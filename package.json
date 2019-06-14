@@ -1,0 +1,11 @@
+{
+  "name": "ve-webgl-editor",
+  "version": "0.1.0",
+  "description": "just a joy",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Eric.J",
+  "license": "ISC"
+}
