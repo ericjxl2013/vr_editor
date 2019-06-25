@@ -59,30 +59,30 @@ export class ContainerElement extends Element {
     }
   }
 
-  public get flexDirection(): Nullable<string> {
-    return this._innerElement ? this._innerElement!.style.flexDirection : null;
+  public get flexDirection(): string {
+    return this._innerElement ? (this._innerElement!.style.flexDirection || '') : '';
   }
-  public set flexDirection(val: Nullable<string>) {
+  public set flexDirection(val: string) {
     if (this._innerElement) {
       this._innerElement.style.flexDirection = val;
       this._innerElement.style.webkitFlexDirection = val!;
     }
   }
 
-  public get flexWrap(): Nullable<string> {
-    return this._innerElement ? this._innerElement!.style.flexWrap : null;
+  public get flexWrap(): string {
+    return this._innerElement ? (this._innerElement!.style.flexWrap || '') : '';
   }
-  public set flexWrap(val: Nullable<string>) {
+  public set flexWrap(val: string) {
     if (this._innerElement) {
       this._innerElement.style.flexWrap = val;
       this._innerElement.style.webkitFlexWrap = val!;
     }
   }
 
-  public get flexGrow(): Nullable<string> {
-    return this.element ? this.element.style.flexGrow : null;
+  public get flexGrow(): string {
+    return this.element ? (this.element.style.flexGrow || '') : '';
   }
-  public set flexGrow(val: Nullable<string>) {
+  public set flexGrow(val: string) {
     if (!!val) this.flex = true;
 
     if (this.element) {
@@ -96,10 +96,10 @@ export class ContainerElement extends Element {
     }
   }
 
-  public get flexShrink(): Nullable<string> {
-    return this.element ? this.element.style.flexShrink : null;
+  public get flexShrink(): string {
+    return this.element ? (this.element.style.flexShrink || '') : '';
   }
-  public set flexShrink(val: Nullable<string>) {
+  public set flexShrink(val: string) {
     if (!!val) this.flex = true;
 
     if (this.element) {
@@ -126,18 +126,22 @@ export class ContainerElement extends Element {
 
     let self = this;
 
+    let observerTimeout = function() {
+      self._observerChanged = false;
+      self.emit('nodesChanged');
+      // console.warn('nodesChanged');
+    };
+
     this._observer = new MutationObserver(function () {
       if (self._observerChanged)
         return;
       self._observerChanged = true;
-      setTimeout(self.observerTimeout, 0);
+      setTimeout(observerTimeout, 0);
     });
+
   }
 
-  private observerTimeout(): void {
-    this._observerChanged = false;
-    this.emit('nodesChanged');
-  };
+  
 
 
   public append(element: HTMLElement | Element): void {
@@ -206,7 +210,7 @@ export class ContainerElement extends Element {
     let html: boolean = (element instanceof HTMLElement);
     let node: HTMLElement = html ? <HTMLElement>element : (<Element>element).element!;
 
-    if (!node.parentNode || node.parentNode !== this._innerElement)
+    if (!node.parentElement || node.parentElement !== this._innerElement)
       return;
 
     this._innerElement.removeChild(node);
@@ -217,20 +221,20 @@ export class ContainerElement extends Element {
     }
   };
 
-
+  // TODO：怕不对
   public clear(): void {
-    let node: ChildNode;
+    let node: HTMLElement;
 
     this._observer.disconnect();
 
-    let i: number = this._innerElement!.childNodes.length;
+    let i: number = this._innerElement!.children.length;
     while (i--) {
-      node = this._innerElement!.childNodes[i];
+      node = <HTMLElement>(this._innerElement!.children[i]);
 
-      // if (!node.ui)
-      //   continue;
+      if (!node.ui)
+        continue;
 
-      // node.ui.destroy();
+      node.ui.destroy();
     }
     this._innerElement!.innerHTML = '';
 

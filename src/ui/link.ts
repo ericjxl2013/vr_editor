@@ -16,6 +16,7 @@ export class Link {
     return this._value[path];
   }
 
+  // TODO
   public set(path: string, value: any): void {
     this._value[path] = value;
   }

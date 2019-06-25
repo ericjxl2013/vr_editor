@@ -1,11 +1,23 @@
-import { Editor } from './editor';
+import { Editor, Layout, Viewport, Hierarchy } from './editor';
 
-import {Element} from './ui';
+import { Element, Canvas } from './ui';
+import { VeryEngine } from './engine';
 
 export * from './index';
 
 // 添加到全局变量
 window.editor = new Editor();
+
+// 整体布局
+let layout = new Layout();
+layout.init();
+
+// 编辑视窗
+let viewport = new Viewport();
+VeryEngine.viewport = viewport;
+
+// 层级菜单
+let hierarchy = new Hierarchy();
 
 /* TEST
 editor.once('load', () => {
@@ -40,20 +52,23 @@ editor.emit('array');
 editor.call('method', 123);
 */
 
-let parent: HTMLElement = document.getElementById('test')!;
+// let parent: HTMLElement = document.getElementById('test')!;
 
-console.log('children');
+// console.log('children');
 
-console.log(parent);
-console.log(parent.childNodes);
+// console.log(parent);
+// console.log(parent.childNodes);
 
-for(let i: number = 0; i < parent.children.length; i++) {
-  console.log((<HTMLElement>(parent.children[i])).ui = new Element());
-  console.log(parent.children[i] instanceof HTMLElement);
-}
+// for(let i: number = 0; i < parent.children.length; i++) {
+//   (<HTMLElement>(parent.children[i])).ui = new Element();
+//   console.warn((<HTMLElement>(parent.children[i])).ui === undefined);
+//   console.log((<HTMLElement>(parent.children[i])).ui);
+//   (<HTMLElement>(parent.children[i])).ui.destroy();
+//   console.log(parent.children[i] instanceof HTMLElement);
+// }
 
-console.log('childNodes');
+// console.log('childNodes');
 
-for(let i: number = 0; i < parent.childNodes.length; i++) {
-  console.log(parent.childNodes[i] instanceof HTMLElement);
-}
+// for(let i: number = 0; i < parent.childNodes.length; i++) {
+//   console.log(parent.childNodes[i] instanceof HTMLElement);
+// }

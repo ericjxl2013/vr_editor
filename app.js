@@ -5,6 +5,11 @@ const send = require("koa-send");
 const bodyParser = require("koa-bodyparser");
 const router = require("./router/index.js");
 const sendHandle = require("./middlewares/sendHandle");
+const compress = require("koa-compress");
+
+const options = { threshold: 2048 };
+
+app.use(compress(options));
 
 app.use(bodyParser());
 app.use(sendHandle()); // 发送数据控制中间件

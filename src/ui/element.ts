@@ -7,7 +7,7 @@ export class Element extends Events {
   private _destroyed: boolean = false;
 
   // TODO
-  private _link: Nullable<Link> = null;
+  public _link: Nullable<Link> = null;
   /*
     on get set .schema.has .schema.get .history .history.combine .entity
   */
@@ -32,7 +32,7 @@ export class Element extends Events {
 
   // HTMLElement 
   private _element: Nullable<HTMLElement> = null;
-  public innerElement: Nullable<HTMLElement> = null;
+  // public innerElement: Nullable<HTMLElement> = null;
   public get element(): Nullable<HTMLElement> {
     return this._element;
   }
@@ -40,7 +40,7 @@ export class Element extends Events {
     if (this._element) return;
 
     this._element = val;
-    // this._element!.ui = this;
+    this._element!.ui = this;
 
     if (!this._element) return;
 
@@ -59,7 +59,7 @@ export class Element extends Events {
       self.emit('blur', evt);
     }, false);
 
-    if (!this.innerElement) this.innerElement = this._element;
+    // if (!this.innerElement) this.innerElement = this._element;
   }
 
   public get parent(): Nullable<Element> {
@@ -170,10 +170,10 @@ export class Element extends Events {
   }
 
   // flex-grow 属性用于设置或检索弹性盒子的扩展比率，用作css动画效果
-  public get flexGrow(): Nullable<string> {
-    return this._element ? this._element.style.flexGrow : null;
+  public get flexGrow(): string {
+    return this._element ? (this._element.style.flexGrow || '') : '';
   }
-  public set flexGrow(val: Nullable<string>) {
+  public set flexGrow(val: string) {
     if (this._element) {
       this._element.style.flexGrow = val;
       this._element.style.webkitFlexGrow = val!;
@@ -181,10 +181,10 @@ export class Element extends Events {
   }
 
   // flex-shrink 属性规定项目将相对于同一容器内其他灵活的项目进行收缩的量，用作css动画效果
-  public get flexShrink(): Nullable<string> {
-    return this._element ? this._element.style.flexShrink : null;
+  public get flexShrink(): string {
+    return this._element ? (this._element.style.flexShrink || '') : '';
   }
-  public set flexShrink(val: Nullable<string>) {
+  public set flexShrink(val: string) {
     if (this._element) {
       this._element.style.flexShrink = val;
       this._element.style.webkitFlexShrink = val!;
@@ -256,7 +256,7 @@ export class Element extends Events {
     this.path = "";
   };
 
-  private _onLinkChange(value: any): void {
+  public _onLinkChange(value: any): void {
 
   }
 
@@ -282,6 +282,8 @@ export class Element extends Events {
     this.emit('destroy');
 
     this.unbind();
+
+    console.error('destroy');
   };
 
   private _parentDestroy(): void {

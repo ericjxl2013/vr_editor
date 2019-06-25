@@ -38,10 +38,16 @@ declare interface Window {
 
 declare var editor: Editor;
 
-declare interface Element {
+declare interface Element1 {
   destroy(): void;
 }
 
 declare interface HTMLElement {
-  ui: Element;
+  ui: Element1;
+}
+
+declare interface TreeItemArgs {
+  text: string;
+  classList: string[];
+  allowDrop: false;
 }
