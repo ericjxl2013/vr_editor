@@ -173,6 +173,15 @@ export class TreeItem extends Element {
   private _onClick(evt: MouseEvent): void {
     let htmlEle: HTMLElement = <HTMLElement>evt.target;
 
+    // 可能点击title或者title子项
+    if (!(<TreeItem>htmlEle.ui)) {
+      if (htmlEle.parentElement && <TreeItem>(htmlEle.parentElement).ui) {
+        htmlEle = htmlEle.parentElement;
+      } else {
+        return;
+      }
+    }
+
     if (evt.button !== 0 || !(<TreeItem>htmlEle.ui).selectable)
       return;
 
@@ -188,6 +197,15 @@ export class TreeItem extends Element {
 
   private _onDblClick(evt: MouseEvent): void {
     let htmlEle: HTMLElement = <HTMLElement>evt.target;
+
+    // 可能点击title或者title子项
+    if (!(<TreeItem>htmlEle.ui)) {
+      if (htmlEle.parentElement && <TreeItem>(htmlEle.parentElement).ui) {
+        htmlEle = htmlEle.parentElement;
+      } else {
+        return;
+      }
+    }
 
     if (!(<TreeItem>htmlEle.ui).tree!.allowRenaming || evt.button !== 0)
       return;
@@ -205,14 +223,33 @@ export class TreeItem extends Element {
   private _onMouseDown(evt: MouseEvent): void {
     let htmlEle: HTMLElement = <HTMLElement>evt.target;
 
-    if (!(<TreeItem>htmlEle.ui).tree!.draggable)
+    // 可能点击title或者title子项
+    if (!(<TreeItem>htmlEle.ui)) {
+      if (htmlEle.parentElement && <TreeItem>(htmlEle.parentElement).ui) {
+        htmlEle = htmlEle.parentElement;
+      } else {
+        return;
+      }
+    }
+
+    if ((<TreeItem>htmlEle.ui).tree && !(<TreeItem>htmlEle.ui).tree!.draggable)
       return;
 
     evt.stopPropagation();
+
   };
 
   private _onDragStart = function (evt: MouseEvent): void {
     let htmlEle: HTMLElement = <HTMLElement>evt.target;
+    
+    // 可能点击title或者title子项
+    if (!(<TreeItem>htmlEle.ui)) {
+      if (htmlEle.parentElement && <TreeItem>(htmlEle.parentElement).ui) {
+        htmlEle = htmlEle.parentElement;
+      } else {
+        return;
+      }
+    }
 
     if (!(<TreeItem>htmlEle.ui).tree!.draggable) {
       evt.stopPropagation();
@@ -231,14 +268,26 @@ export class TreeItem extends Element {
     evt.stopPropagation();
     evt.preventDefault();
 
+    console.log('drag start');
+
     (<TreeItem>htmlEle.ui).emit('dragstart');
   };
 
   private _onMouseOver(evt: MouseEvent): void {
     let htmlEle: HTMLElement = <HTMLElement>evt.target;
 
+    // 可能点击title或者title子项
+    if (!(<TreeItem>htmlEle.ui)) {
+      if (htmlEle.parentElement && <TreeItem>(htmlEle.parentElement).ui) {
+        htmlEle = htmlEle.parentElement;
+      } else {
+        return;
+      }
+    }
+
     evt.stopPropagation();
     (<TreeItem>htmlEle.ui).emit('mouseover', evt);
+
   };
 
 
@@ -253,6 +302,9 @@ export class TreeItem extends Element {
 
   private _onKeyDown(evt: KeyboardEvent) {
     let htmlEle: HTMLElement = <HTMLElement>evt.target;
+
+    if (!(<TreeItem>htmlEle.ui)) return;
+
     let currentItem: TreeItem = <TreeItem>htmlEle.ui;
 
     if ((evt.target && htmlEle.tagName.toLowerCase() === 'input'))
@@ -381,7 +433,7 @@ export class TreeItem extends Element {
 
     var self = this;
     this.class!.add('rename');
-
+    console.log('rename');
     // add remaning field
     var field = new TextField();
     field.parent = this;

@@ -24,7 +24,7 @@ export class Layout {
 
       // blur inputs
       if (window.getSelection) {
-        var focusNode = window.getSelection()!.focusNode;
+        let focusNode = window.getSelection()!.focusNode;
         if (focusNode) {
           if ((<HTMLElement>focusNode).tagName === 'INPUT') {
             (<HTMLElement>focusNode).blur();
@@ -66,14 +66,14 @@ export class Layout {
     root.append(top);
 
     // middle panel
-    var middle = new Panel();
+    let middle = new Panel();
     middle.element!.id = 'ui-middle';
     middle.flexible = true;
     middle.flexGrow = '1';
     root.append(middle);
 
     // bottom panel (status)
-    var bottom = new Panel();
+    let bottom = new Panel();
     bottom.element!.id = 'ui-bottom';
     bottom.flexShrink = '0';
     root.append(bottom);
@@ -81,7 +81,7 @@ export class Layout {
     editor.method('layout.bottom', function () { return bottom; });
 
     // toolbar panel (left)
-    var toolbar = new Panel();
+    let toolbar = new Panel();
     toolbar.element!.id = 'ui-toolbar';
     toolbar.flexShrink = '0';
     toolbar.style!.width = '45px';
@@ -91,11 +91,11 @@ export class Layout {
     VeryEngine.toolbarPanel = toolbar;
 
     // hierarchy
-    var hierarchyPanel = new Panel('层级窗口');
+    let hierarchyPanel = new Panel('树形结构窗口');
     hierarchyPanel.enabled = false;
     hierarchyPanel.class!.add('hierarchy');
     hierarchyPanel.flexShrink = '0';
-    var hierarchyPanelSize = editor.call('localStorage:get', 'editor:layout:hierarchy:width') || '256px';
+    let hierarchyPanelSize = editor.call('localStorage:get', 'editor:layout:hierarchy:width') || '256px';
     hierarchyPanel.style!.width = hierarchyPanelSize;
     hierarchyPanel.innerElement!.style.width = hierarchyPanelSize;
     hierarchyPanel.foldable = true;
@@ -128,14 +128,14 @@ export class Layout {
     VeryEngine.hierarchyPanel = hierarchyPanel;
 
     // center panel
-    var center = new Panel();
+    let center = new Panel();
     center.flexible = true;
     center.flexGrow = '1';
     center.flexDirection = 'column';
     middle.append(center);
 
     // viewport panel
-    var viewport = new Panel();
+    let viewport = new Panel();
     viewport.flexible = true;
     viewport.flexGrow = '1';
     viewport.class!.add('viewport');
@@ -145,7 +145,7 @@ export class Layout {
     VeryEngine.viewPanel = viewport;
 
     // assets panel
-    var assetsPanel = new Panel('资源窗口');
+    let assetsPanel = new Panel('资源窗口');
     assetsPanel.class!.add('assets');
     assetsPanel.foldable = true;
     assetsPanel.folded = editor.call('localStorage:get', 'editor:layout:assets:fold') || false;
@@ -177,11 +177,11 @@ export class Layout {
 
 
     // attributes panel
-    var attributesPanel = new Panel('属性窗口');
+    let attributesPanel = new Panel('属性窗口');
     attributesPanel.enabled = false;
     attributesPanel.class!.add('attributes');
     attributesPanel.flexShrink = '0';
-    var attributesPanelWidth = editor.call('localStorage:get', 'editor:layout:attributes:width') || '320px';
+    let attributesPanelWidth = editor.call('localStorage:get', 'editor:layout:attributes:width') || '320px';
     attributesPanel.style!.width = attributesPanelWidth;
     attributesPanel.innerElement!.style.width = attributesPanelWidth;
     attributesPanel.horizontal = true;

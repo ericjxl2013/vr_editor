@@ -7,9 +7,9 @@ export class Tree extends ContainerElement {
 
   private elementDrag: HTMLElement;
   public draggable: boolean;
-  private _dragging: boolean;
-  private _dragItems: TreeItem[] = [];
-  private _dragOver: Nullable<TreeItem>;
+  public _dragging: boolean;
+  public _dragItems: TreeItem[] = [];
+  public _dragOver: Nullable<TreeItem>;
   private _dragArea: string;
   private _evtDragMove: any;
   public reordering: boolean;
@@ -44,6 +44,10 @@ export class Tree extends ContainerElement {
       self._onDragOut();
     });
 
+    this.on('select', this._onSelect);
+    this.on('deselect', this._onDeselect);
+    this.on('append', this._onAppend);
+    this.on('remove', this._onRemove);
 
     this.draggable = true;
     this._dragging = false;
@@ -568,7 +572,7 @@ export class Tree extends ContainerElement {
     this.emit('dragout');
   }
 
-  private _updateDragHandle(): void {
+  public _updateDragHandle(): void {
     if (!this.draggable || !this._dragging)
       return;
 

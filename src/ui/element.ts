@@ -196,6 +196,11 @@ export class Element extends Events {
     super();
     // this._element!.addEventListener('click', )
 
+    this._parent = null;
+    // let self = this;
+    // this._parentDestroy = function () {
+    //   self.destroy();
+    // };
   }
 
   // 设置元素闪烁效果

@@ -68,33 +68,264 @@ var Editor = /** @class */ (function (_super) {
     return Editor;
 }(lib_1.Events));
 exports.Editor = Editor;
-},{"../lib":14}],2:[function(require,module,exports){
+},{"../lib":15}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ui_1 = require("../../ui");
 var engine_1 = require("../../engine");
+var HierarchySearch = /** @class */ (function () {
+    function HierarchySearch() {
+        this.results = new ui_1.List();
+        this.results.element.tabIndex = 0;
+        this.results.hidden = true;
+        this.results.class.add('search-results');
+        engine_1.VeryEngine.hierarchyPanel.append(this.results);
+        this.search = new ui_1.TextField('搜索');
+        this.init();
+    }
+    HierarchySearch.prototype.init = function () {
+        var self = this;
+        var lastSearch = '';
+        this.search.blurOnEnter = false;
+        this.search.keyChange = true;
+        this.search.class.add('search');
+        this.search.renderChanges = false;
+        engine_1.VeryEngine.hierarchyPanel.element.insertBefore(this.search.element, engine_1.VeryEngine.hierarchyPanel.innerElement);
+        var searchClear = document.createElement('div');
+        searchClear.innerHTML = '&#57650;';
+        searchClear.classList.add('clear');
+        this.search.element.appendChild(searchClear);
+        searchClear.addEventListener('click', function () {
+            self.search.value = '';
+        }, false);
+    };
+    return HierarchySearch;
+}());
+exports.HierarchySearch = HierarchySearch;
+},{"../../engine":11,"../../ui":23}],3:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var ui_1 = require("../../ui");
+var engine_1 = require("../../engine");
+var hierarchy_search_1 = require("./hierarchy-search");
 var Hierarchy = /** @class */ (function () {
     function Hierarchy() {
-        this.controls = new ui_1.Panel();
-        this.controls.class.add('hierarchy-controls');
-        this.controls.parent = engine_1.VeryEngine.hierarchyPanel;
-        engine_1.VeryEngine.hierarchyPanel.headerAppend(this.controls);
+        this.hierarchyMain = new ui_1.Panel();
+        this.hierarchyMain.class.add('hierarchy-controls');
+        this.hierarchyMain.parent = engine_1.VeryEngine.hierarchyPanel;
+        engine_1.VeryEngine.hierarchyPanel.headerAppend(this.hierarchyMain);
         console.log('hierarchy-controls');
+        // controls delete (Button)
+        var btnDelete = new ui_1.Button('&#57636;');
+        btnDelete.class.add('delete');
+        btnDelete.style.fontWeight = '200';
+        btnDelete.on('click', function () {
+            var type = editor.call('selector:type');
+            if (type !== 'entity')
+                return;
+            editor.call('entities:delete', editor.call('selector:items'));
+        });
+        this.hierarchyMain.append(btnDelete);
+        var tooltipDelete = ui_1.Tooltip.attach({
+            target: btnDelete.element,
+            text: '删除',
+            align: 'top',
+            root: engine_1.VeryEngine.rootPanel
+        });
+        tooltipDelete.class.add('innactive');
+        // controls duplicate
+        var btnDuplicate = new ui_1.Button('&#57638;');
+        btnDuplicate.disabled = true;
+        btnDuplicate.class.add('duplicate');
+        btnDuplicate.on('click', function () {
+            var type = editor.call('selector:type');
+            var items = editor.call('selector:items');
+            if (type === 'entity' && items.length)
+                editor.call('entities:duplicate', items);
+        });
+        this.hierarchyMain.append(btnDuplicate);
+        var tooltipDuplicate = ui_1.Tooltip.attach({
+            target: btnDuplicate.element,
+            text: '复制',
+            align: 'top',
+            root: engine_1.VeryEngine.rootPanel
+        });
+        tooltipDuplicate.class.add('innactive');
+        // TODO: Menu
+        // var menuEntities = ui.Menu.fromData(editor.call('menu:entities:new'));
+        // root.append(menuEntities);
+        // controls add
+        var btnAdd = new ui_1.Button('&#57632;');
+        btnAdd.class.add('add');
+        btnAdd.on('click', function () {
+            // menuEntities.open = true;
+            // var rect = btnAdd.element.getBoundingClientRect();
+            // menuEntities.position(rect.left, rect.top);
+        });
+        this.hierarchyMain.append(btnAdd);
+        ui_1.Tooltip.attach({
+            target: btnAdd.element,
+            text: '添加',
+            align: 'top',
+            root: engine_1.VeryEngine.rootPanel
+        });
+        this.init();
     }
     Hierarchy.prototype.init = function () {
         // left control
+        // hierarchy index
+        var uiItemIndex = {};
+        var awaitingParent = {};
+        var panel = engine_1.VeryEngine.hierarchyPanel;
+        var hierarchy = new ui_1.Tree();
+        engine_1.VeryEngine.hierarchyTree = hierarchy;
+        // TODO: hierarchy权限管理
+        // hierarchy.allowRenaming = editor.call('permissions:write');
+        hierarchy.draggable = hierarchy.allowRenaming;
+        hierarchy.class.add('hierarchy');
+        panel.append(hierarchy);
+        var resizeQueued = false;
+        var resizeTree = function () {
+            resizeQueued = false;
+            hierarchy.element.style.width = '';
+            hierarchy.element.style.width = (panel.innerElement.scrollWidth - 5) + 'px';
+        };
+        var resizeQueue = function () {
+            if (resizeQueued)
+                return;
+            resizeQueued = true;
+            requestAnimationFrame(resizeTree);
+        };
+        panel.on('resize', resizeQueue);
+        hierarchy.on('open', resizeQueue);
+        hierarchy.on('close', resizeQueue);
+        setInterval(resizeQueue, 1000);
+        // return hierarchy
+        editor.method('entities:hierarchy', function () {
+            return hierarchy;
+        });
+        // list item selected
+        hierarchy.on('select', function (item) {
+            // open items till parent
+            var parent = item.parent;
+            while (parent && parent instanceof ui_1.TreeItem) {
+                parent.open = true;
+                parent = parent.parent;
+            }
+            // focus
+            item.elementTitle.focus();
+            // add selection
+            // TODO
+            console.log('selector:add entity');
+            // editor.call('selector:add', 'entity', item.entity);
+        });
+        // list item deselected
+        hierarchy.on('deselect', function (item) {
+            // TODO:
+            console.log('selector:remove entity');
+            // editor.call('selector:remove', item.entity);
+        });
+        // scrolling on drag
+        var dragScroll = 0;
+        var dragTimer = null;
+        ;
+        var dragLastEvt;
+        var dragEvt = function (evt) {
+            if (!hierarchy._dragging) {
+                clearInterval(Number(dragTimer));
+                window.removeEventListener('mousemove', dragEvt);
+                return;
+            }
+            var rect = panel.innerElement.getBoundingClientRect();
+            if ((evt.clientY - rect.top) < 32 && panel.innerElement.scrollTop > 0) {
+                dragScroll = -1;
+            }
+            else if ((rect.bottom - evt.clientY) < 32 && (panel.innerElement.scrollHeight - (rect.height + panel.innerElement.scrollTop)) > 0) {
+                dragScroll = 1;
+            }
+            else {
+                dragScroll = 0;
+            }
+        };
+        hierarchy.on('dragstart', function () {
+            dragTimer = setInterval(function () {
+                if (dragScroll === 0)
+                    return;
+                panel.innerElement.scrollTop += dragScroll * 8;
+                hierarchy._dragOver = null;
+                hierarchy._updateDragHandle();
+            }, 1000 / 60);
+            dragScroll = 0;
+            window.addEventListener('mousemove', dragEvt, false);
+            // TODO:
+            console.log('get drag TreeItem entity resourceId');
+            // var resourceId = hierarchy._dragItems[0].entity.get('resource_id');
+            // editor.call('drop:set', 'entity', { resource_id: resourceId });
+            // editor.call('drop:activate', true);
+        });
+        hierarchy.on('dragend', function () {
+            editor.call('drop:activate', false);
+            editor.call('drop:set');
+        });
+        // TODO
+        // var target = editor.call('drop:target', {
+        //   ref: panel.innerElement,
+        //   type: 'entity',
+        //   hole: true,
+        //   passThrough: true
+        // });
+        // target.element.style.outline = 'none';
+        var classList = ['tree-item-entity', 'entity-id-' + 'ids-to-be-done', 'c-model'];
+        // if (isRoot) {
+        //   classList.push('tree-item-root');
+        // }
+        var rootElement = new ui_1.TreeItem({
+            text: 'Scene',
+            classList: classList
+        });
+        rootElement.class.remove('c-model');
+        hierarchy.element.appendChild(rootElement.element);
+        hierarchy.emit('append', rootElement);
+        for (var i = 0; i < 10; i++) {
+            var element1 = new ui_1.TreeItem({
+                text: '物体名' + (i + 1),
+                classList: classList
+            });
+            hierarchy.emit('append', element1);
+            rootElement.append(element1);
+            for (var k = 0; k < 5; k++) {
+                var element2 = new ui_1.TreeItem({
+                    text: '子物体名' + (k + 1),
+                    classList: classList
+                });
+                hierarchy.emit('append', element2);
+                element1.append(element2);
+                for (var x = 0; x < 5; x++) {
+                    var element3 = new ui_1.TreeItem({
+                        text: '二级子物体' + (x + 1),
+                        classList: classList
+                    });
+                    hierarchy.emit('append', element3);
+                    element2.append(element3);
+                }
+            }
+        }
+        // element.append();
+        // Search Field
+        var searchField = new hierarchy_search_1.HierarchySearch();
     };
     return Hierarchy;
 }());
 exports.Hierarchy = Hierarchy;
-},{"../../engine":10,"../../ui":20}],3:[function(require,module,exports){
+},{"../../engine":11,"../../ui":23,"./hierarchy-search":2}],4:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./hierarchy"));
-},{"./hierarchy":2}],4:[function(require,module,exports){
+__export(require("./hierarchy-search"));
+},{"./hierarchy":3,"./hierarchy-search":2}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Hotkeys = /** @class */ (function () {
@@ -106,7 +337,7 @@ var Hotkeys = /** @class */ (function () {
     return Hotkeys;
 }());
 exports.Hotkeys = Hotkeys;
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -117,7 +348,7 @@ __export(require("./layout"));
 __export(require("./viewport"));
 __export(require("./hierarchy"));
 __export(require("./hotkeys"));
-},{"./editor":1,"./hierarchy":3,"./hotkeys":4,"./layout":6,"./viewport":7}],6:[function(require,module,exports){
+},{"./editor":1,"./hierarchy":4,"./hotkeys":5,"./layout":7,"./viewport":8}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ui_1 = require("../ui");
@@ -204,7 +435,7 @@ var Layout = /** @class */ (function () {
         editor.method('layout.toolbar', function () { return toolbar; });
         engine_1.VeryEngine.toolbarPanel = toolbar;
         // hierarchy
-        var hierarchyPanel = new ui_1.Panel('层级窗口');
+        var hierarchyPanel = new ui_1.Panel('树形结构窗口');
         hierarchyPanel.enabled = false;
         hierarchyPanel.class.add('hierarchy');
         hierarchyPanel.flexShrink = '0';
@@ -318,14 +549,14 @@ var Layout = /** @class */ (function () {
     return Layout;
 }());
 exports.Layout = Layout;
-},{"../engine":10,"../ui":20}],7:[function(require,module,exports){
+},{"../engine":11,"../ui":23}],8:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./viewport"));
-},{"./viewport":8}],8:[function(require,module,exports){
+},{"./viewport":9}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ui_1 = require("../../ui");
@@ -415,7 +646,7 @@ var Viewport = /** @class */ (function () {
     return Viewport;
 }());
 exports.Viewport = Viewport;
-},{"../../engine":10,"../../ui":20}],9:[function(require,module,exports){
+},{"../../engine":11,"../../ui":23}],10:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var BabylonEngine = /** @class */ (function () {
@@ -424,7 +655,7 @@ var BabylonEngine = /** @class */ (function () {
     return BabylonEngine;
 }());
 exports.BabylonEngine = BabylonEngine;
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -432,7 +663,7 @@ function __export(m) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./babylon-engine"));
 __export(require("./very-engine"));
-},{"./babylon-engine":9,"./very-engine":11}],11:[function(require,module,exports){
+},{"./babylon-engine":10,"./very-engine":12}],12:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var VeryEngine = /** @class */ (function () {
@@ -441,7 +672,7 @@ var VeryEngine = /** @class */ (function () {
     return VeryEngine;
 }());
 exports.VeryEngine = VeryEngine;
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -451,7 +682,7 @@ __export(require("./lib"));
 __export(require("./editor"));
 __export(require("./ui"));
 __export(require("./engine"));
-},{"./editor":5,"./engine":10,"./lib":14,"./ui":20}],13:[function(require,module,exports){
+},{"./editor":6,"./engine":11,"./lib":15,"./ui":23}],14:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Events = /** @class */ (function () {
@@ -593,14 +824,14 @@ var EventHandle = /** @class */ (function () {
     return EventHandle;
 }());
 exports.EventHandle = EventHandle;
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./events"));
-},{"./events":13}],15:[function(require,module,exports){
+},{"./events":14}],16:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -666,7 +897,69 @@ editor.call('method', 123);
 // for(let i: number = 0; i < parent.childNodes.length; i++) {
 //   console.log(parent.childNodes[i] instanceof HTMLElement);
 // }
-},{"./editor":5,"./engine":10,"./index":12}],16:[function(require,module,exports){
+},{"./editor":6,"./engine":11,"./index":13}],17:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var element_1 = require("./element");
+var Bubble = /** @class */ (function (_super) {
+    __extends(Bubble, _super);
+    function Bubble(id, tabindex) {
+        var _this = _super.call(this) || this;
+        _this.element = document.createElement('div');
+        _this.element.classList.add('ui-bubble');
+        var pulseCircle = document.createElement('div');
+        pulseCircle.classList.add('pulse');
+        _this.element.appendChild(pulseCircle);
+        var centerCircle = document.createElement('div');
+        centerCircle.classList.add('center');
+        _this.element.appendChild(centerCircle);
+        _this.on('click', _this._onClick);
+        if (id !== undefined)
+            _this.element.id = id;
+        if (tabindex !== undefined)
+            _this.element.setAttribute('tabindex', tabindex.toString());
+        return _this;
+    }
+    Bubble.prototype._onClick = function () {
+        if (this.class.contains('active')) {
+            this.deactivate();
+        }
+        else {
+            this.activate();
+        }
+    };
+    Bubble.prototype.activate = function () {
+        this.class.add('active');
+        this.emit('activate');
+    };
+    Bubble.prototype.deactivate = function () {
+        this.class.remove('active');
+        this.emit('deactivate');
+    };
+    Bubble.prototype.position = function (x, y) {
+        var rect = this.element.getBoundingClientRect();
+        var left = x || 0;
+        var top = y || 0;
+        this.element.style.left = (typeof left === 'number') ? left + 'px' : left;
+        this.element.style.top = (typeof top === 'number') ? top + 'px' : top;
+    };
+    return Bubble;
+}(element_1.Element));
+exports.Bubble = Bubble;
+},{"./element":22}],18:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -732,7 +1025,7 @@ var Button = /** @class */ (function (_super) {
     return Button;
 }(element_1.Element));
 exports.Button = Button;
-},{"./element":19}],17:[function(require,module,exports){
+},{"./element":22}],19:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -805,7 +1098,95 @@ var Canvas = /** @class */ (function (_super) {
     return Canvas;
 }(element_1.Element));
 exports.Canvas = Canvas;
-},{"./element":19}],18:[function(require,module,exports){
+},{"./element":22}],20:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var element_1 = require("./element");
+var Checkbox = /** @class */ (function (_super) {
+    __extends(Checkbox, _super);
+    function Checkbox(text) {
+        var _this = _super.call(this) || this;
+        _this._text = text || '';
+        _this.element = document.createElement('div');
+        _this.element.classList.add('ui-checkbox', 'noSelect');
+        _this.element.tabIndex = 0;
+        _this.element.addEventListener('keydown', _this._onKeyDown.bind(_this), false);
+        _this.on('click', _this._onClick);
+        _this.on('change', _this._onChange);
+        return _this;
+    }
+    Object.defineProperty(Checkbox.prototype, "value", {
+        get: function () {
+            if (this._link) {
+                return this._link.get(this.path);
+            }
+            else {
+                return this.element.classList.contains('checked');
+            }
+        },
+        set: function (val) {
+            if (this._link) {
+                this._link.set(this.path, val);
+            }
+            else {
+                if (this.element.classList.contains('checked') !== val)
+                    this._onLinkChange(val);
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Checkbox.prototype._onClick = function () {
+        this.value = !this.value;
+        this.element.blur();
+    };
+    Checkbox.prototype._onChange = function () {
+        if (!this.renderChanges)
+            return;
+        this.flash();
+    };
+    Checkbox.prototype._onKeyDown = function (evt) {
+        if (evt.keyCode === 27) // Escape
+            return evt.target.blur();
+        // Space
+        if (evt.keyCode !== 32 || this.disabled)
+            return;
+        evt.stopPropagation();
+        evt.preventDefault();
+        this.value = !this.value;
+    };
+    // TODO
+    Checkbox.prototype._onLinkChange = function (value) {
+        if (value === null) {
+            this.element.classList.remove('checked');
+            this.element.classList.add('null');
+        }
+        else if (value) {
+            this.element.classList.add('checked');
+            this.element.classList.remove('null');
+        }
+        else {
+            this.element.classList.remove('checked', 'null');
+        }
+        this.emit('change', value);
+    };
+    return Checkbox;
+}(element_1.Element));
+exports.Checkbox = Checkbox;
+},{"./element":22}],21:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -1057,7 +1438,7 @@ var ContainerElement = /** @class */ (function (_super) {
     return ContainerElement;
 }(element_1.Element));
 exports.ContainerElement = ContainerElement;
-},{"./element":19}],19:[function(require,module,exports){
+},{"./element":22}],22:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -1102,8 +1483,13 @@ var Element = /** @class */ (function (_super) {
         _this._evtParentEnable = null;
         // HTMLElement 
         _this._element = null;
-        return _this;
         // this._element!.addEventListener('click', )
+        _this._parent = null;
+        return _this;
+        // let self = this;
+        // this._parentDestroy = function () {
+        //   self.destroy();
+        // };
     }
     Object.defineProperty(Element.prototype, "element", {
         // public innerElement: Nullable<HTMLElement> = null;
@@ -1390,7 +1776,7 @@ var Element = /** @class */ (function (_super) {
     return Element;
 }(lib_1.Events));
 exports.Element = Element;
-},{"../lib":14}],20:[function(require,module,exports){
+},{"../lib":15}],23:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -1404,9 +1790,16 @@ __export(require("./canvas"));
 __export(require("./button"));
 __export(require("./label"));
 __export(require("./text-field"));
+__export(require("./textarea-field"));
 __export(require("./tree"));
 __export(require("./tree-item"));
-},{"./button":16,"./canvas":17,"./container-element":18,"./element":19,"./label":21,"./link":22,"./panel":23,"./text-field":24,"./tree":26,"./tree-item":25}],21:[function(require,module,exports){
+__export(require("./list"));
+__export(require("./list-item"));
+__export(require("./checkbox"));
+__export(require("./bubble"));
+__export(require("./overlay"));
+__export(require("./tooltip"));
+},{"./bubble":17,"./button":18,"./canvas":19,"./checkbox":20,"./container-element":21,"./element":22,"./label":24,"./link":25,"./list":27,"./list-item":26,"./overlay":28,"./panel":29,"./text-field":30,"./textarea-field":31,"./tooltip":32,"./tree":34,"./tree-item":33}],24:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -1513,7 +1906,7 @@ var Label = /** @class */ (function (_super) {
     return Label;
 }(element_1.Element));
 exports.Label = Label;
-},{"./element":19}],22:[function(require,module,exports){
+},{"./element":22}],25:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // TODO
@@ -1535,7 +1928,332 @@ var Link = /** @class */ (function () {
     return Link;
 }());
 exports.Link = Link;
-},{}],23:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var element_1 = require("./element");
+var ListItem = /** @class */ (function (_super) {
+    __extends(ListItem, _super);
+    function ListItem(text, selected, allowDeselect) {
+        var _this = _super.call(this) || this;
+        _this._text = text || '';
+        _this._selected = selected || false;
+        _this._allowDeselect = allowDeselect || false;
+        _this.element = document.createElement('li');
+        _this.element.classList.add('ui-list-item');
+        _this.elementText = document.createElement('span');
+        _this.elementText.textContent = _this._text;
+        _this.element.appendChild(_this.elementText);
+        _this.on('click', _this._onClick);
+        return _this;
+    }
+    Object.defineProperty(ListItem.prototype, "text", {
+        get: function () {
+            return this._text;
+        },
+        set: function (val) {
+            if (this._text === val)
+                return;
+            this._text = val;
+            this.elementText.textContent = this._text;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ListItem.prototype, "selected", {
+        get: function () {
+            return this._selected;
+        },
+        set: function (val) {
+            if (this._selected === val)
+                return;
+            this._selected = val;
+            if (this._selected) {
+                this.element.classList.add('selected');
+            }
+            else {
+                this.element.classList.remove('selected');
+            }
+            this.emit(this.selected ? 'select' : 'deselect');
+            if (this.parent)
+                this.parent.emit(this.selected ? 'select' : 'deselect', this);
+            this.emit('change', this.selected);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ListItem.prototype._onClick = function () {
+        if (!this.selected) {
+            this.selected = true;
+        }
+        else if (this._allowDeselect) {
+            this.selected = false;
+        }
+    };
+    return ListItem;
+}(element_1.Element));
+exports.ListItem = ListItem;
+},{"./element":22}],27:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var container_element_1 = require("./container-element");
+var editor_1 = require("../editor");
+var List = /** @class */ (function (_super) {
+    __extends(List, _super);
+    function List(selectable) {
+        var _this = _super.call(this) || this;
+        _this.element = document.createElement('ul');
+        _this.element.classList.add('ui-list');
+        _this._selectable = selectable || true;
+        _this._changing = false;
+        _this._selected = [];
+        _this.on('select', _this._onSelect);
+        _this.on('deselect', _this._onDeselect);
+        _this.on('append', _this._onAppend);
+        return _this;
+    }
+    Object.defineProperty(List.prototype, "selectable", {
+        get: function () {
+            return this._selectable;
+        },
+        set: function (val) {
+            if (this._selectable === !!val)
+                return;
+            this._selectable = val;
+            if (this._selectable) {
+                this.class.add('selectable');
+            }
+            else {
+                this.class.remove('selectable');
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(List.prototype, "selected", {
+        get: function () {
+            return this._selected.slice(0);
+        },
+        set: function (val) {
+            this._changing = true;
+            // deselecting
+            var items = this.selected;
+            for (var i = 0; i < items.length; i++) {
+                if (val.indexOf(items[i]) !== -1)
+                    continue;
+                items[i].selected = false;
+            }
+            // selecting
+            for (var i = 0; i < val.length; i++) {
+                val[i].selected = true;
+            }
+            this._changing = false;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    List.prototype._onSelect = function (item) {
+        var ind = this._selected.indexOf(item);
+        if (ind === -1)
+            this._selected.push(item);
+        if (this._changing)
+            return;
+        if (List._ctrl && List._ctrl()) {
+        }
+        else if (List._shift && List._shift() && this.selected.length) {
+        }
+        else {
+            this._changing = true;
+            var items = this.selected;
+            if (items.length > 1) {
+                for (var i = 0; i < items.length; i++) {
+                    if (items[i] === item)
+                        continue;
+                    items[i].selected = false;
+                }
+            }
+            this._changing = false;
+        }
+        this.emit('change');
+    };
+    List.prototype._onDeselect = function (item) {
+        var ind = this._selected.indexOf(item);
+        if (ind !== -1)
+            this._selected.splice(ind, 1);
+        if (this._changing)
+            return;
+        if (List._ctrl && List._ctrl()) {
+        }
+        else {
+            this._changing = true;
+            var items = this.selected;
+            if (items.length) {
+                for (var i = 0; i < items.length; i++)
+                    items[i].selected = false;
+                item.selected = true;
+            }
+            this._changing = false;
+        }
+        this.emit('change');
+    };
+    List.prototype._onAppend = function (item) {
+        if (!item.selected)
+            return;
+        var ind = this._selected.indexOf(item);
+        if (ind === -1)
+            this._selected.push(item);
+    };
+    List.prototype.clear = function () {
+        this._selected = [];
+        container_element_1.ContainerElement.prototype.clear.call(this);
+    };
+    List._ctrl = function () {
+        return editor_1.Hotkeys.ctrl;
+    };
+    List._shift = function () {
+        return editor_1.Hotkeys.shift;
+    };
+    return List;
+}(container_element_1.ContainerElement));
+exports.List = List;
+},{"../editor":6,"./container-element":21}],28:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var container_element_1 = require("./container-element");
+var Overlay = /** @class */ (function (_super) {
+    __extends(Overlay, _super);
+    function Overlay() {
+        var _this = _super.call(this) || this;
+        _this.element = document.createElement('div');
+        _this.element.classList.add('ui-overlay', 'center');
+        _this.elementOverlay = document.createElement('div');
+        _this.elementOverlay.ui = _this;
+        _this.elementOverlay.classList.add('overlay', 'clickable');
+        _this.element.appendChild(_this.elementOverlay);
+        _this.elementOverlay.addEventListener('mousedown', _this._onMouseDown.bind(_this), false);
+        _this.innerElement = document.createElement('div');
+        _this.innerElement.classList.add('content');
+        _this.element.appendChild(_this.innerElement);
+        return _this;
+    }
+    Object.defineProperty(Overlay.prototype, "clickable", {
+        get: function () {
+            return this.elementOverlay.classList.contains('clickable');
+        },
+        set: function (val) {
+            if (val) {
+                this.elementOverlay.classList.add('clickable');
+            }
+            else {
+                this.elementOverlay.classList.remove('clickable');
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Overlay.prototype, "rect", {
+        get: function () {
+            return this.innerElement.getBoundingClientRect();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Overlay.prototype, "center", {
+        get: function () {
+            return this.element.classList.contains('center');
+        },
+        set: function (val) {
+            if (val) {
+                this.element.classList.add('center');
+                this.innerElement.style.left = '';
+                this.innerElement.style.top = '';
+            }
+            else {
+                this.element.classList.remove('center');
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Overlay.prototype, "transparent", {
+        get: function () {
+            return this.element.classList.contains('transparent');
+        },
+        set: function (val) {
+            if (val) {
+                this.element.classList.add('transparent');
+            }
+            else {
+                this.element.classList.remove('transparent');
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Overlay.prototype._onMouseDown = function (evt) {
+        if (!this.clickable)
+            return;
+        var self = this;
+        // some field might be in focus
+        document.body.blur();
+        // wait till blur takes in account
+        requestAnimationFrame(function () {
+            // hide overlay
+            self.hidden = true;
+        });
+        evt.preventDefault();
+    };
+    Overlay.prototype.position = function (x, y) {
+        var area = this.elementOverlay.getBoundingClientRect();
+        var rect = this.innerElement.getBoundingClientRect();
+        x = Math.max(0, Math.min(area.width - rect.width, x));
+        y = Math.max(0, Math.min(area.height - rect.height, y));
+        this.innerElement.style.left = x + 'px';
+        this.innerElement.style.top = y + 'px';
+    };
+    return Overlay;
+}(container_element_1.ContainerElement));
+exports.Overlay = Overlay;
+},{"./container-element":21}],29:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -1902,7 +2620,7 @@ var Panel = /** @class */ (function (_super) {
     return Panel;
 }(container_element_1.ContainerElement));
 exports.Panel = Panel;
-},{"./container-element":18}],24:[function(require,module,exports){
+},{"./container-element":21}],30:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -2082,7 +2800,449 @@ var TextField = /** @class */ (function (_super) {
     return TextField;
 }(element_1.Element));
 exports.TextField = TextField;
-},{"./element":19}],25:[function(require,module,exports){
+},{"./element":22}],31:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var element_1 = require("./element");
+var TextAreaField = /** @class */ (function (_super) {
+    __extends(TextAreaField, _super);
+    function TextAreaField(placeholder, value, blurOnEnter) {
+        var _this = _super.call(this) || this;
+        _this.element = document.createElement('div');
+        _this.element.classList.add('ui-textarea-field');
+        _this.elementInput = document.createElement('textarea');
+        _this.elementInput.ui = _this;
+        _this.elementInput.classList.add('field');
+        _this.elementInput.tabIndex = 0;
+        _this.elementInput.addEventListener('focus', _this._onInputFocus.bind(_this), false);
+        _this.elementInput.addEventListener('blur', _this._onInputBlur.bind(_this), false);
+        _this.element.appendChild(_this.elementInput);
+        if (value !== undefined)
+            _this.value = value;
+        _this.elementInput.addEventListener('change', _this._onChange.bind(_this), false);
+        _this.elementInput.addEventListener('keydown', _this._onKeyDown.bind(_this), false);
+        _this.elementInput.addEventListener('contextmenu', _this._onFullSelect.bind(_this), false);
+        _this.evtKeyChange = false;
+        _this.ignoreChange = false;
+        _this.blurOnEnter = blurOnEnter !== undefined ? blurOnEnter : true;
+        _this.refocusable = true;
+        _this.on('disable', _this._onDisable);
+        _this.on('enable', _this._onEnable);
+        _this.on('change', _this._onChangeField);
+        if (placeholder)
+            _this.placeholder = placeholder;
+        return _this;
+    }
+    Object.defineProperty(TextAreaField.prototype, "value", {
+        get: function () {
+            if (this._link) {
+                return this._link.get(this.path);
+            }
+            else {
+                return this.elementInput.value;
+            }
+        },
+        set: function (val) {
+            if (this._link) {
+                // TODO
+                // if (!this._link.set(this.path, value)) {
+                //   this.elementInput.value = this._link.get(this.path);
+                // }
+                this._link.set(this.path, val);
+                this.elementInput.value = this._link.get(this.path);
+            }
+            else {
+                if (this.elementInput.value === val)
+                    return;
+                this.elementInput.value = val || '';
+                this.emit('change', val);
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextAreaField.prototype, "placeholder", {
+        get: function () {
+            return this.element.getAttribute('placeholder') || '';
+        },
+        set: function (val) {
+            if (!val) {
+                this.element.removeAttribute('placeholder');
+            }
+            else {
+                this.element.setAttribute('placeholder', val);
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextAreaField.prototype, "keyChange", {
+        get: function () {
+            return this.evtKeyChange;
+        },
+        set: function (val) {
+            if (this.evtKeyChange === !!val)
+                return;
+            if (val) {
+                this.elementInput.addEventListener('keyup', this._onChange.bind(this), false);
+            }
+            else {
+                this.elementInput.removeEventListener('keyup', this._onChange.bind(this));
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextAreaField.prototype, "proxy", {
+        get: function () {
+            return this.element.getAttribute('proxy') || '';
+        },
+        set: function (val) {
+            if (!val) {
+                this.element.removeAttribute('proxy');
+            }
+            else {
+                this.element.setAttribute('proxy', val);
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    TextAreaField.prototype._onChange = function () {
+        if (this.ignoreChange)
+            return;
+        this.value = this.value || '';
+        if (!this._link)
+            this.emit('change', this.value);
+    };
+    TextAreaField.prototype._onKeyDown = function (evt) {
+        if (evt.keyCode === 27) {
+            evt.target.blur();
+        }
+        else if (this.blurOnEnter && evt.keyCode === 13 && !evt.shiftKey) {
+            var focused = false;
+            var parent_1 = this.parent;
+            while (parent_1) {
+                if (parent_1.element && parent_1.element.focus) {
+                    parent_1.element.focus();
+                    focused = true;
+                    break;
+                }
+                parent_1 = parent_1.parent;
+            }
+            if (!focused)
+                evt.target.blur();
+        }
+    };
+    TextAreaField.prototype._onFullSelect = function () {
+        this.elementInput.select();
+    };
+    TextAreaField.prototype._onInputFocus = function () {
+        this.class.add('focus');
+        this.emit('input:focus');
+    };
+    TextAreaField.prototype._onInputBlur = function () {
+        this.class.remove('focus');
+        this.emit('input:blur');
+    };
+    TextAreaField.prototype._onDisable = function () {
+        this.elementInput.readOnly = true;
+    };
+    TextAreaField.prototype._onEnable = function () {
+        this.elementInput.readOnly = false;
+    };
+    TextAreaField.prototype._onChangeField = function () {
+        if (!this.renderChanges)
+            return;
+        this.flash();
+    };
+    ;
+    TextAreaField.prototype.focus = function (select) {
+        this.elementInput.focus();
+        if (select)
+            this.elementInput.select();
+    };
+    TextAreaField.prototype._onLinkChange = function (value) {
+        this.elementInput.value = value;
+        this.emit('change', value);
+    };
+    return TextAreaField;
+}(element_1.Element));
+exports.TextAreaField = TextAreaField;
+},{"./element":22}],32:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var container_element_1 = require("./container-element");
+var Tooltip = /** @class */ (function (_super) {
+    __extends(Tooltip, _super);
+    function Tooltip(args) {
+        var _this = _super.call(this) || this;
+        args = args || {};
+        var self = _this;
+        _this.element = document.createElement('div');
+        _this.element.classList.add('ui-tooltip', 'align-left');
+        _this.innerElement = document.createElement('div');
+        _this.innerElement.classList.add('inner');
+        _this.element.appendChild(_this.innerElement);
+        _this.arrow = document.createElement('div');
+        _this.arrow.classList.add('arrow');
+        _this.element.appendChild(_this.arrow);
+        _this.hoverable = args.hoverable || false;
+        _this.x = args.x || 0;
+        _this.y = args.y || 0;
+        _this._align = 'left';
+        _this.align = args.align || 'left';
+        _this.on('show', _this._reflow);
+        _this.hidden = args.hidden !== undefined ? args.hidden : true;
+        if (args.html) {
+            _this.html = args.html;
+        }
+        else {
+            _this.text = args.text || '';
+        }
+        _this.element.addEventListener('mouseover', _this._onMouseOver.bind(_this), false);
+        _this.element.addEventListener('mouseleave', _this._onMouseLeave.bind(_this), false);
+        return _this;
+    }
+    Object.defineProperty(Tooltip.prototype, "align", {
+        get: function () {
+            return this._align;
+        },
+        set: function (val) {
+            if (this._align === val)
+                return;
+            this.class.remove('align-' + this._align);
+            this._align = val;
+            this.class.add('align-' + this._align);
+            this._reflow();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Tooltip.prototype, "html", {
+        get: function () {
+            return this.innerElement.innerHTML;
+        },
+        set: function (val) {
+            if (this.innerElement.innerHTML === val)
+                return;
+            this.innerElement.innerHTML = val;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Tooltip.prototype, "text", {
+        get: function () {
+            return this.innerElement.textContent || '';
+        },
+        set: function (val) {
+            if (this.innerElement.textContent === val)
+                return;
+            this.innerElement.textContent = val;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Tooltip.prototype, "flip", {
+        get: function () {
+            return this.class.contains('flip');
+        },
+        set: function (val) {
+            if (this.class.contains('flip') === val)
+                return;
+            if (val) {
+                this.class.add('flip');
+            }
+            else {
+                this.class.remove('flip');
+            }
+            this._reflow();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Tooltip.prototype._onMouseOver = function (evt) {
+        if (!this.hoverable)
+            return;
+        this.hidden = false;
+        this.emit('hover', evt);
+    };
+    Tooltip.prototype._onMouseLeave = function () {
+        if (!this.hoverable)
+            return;
+        this.hidden = true;
+    };
+    Tooltip.prototype.position = function (x, y) {
+        x = Math.floor(x);
+        y = Math.floor(y);
+        if (this.x === x && this.y === y)
+            return;
+        this.x = x;
+        this.y = y;
+        this._reflow();
+    };
+    Tooltip.prototype._reflow = function () {
+        if (this.hidden)
+            return;
+        this.element.style.top = '';
+        this.element.style.right = '';
+        this.element.style.bottom = '';
+        this.element.style.left = '';
+        this.arrow.style.top = '';
+        this.arrow.style.right = '';
+        this.arrow.style.bottom = '';
+        this.arrow.style.left = '';
+        this.element.style.display = 'block';
+        // alignment
+        switch (this._align) {
+            case 'top':
+                this.element.style.top = this.y + 'px';
+                if (this.flip) {
+                    this.element.style.right = 'calc(100% - ' + this.x + 'px)';
+                }
+                else {
+                    this.element.style.left = this.x + 'px';
+                }
+                break;
+            case 'right':
+                this.element.style.top = this.y + 'px';
+                this.element.style.right = 'calc(100% - ' + this.x + 'px)';
+                break;
+            case 'bottom':
+                this.element.style.bottom = 'calc(100% - ' + this.y + 'px)';
+                if (this.flip) {
+                    this.element.style.right = 'calc(100% - ' + this.x + 'px)';
+                }
+                else {
+                    this.element.style.left = this.x + 'px';
+                }
+                break;
+            case 'left':
+                this.element.style.top = this.y + 'px';
+                this.element.style.left = this.x + 'px';
+                break;
+        }
+        // limit to screen bounds
+        var rect = this.element.getBoundingClientRect();
+        if (rect.left < 0) {
+            this.element.style.left = '0px';
+            this.element.style.right = '';
+        }
+        if (rect.top < 0) {
+            this.element.style.top = '0px';
+            this.element.style.bottom = '';
+        }
+        if (rect.right > window.innerWidth) {
+            this.element.style.right = '0px';
+            this.element.style.left = '';
+            this.arrow.style.left = Math.floor(rect.right - window.innerWidth + 8) + 'px';
+        }
+        if (rect.bottom > window.innerHeight) {
+            this.element.style.bottom = '0px';
+            this.element.style.top = '';
+            this.arrow.style.top = Math.floor(rect.bottom - window.innerHeight + 8) + 'px';
+        }
+        this.element.style.display = '';
+    };
+    Tooltip.prototype.evtHover = function () {
+    };
+    Tooltip.prototype.evtBlur = function () {
+    };
+    Tooltip.attach = function (args) {
+        var data = {
+            align: args.align,
+            hoverable: args.hoverable
+        };
+        if (args.html) {
+            data.html = args.html;
+        }
+        else {
+            data.text = args.text || '';
+        }
+        var item = new Tooltip(data);
+        item.evtHover = function () {
+            var rect = args.target.getBoundingClientRect();
+            var off = 16;
+            switch (item.align) {
+                case 'top':
+                    if (rect.width < 64)
+                        off = rect.width / 2;
+                    item.flip = rect.left + off > window.innerWidth / 2;
+                    if (item.flip) {
+                        item.position(rect.right - off, rect.bottom);
+                    }
+                    else {
+                        item.position(rect.left + off, rect.bottom);
+                    }
+                    break;
+                case 'right':
+                    if (rect.height < 64)
+                        off = rect.height / 2;
+                    item.flip = false;
+                    item.position(rect.left, rect.top + off);
+                    break;
+                case 'bottom':
+                    if (rect.width < 64)
+                        off = rect.width / 2;
+                    item.flip = rect.left + off > window.innerWidth / 2;
+                    if (item.flip) {
+                        item.position(rect.right - off, rect.top);
+                    }
+                    else {
+                        item.position(rect.left + off, rect.top);
+                    }
+                    break;
+                case 'left':
+                    if (rect.height < 64)
+                        off = rect.height / 2;
+                    item.flip = false;
+                    item.position(rect.right, rect.top + off);
+                    break;
+            }
+            item.hidden = false;
+        };
+        item.evtBlur = function () {
+            item.hidden = true;
+        };
+        args.target.addEventListener('mouseover', item.evtHover, false);
+        args.target.addEventListener('mouseout', item.evtBlur, false);
+        item.on('destroy', function () {
+            args.target.removeEventListener('mouseover', item.evtHover);
+            args.target.removeEventListener('mouseout', item.evtBlur);
+        });
+        args.root.append(item);
+        return item;
+    };
+    return Tooltip;
+}(container_element_1.ContainerElement));
+exports.Tooltip = Tooltip;
+},{"./container-element":21}],33:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -2108,6 +3268,15 @@ var TreeItem = /** @class */ (function (_super) {
         _this._dragId = -1;
         _this._onDragStart = function (evt) {
             var htmlEle = evt.target;
+            // 可能点击title或者title子项
+            if (!htmlEle.ui) {
+                if (htmlEle.parentElement && (htmlEle.parentElement).ui) {
+                    htmlEle = htmlEle.parentElement;
+                }
+                else {
+                    return;
+                }
+            }
             if (!htmlEle.ui.tree.draggable) {
                 evt.stopPropagation();
                 evt.preventDefault();
@@ -2120,6 +3289,7 @@ var TreeItem = /** @class */ (function (_super) {
             window.addEventListener('mouseup', htmlEle.ui._dragRelease, false);
             evt.stopPropagation();
             evt.preventDefault();
+            console.log('drag start');
             htmlEle.ui.emit('dragstart');
         };
         var self = _this;
@@ -2268,6 +3438,15 @@ var TreeItem = /** @class */ (function (_super) {
     ;
     TreeItem.prototype._onClick = function (evt) {
         var htmlEle = evt.target;
+        // 可能点击title或者title子项
+        if (!htmlEle.ui) {
+            if (htmlEle.parentElement && (htmlEle.parentElement).ui) {
+                htmlEle = htmlEle.parentElement;
+            }
+            else {
+                return;
+            }
+        }
         if (evt.button !== 0 || !htmlEle.ui.selectable)
             return;
         var rect = htmlEle.getBoundingClientRect();
@@ -2282,6 +3461,15 @@ var TreeItem = /** @class */ (function (_super) {
     ;
     TreeItem.prototype._onDblClick = function (evt) {
         var htmlEle = evt.target;
+        // 可能点击title或者title子项
+        if (!htmlEle.ui) {
+            if (htmlEle.parentElement && (htmlEle.parentElement).ui) {
+                htmlEle = htmlEle.parentElement;
+            }
+            else {
+                return;
+            }
+        }
         if (!htmlEle.ui.tree.allowRenaming || evt.button !== 0)
             return;
         evt.stopPropagation();
@@ -2296,13 +3484,31 @@ var TreeItem = /** @class */ (function (_super) {
     ;
     TreeItem.prototype._onMouseDown = function (evt) {
         var htmlEle = evt.target;
-        if (!htmlEle.ui.tree.draggable)
+        // 可能点击title或者title子项
+        if (!htmlEle.ui) {
+            if (htmlEle.parentElement && (htmlEle.parentElement).ui) {
+                htmlEle = htmlEle.parentElement;
+            }
+            else {
+                return;
+            }
+        }
+        if (htmlEle.ui.tree && !htmlEle.ui.tree.draggable)
             return;
         evt.stopPropagation();
     };
     ;
     TreeItem.prototype._onMouseOver = function (evt) {
         var htmlEle = evt.target;
+        // 可能点击title或者title子项
+        if (!htmlEle.ui) {
+            if (htmlEle.parentElement && (htmlEle.parentElement).ui) {
+                htmlEle = htmlEle.parentElement;
+            }
+            else {
+                return;
+            }
+        }
         evt.stopPropagation();
         htmlEle.ui.emit('mouseover', evt);
     };
@@ -2317,6 +3523,8 @@ var TreeItem = /** @class */ (function (_super) {
     ;
     TreeItem.prototype._onKeyDown = function (evt) {
         var htmlEle = evt.target;
+        if (!htmlEle.ui)
+            return;
         var currentItem = htmlEle.ui;
         if ((evt.target && htmlEle.tagName.toLowerCase() === 'input'))
             return;
@@ -2440,6 +3648,7 @@ var TreeItem = /** @class */ (function (_super) {
         }
         var self = this;
         this.class.add('rename');
+        console.log('rename');
         // add remaning field
         var field = new text_field_1.TextField();
         field.parent = this;
@@ -2589,7 +3798,7 @@ var TreeItem = /** @class */ (function (_super) {
     return TreeItem;
 }(element_1.Element));
 exports.TreeItem = TreeItem;
-},{"./element":19,"./text-field":24,"./tree":26}],26:[function(require,module,exports){
+},{"./element":22,"./text-field":30,"./tree":34}],34:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -2629,6 +3838,10 @@ var Tree = /** @class */ (function (_super) {
         _this.element.addEventListener('mouseleave', function (evt) {
             self._onDragOut();
         });
+        _this.on('select', _this._onSelect);
+        _this.on('deselect', _this._onDeselect);
+        _this.on('append', _this._onAppend);
+        _this.on('remove', _this._onRemove);
         _this.draggable = true;
         _this._dragging = false;
         _this._dragItems = [];
@@ -3152,6 +4365,6 @@ var Tree = /** @class */ (function (_super) {
     return Tree;
 }(container_element_1.ContainerElement));
 exports.Tree = Tree;
-},{"../editor":5,"./container-element":18,"./tree-item":25}]},{},[15])
+},{"../editor":6,"./container-element":21,"./tree-item":33}]},{},[16])
 
 //# sourceMappingURL=vreditor.js.map

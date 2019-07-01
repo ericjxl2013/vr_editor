@@ -47,7 +47,7 @@ declare interface HTMLElement {
 }
 
 declare interface TreeItemArgs {
-  text: string;
-  classList: string[];
-  allowDrop: false;
+  text?: string;
+  classList?: string[];
+  allowDrop?: false;
 }

@@ -141,9 +141,6 @@ export class ContainerElement extends Element {
 
   }
 
-  
-
-
   public append(element: HTMLElement | Element): void {
     let html: boolean = element instanceof HTMLElement;
     let node: HTMLElement = html ? <HTMLElement>element : (<Element>element).element!;
