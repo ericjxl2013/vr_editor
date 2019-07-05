@@ -1,5 +1,33 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var ui_1 = require("../../ui");
+var engine_1 = require("../../engine");
+var Assets = /** @class */ (function () {
+    function Assets() {
+        var assetsOverlay = new ui_1.Panel();
+        assetsOverlay.class.add('overlay');
+        engine_1.VeryEngine.assetPanel.append(assetsOverlay);
+        var p = new ui_1.Progress();
+        p.on('progress:100', function () {
+            assetsOverlay.hidden = true;
+        });
+        assetsOverlay.append(p);
+        p.hidden = false;
+        p.progress = 1;
+    }
+    return Assets;
+}());
+exports.Assets = Assets;
+},{"../../engine":16,"../../ui":28}],2:[function(require,module,exports){
+"use strict";
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+__export(require("./assets"));
+},{"./assets":1}],3:[function(require,module,exports){
+"use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -68,29 +96,180 @@ var Editor = /** @class */ (function (_super) {
     return Editor;
 }(lib_1.Events));
 exports.Editor = Editor;
-},{"../lib":15}],2:[function(require,module,exports){
+},{"../lib":20}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ui_1 = require("../../ui");
 var engine_1 = require("../../engine");
 var HierarchySearch = /** @class */ (function () {
     function HierarchySearch() {
+        this.changing = false;
+        this.itemsIndex = {};
+        this.lastSearch = '';
+        var self = this;
+        // 结果列表
         this.results = new ui_1.List();
         this.results.element.tabIndex = 0;
         this.results.hidden = true;
         this.results.class.add('search-results');
         engine_1.VeryEngine.hierarchyPanel.append(this.results);
+        this.initResult();
+        // 搜索区域控制
         this.search = new ui_1.TextField('搜索');
-        this.init();
+        this.initSearchField();
+        // 搜索结果clear控制
+        this.searchClear = document.createElement('div');
+        this.searchClear.innerHTML = '&#57650;';
+        this.searchClear.classList.add('clear');
+        this.search.element.appendChild(this.searchClear);
+        this.searchClear.addEventListener('click', function () {
+            self.search.value = '';
+        }, false);
     }
-    HierarchySearch.prototype.init = function () {
+    HierarchySearch.prototype.initResult = function () {
         var self = this;
-        var lastSearch = '';
+        // clear on escape
+        this.results.element.addEventListener('keydown', function (evt) {
+            if (evt.keyCode === 27) { // esc
+                self.searchClear.click();
+            }
+            else if (evt.keyCode === 13) { // enter，TODO: 回车键选择
+                if (!self.results.selected) {
+                    // let firstElement = self.results.element!.firstElementChild;
+                    // if (firstElement && (<HTMLElement>firstElement).ui && (<HTMLElement>firstElement).ui.entity)
+                    //   editor.call('selector:set', 'entity', [firstElement.ui.entity]);
+                }
+                self.search.value = '';
+            }
+            else if (evt.keyCode === 40) { // down
+                self.selectNext();
+                evt.stopPropagation();
+            }
+            else if (evt.keyCode === 38) { // up
+                self.selectPrev();
+                evt.stopPropagation();
+            }
+        }, false);
+        // deselecting
+        this.results.unbind('deselect', this.results._onDeselect);
+        this.results._onDeselect = function (item) {
+            var ind = this.selected.indexOf(item);
+            if (ind !== -1)
+                this.selected.splice(ind, 1);
+            if (this._changing)
+                return;
+            if (ui_1.List._ctrl && ui_1.List._ctrl()) {
+            }
+            else {
+                this._changing = true;
+                var items = editor.call('selector:type') === 'entity' && editor.call('selector:items') || [];
+                // TODO: 
+                console.log('_onDeselect');
+                // var inSelected = items.indexOf(item.entity) !== -1;
+                // if (items.length >= 2 && inSelected) {
+                //   var selected = this.selected;
+                //   for (var i = 0; i < selected.length; i++)
+                //     selected[i].selected = false;
+                //   item.selected = true;
+                // }
+                this._changing = false;
+            }
+            this.emit('change');
+        };
+        this.results.on('deselect', this.results._onDeselect);
+        // results selection change
+        this.results.on('change', function () {
+            if (self.changing)
+                return;
+            if (self.results.selected) {
+                editor.call('selector:set', 'entity', self.results.selected.map(function (item) {
+                    console.log('entity change');
+                    return;
+                    // TODO
+                    // return item.entity;
+                }));
+            }
+            else {
+                editor.call('selector:clear');
+            }
+        });
+        // selector change
+        editor.on('selector:change', function (type, items) {
+            if (self.changing)
+                return;
+            self.changing = true;
+            if (type === 'entity') {
+                self.results.selected = [];
+                // TODO
+                for (var i = 0; i < items.length; i++) {
+                    // var item = self.itemsIndex[items[i].get('resource_id')];
+                    // if (!item) continue;
+                    // item.selected = true;
+                }
+            }
+            else {
+                self.results.selected = [];
+            }
+            self.changing = false;
+        });
+    };
+    HierarchySearch.prototype.initSearchField = function () {
+        var self = this;
         this.search.blurOnEnter = false;
         this.search.keyChange = true;
         this.search.class.add('search');
         this.search.renderChanges = false;
         engine_1.VeryEngine.hierarchyPanel.element.insertBefore(this.search.element, engine_1.VeryEngine.hierarchyPanel.innerElement);
+        this.search.element.addEventListener('keydown', function (evt) {
+            if (evt.keyCode === 27) {
+                searchClear.click();
+            }
+            else if (evt.keyCode === 13) {
+                if (!self.results.selected.length) {
+                    // TODO
+                    // var firstElement = self.results.element!.firstElementChild;
+                    // if (firstElement && (<HTMLElement>firstElement).ui && (<HTMLElement>firstElement).ui.entity)
+                    //   editor.call('selector:set', 'entity', [(<HTMLElement>firstElement).ui.entity]);
+                }
+                self.search.value = '';
+            }
+            else if (evt.keyCode === 40) { // down
+                editor.call('hotkey:updateModifierKeys', evt);
+                self.selectNext();
+                evt.stopPropagation();
+                evt.preventDefault();
+            }
+            else if (evt.keyCode === 38) { // up
+                editor.call('hotkey:updateModifierKeys', evt);
+                self.selectPrev();
+                evt.stopPropagation();
+                evt.preventDefault();
+            }
+            else if (evt.keyCode === 65 && evt.ctrlKey) { // ctrl + a
+                var toSelect = [];
+                var items = self.results.element.querySelectorAll('.ui-list-item');
+                for (var i = 0; i < items.length; i++)
+                    toSelect.push(items[i].ui);
+                // TODO
+                console.log('全选');
+                // self.results.selected = toSelect;
+                evt.stopPropagation();
+                evt.preventDefault();
+            }
+        }, false);
+        this.search.on('change', function (value) {
+            value = value.trim();
+            if (self.lastSearch === value)
+                return;
+            self.lastSearch = value;
+            if (value) {
+                self.search.class.add('not-empty');
+            }
+            else {
+                self.search.class.remove('not-empty');
+            }
+            self.performSearch();
+        });
         var searchClear = document.createElement('div');
         searchClear.innerHTML = '&#57650;';
         searchClear.classList.add('clear');
@@ -99,10 +278,102 @@ var HierarchySearch = /** @class */ (function () {
             self.search.value = '';
         }, false);
     };
+    HierarchySearch.prototype.selectNext = function () {
+        var children = this.results.element.children;
+        // could be nothing or only one item to select
+        if (!children.length || !children.length)
+            return;
+        var toSelect = null;
+        var items = this.results.element.querySelectorAll('.ui-list-item.selected');
+        var multi = ui_1.List._ctrl() || ui_1.List._shift();
+        if (items.length) {
+            var last = items[items.length - 1];
+            var next = last.nextElementSibling;
+            if (next) {
+                // select next
+                toSelect = next.ui;
+            }
+            else {
+                // loop through
+                if (!multi)
+                    toSelect = children[0].ui;
+            }
+        }
+        else {
+            // select first
+            toSelect = children[0].ui;
+        }
+        if (toSelect) {
+            if (!multi)
+                this.results.selected = [];
+            // TODO
+            // toSelect.selected = true;
+        }
+    };
+    HierarchySearch.prototype.selectPrev = function () {
+        var children = this.results.element.children;
+        // could be nothing or only one item to select
+        if (!children || !children.length)
+            return;
+        var toSelect = null;
+        var items = this.results.element.querySelectorAll('.ui-list-item.selected');
+        var multi = ui_1.List._ctrl() || ui_1.List._shift();
+        if (items.length) {
+            var first = items[0];
+            var prev = first.previousElementSibling;
+            if (prev) {
+                // select previous
+                toSelect = prev.ui;
+            }
+            else {
+                // loop through
+                if (!multi)
+                    toSelect = children[children.length - 1].ui;
+            }
+        }
+        else {
+            // select last
+            toSelect = children[children.length - 1].ui;
+        }
+        if (toSelect) {
+            if (!multi)
+                this.results.selected = [];
+            // TODO
+            // toSelect.selected = true;
+        }
+    };
+    ;
+    HierarchySearch.prototype.performSearch = function () {
+        var query = this.lastSearch;
+        // clear results list
+        this.results.clear();
+        this.itemsIndex = {};
+        if (query) {
+            var result = editor.call('entities:fuzzy-search', query);
+            engine_1.VeryEngine.hierarchyTree.hidden = true;
+            this.results.hidden = false;
+            var selected = [];
+            if (editor.call('selector:type') === 'entity')
+                selected = editor.call('selector:items');
+            // TODO
+            for (var i = 0; i < result.length; i++) {
+                // var item = this.addItem(result[i]);
+                // this.itemsIndex[result[i].get('resource_id')] = item;
+                // if (selected.indexOf(result[i]) !== -1)
+                //   item.selected = true;
+                // this.results.append(item);
+            }
+        }
+        else {
+            this.results.hidden = true;
+            engine_1.VeryEngine.hierarchyTree.hidden = false;
+        }
+    };
+    ;
     return HierarchySearch;
 }());
 exports.HierarchySearch = HierarchySearch;
-},{"../../engine":11,"../../ui":23}],3:[function(require,module,exports){
+},{"../../engine":16,"../../ui":28}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ui_1 = require("../../ui");
@@ -152,14 +423,14 @@ var Hierarchy = /** @class */ (function () {
         });
         tooltipDuplicate.class.add('innactive');
         // TODO: Menu
-        // var menuEntities = ui.Menu.fromData(editor.call('menu:entities:new'));
+        // let menuEntities = ui.Menu.fromData(editor.call('menu:entities:new'));
         // root.append(menuEntities);
         // controls add
         var btnAdd = new ui_1.Button('&#57632;');
         btnAdd.class.add('add');
         btnAdd.on('click', function () {
             // menuEntities.open = true;
-            // var rect = btnAdd.element.getBoundingClientRect();
+            // let rect = btnAdd.element.getBoundingClientRect();
             // menuEntities.position(rect.left, rect.top);
         });
         this.hierarchyMain.append(btnAdd);
@@ -179,7 +450,7 @@ var Hierarchy = /** @class */ (function () {
         var panel = engine_1.VeryEngine.hierarchyPanel;
         var hierarchy = new ui_1.Tree();
         engine_1.VeryEngine.hierarchyTree = hierarchy;
-        // TODO: hierarchy权限管理
+        // TODO: hierarchy权限管理，有些人可看不可编辑；
         // hierarchy.allowRenaming = editor.call('permissions:write');
         hierarchy.draggable = hierarchy.allowRenaming;
         hierarchy.class.add('hierarchy');
@@ -259,7 +530,7 @@ var Hierarchy = /** @class */ (function () {
             window.addEventListener('mousemove', dragEvt, false);
             // TODO:
             console.log('get drag TreeItem entity resourceId');
-            // var resourceId = hierarchy._dragItems[0].entity.get('resource_id');
+            // let resourceId = hierarchy._dragItems[0].entity.get('resource_id');
             // editor.call('drop:set', 'entity', { resource_id: resourceId });
             // editor.call('drop:activate', true);
         });
@@ -268,7 +539,7 @@ var Hierarchy = /** @class */ (function () {
             editor.call('drop:set');
         });
         // TODO
-        // var target = editor.call('drop:target', {
+        // let target = editor.call('drop:target', {
         //   ref: panel.innerElement,
         //   type: 'entity',
         //   hole: true,
@@ -317,7 +588,7 @@ var Hierarchy = /** @class */ (function () {
     return Hierarchy;
 }());
 exports.Hierarchy = Hierarchy;
-},{"../../engine":11,"../../ui":23,"./hierarchy-search":2}],4:[function(require,module,exports){
+},{"../../engine":16,"../../ui":28,"./hierarchy-search":4}],6:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -325,19 +596,517 @@ function __export(m) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./hierarchy"));
 __export(require("./hierarchy-search"));
-},{"./hierarchy":3,"./hierarchy-search":2}],5:[function(require,module,exports){
+},{"./hierarchy":5,"./hierarchy-search":4}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Hotkeys = /** @class */ (function () {
     function Hotkeys() {
+        this.hotkeys = {};
+        this.keyIndex = {};
+        // private keysDown = {};
+        this.isMac = navigator.userAgent.indexOf('Mac OS X') !== -1;
+        this.keyByKeyCode = {};
+        this.keyByCode = {};
+        this.keyMap = {};
+        this.keyMapInit();
+        var self = this;
+        editor.method('hotkey:register', function (name, args) {
+            self.hotkeys[name] = args;
+            // keys list
+            var keys = [args.ctrl ? '1' : '0', args.alt ? '1' : '0', args.shift ? '1' : '0'];
+            // map keyCode to key
+            if (typeof (args.key) === 'number')
+                args.key = self.keyByKeyCode[args.key];
+            // unknown key
+            if (!args.key) {
+                console.error('未知的hotkeys: ' + name + ', ' + args.key);
+                return;
+            }
+            keys.push(args.key);
+            args.index = keys.join('+');
+            if (!self.keyIndex[args.index])
+                self.keyIndex[args.index] = [];
+            self.keyIndex[args.index].push(name);
+        });
+        editor.method('hotkey:unregister', function (name) {
+            var hotkey = self.hotkeys[name];
+            if (!hotkey)
+                return;
+            if (self.keyIndex[hotkey.index].length === 1) {
+                delete self.keyIndex[hotkey.index];
+            }
+            else {
+                self.keyIndex[hotkey.index].splice(self.keyIndex[hotkey.index].indexOf(name), 1);
+            }
+            delete self.hotkeys[name];
+        });
+        editor.method('hotkey:shift', function () {
+            return Hotkeys.shift;
+        });
+        editor.method('hotkey:ctrl', function () {
+            return Hotkeys.ctrl;
+        });
+        editor.method('hotkey:alt', function () {
+            return Hotkeys.alt;
+        });
+        var updateModifierKeys = function (evt) {
+            if (evt instanceof KeyboardEvent || evt instanceof MouseEvent) {
+                // console.warn(evt);
+                Hotkeys.shift = evt.shiftKey;
+                Hotkeys.ctrl = evt.ctrlKey || evt.metaKey;
+                Hotkeys.alt = evt.altKey;
+            }
+        };
+        editor.method('hotkey:updateModifierKeys', updateModifierKeys);
+        window.addEventListener('keydown', function (evt) {
+            if (evt.target) {
+                var tag = evt.target.tagName;
+                if (/(input)|(textarea)/i.test(tag) && !evt.target.classList.contains('hotkeys'))
+                    return;
+            }
+            updateModifierKeys(evt);
+            var key = evt.code ? self.keyByCode[evt.code] : self.keyByKeyCode[evt.keyCode];
+            if (evt.keyCode === 92 || evt.keyCode === 93)
+                return;
+            var index = [Hotkeys.ctrl ? '1' : '0', Hotkeys.alt ? '1' : '0', Hotkeys.shift ? '1' : '0', key].join('+');
+            if (self.keyIndex[index]) {
+                var skipPreventDefault = false;
+                for (var i = 0; i < self.keyIndex[index].length; i++) {
+                    if (!skipPreventDefault && self.hotkeys[self.keyIndex[index][i]].skipPreventDefault)
+                        skipPreventDefault = true;
+                    self.hotkeys[self.keyIndex[index][i]].callback(evt);
+                }
+                if (!skipPreventDefault)
+                    evt.preventDefault();
+            }
+        }, false);
+        // Returns Ctrl or Cmd for Mac
+        editor.method('hotkey:ctrl:string', function () {
+            return self.isMac ? 'Cmd' : 'Ctrl';
+        });
+        window.addEventListener('keyup', updateModifierKeys, false);
+        window.addEventListener('mousedown', updateModifierKeys, false);
+        window.addEventListener('mouseup', updateModifierKeys, false);
+        window.addEventListener('click', updateModifierKeys, false);
     }
+    Hotkeys.prototype.keyMapInit = function () {
+        this.keyMap = {
+            'backspace': {
+                keyCode: 8,
+                code: 'Backspace'
+            },
+            'tab': {
+                keyCode: 9,
+                code: 'Tab',
+            },
+            'enter': {
+                keyCode: 13,
+                code: ['enter', 'NumpadEnter', 'Enter'],
+            },
+            'shift': {
+                keyCode: 16,
+                code: ['ShiftLeft', 'ShiftRight'],
+            },
+            'ctrl': {
+                keyCode: 17,
+                code: ['CtrlLeft', 'CtrlRight'],
+            },
+            'alt': {
+                keyCode: 18,
+                code: ['AltLeft', 'AltRight'],
+            },
+            'pause/break': {
+                keyCode: 19,
+                code: 'Pause',
+            },
+            'caps lock': {
+                keyCode: 20,
+                code: 'CapsLock',
+            },
+            'esc': {
+                keyCode: 27,
+                code: 'Escape',
+            },
+            'space': {
+                keyCode: 32,
+                code: 'Space',
+            },
+            'page up': {
+                keyCode: 33,
+                code: 'PageUp'
+            },
+            'page down': {
+                keyCode: 34,
+                code: 'PageDown'
+            },
+            'end': {
+                keyCode: 35,
+                code: 'End'
+            },
+            'home': {
+                keyCode: 36,
+                code: 'Home'
+            },
+            'left arrow': {
+                keyCode: 37,
+                code: 'ArrowLeft'
+            },
+            'up arrow': {
+                keyCode: 38,
+                code: 'ArrowUp'
+            },
+            'right arrow': {
+                keyCode: 39,
+                code: 'ArrowRight'
+            },
+            'down arrow': {
+                keyCode: 40,
+                code: 'ArrowDown'
+            },
+            'insert': {
+                keyCode: 45,
+                code: 'Insert'
+            },
+            'delete': {
+                keyCode: 46,
+                code: 'Delete'
+            },
+            '0': {
+                keyCode: 48,
+                code: 'Digit0'
+            },
+            '1': {
+                keyCode: 49,
+                code: 'Digit1'
+            },
+            '2': {
+                keyCode: 50,
+                code: 'Digit2'
+            },
+            '3': {
+                keyCode: 51,
+                code: 'Digit3'
+            },
+            '4': {
+                keyCode: 52,
+                code: 'Digit4'
+            },
+            '5': {
+                keyCode: 53,
+                code: 'Digit5'
+            },
+            '6': {
+                keyCode: 54,
+                code: 'Digit6'
+            },
+            '7': {
+                keyCode: 55,
+                code: 'Digit7'
+            },
+            '8': {
+                keyCode: 56,
+                code: 'Digit8'
+            },
+            '9': {
+                keyCode: 57,
+                code: 'Digit9'
+            },
+            'a': {
+                keyCode: 65,
+                code: 'KeyA'
+            },
+            'b': {
+                keyCode: 66,
+                code: 'KeyB'
+            },
+            'c': {
+                keyCode: 67,
+                code: 'KeyC'
+            },
+            'd': {
+                keyCode: 68,
+                code: 'KeyD'
+            },
+            'e': {
+                keyCode: 69,
+                code: 'KeyE'
+            },
+            'f': {
+                keyCode: 70,
+                code: 'KeyF'
+            },
+            'g': {
+                keyCode: 71,
+                code: 'KeyG'
+            },
+            'h': {
+                keyCode: 72,
+                code: 'KeyH'
+            },
+            'i': {
+                keyCode: 73,
+                code: 'KeyI'
+            },
+            'j': {
+                keyCode: 74,
+                code: 'KeyJ'
+            },
+            'k': {
+                keyCode: 75,
+                code: 'KeyK'
+            },
+            'l': {
+                keyCode: 76,
+                code: 'KeyL'
+            },
+            'm': {
+                keyCode: 77,
+                code: 'KeyM'
+            },
+            'n': {
+                keyCode: 78,
+                code: 'KeyN'
+            },
+            'o': {
+                keyCode: 79,
+                code: 'KeyO'
+            },
+            'p': {
+                keyCode: 80,
+                code: 'KeyP'
+            },
+            'q': {
+                keyCode: 81,
+                code: 'KeyQ'
+            },
+            'r': {
+                keyCode: 82,
+                code: 'KeyR'
+            },
+            's': {
+                keyCode: 83,
+                code: 'KeyS'
+            },
+            't': {
+                keyCode: 84,
+                code: 'KeyT'
+            },
+            'u': {
+                keyCode: 85,
+                code: 'KeyU'
+            },
+            'v': {
+                keyCode: 86,
+                code: 'KeyV'
+            },
+            'w': {
+                keyCode: 87,
+                code: 'KeyW'
+            },
+            'x': {
+                keyCode: 88,
+                code: 'KeyX'
+            },
+            'y': {
+                keyCode: 89,
+                code: 'KeyY'
+            },
+            'z': {
+                keyCode: 90,
+                code: 'KeyZ'
+            },
+            'left window key': {
+                keyCode: 91,
+                code: 'MetaLeft'
+            },
+            'right window key': {
+                keyCode: 92,
+                code: 'MetaRight'
+            },
+            'select key': {
+                keyCode: 93,
+                code: 'ContextMenu'
+            },
+            'numpad 0': {
+                keyCode: 96,
+                code: 'Numpad0'
+            },
+            'numpad 1': {
+                keyCode: 97,
+                code: 'Numpad1'
+            },
+            'numpad 2': {
+                keyCode: 98,
+                code: 'Numpad2'
+            },
+            'numpad 3': {
+                keyCode: 99,
+                code: 'Numpad3'
+            },
+            'numpad 4': {
+                keyCode: 100,
+                code: 'Numpad4'
+            },
+            'numpad 5': {
+                keyCode: 101,
+                code: 'Numpad5'
+            },
+            'numpad 6': {
+                keyCode: 102,
+                code: 'Numpad6'
+            },
+            'numpad 7': {
+                keyCode: 103,
+                code: 'Numpad7'
+            },
+            'numpad 8': {
+                keyCode: 104,
+                code: 'Numpad8'
+            },
+            'numpad 9': {
+                keyCode: 105,
+                code: 'Numpad9'
+            },
+            'multiply': {
+                keyCode: 106,
+                code: 'NumpadMultiply'
+            },
+            'add': {
+                keyCode: 107,
+                code: 'NumpadAdd'
+            },
+            'subtract': {
+                keyCode: 109,
+                code: 'NumpadSubtract'
+            },
+            'decimal point': {
+                keyCode: 110,
+                code: 'NumpadDecimal'
+            },
+            'divide': {
+                keyCode: 111,
+                code: 'NumpadDivide'
+            },
+            'f1': {
+                keyCode: 112,
+                code: 'F1'
+            },
+            'f2': {
+                keyCode: 113,
+                code: 'F2'
+            },
+            'f3': {
+                keyCode: 114,
+                code: 'F3'
+            },
+            'f4': {
+                keyCode: 115,
+                code: 'F4'
+            },
+            'f5': {
+                keyCode: 116,
+                code: 'F5'
+            },
+            'f6': {
+                keyCode: 117,
+                code: 'F6'
+            },
+            'f7': {
+                keyCode: 118,
+                code: 'F7'
+            },
+            'f8': {
+                keyCode: 119,
+                code: 'F8'
+            },
+            'f9': {
+                keyCode: 120,
+                code: 'F9'
+            },
+            'f10': {
+                keyCode: 121,
+                code: 'F10'
+            },
+            'f11': {
+                keyCode: 122,
+                code: 'F11'
+            },
+            'f12': {
+                keyCode: 123,
+                code: 'F12'
+            },
+            'num lock': {
+                keyCode: 144,
+                code: 'NumLock'
+            },
+            'scroll lock': {
+                keyCode: 145,
+                code: 'ScrollLock'
+            },
+            'semi-colon': {
+                keyCode: 186,
+                code: 'Semicolon'
+            },
+            'equal sign': {
+                keyCode: 187,
+                code: 'Equal'
+            },
+            'comma': {
+                keyCode: 188,
+                code: 'Comma'
+            },
+            'dash': {
+                keyCode: 189,
+                code: 'Minus'
+            },
+            'period': {
+                keyCode: 190,
+                code: 'Period'
+            },
+            'forward slash': {
+                keyCode: 191,
+                code: ''
+            },
+            'grave accent': {
+                keyCode: 192,
+                code: 'Backquote'
+            },
+            'open bracket': {
+                keyCode: 219,
+                code: 'BracketLeft'
+            },
+            'back slash': {
+                keyCode: 220,
+                code: ['Backslash', 'IntlBackslash']
+            },
+            'close bracket': {
+                keyCode: 221,
+                code: 'BracketRight'
+            },
+            'single quote': {
+                keyCode: 222,
+                code: 'Quote'
+            },
+        };
+        for (var key in this.keyMap) {
+            this.keyByKeyCode[this.keyMap[key].keyCode] = key;
+            if (this.keyMap[key].code instanceof Array) {
+                for (var i = 0; i < this.keyMap[key].code.length; i++) {
+                    this.keyByCode[this.keyMap[key].code[i]] = key;
+                }
+            }
+            else {
+                this.keyByCode[(this.keyMap[key].code)] = key;
+            }
+        }
+    };
     Hotkeys.ctrl = false;
     Hotkeys.shift = false;
     Hotkeys.alt = false;
     return Hotkeys;
 }());
 exports.Hotkeys = Hotkeys;
-},{}],6:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -348,7 +1117,9 @@ __export(require("./layout"));
 __export(require("./viewport"));
 __export(require("./hierarchy"));
 __export(require("./hotkeys"));
-},{"./editor":1,"./hierarchy":4,"./hotkeys":5,"./layout":7,"./viewport":8}],7:[function(require,module,exports){
+__export(require("./assets"));
+__export(require("./toolbar"));
+},{"./assets":2,"./editor":3,"./hierarchy":6,"./hotkeys":7,"./layout":9,"./toolbar":10,"./viewport":12}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ui_1 = require("../ui");
@@ -436,7 +1207,7 @@ var Layout = /** @class */ (function () {
         engine_1.VeryEngine.toolbarPanel = toolbar;
         // hierarchy
         var hierarchyPanel = new ui_1.Panel('树形结构窗口');
-        hierarchyPanel.enabled = false;
+        hierarchyPanel.enabled = true;
         hierarchyPanel.class.add('hierarchy');
         hierarchyPanel.flexShrink = '0';
         var hierarchyPanelSize = editor.call('localStorage:get', 'editor:layout:hierarchy:width') || '256px';
@@ -513,7 +1284,7 @@ var Layout = /** @class */ (function () {
         engine_1.VeryEngine.assetPanel = assetsPanel;
         // attributes panel
         var attributesPanel = new ui_1.Panel('属性窗口');
-        attributesPanel.enabled = false;
+        attributesPanel.enabled = true;
         attributesPanel.class.add('attributes');
         attributesPanel.flexShrink = '0';
         var attributesPanelWidth = editor.call('localStorage:get', 'editor:layout:attributes:width') || '320px';
@@ -549,18 +1320,108 @@ var Layout = /** @class */ (function () {
     return Layout;
 }());
 exports.Layout = Layout;
-},{"../engine":11,"../ui":23}],8:[function(require,module,exports){
+},{"../engine":16,"../ui":28}],10:[function(require,module,exports){
+"use strict";
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+__export(require("./toolbar-top-control"));
+},{"./toolbar-top-control":11}],11:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var ui_1 = require("../../ui");
+var engine_1 = require("../../engine");
+var ToolbarTopControl = /** @class */ (function () {
+    function ToolbarTopControl() {
+        // panel
+        var panel = new ui_1.Panel();
+        panel.class.add('top-controls');
+        engine_1.VeryEngine.viewPanel.append(panel);
+        editor.method('layout.toolbar.launch', function () {
+            return panel;
+        });
+        // fullscreen button
+        var buttonExpand = new ui_1.Button('&#57639;');
+        buttonExpand.class.add('icon', 'expand');
+        panel.append(buttonExpand);
+        buttonExpand.on('click', function () {
+            editor.call('viewport:expand');
+        });
+        editor.on('viewport:expand', function (state) {
+            if (state) {
+                tooltipExpand.text = '还原';
+                buttonExpand.class.add('active');
+            }
+            else {
+                tooltipExpand.text = '最大化';
+                buttonExpand.class.remove('active');
+            }
+            tooltipExpand.hidden = true;
+        });
+        var tooltipExpand = ui_1.Tooltip.attach({
+            target: buttonExpand.element,
+            text: '最大化',
+            align: 'top',
+            root: engine_1.VeryEngine.rootPanel
+        });
+    }
+    return ToolbarTopControl;
+}());
+exports.ToolbarTopControl = ToolbarTopControl;
+},{"../../engine":16,"../../ui":28}],12:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./viewport"));
-},{"./viewport":9}],9:[function(require,module,exports){
+__export(require("./viewport-expand"));
+},{"./viewport":14,"./viewport-expand":13}],13:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var engine_1 = require("../../engine");
+/*
+*  viewport窗口最大化显示控制；
+*/
+var ViewportExpand = /** @class */ (function () {
+    function ViewportExpand() {
+        var panels = [];
+        panels.push(engine_1.VeryEngine.hierarchyPanel);
+        panels.push(engine_1.VeryEngine.assetPanel);
+        panels.push(engine_1.VeryEngine.attributesPanel);
+        var expanded = false;
+        window.editor.method('viewport:expand', function (state) {
+            if (state === undefined)
+                state = !expanded;
+            if (expanded === state)
+                return;
+            expanded = state;
+            for (var i = 0; i < panels.length; i++)
+                panels[i].hidden = expanded;
+            window.editor.emit('viewport:expand', state);
+        });
+        window.editor.method('viewport:expand:state', function () {
+            return expanded;
+        });
+        // expand hotkey
+        window.editor.call('hotkey:register', 'viewport:expand', {
+            key: 'space',
+            callback: function () {
+                window.editor.call('viewport:expand');
+            }
+        });
+    }
+    return ViewportExpand;
+}());
+exports.ViewportExpand = ViewportExpand;
+},{"../../engine":16}],14:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ui_1 = require("../../ui");
 var engine_1 = require("../../engine");
+var toolbar_1 = require("../toolbar");
+var viewport_expand_1 = require("./viewport-expand");
 var Viewport = /** @class */ (function () {
     function Viewport() {
         var _this = this;
@@ -568,6 +1429,8 @@ var Viewport = /** @class */ (function () {
         this.canvas = new ui_1.Canvas('canvas-3d');
         engine_1.VeryEngine.viewCanvas = this.canvas;
         this._canvas = this.canvas.element;
+        // 去掉Babylon的蓝色边框
+        this._canvas.style.outline = 'none';
         // add canvas
         editor.call('layout.viewport').prepend(this.canvas);
         // get canvas
@@ -578,7 +1441,7 @@ var Viewport = /** @class */ (function () {
         setInterval(function () {
             var rect = engine_1.VeryEngine.viewPanel.element.getBoundingClientRect();
             self.canvas.resize(Math.floor(rect.width), Math.floor(rect.height));
-        }, 1000 / 60);
+        }, 100 / 6);
         this._engine = new BABYLON.Engine(this._canvas, true);
         var engine = this._engine;
         window.addEventListener("resize", function () {
@@ -593,13 +1456,14 @@ var Viewport = /** @class */ (function () {
         camera.upperBetaLimit = (Math.PI / 2) * 0.99;
         camera.lowerRadiusLimit = 150;
         // 加载过度动画开
-        engine.displayLoadingUI();
+        engine.loadingScreen.hideLoadingUI();
+        // engine.displayLoadingUI();
         var inputMap = {};
         // TODO: 加载scene.babylon场景文件，当前为默认
         BABYLON.SceneLoader.Append("./scene/", "scene.babylon", this._scene, function (scene) {
             // do something with the scene
             // 加载过度动画关
-            engine.hideLoadingUI();
+            // engine.hideLoadingUI();
             // Keyboard events
             var blue = scene.getMeshByName('blue');
             scene.actionManager = new BABYLON.ActionManager(scene);
@@ -642,11 +1506,16 @@ var Viewport = /** @class */ (function () {
             // }
         });
         // return this;
+        this.expandControl();
     }
+    Viewport.prototype.expandControl = function () {
+        var control = new toolbar_1.ToolbarTopControl();
+        var expandView = new viewport_expand_1.ViewportExpand();
+    };
     return Viewport;
 }());
 exports.Viewport = Viewport;
-},{"../../engine":11,"../../ui":23}],10:[function(require,module,exports){
+},{"../../engine":16,"../../ui":28,"../toolbar":10,"./viewport-expand":13}],15:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var BabylonEngine = /** @class */ (function () {
@@ -655,7 +1524,7 @@ var BabylonEngine = /** @class */ (function () {
     return BabylonEngine;
 }());
 exports.BabylonEngine = BabylonEngine;
-},{}],11:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -663,7 +1532,7 @@ function __export(m) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./babylon-engine"));
 __export(require("./very-engine"));
-},{"./babylon-engine":10,"./very-engine":12}],12:[function(require,module,exports){
+},{"./babylon-engine":15,"./very-engine":17}],17:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var VeryEngine = /** @class */ (function () {
@@ -672,7 +1541,7 @@ var VeryEngine = /** @class */ (function () {
     return VeryEngine;
 }());
 exports.VeryEngine = VeryEngine;
-},{}],13:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -682,7 +1551,7 @@ __export(require("./lib"));
 __export(require("./editor"));
 __export(require("./ui"));
 __export(require("./engine"));
-},{"./editor":6,"./engine":11,"./lib":15,"./ui":23}],14:[function(require,module,exports){
+},{"./editor":8,"./engine":16,"./lib":20,"./ui":28}],19:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Events = /** @class */ (function () {
@@ -824,14 +1693,14 @@ var EventHandle = /** @class */ (function () {
     return EventHandle;
 }());
 exports.EventHandle = EventHandle;
-},{}],15:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./events"));
-},{"./events":14}],16:[function(require,module,exports){
+},{"./events":19}],21:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -842,6 +1711,8 @@ var engine_1 = require("./engine");
 __export(require("./index"));
 // 添加到全局变量
 window.editor = new editor_1.Editor();
+// 全局快捷键
+var hotkeys = new editor_1.Hotkeys();
 // 整体布局
 var layout = new editor_1.Layout();
 layout.init();
@@ -850,6 +1721,8 @@ var viewport = new editor_1.Viewport();
 engine_1.VeryEngine.viewport = viewport;
 // 层级菜单
 var hierarchy = new editor_1.Hierarchy();
+// 资源菜单
+var assets = new editor_1.Assets();
 /* TEST
 editor.once('load', () => {
   console.log('once');
@@ -897,7 +1770,7 @@ editor.call('method', 123);
 // for(let i: number = 0; i < parent.childNodes.length; i++) {
 //   console.log(parent.childNodes[i] instanceof HTMLElement);
 // }
-},{"./editor":6,"./engine":11,"./index":13}],17:[function(require,module,exports){
+},{"./editor":8,"./engine":16,"./index":18}],22:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -959,7 +1832,7 @@ var Bubble = /** @class */ (function (_super) {
     return Bubble;
 }(element_1.Element));
 exports.Bubble = Bubble;
-},{"./element":22}],18:[function(require,module,exports){
+},{"./element":27}],23:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -987,9 +1860,11 @@ var Button = /** @class */ (function (_super) {
         _this.element.ui = _this;
         _this.element.tabIndex = 0;
         // space > click
-        _this.element.addEventListener('keydown', _this._onKeyDown, false);
+        // 鼠标抬起时完成keydown，才会触发；
+        _this.element.addEventListener('keydown', _this._onKeyDown.bind(_this), false);
         _this.on('click', _this._onClick);
         return _this;
+        // this.element.addEventListener('mousedown', this._onClick.bind(this));
     }
     Object.defineProperty(Button.prototype, "text", {
         get: function () {
@@ -1005,9 +1880,10 @@ var Button = /** @class */ (function (_super) {
         configurable: true
     });
     Button.prototype._onKeyDown = function (evt) {
-        if (evt.keyCode === 27)
+        // console.log('c');
+        if (evt.keyCode === 27) // 27: Escape
             return evt.target.blur();
-        if (evt.keyCode !== 32 || this.disabled)
+        if (evt.keyCode !== 32 || this.disabled) // 32: Space
             return;
         evt.stopPropagation();
         evt.preventDefault();
@@ -1025,7 +1901,7 @@ var Button = /** @class */ (function (_super) {
     return Button;
 }(element_1.Element));
 exports.Button = Button;
-},{"./element":22}],19:[function(require,module,exports){
+},{"./element":27}],24:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -1098,7 +1974,7 @@ var Canvas = /** @class */ (function (_super) {
     return Canvas;
 }(element_1.Element));
 exports.Canvas = Canvas;
-},{"./element":22}],20:[function(require,module,exports){
+},{"./element":27}],25:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -1186,7 +2062,7 @@ var Checkbox = /** @class */ (function (_super) {
     return Checkbox;
 }(element_1.Element));
 exports.Checkbox = Checkbox;
-},{"./element":22}],21:[function(require,module,exports){
+},{"./element":27}],26:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -1424,6 +2300,7 @@ var ContainerElement = /** @class */ (function (_super) {
     ContainerElement.prototype.clear = function () {
         var node;
         this._observer.disconnect();
+        console.log(this._innerElement);
         var i = this._innerElement.children.length;
         while (i--) {
             node = (this._innerElement.children[i]);
@@ -1438,7 +2315,7 @@ var ContainerElement = /** @class */ (function (_super) {
     return ContainerElement;
 }(element_1.Element));
 exports.ContainerElement = ContainerElement;
-},{"./element":22}],22:[function(require,module,exports){
+},{"./element":27}],27:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -1481,6 +2358,9 @@ var Element = /** @class */ (function (_super) {
         _this._evtParentDestroy = null;
         _this._evtParentDisable = null;
         _this._evtParentEnable = null;
+        // public get selected(): boolean {
+        //   return this.class!.contains('selected');
+        // }
         // HTMLElement 
         _this._element = null;
         // this._element!.addEventListener('click', )
@@ -1776,7 +2656,7 @@ var Element = /** @class */ (function (_super) {
     return Element;
 }(lib_1.Events));
 exports.Element = Element;
-},{"../lib":15}],23:[function(require,module,exports){
+},{"../lib":20}],28:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -1799,7 +2679,8 @@ __export(require("./checkbox"));
 __export(require("./bubble"));
 __export(require("./overlay"));
 __export(require("./tooltip"));
-},{"./bubble":17,"./button":18,"./canvas":19,"./checkbox":20,"./container-element":21,"./element":22,"./label":24,"./link":25,"./list":27,"./list-item":26,"./overlay":28,"./panel":29,"./text-field":30,"./textarea-field":31,"./tooltip":32,"./tree":34,"./tree-item":33}],24:[function(require,module,exports){
+__export(require("./progress"));
+},{"./bubble":22,"./button":23,"./canvas":24,"./checkbox":25,"./container-element":26,"./element":27,"./label":29,"./link":30,"./list":32,"./list-item":31,"./overlay":33,"./panel":34,"./progress":35,"./text-field":36,"./textarea-field":37,"./tooltip":38,"./tree":40,"./tree-item":39}],29:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -1906,7 +2787,7 @@ var Label = /** @class */ (function (_super) {
     return Label;
 }(element_1.Element));
 exports.Label = Label;
-},{"./element":22}],25:[function(require,module,exports){
+},{"./element":27}],30:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // TODO
@@ -1928,7 +2809,7 @@ var Link = /** @class */ (function () {
     return Link;
 }());
 exports.Link = Link;
-},{}],26:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -2006,7 +2887,7 @@ var ListItem = /** @class */ (function (_super) {
     return ListItem;
 }(element_1.Element));
 exports.ListItem = ListItem;
-},{"./element":22}],27:[function(require,module,exports){
+},{"./element":27}],32:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -2142,7 +3023,7 @@ var List = /** @class */ (function (_super) {
     return List;
 }(container_element_1.ContainerElement));
 exports.List = List;
-},{"../editor":6,"./container-element":21}],28:[function(require,module,exports){
+},{"../editor":8,"./container-element":26}],33:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -2253,7 +3134,7 @@ var Overlay = /** @class */ (function (_super) {
     return Overlay;
 }(container_element_1.ContainerElement));
 exports.Overlay = Overlay;
-},{"./container-element":21}],29:[function(require,module,exports){
+},{"./container-element":26}],34:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -2620,7 +3501,143 @@ var Panel = /** @class */ (function (_super) {
     return Panel;
 }(container_element_1.ContainerElement));
 exports.Panel = Panel;
-},{"./container-element":21}],30:[function(require,module,exports){
+},{"./container-element":26}],35:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var element_1 = require("./element");
+var Progress = /** @class */ (function (_super) {
+    __extends(Progress, _super);
+    function Progress(progress, speed) {
+        var _this = _super.call(this) || this;
+        _this._progress = progress ? Math.max(0, Math.min(1, progress)) : 0;
+        _this._targetProgress = _this._progress;
+        _this._lastProgress = Math.floor(_this._progress * 100);
+        _this.element = document.createElement('div');
+        _this.element.classList.add('ui-progress');
+        _this._inner = document.createElement('div');
+        _this._inner.classList.add('inner');
+        _this._inner.style.width = (_this._progress * 100) + '%';
+        _this.element.appendChild(_this._inner);
+        _this._speed = speed || 1;
+        _this._now = Date.now();
+        _this._animating = false;
+        _this._failed = false;
+        return _this;
+    }
+    Object.defineProperty(Progress.prototype, "progress", {
+        get: function () {
+            return this._progress;
+        },
+        set: function (val) {
+            var self = this;
+            val = Math.max(0, Math.min(1, val));
+            if (this._targetProgress === val)
+                return;
+            this._targetProgress = val;
+            if (this._speed === 0 || this._speed === 1) {
+                this._progress = this._targetProgress;
+                this._inner.style.width = (this._progress * 100) + '%';
+                var progress = Math.max(0, Math.min(100, Math.round(this._progress * 100)));
+                if (progress !== this._lastProgress) {
+                    this._lastProgress = progress;
+                    this.emit('progress:' + progress);
+                    this.emit('progress', progress);
+                }
+            }
+            else if (!this._animating) {
+                requestAnimationFrame(function () {
+                    self._animate();
+                });
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Progress.prototype, "speed", {
+        get: function () {
+            return this._speed;
+        },
+        set: function (val) {
+            this._speed = Math.max(0, Math.min(1, val));
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Progress.prototype, "failed", {
+        get: function () {
+            return this._failed;
+        },
+        set: function (val) {
+            this._failed = val;
+            if (this._failed) {
+                this.class.add('failed');
+            }
+            else {
+                this.class.remove('failed');
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     *  probability and statistics；
+     *  how can I create a 80% win rate strategy?
+     *  it's about hummanity.
+     *
+     *  websocket link -> best way;
+     *  information format -> many kinds of information to be transformed;
+     *
+     *  think about the process:
+     *     1. access permission check;
+     *     2. a data structure of scene detail;
+     *     3. a data structure for assets detail;
+     *     4. keep the original file no change so there will be only one source file;
+     *     5.
+     *
+     */
+    Progress.prototype._animate = function () {
+        var self = this;
+        if (Math.abs(this._targetProgress - this._progress) < 0.01) {
+            this._progress = this._targetProgress;
+            this._animating = false;
+        }
+        else {
+            if (!this._animating) {
+                this._now = Date.now() - (1000 / 60);
+                this._animating = true;
+            }
+            requestAnimationFrame(function () {
+                self._animate();
+            });
+            var dt = Math.max(0.1, Math.min(3, (Date.now() - this._now) / (1000 / 60)));
+            this._now = Date.now();
+            this._progress = this._progress + (this._targetProgress - this._progress) * (this._speed * dt);
+        }
+        var progress = Math.max(0, Math.min(100, Math.round(this._progress * 100)));
+        if (progress !== this._lastProgress) {
+            this._lastProgress = progress;
+            this.emit('progress:' + progress);
+            this.emit('progress', progress);
+        }
+        this._inner.style.width = (this._progress * 100) + '%';
+    };
+    return Progress;
+}(element_1.Element));
+exports.Progress = Progress;
+},{"./element":27}],36:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -2731,10 +3748,10 @@ var TextField = /** @class */ (function (_super) {
             if (this.evtKeyChange === !!val)
                 return;
             if (val) {
-                this.elementInput.addEventListener('keyup', this._onChange, false);
+                this.elementInput.addEventListener('keyup', this._onChange.bind(this), false);
             }
             else {
-                this.elementInput.removeEventListener('keyup', this._onChange);
+                this.elementInput.removeEventListener('keyup', this._onChange.bind(this));
             }
         },
         enumerable: true,
@@ -2800,7 +3817,7 @@ var TextField = /** @class */ (function (_super) {
     return TextField;
 }(element_1.Element));
 exports.TextField = TextField;
-},{"./element":22}],31:[function(require,module,exports){
+},{"./element":27}],37:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -2982,7 +3999,7 @@ var TextAreaField = /** @class */ (function (_super) {
     return TextAreaField;
 }(element_1.Element));
 exports.TextAreaField = TextAreaField;
-},{"./element":22}],32:[function(require,module,exports){
+},{"./element":27}],38:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -3242,7 +4259,7 @@ var Tooltip = /** @class */ (function (_super) {
     return Tooltip;
 }(container_element_1.ContainerElement));
 exports.Tooltip = Tooltip;
-},{"./container-element":21}],33:[function(require,module,exports){
+},{"./container-element":26}],39:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -3798,7 +4815,7 @@ var TreeItem = /** @class */ (function (_super) {
     return TreeItem;
 }(element_1.Element));
 exports.TreeItem = TreeItem;
-},{"./element":22,"./text-field":30,"./tree":34}],34:[function(require,module,exports){
+},{"./element":27,"./text-field":36,"./tree":40}],40:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -4365,6 +5382,6 @@ var Tree = /** @class */ (function (_super) {
     return Tree;
 }(container_element_1.ContainerElement));
 exports.Tree = Tree;
-},{"../editor":6,"./container-element":21,"./tree-item":33}]},{},[16])
+},{"../editor":8,"./container-element":26,"./tree-item":39}]},{},[21])
 
 //# sourceMappingURL=vreditor.js.map

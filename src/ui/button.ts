@@ -26,17 +26,20 @@ export class Button extends Element {
     this.element.tabIndex = 0;
 
     // space > click
-    this.element.addEventListener('keydown', this._onKeyDown, false);
+    // 鼠标抬起时完成keydown，才会触发；
+    this.element.addEventListener('keydown', this._onKeyDown.bind(this), false);
     this.on('click', this._onClick);
+    // this.element.addEventListener('mousedown', this._onClick.bind(this));
 
   }
 
 
   private _onKeyDown(evt: KeyboardEvent): void {
-    if (evt.keyCode === 27)
+    // console.log('c');
+    if (evt.keyCode === 27)  // 27: Escape
       return (<HTMLElement>evt.target).blur();
 
-    if (evt.keyCode !== 32 || this.disabled)
+    if (evt.keyCode !== 32 || this.disabled)  // 32: Space
       return;
 
     evt.stopPropagation();

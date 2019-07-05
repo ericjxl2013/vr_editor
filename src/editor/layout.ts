@@ -92,7 +92,7 @@ export class Layout {
 
     // hierarchy
     let hierarchyPanel = new Panel('树形结构窗口');
-    hierarchyPanel.enabled = false;
+    hierarchyPanel.enabled = true;
     hierarchyPanel.class!.add('hierarchy');
     hierarchyPanel.flexShrink = '0';
     let hierarchyPanelSize = editor.call('localStorage:get', 'editor:layout:hierarchy:width') || '256px';
@@ -178,7 +178,7 @@ export class Layout {
 
     // attributes panel
     let attributesPanel = new Panel('属性窗口');
-    attributesPanel.enabled = false;
+    attributesPanel.enabled = true;
     attributesPanel.class!.add('attributes');
     attributesPanel.flexShrink = '0';
     let attributesPanelWidth = editor.call('localStorage:get', 'editor:layout:attributes:width') || '320px';

@@ -223,7 +223,7 @@ export class ContainerElement extends Element {
     let node: HTMLElement;
 
     this._observer.disconnect();
-
+    console.log(this._innerElement);
     let i: number = this._innerElement!.children.length;
     while (i--) {
       node = <HTMLElement>(this._innerElement!.children[i]);

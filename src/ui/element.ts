@@ -30,6 +30,10 @@ export class Element extends Events {
   private _evtParentDisable: Nullable<EventHandle> = null;
   private _evtParentEnable: Nullable<EventHandle> = null;
 
+  // public get selected(): boolean {
+  //   return this.class!.contains('selected');
+  // }
+
   // HTMLElement 
   private _element: Nullable<HTMLElement> = null;
   // public innerElement: Nullable<HTMLElement> = null;

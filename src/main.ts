@@ -1,4 +1,4 @@
-import { Editor, Layout, Viewport, Hierarchy } from './editor';
+import { Editor, Layout, Viewport, Hierarchy, Assets, Hotkeys } from './editor';
 
 import { Element, Canvas } from './ui';
 import { VeryEngine } from './engine';
@@ -7,6 +7,10 @@ export * from './index';
 
 // 添加到全局变量
 window.editor = new Editor();
+
+// 全局快捷键
+let hotkeys = new Hotkeys();
+
 
 // 整体布局
 let layout = new Layout();
@@ -18,6 +22,9 @@ VeryEngine.viewport = viewport;
 
 // 层级菜单
 let hierarchy = new Hierarchy();
+
+// 资源菜单
+let assets = new Assets();
 
 /* TEST
 editor.once('load', () => {

@@ -14,18 +14,18 @@ export class Hierarchy {
     console.log('hierarchy-controls');
 
     // controls delete (Button)
-    var btnDelete: Button = new Button('&#57636;');
+    let btnDelete: Button = new Button('&#57636;');
     btnDelete.class!.add('delete');
     btnDelete.style!.fontWeight = '200';
     btnDelete.on('click', function () {
-      var type = editor.call('selector:type');
+      let type = editor.call('selector:type');
       if (type !== 'entity')
         return;
       editor.call('entities:delete', editor.call('selector:items'));
     });
     this.hierarchyMain.append(btnDelete);
 
-    var tooltipDelete = Tooltip.attach({
+    let tooltipDelete = Tooltip.attach({
       target: btnDelete.element!,
       text: '删除',
       align: 'top',
@@ -34,19 +34,19 @@ export class Hierarchy {
     tooltipDelete.class!.add('innactive');
 
     // controls duplicate
-    var btnDuplicate: Button = new Button('&#57638;');
+    let btnDuplicate: Button = new Button('&#57638;');
     btnDuplicate.disabled = true;
     btnDuplicate.class!.add('duplicate');
     btnDuplicate.on('click', function () {
-      var type = editor.call('selector:type');
-      var items = editor.call('selector:items');
+      let type = editor.call('selector:type');
+      let items = editor.call('selector:items');
 
       if (type === 'entity' && items.length)
         editor.call('entities:duplicate', items);
     });
     this.hierarchyMain.append(btnDuplicate);
 
-    var tooltipDuplicate = Tooltip.attach({
+    let tooltipDuplicate = Tooltip.attach({
       target: btnDuplicate.element!,
       text: '复制',
       align: 'top',
@@ -55,15 +55,15 @@ export class Hierarchy {
     tooltipDuplicate.class!.add('innactive');
 
     // TODO: Menu
-    // var menuEntities = ui.Menu.fromData(editor.call('menu:entities:new'));
+    // let menuEntities = ui.Menu.fromData(editor.call('menu:entities:new'));
     // root.append(menuEntities);
 
     // controls add
-    var btnAdd: Button = new Button('&#57632;');
+    let btnAdd: Button = new Button('&#57632;');
     btnAdd.class!.add('add');
     btnAdd.on('click', function () {
       // menuEntities.open = true;
-      // var rect = btnAdd.element.getBoundingClientRect();
+      // let rect = btnAdd.element.getBoundingClientRect();
       // menuEntities.position(rect.left, rect.top);
     });
     this.hierarchyMain.append(btnAdd);
@@ -82,26 +82,26 @@ export class Hierarchy {
   public init(): void {
     // left control
     // hierarchy index
-    var uiItemIndex = {};
-    var awaitingParent = {};
+    let uiItemIndex = {};
+    let awaitingParent = {};
     let panel: Panel = VeryEngine.hierarchyPanel;
 
-    var hierarchy: Tree = new Tree();
+    let hierarchy: Tree = new Tree();
     VeryEngine.hierarchyTree = hierarchy;
 
-    // TODO: hierarchy权限管理
+    // TODO: hierarchy权限管理，有些人可看不可编辑；
     // hierarchy.allowRenaming = editor.call('permissions:write');
     hierarchy.draggable = hierarchy.allowRenaming;
     hierarchy.class!.add('hierarchy');
     panel.append(hierarchy);
 
-    var resizeQueued = false;
-    var resizeTree = function () {
+    let resizeQueued = false;
+    let resizeTree = function () {
       resizeQueued = false;
       hierarchy.element!.style.width = '';
       hierarchy.element!.style.width = (panel.innerElement!.scrollWidth - 5) + 'px';
     };
-    var resizeQueue = function () {
+    let resizeQueue = function () {
       if (resizeQueued) return;
       resizeQueued = true;
       requestAnimationFrame(resizeTree);
@@ -119,7 +119,7 @@ export class Hierarchy {
     // list item selected
     hierarchy.on('select', function (item: TreeItem) {
       // open items till parent
-      var parent = item.parent;
+      let parent = item.parent;
       while (parent && parent instanceof TreeItem) {
         parent.open = true;
         parent = parent.parent;
@@ -140,16 +140,16 @@ export class Hierarchy {
     });
 
     // scrolling on drag
-    var dragScroll = 0;
-    var dragTimer: NodeJS.Timer | null = null;;
-    var dragLastEvt;
-    var dragEvt = function (evt: MouseEvent) {
+    let dragScroll = 0;
+    let dragTimer: NodeJS.Timer | null = null;;
+    let dragLastEvt;
+    let dragEvt = function (evt: MouseEvent) {
       if (!hierarchy._dragging) {
         clearInterval(Number(dragTimer));
         window.removeEventListener('mousemove', dragEvt);
         return;
       }
-      var rect = panel.innerElement!.getBoundingClientRect();
+      let rect = panel.innerElement!.getBoundingClientRect();
 
       if ((evt.clientY - rect.top) < 32 && panel.innerElement!.scrollTop > 0) {
         dragScroll = -1;
@@ -175,7 +175,7 @@ export class Hierarchy {
 
       // TODO:
       console.log('get drag TreeItem entity resourceId');
-      // var resourceId = hierarchy._dragItems[0].entity.get('resource_id');
+      // let resourceId = hierarchy._dragItems[0].entity.get('resource_id');
       // editor.call('drop:set', 'entity', { resource_id: resourceId });
       // editor.call('drop:activate', true);
     });
@@ -186,7 +186,7 @@ export class Hierarchy {
     });
 
     // TODO
-    // var target = editor.call('drop:target', {
+    // let target = editor.call('drop:target', {
     //   ref: panel.innerElement,
     //   type: 'entity',
     //   hole: true,
@@ -194,12 +194,12 @@ export class Hierarchy {
     // });
     // target.element.style.outline = 'none';
 
-    var classList = ['tree-item-entity', 'entity-id-' + 'ids-to-be-done', 'c-model'];
+    let classList = ['tree-item-entity', 'entity-id-' + 'ids-to-be-done', 'c-model'];
     // if (isRoot) {
     //   classList.push('tree-item-root');
     // }
 
-    var rootElement = new TreeItem({
+    let rootElement = new TreeItem({
       text: 'Scene',
       classList: classList
     });
@@ -208,7 +208,7 @@ export class Hierarchy {
     hierarchy.emit('append', rootElement);
 
     for (let i: number = 0; i < 10; i++) {
-      var element1 = new TreeItem({
+      let element1 = new TreeItem({
         text: '物体名' + (i + 1),
         classList: classList
       });
@@ -216,14 +216,14 @@ export class Hierarchy {
       rootElement.append(element1);
 
       for (let k = 0; k < 5; k++) {
-        var element2 = new TreeItem({
+        let element2 = new TreeItem({
           text: '子物体名' + (k + 1),
           classList: classList
         });
         hierarchy.emit('append', element2);
         element1.append(element2);
         for (let x = 0; x < 5; x++) {
-          var element3 = new TreeItem({
+          let element3 = new TreeItem({
             text: '二级子物体' + (x + 1),
             classList: classList
           });

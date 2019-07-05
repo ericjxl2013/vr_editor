@@ -1,5 +1,7 @@
 import { Canvas } from '../../ui';
 import { VeryEngine } from '../../engine';
+import { ToolbarTopControl } from '../toolbar';
+import { ViewportExpand } from './viewport-expand';
 
 export class Viewport {
 
@@ -18,6 +20,8 @@ export class Viewport {
     VeryEngine.viewCanvas = this.canvas;
 
     this._canvas = <HTMLCanvasElement>this.canvas.element;
+    // 去掉Babylon的蓝色边框
+    this._canvas.style.outline = 'none';
     // add canvas
     editor.call('layout.viewport').prepend(this.canvas);
 
@@ -30,7 +34,7 @@ export class Viewport {
     setInterval(function () {
       let rect = VeryEngine.viewPanel.element!.getBoundingClientRect();
       self.canvas.resize(Math.floor(rect.width), Math.floor(rect.height));
-    }, 1000 / 60);
+    }, 100 / 6);
 
     this._engine = new BABYLON.Engine(this._canvas, true);
     let engine = this._engine;
@@ -48,7 +52,8 @@ export class Viewport {
     camera.lowerRadiusLimit = 150;
 
     // 加载过度动画开
-    engine.displayLoadingUI();
+    engine.loadingScreen.hideLoadingUI();
+    // engine.displayLoadingUI();
 
     let inputMap: { [key: string]: boolean } = {};
 
@@ -56,7 +61,7 @@ export class Viewport {
     BABYLON.SceneLoader.Append("./scene/", "scene.babylon", this._scene, function (scene) {
       // do something with the scene
       // 加载过度动画关
-      engine.hideLoadingUI();
+      // engine.hideLoadingUI();
 
       // Keyboard events
       var blue = scene.getMeshByName('blue')!;
@@ -118,6 +123,15 @@ export class Viewport {
     });
     // return this;
 
+
+    this.expandControl();
+  }
+
+
+
+  private expandControl(): void {
+    let control: ToolbarTopControl = new ToolbarTopControl();
+    let expandView: ViewportExpand = new ViewportExpand();
   }
 
 

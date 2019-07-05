@@ -63,9 +63,9 @@ export class TextField extends Element {
       return;
 
     if (val) {
-      this.elementInput.addEventListener('keyup', this._onChange, false);
+      this.elementInput.addEventListener('keyup', this._onChange.bind(this), false);
     } else {
-      this.elementInput.removeEventListener('keyup', this._onChange);
+      this.elementInput.removeEventListener('keyup', this._onChange.bind(this));
     }
   }
 

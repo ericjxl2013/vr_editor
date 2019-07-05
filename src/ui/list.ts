@@ -22,7 +22,7 @@ export class List extends ContainerElement {
     }
   }
 
-  private _changing: boolean;
+  public _changing: boolean;
 
   private _selected: ListItem[];
   public get selected(): ListItem[] {
@@ -96,7 +96,7 @@ export class List extends ContainerElement {
     this.emit('change');
   }
 
-  private _onDeselect(item: ListItem): void {
+  public _onDeselect(item: ListItem): void {
     let ind: number = this._selected.indexOf(item);
     if (ind !== -1) this._selected.splice(ind, 1);
 

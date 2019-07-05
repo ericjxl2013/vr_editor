@@ -15,3 +15,4 @@ export * from './checkbox';
 export * from './bubble';
 export * from './overlay';
 export * from './tooltip';
+export * from './progress';
