@@ -84,16 +84,12 @@ export class Progress extends Element {
 
     this._now = Date.now();
     this._animating = false;
-
+ 
     this._failed = false;
 
   }
 
   /**
-   *  probability and statistics；
-   *  how can I create a 80% win rate strategy?
-   *  it's about hummanity. 
-   *  
    *  websocket link -> best way;
    *  information format -> many kinds of information to be transformed;
    * 
@@ -102,7 +98,11 @@ export class Progress extends Element {
    *     2. a data structure of scene detail;
    *     3. a data structure for assets detail;
    *     4. keep the original file no change so there will be only one source file;
-   *     5. 
+   *     5. link to any information;
+   * 
+   * 
+   * 
+
    *  
    */
   private _animate(): void {

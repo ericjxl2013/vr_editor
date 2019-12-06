@@ -96,6 +96,7 @@ export class Element extends Events {
           this.class!.remove("disabled");
           this.emit("enable");
         }
+        
       }
     }
 
@@ -180,7 +181,7 @@ export class Element extends Events {
   public set flexGrow(val: string) {
     if (this._element) {
       this._element.style.flexGrow = val;
-      this._element.style.webkitFlexGrow = val!;
+      this._element.style.webkitFlexGrow = val;
     }
   }
 

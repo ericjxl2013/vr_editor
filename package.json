@@ -11,7 +11,8 @@
     "koa-bodyparser": "^4.2.1",
     "koa-compress": "^3.0.0",
     "koa-router": "^7.4.0",
-    "koa-send": "^5.0.0"
+    "koa-send": "^5.0.0",
+    "ws": "^7.1.2"
   },
   "devDependencies": {
     "@types/handsontable": "^0.35.0",

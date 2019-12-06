@@ -1,0 +1,278 @@
+{
+    "name": "场景名",
+    "settings": {
+        "physics": {
+            "gravity": [
+                0,
+                -9.8,
+                0
+            ]
+        },
+        "render": {
+            "fog_end": 1000,
+            "fog_start": 1,
+            "global_ambient": [
+                0.2,
+                0.2,
+                0.2
+            ],
+            "fog_color": [
+                0,
+                0,
+                0
+            ],
+            "fog": "none",
+            "fog_density": 0.01,
+            "gamma_correction": 1,
+            "tonemapping": 0,
+            "exposure": 1,
+            "skybox": 24427275,
+            "skyboxIntensity": 1,
+            "skyboxMip": 0,
+            "lightmapSizeMultiplier": 16,
+            "lightmapMaxResolution": 2048,
+            "lightmapMode": 1
+        }
+    },
+    "entities": {
+        "c77a6124-ee0e-4192-bfcf-cbc4bd9873bf": {
+            "name": "Root",
+            "parent": null,
+            "resource_id": "c77a6124-ee0e-4192-bfcf-cbc4bd9873bf",
+            "tags": [],
+            "enabled": true,
+            "components": {},
+            "scale": [
+                1,
+                1,
+                1
+            ],
+            "position": [
+                0,
+                0,
+                0
+            ],
+            "rotation": [
+                0,
+                0,
+                0
+            ],
+            "children": [
+                "79032499-ec4b-466b-8ce0-6e11b2077ca6",
+                "953eb8d1-c6c7-46a1-b180-b96b48c595e0",
+                "af313ee1-6b68-4bd0-b7c8-eb05060c1861",
+                "8bc65ee2-757c-4afc-8bdd-587ad95124c4"
+            ]
+        },
+        "79032499-ec4b-466b-8ce0-6e11b2077ca6": {
+            "name": "Camera",
+            "parent": "c77a6124-ee0e-4192-bfcf-cbc4bd9873bf",
+            "resource_id": "79032499-ec4b-466b-8ce0-6e11b2077ca6",
+            "tags": [],
+            "enabled": true,
+            "components": {
+                "camera": {
+                    "fov": 45,
+                    "projection": 0,
+                    "clearColor": [
+                        0.118,
+                        0.118,
+                        0.118,
+                        1
+                    ],
+                    "clearColorBuffer": true,
+                    "clearDepthBuffer": true,
+                    "frustumCulling": true,
+                    "enabled": true,
+                    "orthoHeight": 4,
+                    "farClip": 1000,
+                    "nearClip": 0.1,
+                    "priority": 0,
+                    "rect": [
+                        0,
+                        0,
+                        1,
+                        1
+                    ],
+                    "layers": [
+                        0,
+                        1,
+                        2,
+                        3,
+                        4
+                    ]
+                }
+            },
+            "scale": [
+                1,
+                1,
+                1
+            ],
+            "position": [
+                -1.453712995842989,
+                0.48481524161646466,
+                1.5014028215868904
+            ],
+            "rotation": [
+                -4.5999998999018565,
+                -40.40000958098368,
+                2.8614683080027713e-8
+            ],
+            "children": []
+        },
+        "953eb8d1-c6c7-46a1-b180-b96b48c595e0": {
+            "name": "Light",
+            "parent": "c77a6124-ee0e-4192-bfcf-cbc4bd9873bf",
+            "resource_id": "953eb8d1-c6c7-46a1-b180-b96b48c595e0",
+            "tags": [],
+            "enabled": true,
+            "components": {
+                "light": {
+                    "enabled": true,
+                    "bake": false,
+                    "bakeDir": true,
+                    "affectDynamic": true,
+                    "affectLightmapped": false,
+                    "isStatic": false,
+                    "color": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "intensity": 1,
+                    "type": "directional",
+                    "shadowDistance": 16,
+                    "range": 8,
+                    "innerConeAngle": 40,
+                    "outerConeAngle": 45,
+                    "falloffMode": 0,
+                    "castShadows": true,
+                    "shadowUpdateMode": 2,
+                    "shadowType": 0,
+                    "shadowResolution": 1024,
+                    "shadowBias": 0.2,
+                    "normalOffsetBias": 0.05,
+                    "vsmBlurMode": 1,
+                    "vsmBlurSize": 11,
+                    "vsmBias": 0.01,
+                    "cookieAsset": null,
+                    "cookieIntensity": 1,
+                    "cookieFalloff": true,
+                    "cookieChannel": "rgb",
+                    "cookieAngle": 0,
+                    "cookieScale": [
+                        1,
+                        1
+                    ],
+                    "cookieOffset": [
+                        0,
+                        0
+                    ],
+                    "layers": [
+                        0
+                    ]
+                }
+            },
+            "scale": [
+                1,
+                1,
+                1
+            ],
+            "position": [
+                2,
+                2,
+                -2
+            ],
+            "rotation": [
+                45,
+                135,
+                0
+            ],
+            "children": []
+        },
+        "af313ee1-6b68-4bd0-b7c8-eb05060c1861": {
+            "name": "Box",
+            "parent": "c77a6124-ee0e-4192-bfcf-cbc4bd9873bf",
+            "resource_id": "af313ee1-6b68-4bd0-b7c8-eb05060c1861",
+            "tags": [],
+            "enabled": true,
+            "components": {
+                "model": {
+                    "enabled": true,
+                    "type": "box",
+                    "asset": null,
+                    "materialAsset": null,
+                    "castShadows": true,
+                    "receiveShadows": true,
+                    "lightmapped": false,
+                    "lightmapSizeMultiplier": 1,
+                    "castShadowsLightmap": true,
+                    "isStatic": false,
+                    "layers": [
+                        0
+                    ],
+                    "batchGroupId": null
+                }
+            },
+            "scale": [
+                1,
+                1,
+                1
+            ],
+            "position": [
+                0,
+                0.5,
+                0
+            ],
+            "rotation": [
+                0,
+                0,
+                0
+            ],
+            "children": []
+        },
+        "8bc65ee2-757c-4afc-8bdd-587ad95124c4": {
+            "name": "Plane",
+            "parent": "c77a6124-ee0e-4192-bfcf-cbc4bd9873bf",
+            "resource_id": "8bc65ee2-757c-4afc-8bdd-587ad95124c4",
+            "tags": [],
+            "enabled": true,
+            "components": {
+                "model": {
+                    "enabled": true,
+                    "type": "plane",
+                    "asset": null,
+                    "materialAsset": null,
+                    "castShadows": true,
+                    "receiveShadows": true,
+                    "lightmapped": false,
+                    "lightmapSizeMultiplier": 1,
+                    "castShadowsLightmap": true,
+                    "isStatic": false,
+                    "layers": [
+                        0
+                    ],
+                    "batchGroupId": null
+                }
+            },
+            "scale": [
+                8,
+                1,
+                8
+            ],
+            "position": [
+                0,
+                0,
+                0
+            ],
+            "rotation": [
+                0,
+                0,
+                0
+            ],
+            "children": []
+        }
+    },
+    "created": "2019-10-29T09:02:36.937Z",
+    "id": 823008
+}

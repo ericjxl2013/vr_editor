@@ -1,0 +1,152 @@
+{
+    "project_id": "12345",
+    "name": "场景1",
+    "created": "2019-10-17 09:01:59.84",
+    "id": "abcde",
+    "settings": {
+        "autoClear": true,
+        "clearColor": [
+            0,
+            0,
+            0
+        ],
+        "ambientColor": [
+            0,
+            0,
+            0
+        ],
+        "gravity": [
+            0,
+            -9.807,
+            0
+        ]
+    },
+    "entities": {
+        "e8ae4254-6751-11e5-bd2a-8438356164ca": {
+            "scale": [
+                1,
+                1,
+                1
+            ],
+            "name": "scene",
+            "parent": null,
+            "resource_id": "e8ae4254-6751-11e5-bd2a-8438356164ca",
+            "labels": [],
+            "enabled": true,
+            "components": {
+                "pack": {}
+            },
+            "position": [
+                0,
+                0,
+                0
+            ],
+            "rotation": [
+                0,
+                0,
+                0
+            ],
+            "children": [
+                "e8ae4acf-6751-11e5-8a1b-8438356164ca",
+                "e8ae4e82-6751-11e5-8a5f-8438356164ca",
+                "23c37f0a-0043-4de3-94fa-a3e5176ae05e",
+                "e8ae4f87-6751-11e5-b6f2-8438356164ca",
+                "e8ae461c-6751-11e5-b2b0-8438356164ca",
+                "e8ae5685-6751-11e5-8804-8438356164ca",
+                "6e2c2ecd-0713-4f3a-a3fc-c72dcae813e0",
+                "e6b2921b-97f1-4664-acbb-b465cd16eb0d",
+                "6dbace5d-f0ea-4b46-9ec5-b2547fab6998",
+                "94189496-ed8e-4afb-a262-0c78cb43549d",
+                "5b3eb034-1103-4c3c-b6ee-7a22aed11788",
+                "0aa60696-5592-4dfd-8ef0-d360efefdce9",
+                "297caa3d-71db-4cde-a0d8-220d3ff096e7",
+                "ed574d01-5fae-4714-904d-c6cf653f3e7d",
+                "d5bb723e-2a50-42b9-a6b2-9be910b39e5e",
+                "5241a51f-2a1d-46b6-9dc3-ac0e531b2943",
+                "e848848c-02f9-4a11-adb6-3a29805da576",
+                "eaa6515f-8d0f-4e3e-876d-360c90710599",
+                "4f6bf655-be16-4512-b507-64ec09bca766",
+                "68824b76-668a-4528-bfdd-0bdde67ba480"
+            ],
+            "template": null,
+            "tags": [],
+            "type": "root"
+        },
+        "e8ae4f87-6751-11e5-b6f2-8438356164ca": {
+            "scale": [
+                0.5,
+                0.5,
+                0.5
+            ],
+            "name": "ball",
+            "parent": "e8ae4254-6751-11e5-bd2a-8438356164ca",
+            "resource_id": "e8ae4f87-6751-11e5-b6f2-8438356164ca",
+            "enabled": true,
+            "components": {
+                "rigidbody": {
+                    "linearDamping": 0,
+                    "enabled": true,
+                    "friction": 0.5,
+                    "mass": 1,
+                    "angularDamping": 0,
+                    "linearFactor": [
+                        0.7,
+                        0.7,
+                        0.7
+                    ],
+                    "type": "dynamic",
+                    "angularFactor": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "restitution": 1
+                },
+                "collision": {
+                    "enabled": true,
+                    "halfExtents": [
+                        0.5,
+                        0.5,
+                        0.5
+                    ],
+                    "height": 2,
+                    "radius": 0.25,
+                    "asset": null,
+                    "type": "sphere",
+                    "axis": 1
+                },
+                "model": {
+                    "materialAsset": 18818365,
+                    "receiveShadows": true,
+                    "enabled": true,
+                    "castShadows": true,
+                    "asset": null,
+                    "type": "sphere",
+                    "lightmapped": false,
+                    "castShadowsLightmap": true,
+                    "lightmapSizeMultiplier": 1,
+                    "isStatic": false,
+                    "batchGroupId": null,
+                    "layers": [
+                        0
+                    ]
+                }
+            },
+            "position": [
+                0,
+                2.5,
+                3.499192083369618
+            ],
+            "rotation": [
+                0,
+                0,
+                0
+            ],
+            "children": [
+                "2b29d392-57ce-4d03-ad00-1a0ce3c60957"
+            ],
+            "tags": [],
+            "type": "mesh"
+        }
+    }
+}

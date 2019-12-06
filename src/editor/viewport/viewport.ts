@@ -36,6 +36,8 @@ export class Viewport {
       self.canvas.resize(Math.floor(rect.width), Math.floor(rect.height));
     }, 100 / 6);
 
+    // if(this._engine) this._engine.dispose();
+
     this._engine = new BABYLON.Engine(this._canvas, true);
     let engine = this._engine;
     window.addEventListener("resize", function () {
@@ -51,13 +53,18 @@ export class Viewport {
     camera.upperBetaLimit = (Math.PI / 2) * 0.99;
     camera.lowerRadiusLimit = 150;
 
+
+    // this._scen
+
     // 加载过度动画开
-    engine.loadingScreen.hideLoadingUI();
+    // engine.loadingScreen.hideLoadingUI();
     // engine.displayLoadingUI();
 
     let inputMap: { [key: string]: boolean } = {};
 
     // TODO: 加载scene.babylon场景文件，当前为默认
+    // 默认Editor场景，加载保存的某一个场景资源
+    // 资源的父子关系以及模型
     BABYLON.SceneLoader.Append("./scene/", "scene.babylon", this._scene, function (scene) {
       // do something with the scene
       // 加载过度动画关
@@ -92,7 +99,7 @@ export class Viewport {
         }
       })
 
-      // // sphere
+      // sphere
       var sphere = scene.getMeshByName('sphere')!;
       sphere.actionManager = new BABYLON.ActionManager(scene);
 
@@ -103,6 +110,18 @@ export class Viewport {
       sphere.actionManager.registerAction(new BABYLON.SetValueAction(
         { trigger: BABYLON.ActionManager.OnIntersectionExitTrigger, parameter: blue }
         , sphere, "scaling", new BABYLON.Vector3(1, 1, 1)));
+
+      let i: number = 0;
+
+      // WebSocket 测试
+      // scene.onKeyboardObservable.add( kbInfo => {
+      //   if(kbInfo.type === BABYLON.KeyboardEventTypes.KEYUP) {
+      //     if(kbInfo.event.keyCode === 65) {
+      //       // editor.call('send', '按下次数：' + (i++) + "!");
+      //       editor.call('send', '{"data": {"a": 123, "b": "qwe"}}');
+      //     }
+      //   }
+      // });
 
     });
 

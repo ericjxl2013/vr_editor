@@ -1,5 +1,6 @@
+
 interface Events {
-  
+
 }
 
 interface Editor {
@@ -18,7 +19,7 @@ interface Editor {
     arg6?: any,
     arg7?: any
   ): Events;
-  unbind(name: string, fn: Function): Events
+  unbind(name: string, fn: Function): Events;
 }
 
 interface EventHandle {
@@ -32,18 +33,28 @@ interface EventHandle {
 
 declare type Nullable<T> = T | null;
 
+
 declare interface Window {
   editor: Editor;
+  debug: Debug;
 }
 
 declare var editor: Editor;
+
+// declare var debug: debug;
 
 declare interface Element1 {
   destroy(): void;
 }
 
+declare interface SelectField {
+
+}
+
 declare interface HTMLElement {
   ui: Element1;
+  uiElement: SelectField;
+  uiValue: any;
 }
 
 declare interface TreeItemArgs {
@@ -51,3 +62,13 @@ declare interface TreeItemArgs {
   classList?: string[];
   allowDrop?: false;
 }
+
+interface Debug {
+  log(message?: any, ...optionalParams: any[]): void;
+  warn(message?: any, ...optionalParams: any[]): void;
+  error(message?: any, ...optionalParams: any[]): void;
+}
+
+declare var debug: Debug;
+
+

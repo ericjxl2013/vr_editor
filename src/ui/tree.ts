@@ -148,6 +148,7 @@ export class Tree extends ContainerElement {
       item.selected = !item.selected;
     } else if (Tree._shift && Tree._shift() && this._selected.length) {
       // shift按住以后，往上往下都可进行选择，不断添加选择项，不减少
+      console.log('shift按钮')
       let from: TreeItem = this._selected[this._selected.length - 1];
       let to: TreeItem = item;
 
@@ -251,7 +252,7 @@ export class Tree extends ContainerElement {
       let lookDown: boolean = true;
       let lookingUp: boolean = true;
       // TODO
-      while (!done && !path) {
+      while (!done) {
         lookingUp = !lookingUp;
 
         let item: Nullable<TreeItem> = null;

@@ -64,11 +64,10 @@ export class HierarchySearch {
         }
         self.search.value = '';
 
-      } else if (evt.keyCode === 40) { // down
+      } else if (evt.keyCode === 40) {  // down
         self.selectNext();
         evt.stopPropagation();
-
-      } else if (evt.keyCode === 38) { // up
+      } else if (evt.keyCode === 38) {  // up
         self.selectPrev();
         evt.stopPropagation();
       }
@@ -78,7 +77,7 @@ export class HierarchySearch {
     // deselecting
     this.results.unbind('deselect', this.results._onDeselect);
     this.results._onDeselect = function (item) {
-      var ind = this.selected.indexOf(item);
+      let ind = this.selected.indexOf(item);
       if (ind !== -1) this.selected.splice(ind, 1);
 
       if (this._changing)
@@ -89,15 +88,15 @@ export class HierarchySearch {
       } else {
         this._changing = true;
 
-        var items = editor.call('selector:type') === 'entity' && editor.call('selector:items') || [];
+        let items = editor.call('selector:type') === 'entity' && editor.call('selector:items') || [];
 
         // TODO: 
         console.log('_onDeselect');
-        // var inSelected = items.indexOf(item.entity) !== -1;
+        // let inSelected = items.indexOf(item.entity) !== -1;
 
         // if (items.length >= 2 && inSelected) {
-        //   var selected = this.selected;
-        //   for (var i = 0; i < selected.length; i++)
+        //   let selected = this.selected;
+        //   for (let i = 0; i < selected.length; i++)
         //     selected[i].selected = false;
 
         //   item.selected = true;
@@ -138,10 +137,10 @@ export class HierarchySearch {
         self.results.selected = [];
 
         // TODO
-        for (var i = 0; i < items.length; i++) {
-          // var item = self.itemsIndex[items[i].get('resource_id')];
+        for (let i = 0; i < items.length; i++) {
+          // let item = self.itemsIndex[items[i].get('resource_id')];
           // if (!item) continue;
-          // item.selected = true;
+          // item.selected = true;.
         }
       } else {
         self.results.selected = [];
@@ -155,13 +154,11 @@ export class HierarchySearch {
 
     let self = this;
 
-
     this.search.blurOnEnter = false;
     this.search.keyChange = true;
     this.search.class!.add('search');
     this.search.renderChanges = false;
     VeryEngine.hierarchyPanel.element!.insertBefore(this.search.element!, VeryEngine.hierarchyPanel.innerElement);
-
 
     this.search.element!.addEventListener('keydown', function (evt: KeyboardEvent) {
       if (evt.keyCode === 27) {
@@ -170,7 +167,7 @@ export class HierarchySearch {
       } else if (evt.keyCode === 13) {
         if (!self.results.selected.length) {
           // TODO
-          // var firstElement = self.results.element!.firstElementChild;
+          // let firstElement = self.results.element!.firstElementChild;
           // if (firstElement && (<HTMLElement>firstElement).ui && (<HTMLElement>firstElement).ui.entity)
           //   editor.call('selector:set', 'entity', [(<HTMLElement>firstElement).ui.entity]);
         }
@@ -189,16 +186,14 @@ export class HierarchySearch {
         evt.preventDefault();
 
       } else if (evt.keyCode === 65 && evt.ctrlKey) { // ctrl + a
-        var toSelect = [];
-
-        var items = self.results.element!.querySelectorAll('.ui-list-item');
-        for (var i = 0; i < items.length; i++)
+        let toSelect = [];
+        let items = self.results.element!.querySelectorAll('.ui-list-item');
+        for (let i = 0; i < items.length; i++) {
           toSelect.push((<HTMLElement>items[i]).ui);
-
+        }
         // TODO
         console.log('全选');
         // self.results.selected = toSelect;
-
         evt.stopPropagation();
         evt.preventDefault();
       }
@@ -221,7 +216,7 @@ export class HierarchySearch {
     });
 
 
-    var searchClear = document.createElement('div');
+    let searchClear = document.createElement('div');
     searchClear.innerHTML = '&#57650;';
     searchClear.classList.add('clear');
     this.search.element!.appendChild(searchClear);
@@ -235,19 +230,19 @@ export class HierarchySearch {
 
 
   private selectNext(): void {
-    var children = this.results.element!.children;
+    let children = this.results.element!.children;
 
     // could be nothing or only one item to select
     if (!children.length || !children.length)
       return;
 
-    var toSelect = null;
-    var items = this.results.element!.querySelectorAll('.ui-list-item.selected');
-    var multi: boolean = List._ctrl() || List._shift();
+    let toSelect = null;
+    let items = this.results.element!.querySelectorAll('.ui-list-item.selected');
+    let multi: boolean = List._ctrl() || List._shift();
 
     if (items.length) {
-      var last = items[items.length - 1];
-      var next = last.nextElementSibling;
+      let last = items[items.length - 1];
+      let next = last.nextElementSibling;
       if (next) {
         // select next
         toSelect = (<HTMLElement>next).ui;
@@ -268,19 +263,19 @@ export class HierarchySearch {
   }
 
   private selectPrev(): void {
-    var children = this.results.element!.children;
+    let children = this.results.element!.children;
 
     // could be nothing or only one item to select
     if (!children || !children.length)
       return;
 
-    var toSelect = null;
-    var items = this.results.element!.querySelectorAll('.ui-list-item.selected');
-    var multi: boolean = List._ctrl() || List._shift();
+    let toSelect = null;
+    let items = this.results.element!.querySelectorAll('.ui-list-item.selected');
+    let multi: boolean = List._ctrl() || List._shift();
 
     if (items.length) {
-      var first = items[0];
-      var prev = first.previousElementSibling;
+      let first = items[0];
+      let prev = first.previousElementSibling;
       if (prev) {
         // select previous
         toSelect = (<HTMLElement>prev).ui;
@@ -301,25 +296,25 @@ export class HierarchySearch {
   };
 
   private performSearch() {
-    var query = this.lastSearch;
+    let query = this.lastSearch;
 
     // clear results list
     this.results.clear();
     this.itemsIndex = {};
 
     if (query) {
-      var result = editor.call('entities:fuzzy-search', query);
+      let result = editor.call('entities:fuzzy-search', query);
 
       VeryEngine.hierarchyTree.hidden = true;
       this.results.hidden = false;
 
-      var selected = [];
+      let selected = [];
       if (editor.call('selector:type') === 'entity')
         selected = editor.call('selector:items');
 
       // TODO
-      for (var i = 0; i < result.length; i++) {
-        // var item = this.addItem(result[i]);
+      for (let i = 0; i < result.length; i++) {
+        // let item = this.addItem(result[i]);
 
         // this.itemsIndex[result[i].get('resource_id')] = item;
 
@@ -336,9 +331,9 @@ export class HierarchySearch {
 
 
   // private addItem(entity) {
-  //   var events = [];
+  //   let events = [];
 
-  //   var item = new ListItem({
+  //   let item = new ListItem({
   //     text: entity.get('name')
   //   });
   //   item.disabledClick = true;
@@ -348,29 +343,29 @@ export class HierarchySearch {
   //     item.class.add('container');
 
   //   // relate to tree item
-  //   var treeItem = editor.call('entities:panel:get', entity.get('resource_id'));
+  //   let treeItem = editor.call('entities:panel:get', entity.get('resource_id'));
 
   //   item.disabled = treeItem.disabled;
 
-  //   var onStateChange = function () {
+  //   let onStateChange = function () {
   //     item.disabled = treeItem.disabled;
   //   };
 
   //   events.push(treeItem.on('enable', onStateChange));
   //   events.push(treeItem.on('disable', onStateChange));
 
-  //   var onNameSet = function (name) {
+  //   let onNameSet = function (name) {
   //     item.text = name;
   //   };
   //   events.push(entity.on('name:set', onNameSet));
 
   //   // icon
-  //   var components = Object.keys(entity.get('components'));
-  //   for (var c = 0; c < components.length; c++)
+  //   let components = Object.keys(entity.get('components'));
+  //   for (let c = 0; c < components.length; c++)
   //     item.class.add('c-' + components[c]);
 
-  //   var onContextMenu = function (evt) {
-  //     var openned = editor.call('entities:contextmenu:open', entity, evt.clientX, evt.clientY);
+  //   let onContextMenu = function (evt) {
+  //     let openned = editor.call('entities:contextmenu:open', entity, evt.clientX, evt.clientY);
 
   //     if (openned) {
   //       evt.preventDefault();
@@ -378,7 +373,7 @@ export class HierarchySearch {
   //     }
   //   };
 
-  //   var onDblClick = function (evt) {
+  //   let onDblClick = function (evt) {
   //     search.value = '';
   //     editor.call('selector:set', 'entity', [entity]);
 
@@ -390,7 +385,7 @@ export class HierarchySearch {
   //   item.element.addEventListener('dblclick', onDblClick);
 
   //   events.push(item.once('destroy', function () {
-  //     for (var i = 0; i < events.length; i++)
+  //     for (let i = 0; i < events.length; i++)
   //       events[i].unbind();
   //     events = null;
 

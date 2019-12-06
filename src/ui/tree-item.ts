@@ -1,6 +1,7 @@
 import { Element } from "./element";
 import { Tree } from "./tree";
 import { TextField } from "./text-field";
+import { Observer } from "../lib";
 
 export class TreeItem extends Element {
 
@@ -20,6 +21,8 @@ export class TreeItem extends Element {
   private _allowDrop: boolean;
 
   public _dragId: number = -1;
+
+  public entity!: Observer;
 
   public get selected(): boolean {
     return this.class!.contains('selected');
@@ -68,6 +71,10 @@ export class TreeItem extends Element {
       this.class!.remove('open');
       this.emit('close');
       this.tree!.emit('close', this);
+    }
+
+    if(this.element) {
+      
     }
   }
 
@@ -307,7 +314,7 @@ export class TreeItem extends Element {
 
     let currentItem: TreeItem = <TreeItem>htmlEle.ui;
 
-    if ((evt.target && htmlEle.tagName.toLowerCase() === 'input'))
+    if (evt.target && htmlEle.tagName.toLowerCase() === 'input')
       return;
 
     if ([9, 38, 40, 37, 39].indexOf(evt.keyCode) === -1)

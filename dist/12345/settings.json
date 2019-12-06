@@ -1,0 +1,204 @@
+{
+  "init": {
+    "a": "init",
+    "protocol": 1,
+    "id": "b94011a3d19f3ca8feb228f4fd503f02",
+    "type": "http://sharejs.org/types/JSONv0"
+  },
+  "auth": { "id": 203859 },
+  "settings1": {
+    "data": {
+      "v": 1,
+      "data": {
+        "user": 203859,
+        "name": "user",
+        "ide": {
+          "fontSize": 12,
+          "continueComments": true,
+          "autoCloseBrackets": true,
+          "highlightBrackets": true
+        },
+        "editor": { "howdoi": true, "iconSize": 0.2 }
+      }
+    },
+    "a": "s",
+    "c": "settings",
+    "d": "user_203859"
+  },
+  "settings2": {
+    "data": {
+      "v": 4,
+      "data": {
+        "user": 203859,
+        "project": 610318,
+        "name": "project-user",
+        "editor": {
+          "cameraNearClip": 0.1,
+          "cameraFarClip": 1000,
+          "cameraClearColor": [0.118, 0.118, 0.118, 1],
+          "gridDivisions": 8,
+          "gridDivisionSize": 1,
+          "snapIncrement": 1,
+          "lastSelectedFontId": 20488390,
+          "localServer": "http://localhost:51000",
+          "launchDebug": true,
+          "locale": "en-US",
+          "pipeline": {
+            "autoRun": true,
+            "texturePot": true,
+            "textureDefaultToAtlas": false,
+            "searchRelatedAssets": true,
+            "preserveMapping": false,
+            "overwriteModel": true,
+            "overwriteAnimation": true,
+            "overwriteMaterial": false,
+            "overwriteTexture": true
+          }
+        },
+        "branch": "0da2b843-9120-411e-a85d-f166d5a6e2be"
+      }
+    },
+    "a": "s",
+    "c": "settings",
+    "d": "project_610318_203859"
+  },
+  "settings3": {
+    "data": {
+      "v": 6,
+      "data": {
+        "height": 720,
+        "scripts": [18818380, 18818381, 18818382, 18818383, 18818458],
+        "width": 1280,
+        "fillMode": "FILL_WINDOW",
+        "resolutionMode": "AUTO",
+        "use3dPhysics": true,
+        "transparentCanvas": false,
+        "preserveDrawingBuffer": false,
+        "useDevicePixelRatio": false,
+        "useLegacyScripts": false,
+        "loadingScreenScript": null,
+        "antiAlias": true,
+        "preferWebGl2": true,
+        "vr": false,
+        "item_id": "project_610318",
+        "name": "project",
+        "project": 610318,
+        "branch_id": "0da2b843-9120-411e-a85d-f166d5a6e2be",
+        "checkpoint_id": "c594006a-bb6d-4a25-b431-de6b861d8d8a",
+        "batchGroups": {},
+        "layers": {
+          "0": {
+            "name": "World",
+            "opaqueSortMode": 2,
+            "transparentSortMode": 3
+          },
+          "1": {
+            "name": "Depth",
+            "opaqueSortMode": 2,
+            "transparentSortMode": 3
+          },
+          "2": {
+            "name": "Skybox",
+            "opaqueSortMode": 0,
+            "transparentSortMode": 3
+          },
+          "3": {
+            "name": "Immediate",
+            "opaqueSortMode": 0,
+            "transparentSortMode": 3
+          },
+          "4": { "name": "UI", "opaqueSortMode": 1, "transparentSortMode": 1 }
+        },
+        "layerOrder": [
+          { "layer": 0, "transparent": false, "enabled": true },
+          { "layer": 1, "transparent": false, "enabled": true },
+          { "layer": 2, "transparent": false, "enabled": true },
+          { "layer": 0, "transparent": true, "enabled": true },
+          { "layer": 3, "transparent": false, "enabled": true },
+          { "layer": 3, "transparent": true, "enabled": true },
+          { "layer": 4, "transparent": true, "enabled": true }
+        ],
+        "useKeyboard": true,
+        "useMouse": true,
+        "useTouch": true,
+        "useGamepads": false,
+        "i18nAssets": [],
+        "externalScripts": [],
+        "useLegacyAmmoPhysics": true
+      }
+    },
+    "a": "s",
+    "c": "settings",
+    "d": "project_610318"
+  },
+  "scene": "scene-data",
+  "camera": {
+    "data": {
+      "v": 2908,
+      "data": {
+        "user": 203859,
+        "scene": 737003,
+        "accessed_at": "2019-11-27T00:52:36.823Z",
+        "cameras": {
+          "perspective": {
+            "position": [
+              -3.002462863922119,
+              1.6775398254394531,
+              2.5475246906280518
+            ],
+            "rotation": [
+              -15.800001402574887,
+              -18.599981264543064,
+              -1.0995859651051006e-7
+            ],
+            "focus": [
+              -1.6488411836206638,
+              0.476644445854181,
+              -1.4746851841823654
+            ]
+          },
+          "top": {
+            "position": [1.6869566440582275, 1000, 0.8173913955688477],
+            "rotation": [-89.99999999999999, 0, 0],
+            "focus": [0, 0, 0],
+            "orthoHeight": 5
+          },
+          "bottom": {
+            "position": [1.0693422555923462, -1000, -2.58050799369812],
+            "rotation": [89.99999999999999, 0, 0],
+            "focus": [0, 0, 0],
+            "orthoHeight": 2
+          },
+          "front": {
+            "position": [0, 0, 1000],
+            "rotation": [0, 0, 0],
+            "focus": [0, 0, 0],
+            "orthoHeight": 4.441674338260147
+          },
+          "back": {
+            "position": [-0.5912686586380005, 1.9565900564193726, -1000],
+            "rotation": [-180, 0, -180],
+            "focus": [0, 0, 0],
+            "orthoHeight": 2.1488732758147533
+          },
+          "left": {
+            "position": [-1000, 0, 0],
+            "rotation": [0, -90, 0],
+            "focus": [0, 0, 0],
+            "orthoHeight": 5
+          },
+          "right": {
+            "position": [1000, 1.8240981101989746, -2.0971884727478027],
+            "rotation": [0, 90, 0],
+            "focus": [0, 0, 0],
+            "orthoHeight": 0.9490396311160717
+          }
+        }
+      }
+    },
+    "a": "s",
+    "c": "user_data",
+    "d": "737003_203859"
+  },
+  "assets": "assets-data"
+}

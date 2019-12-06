@@ -2,6 +2,8 @@ import { Events } from '../lib';
 
 export class Editor extends Events {
 
+  // 相较于Events，同一个函数名只可代表一个函数；
+
   // 某个name对应的某个事件，name与Function是1对1的关系；
   private _hooks: { [key: string]: Function } = {};
 
@@ -10,7 +12,7 @@ export class Editor extends Events {
   }
 
   /**
-   * 添加全局函数，函数名与函数本体一一对象，不能重名；
+   * 添加全局函数，函数名与函数本体一一对应，不能重名；
    * @param name 函数名；
    * @param fn 函数本体；
    */

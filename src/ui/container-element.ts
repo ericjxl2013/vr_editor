@@ -220,10 +220,10 @@ export class ContainerElement extends Element {
 
   // TODO：怕不对
   public clear(): void {
+    console.log('clear');
     let node: HTMLElement;
-
     this._observer.disconnect();
-    console.log(this._innerElement);
+    // console.log(this._innerElement);
     let i: number = this._innerElement!.children.length;
     while (i--) {
       node = <HTMLElement>(this._innerElement!.children[i]);

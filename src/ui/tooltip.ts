@@ -269,6 +269,11 @@ export class Tooltip extends ContainerElement {
   }
 
 
+  public attachReference(args: any): void {
+
+  }
+
+
 }
 
 

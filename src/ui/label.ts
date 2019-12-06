@@ -1,4 +1,5 @@
 import { Element } from "./element";
+import { Tooltip } from "./tooltip";
 
 export class Label extends Element {
 
@@ -47,6 +48,9 @@ export class Label extends Element {
   public set value(val: string) {
     this.text = val;
   }
+
+
+  public tooltip!: Tooltip;
 
 
   public constructor(text?: string, placeholder?: string, unsafe?: boolean) {

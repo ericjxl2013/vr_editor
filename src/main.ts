@@ -1,5 +1,4 @@
-import { Editor, Layout, Viewport, Hierarchy, Assets, Hotkeys } from './editor';
-
+import { Editor, Layout, Viewport, Hierarchy, Assets, InitializeBefore, InitializeAfter, Debug } from './editor';
 import { Element, Canvas } from './ui';
 import { VeryEngine } from './engine';
 
@@ -8,9 +7,17 @@ export * from './index';
 // 添加到全局变量
 window.editor = new Editor();
 
-// 全局快捷键
-let hotkeys = new Hotkeys();
+// 全局注册debug类
+window.debug = new Debug();
 
+// 初始化全局信息类
+let initialize: InitializeBefore = new InitializeBefore();
+
+// 后期可以修改为load、start等string表示的事件，通过event来实现
+// 打开project或者scene，1对多的关系，记录一下默认的scene（上一次打开的scene），一开始就打开默认的scene；
+// 当前project的编辑器设置，如摄像机等，各种设置数据；
+// assets数据；
+// scene的数据，可能会多个，当前scene，不同scene之间还有顺序关系；
 
 // 整体布局
 let layout = new Layout();
@@ -25,6 +32,15 @@ let hierarchy = new Hierarchy();
 
 // 资源菜单
 let assets = new Assets();
+
+// 初始化全局信息类
+let initializeAfter: InitializeAfter = new InitializeAfter();
+
+// 加载资源
+
+// 关联资源
+
+
 
 /* TEST
 editor.once('load', () => {

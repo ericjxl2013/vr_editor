@@ -7905,7 +7905,7 @@ declare module BABYLON {
          * @param doNotCloneChildren Do not clone children hierarchy
          * @returns the new transform node
          */
-        clone(name: string, newParent: Node, doNotCloneChildren?: boolean): Nullable<TransformNode>;
+        clone(name: string, newParent?: Node, doNotCloneChildren?: boolean): Nullable<TransformNode>;
         /**
          * Serializes the objects information.
          * @param currentSerializationObject defines the object to serialize in
@@ -16903,7 +16903,7 @@ declare module BABYLON {
          *
          * Returns the clone.
          */
-        clone(name: string, newParent: Node, doNotCloneChildren?: boolean): InstancedMesh;
+        clone(name: string, newParent?: Node, doNotCloneChildren?: boolean): InstancedMesh;
         /**
          * Disposes the InstancedMesh.
          * Returns nothing.
@@ -55997,7 +55997,7 @@ declare module BABYLON {
          * @param onReloadCallback callback called when a reload is requested
          * @param errorCallback callback call if an error occurs
          */
-        constructor(engine: Engine, scene: Scene, sceneLoadedCallback: (sceneFile: File, scene: Scene) => void, progressCallback: (progress: SceneLoaderProgressEvent) => void, additionalRenderLoopLogicCallback: () => void, textureLoadingCallback: (remaining: number) => void, startingProcessingFilesCallback: (files?: File[]) => void, onReloadCallback: (sceneFile: File) => void, errorCallback: (sceneFile: File, scene: Scene, message: string) => void);
+        constructor(engine: Engine, scene: Scene, sceneLoadedCallback: ((sceneFile: File, scene: Scene) => void) | null, progressCallback: ((progress: SceneLoaderProgressEvent) => void) | null, additionalRenderLoopLogicCallback: (() => void) | null, textureLoadingCallback: ((remaining: number) => void) | null, startingProcessingFilesCallback: ((files?: File[]) => void) | null, onReloadCallback: ((sceneFile: File) => void) | null, errorCallback: ((sceneFile: File, scene: Scene, message: string) => void) | null);
         private _dragEnterHandler;
         private _dragOverHandler;
         private _dropHandler;

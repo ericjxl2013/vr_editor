@@ -1,0 +1,99 @@
+{
+    "application_properties": {
+        "height": 720,
+        "scripts": [
+            18818380,
+            18818381,
+            18818382,
+            18818383,
+            18818458
+        ],
+        "width": 1280,
+        "fillMode": "FILL_WINDOW",
+        "resolutionMode": "AUTO",
+        "use3dPhysics": true,
+        "transparentCanvas": false,
+        "preserveDrawingBuffer": false,
+        "useDevicePixelRatio": false,
+        "useLegacyScripts": false,
+        "loadingScreenScript": null,
+        "antiAlias": true,
+        "preferWebGl2": true,
+        "vr": false,
+        "batchGroups": [],
+        "layers": {
+            "0": {
+                "name": "World",
+                "opaqueSortMode": 2,
+                "transparentSortMode": 3
+            },
+            "1": {
+                "name": "Depth",
+                "opaqueSortMode": 2,
+                "transparentSortMode": 3
+            },
+            "2": {
+                "name": "Skybox",
+                "opaqueSortMode": 0,
+                "transparentSortMode": 3
+            },
+            "3": {
+                "name": "Immediate",
+                "opaqueSortMode": 0,
+                "transparentSortMode": 3
+            },
+            "4": {
+                "name": "UI",
+                "opaqueSortMode": 1,
+                "transparentSortMode": 1
+            }
+        },
+        "layerOrder": [
+            {
+                "layer": 0,
+                "transparent": false,
+                "enabled": true
+            },
+            {
+                "layer": 1,
+                "transparent": false,
+                "enabled": true
+            },
+            {
+                "layer": 2,
+                "transparent": false,
+                "enabled": true
+            },
+            {
+                "layer": 0,
+                "transparent": true,
+                "enabled": true
+            },
+            {
+                "layer": 3,
+                "transparent": false,
+                "enabled": true
+            },
+            {
+                "layer": 3,
+                "transparent": true,
+                "enabled": true
+            },
+            {
+                "layer": 4,
+                "transparent": true,
+                "enabled": true
+            }
+        ],
+        "useKeyboard": true,
+        "useMouse": true,
+        "useTouch": true,
+        "useGamepads": false,
+        "i18nAssets": [],
+        "libraries": [
+            "ammo.dcab07b.js"
+        ]
+    },
+    "scenes": [],
+    "assets": {}
+}

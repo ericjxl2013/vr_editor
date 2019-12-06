@@ -1,5 +1,7 @@
 export class Events {
 
+  // 相较于Editor，同一个函数名可包含一系列函数，不仅仅是一个，且有once功能；
+
   public get suspendEvents(): boolean {
     return this._suspendEvents;
   }
