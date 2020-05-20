@@ -1,4 +1,5 @@
-import { AttributesPanel, AttributesEntity, AttributesReference } from "./attributes";
+import { AttributesPanel, AttributesEntity, AttributesReference, AttributesKeeper } from "./attributes";
+import { ToolbarKeeper } from "./toolbar";
 
 
 export class InitializeAfter {
@@ -7,12 +8,10 @@ export class InitializeAfter {
   public constructor() {
 
     // attributes
+    let attributes = new AttributesKeeper();
 
-    let attributesReference = new AttributesReference();
-
-    let attributesPanel = new AttributesPanel();
-    let attributesEntity = new AttributesEntity();
-
+    // toolbar
+    let toolbar = new ToolbarKeeper();
 
   }
 

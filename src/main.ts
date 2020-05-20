@@ -1,6 +1,7 @@
-import { Editor, Layout, Viewport, Hierarchy, Assets, InitializeBefore, InitializeAfter, Debug } from './editor';
+import { Editor, Layout, Viewport, HierarchyKeeper, AssetsPanel, InitializeBefore, InitializeAfter, Debug, Tools, AssetsKeeper, Search, Drop } from './editor';
 import { Element, Canvas } from './ui';
 import { VeryEngine } from './engine';
+import { Database } from './editor/middleware/offline/database';
 
 export * from './index';
 
@@ -23,23 +24,38 @@ let initialize: InitializeBefore = new InitializeBefore();
 let layout = new Layout();
 layout.init();
 
-// 编辑视窗
-let viewport = new Viewport();
-VeryEngine.viewport = viewport;
+let drop = new Drop();
+let search = new Search();
 
 // 层级菜单
-let hierarchy = new Hierarchy();
+let hierarchy = new HierarchyKeeper();
 
 // 资源菜单
-let assets = new Assets();
+let assetsKeeper = new AssetsKeeper();
 
 // 初始化全局信息类
 let initializeAfter: InitializeAfter = new InitializeAfter();
 
+// 编辑视窗
+let viewport = new Viewport();
+VeryEngine.viewport = viewport;
+
+Tools.loadBabylon();
 // 加载资源
 
 // 关联资源
 
+// 本地数据库测试
+// VeryEngine.database = new Database();
+// VeryEngine.database.connect('test', 'store', 1, ['xxx']);
+
+// let im = new Image();
+// im.src = "test.jpeg";
+// im.onload = () => {
+//   console.log('--------------');
+//   console.log(im.name);
+//   console.log(im.sizes);
+// }
 
 
 /* TEST

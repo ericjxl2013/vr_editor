@@ -53,6 +53,7 @@ export class List extends ContainerElement {
 
     this.element = document.createElement('ul');
     this.element.classList.add('ui-list');
+    this.innerElement = this.element;
 
     this._selectable = selectable || true;
 

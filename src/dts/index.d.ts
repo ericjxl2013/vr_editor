@@ -47,6 +47,7 @@ declare interface Element1 {
   destroy(): void;
 }
 
+
 declare interface SelectField {
 
 }
@@ -55,6 +56,7 @@ declare interface HTMLElement {
   ui: Element1;
   uiElement: SelectField;
   uiValue: any;
+  _ref: IDrop;
 }
 
 declare interface TreeItemArgs {
@@ -70,5 +72,22 @@ interface Debug {
 }
 
 declare var debug: Debug;
+
+declare var debug: Debug;
+
+
+declare interface IDrop {
+    ref?: HTMLElement;
+    type?: string;
+    hole?: boolean;
+    passThrough?: boolean;
+    filter?: (type: string, data: any) => boolean;
+    drop?: (type: string, data: any) => void;
+    over?: (type: string, data: any) => void;
+    leave?: () => void;
+    element?: HTMLElement;
+    evtDrop?: (e: DragEvent | MouseEvent) => void;
+    unregister?: () => void;
+}
 
 

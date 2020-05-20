@@ -36,7 +36,7 @@ export class Observer extends Events {
 
   private _silent: boolean;
 
-  private history!: History;
+  public history!: History;
   private sync!: History;
 
   // entity, assets, components: script, 一般components, selector, history
@@ -88,8 +88,6 @@ export class Observer extends Events {
     }
 
     for (let key in data) {
-
-
       if (typeof data[key] === "object") {
         // 对象属性
         // debug.log('对象属性：' + key);
@@ -120,7 +118,6 @@ export class Observer extends Events {
     let type: string = typeof value;
 
     if (type === "object" && value instanceof Array) {
-
       for (let i = 0; i < value.length; i++) {
         path = prefix + this.SEPARATOR + i.toString();
         this.set(path, value[i]);
@@ -151,19 +148,6 @@ export class Observer extends Events {
   public get(path: string): any {
     return this._data[path];
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -399,66 +383,66 @@ export class Observer extends Events {
   // };
 
   // 将json对象复制解析出来
-  public patch(data: any): void {
-    if (typeof data !== "object") {
-      debug.warn(this.className + ': 不是正确的json对象，打印：\n' + data);
-      return;
-    }
+  // public patch(data: any): void {
+  //   if (typeof data !== "object") {
+  //     debug.warn(this.className + ': 不是正确的json对象，打印：\n' + data);
+  //     return;
+  //   }
 
-    for (let key in data) {
-      if (typeof data[key] === "object" && !this._data.hasOwnProperty(key)) {
-        // 对象属性
-        debug.log('对象属性：' + key);
-        debug.log(data[key]);
-        // this._prepare(this, key, data[key]);
-      } else if (this._data[key] !== data[key]) {
-        // 一般属性
-        debug.log('一般属性：' + key);
-        debug.log(data[key]);
-        // this.set(key, data[key]);
-      }
-    }
-  }
+  //   for (let key in data) {
+  //     if (typeof data[key] === "object" && !this._data.hasOwnProperty(key)) {
+  //       // 对象属性
+  //       debug.log('对象属性：' + key);
+  //       debug.log(data[key]);
+  //       // this._prepare(this, key, data[key]);
+  //     } else if (this._data[key] !== data[key]) {
+  //       // 一般属性
+  //       debug.log('一般属性：' + key);
+  //       debug.log(data[key]);
+  //       // this.set(key, data[key]);
+  //     }
+  //   }
+  // }
 
-  public set2(path: string, value: any, silent?: boolean, remote?: boolean, force?: boolean): void {
-    var keys = path.split('.');
-    var length = keys.length;
-    var key = keys[length - 1];
-    var node: any = this;
-    var nodePath = '';
-    var obj: any = this;
-    var state;
+  // public set2(path: string, value: any, silent?: boolean, remote?: boolean, force?: boolean): void {
+  //   var keys = path.split('.');
+  //   var length = keys.length;
+  //   var key = keys[length - 1];
+  //   var node: any = this;
+  //   var nodePath = '';
+  //   var obj: any = this;
+  //   var state;
 
-    for (var i = 0; i < length - 1; i++) {
-      if (node instanceof Array) {
-        // TODO: 这是啥啊？
-        // node = node[keys[i]];
+  //   for (var i = 0; i < length - 1; i++) {
+  //     if (node instanceof Array) {
+  //       // TODO: 这是啥啊？
+  //       // node = node[keys[i]];
 
-        if (node instanceof Observer) {
-          path = keys.slice(i + 1).join('.');
-          obj = node;
-        }
-      } else {
-        if (i < length && typeof (node._data[keys[i]]) !== 'object') {
-          if (node._data[keys[i]])
-            obj.unset((node.__path ? node.__path + '.' : '') + keys[i]);
+  //       if (node instanceof Observer) {
+  //         path = keys.slice(i + 1).join('.');
+  //         obj = node;
+  //       }
+  //     } else {
+  //       if (i < length && typeof (node._data[keys[i]]) !== 'object') {
+  //         if (node._data[keys[i]])
+  //           obj.unset((node.__path ? node.__path + '.' : '') + keys[i]);
 
-          node._data[keys[i]] = {
-            _path: path,
-            _keys: [],
-            _data: {}
-          };
-          node._keys.push(keys[i]);
-        }
+  //         node._data[keys[i]] = {
+  //           _path: path,
+  //           _keys: [],
+  //           _data: {}
+  //         };
+  //         node._keys.push(keys[i]);
+  //       }
 
-        if (i === length - 1 && node.__path)
-          nodePath = node.__path + '.' + keys[i];
+  //       if (i === length - 1 && node.__path)
+  //         nodePath = node.__path + '.' + keys[i];
 
-        node = node._data[keys[i]];
-      }
-    }
+  //       node = node._data[keys[i]];
+  //     }
+  //   }
 
-  }
+  // }
 
   // public json(target?: Observer): Observer {
   //   let obj: { [key: string]: any } = {};

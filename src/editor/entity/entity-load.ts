@@ -1,5 +1,6 @@
 import { Entities } from "./entities";
 import { Observer } from "../../lib";
+import { Loader } from "../middleware/loader";
 
 export class EntityLoad {
 
@@ -20,6 +21,8 @@ export class EntityLoad {
         // editor.call('entities:clear');
         // editor.call('attributes:clear');
 
+        // Loader.append(row_data);
+
         // 加载进度条计算
         var total = Object.keys(row_data.entities).length;
         var i = 0;
@@ -34,8 +37,6 @@ export class EntityLoad {
             // if (entity.has('components.rigidbody')) {
             //     debug.warn(entity.get('components.rigidbody.type'));
             // }
-
-
 
             // editor.call('entities:add', new Observer(data.entities[key]));
             // p.progress = (++i / total) * 0.8 + 0.1;

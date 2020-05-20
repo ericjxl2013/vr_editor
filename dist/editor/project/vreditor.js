@@ -269,30 +269,3622 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
 Object.defineProperty(exports, "__esModule", { value: true });
 var ui_1 = require("../../ui");
 var engine_1 = require("../../engine");
+var AssetsContextMenu = /** @class */ (function () {
+    function AssetsContextMenu() {
+        var currentAsset = null;
+        // var legacyScripts = editor.call('settings:project').get('useLegacyScripts');
+        var legacyScripts = false;
+        var root = engine_1.VeryEngine.root;
+        var customMenuItems = [];
+        // menu
+        var menu = new ui_1.Menu();
+        root.append(menu);
+        // edit
+        var menuItemNewScript = new ui_1.MenuItem({
+            text: 'New Script',
+            icon: '&#57864;',
+            value: 'script'
+        });
+        menuItemNewScript.on('select', function () {
+            if (legacyScripts) {
+                editor.call('sourcefiles:new');
+            }
+            else {
+                editor.call('picker:script-create', function (filename) {
+                    editor.call('assets:create:script', {
+                        filename: filename,
+                        boilerplate: true
+                    });
+                });
+            }
+        });
+        menu.append(menuItemNewScript);
+        // new asset
+        var menuItemNew = new ui_1.MenuItem({
+            text: 'New Asset',
+            icon: '&#57632;',
+            value: 'new'
+        });
+        menu.append(menuItemNew);
+        var downloadable = {
+            'texture': 1,
+            'textureatlas': 1,
+            'html': 1,
+            'css': 1,
+            'shader': 1,
+            'scene': 1,
+            'json': 1,
+            'audio': 1,
+            'text': 1
+        };
+        var icons = {
+            'upload': '&#57909;',
+            'folder': '&#57657;',
+            'css': '&#57864;',
+            'cubemap': '&#57879;',
+            'html': '&#57864;',
+            'json': '&#57864;',
+            'layers': '&#57992',
+            'material': '&#57749;',
+            'script': '&#57864;',
+            'shader': '&#57864;',
+            'text': '&#57864;',
+            'texture': '&#57857;',
+            'textureatlas': '&#57857;',
+            'model': '&#57735;',
+            'scene': '&#57735;',
+            'animation': '&#57875;',
+            'audio': '&#57872;',
+            'bundle': '&#58384;'
+        };
+        var ICONS = {
+            REFERENCES: '&#57622;',
+            TEXTURE_ATLAS: '&#58162;',
+            SPRITE_ASSET: '&#58261;',
+            REPLACE: '&#57640;',
+            REIMPORT: '&#57889;',
+            DOWNLOAD: '&#57896;',
+            EDIT: '&#57648;',
+            DUPLICATE: '&#57638;',
+            DELETE: '&#57636;',
+            SCENE_SETTINGS: '&#57652;'
+        };
+        var assets = {
+            'upload': 'Upload',
+            'folder': 'Folder',
+            'css': 'CSS',
+            'cubemap': 'CubeMap',
+            'html': 'HTML',
+            'json': 'JSON',
+            'material': 'Material',
+            'script': 'Script',
+            'shader': 'Shader',
+            'text': 'Text'
+        };
+        // if (editor.call('users:hasFlag', 'hasBundles')) {
+        //     assets.bundle = 'Asset Bundle';
+        // }
+        var addNewMenuItem = function (key, title) {
+            // new folder
+            var item = new ui_1.MenuItem({
+                text: title,
+                icon: icons[key] || '',
+                value: key
+            });
+            item.on('select', function () {
+                var args = {};
+                if (currentAsset && currentAsset.get('type') === 'folder') {
+                    args.parent = currentAsset;
+                }
+                else if (currentAsset === undefined) {
+                    args.parent = null;
+                }
+                if (key === 'upload') {
+                    editor.call('assets:upload:picker', args);
+                }
+                else if (key === 'script') {
+                    if (legacyScripts) {
+                        editor.call('sourcefiles:new');
+                    }
+                    else {
+                        editor.call('picker:script-create', function (filename) {
+                            editor.call('assets:create:script', {
+                                filename: filename,
+                                boilerplate: true
+                            });
+                        });
+                    }
+                }
+                else {
+                    editor.call('assets:create:' + key, args);
+                }
+            });
+            menuItemNew.append(item);
+            if (key === 'script') {
+                editor.on('repositories:load', function (repositories) {
+                    if (repositories.get('current') !== 'directory')
+                        item.disabled = true;
+                });
+            }
+        };
+        var keys = Object.keys(assets);
+        for (var i = 0; i < keys.length; i++) {
+            if (!assets.hasOwnProperty(keys[i]))
+                continue;
+            addNewMenuItem(keys[i], assets[keys[i]]);
+        }
+        // related
+        var menuItemReferences = new ui_1.MenuItem({
+            text: 'References',
+            icon: ICONS.REFERENCES,
+            value: 'references'
+        });
+        menu.append(menuItemReferences);
+        // Create Atlas
+        var menuItemTextureToAtlas = new ui_1.MenuItem({
+            text: 'Create Texture Atlas',
+            icon: ICONS.TEXTURE_ATLAS,
+            value: 'texture-to-atlas'
+        });
+        menu.append(menuItemTextureToAtlas);
+        menuItemTextureToAtlas.on('select', function () {
+            editor.call('assets:textureToAtlas', currentAsset);
+        });
+        // Create Sprite From Atlas
+        var menuItemCreateSprite = new ui_1.MenuItem({
+            text: 'Create Sprite Asset',
+            icon: ICONS.SPRITE_ASSET,
+            value: 'atlas-to-sprite'
+        });
+        menu.append(menuItemCreateSprite);
+        menuItemCreateSprite.on('select', function () {
+            editor.call('assets:atlasToSprite', {
+                asset: currentAsset
+            });
+        });
+        // Create Sliced Sprite From Atlas
+        var menuItemCreateSlicedSprite = new ui_1.MenuItem({
+            text: 'Create Sliced Sprite Asset',
+            icon: ICONS.SPRITE_ASSET,
+            value: 'atlas-to-sliced-sprite'
+        });
+        menu.append(menuItemCreateSlicedSprite);
+        menuItemCreateSlicedSprite.on('select', function () {
+            editor.call('assets:atlasToSprite', {
+                asset: currentAsset,
+                sliced: true
+            });
+        });
+        // replace
+        var replaceAvailable = {
+            material: true,
+            texture: true,
+            textureatlas: true,
+            model: true,
+            animation: true,
+            audio: true,
+            cubemap: true,
+            css: true,
+            html: true,
+            shader: true,
+            sprite: true,
+            json: true,
+            text: true
+        };
+        var menuItemReplace = new ui_1.MenuItem({
+            text: 'Replace',
+            icon: ICONS.REPLACE,
+            value: 'replace'
+        });
+        menuItemReplace.on('select', function () {
+            var id = parseInt(currentAsset.get('id'), 10);
+            editor.call('picker:asset', {
+                type: currentAsset.get('type'),
+                currentAsset: currentAsset
+            });
+            var evtPick = editor.once('picker:asset', function (asset) {
+                editor.call('assets:replace', currentAsset, asset);
+                evtPick = null;
+            });
+            editor.once('picker:asset:close', function () {
+                if (evtPick) {
+                    evtPick.unbind();
+                    evtPick = null;
+                }
+            });
+        });
+        menu.append(menuItemReplace);
+        var menuItemReplaceTextureToSprite = new ui_1.MenuItem({
+            text: 'Convert Texture To Sprite',
+            icon: ICONS.SPRITE_ASSET,
+            value: 'replaceTextureToSprite'
+        });
+        menuItemReplaceTextureToSprite.on('select', function () {
+            var id = parseInt(currentAsset.get('id'), 10);
+            editor.call('picker:asset', {
+                type: 'sprite',
+                currentAsset: currentAsset
+            });
+            var evtPick = editor.once('picker:asset', function (asset) {
+                editor.call('assets:replaceTextureToSprite', currentAsset, asset);
+                evtPick = null;
+            });
+            editor.once('picker:asset:close', function () {
+                if (evtPick) {
+                    evtPick.unbind();
+                    evtPick = null;
+                }
+            });
+        });
+        menu.append(menuItemReplaceTextureToSprite);
+        // extract. Used for source assets.
+        var menuItemExtract = new ui_1.MenuItem({
+            text: 'Re-Import',
+            icon: ICONS.REIMPORT,
+            value: 'extract'
+        });
+        menuItemExtract.on('select', function () {
+            editor.call('assets:reimport', currentAsset.get('id'), currentAsset.get('type'));
+        });
+        menu.append(menuItemExtract);
+        // re-import. Used for target assets.
+        var menuItemReImport = new ui_1.MenuItem({
+            text: 'Re-Import',
+            icon: ICONS.REIMPORT,
+            value: 're-import'
+        });
+        menuItemReImport.on('select', function () {
+            editor.call('assets:reimport', currentAsset.get('id'), currentAsset.get('type'));
+        });
+        menu.append(menuItemReImport);
+        // download
+        var menuItemDownload = new ui_1.MenuItem({
+            text: 'Download',
+            icon: ICONS.DOWNLOAD,
+            value: 'download'
+        });
+        menuItemDownload.on('select', function () {
+            window.open(currentAsset.get('file.url'));
+        });
+        menu.append(menuItemDownload);
+        // edit
+        var menuItemEdit = new ui_1.MenuItem({
+            text: 'Edit',
+            icon: ICONS.EDIT,
+            value: 'edit'
+        });
+        menuItemEdit.on('select', function () {
+            editor.call('assets:edit', currentAsset);
+        });
+        menu.append(menuItemEdit);
+        // duplicate
+        var menuItemDuplicate = new ui_1.MenuItem({
+            text: 'Duplicate',
+            icon: ICONS.DUPLICATE,
+            value: 'duplicate'
+        });
+        menuItemDuplicate.on('select', function () {
+            editor.call('assets:duplicate', currentAsset);
+        });
+        menu.append(menuItemDuplicate);
+        // delete
+        var menuItemDelete = new ui_1.MenuItem({
+            text: 'Delete',
+            icon: ICONS.DELETE,
+            value: 'delete'
+        });
+        menuItemDelete.style.fontWeight = '200';
+        menuItemDelete.on('select', function () {
+            var asset = currentAsset;
+            var multiple = false;
+            if (asset) {
+                var assetType = asset.get('type');
+                var type = editor.call('selector:type');
+                var items;
+                if (type === 'asset') {
+                    items = editor.call('selector:items');
+                    for (var i = 0; i < items.length; i++) {
+                        // if the asset that was right-clicked is in the selection
+                        // then include all the other selected items in the delete
+                        // otherwise only delete the right-clicked item
+                        if (assetType === 'script' && legacyScripts) {
+                            if (items[i].get('filename') === asset.get('filename')) {
+                                multiple = true;
+                                break;
+                            }
+                        }
+                        else if (items[i].get('id') === asset.get('id')) {
+                            multiple = true;
+                            break;
+                        }
+                    }
+                }
+                editor.call('assets:delete:picker', multiple ? items : [asset]);
+            }
+        });
+        menu.append(menuItemDelete);
+        // filter buttons
+        menu.on('open', function () {
+            menuItemNewScript.hidden = !((currentAsset === null || (currentAsset && currentAsset.get('type') === 'script')) && editor.call('assets:panel:currentFolder') === 'scripts');
+            menuItemNew.hidden = !menuItemNewScript.hidden;
+            if (currentAsset) {
+                // download，TODO：下载菜单
+                menuItemDownload.hidden = true;
+                // menuItemDownload.hidden = !(
+                //     (!config.project.privateAssets ||
+                //         (config.project.privateAssets &&
+                //             editor.call('permissions:read'))) &&
+                //     currentAsset.get('type') !== 'folder' &&
+                //     (currentAsset.get('source') ||
+                //         downloadable[currentAsset.get('type')] ||
+                //         (!legacyScripts &&
+                //             currentAsset.get('type') === 'script')) &&
+                //     currentAsset.get('file.url')
+                // );
+                // duplicate
+                if (currentAsset.get('type') === 'material' ||
+                    currentAsset.get('type') === 'sprite') {
+                    menuItemEdit.hidden = true;
+                    if (editor.call('selector:type') === 'asset') {
+                        var items = editor.call('selector:items');
+                        menuItemDuplicate.hidden =
+                            items.length > 1 && items.indexOf(currentAsset) !== -1;
+                    }
+                    else {
+                        menuItemDuplicate.hidden = false;
+                    }
+                }
+                else {
+                    menuItemDuplicate.hidden = true;
+                }
+                // edit
+                if (!currentAsset.get('source') &&
+                    ['html', 'css', 'json', 'text', 'script', 'shader'].indexOf(currentAsset.get('type')) !== -1) {
+                    if (editor.call('selector:type') === 'asset') {
+                        var items = editor.call('selector:items');
+                        menuItemEdit.hidden =
+                            items.length > 1 && items.indexOf(currentAsset) !== -1;
+                    }
+                    else {
+                        menuItemEdit.hidden = false;
+                    }
+                }
+                else {
+                    menuItemEdit.hidden = true;
+                }
+                // create atlas
+                menuItemTextureToAtlas.hidden =
+                    currentAsset.get('type') !== 'texture' ||
+                        currentAsset.get('source') ||
+                        currentAsset.get('task') ||
+                        !editor.call('permissions:write');
+                // create sprite
+                menuItemCreateSprite.hidden =
+                    currentAsset.get('type') !== 'textureatlas' ||
+                        currentAsset.get('source') ||
+                        currentAsset.get('task') ||
+                        !editor.call('permissions:write');
+                menuItemCreateSlicedSprite.hidden = menuItemCreateSprite.hidden;
+                // delete
+                menuItemDelete.hidden = false;
+                if (!currentAsset.get('source')) {
+                    menuItemExtract.hidden = true;
+                    // re-import
+                    var sourceId = currentAsset.get('source_asset_id');
+                    if (sourceId) {
+                        var source = editor.call('assets:get', sourceId);
+                        if (source) {
+                            if (source.get('type') === 'scene' &&
+                                (['texture', 'material'].indexOf(currentAsset.get('type')) !== -1 ||
+                                    !source.get('meta'))) {
+                                menuItemReImport.hidden = true;
+                            }
+                            else if (currentAsset.get('type') === 'animation' &&
+                                !source.get('meta.animation.available')) {
+                                menuItemReImport.hidden = true;
+                            }
+                            else if (currentAsset.get('type') === 'material' &&
+                                !currentAsset.has('meta.index')) {
+                                menuItemReImport.hidden = true;
+                            }
+                            else {
+                                menuItemReImport.hidden = false;
+                            }
+                        }
+                        else {
+                            menuItemReImport.hidden = true;
+                        }
+                    }
+                    else {
+                        menuItemReImport.hidden = true;
+                    }
+                    // references
+                    var ref = editor.call('assets:used:index')[currentAsset.get('id')];
+                    if (ref && ref.count && ref.ref) {
+                        menuItemReferences.hidden = false;
+                        menuItemReplace.hidden = replaceAvailable[currentAsset.get('type')]
+                            ? false
+                            : true;
+                        menuItemReplaceTextureToSprite.hidden =
+                            !editor.call('users:hasFlag', 'hasTextureToSprite') ||
+                                currentAsset.get('type') !== 'texture';
+                        while (menuItemReferences.innerElement.firstChild)
+                            menuItemReferences.innerElement.firstChild.ui.destroy();
+                        var menuItems = [];
+                        var addReferenceItem = function (type, id) {
+                            var menuItem = new ui_1.MenuItem();
+                            var item = null;
+                            if (type === 'editorSettings') {
+                                menuItem.text = 'Scene Settings';
+                                menuItem.icon = ICONS.SCENE_SETTINGS;
+                                item = editor.call('settings:projectUser');
+                                if (!item)
+                                    return;
+                            }
+                            else {
+                                if (type === 'entity') {
+                                    item = editor.call('entities:get', id);
+                                    menuItem.icon = '&#57734;';
+                                }
+                                else if (type === 'asset') {
+                                    item = editor.call('assets:get', id);
+                                    menuItem.icon = icons[item.get('type')] || '';
+                                }
+                                if (!item)
+                                    return;
+                                menuItem.text = item.get('name');
+                            }
+                            menuItems.push({
+                                name: menuItem.text,
+                                type: type,
+                                element: menuItem
+                            });
+                            menuItem.on('select', function () {
+                                editor.call('selector:set', type, [item]);
+                                var folder = null;
+                                var path = item.get('path') || [];
+                                if (path.length)
+                                    folder = editor.call('assets:get', path[path.length - 1]);
+                                editor.call('assets:panel:currentFolder', folder);
+                                // unfold rendering tab
+                                if (type === 'editorSettings') {
+                                    setTimeout(function () {
+                                        editor.call('editorSettings:panel:unfold', 'rendering');
+                                    }, 0);
+                                }
+                            });
+                        };
+                        for (var key in ref.ref)
+                            addReferenceItem(ref.ref[key].type, key);
+                        var typeSort = {
+                            editorSettings: 1,
+                            asset: 2,
+                            entity: 3
+                        };
+                        menuItems.sort(function (a, b) {
+                            if (a.type !== b.type) {
+                                return typeSort[a.type] - typeSort[b.type];
+                            }
+                            else {
+                                if (a.name > b.name) {
+                                    return 1;
+                                }
+                                else if (a.name < b.name) {
+                                    return -1;
+                                }
+                                else {
+                                    return 0;
+                                }
+                            }
+                        });
+                        for (var i = 0; i < menuItems.length; i++)
+                            menuItemReferences.append(menuItems[i].element);
+                    }
+                    else {
+                        menuItemReferences.hidden = true;
+                        menuItemReplace.hidden = true;
+                        menuItemReplaceTextureToSprite.hidden = true;
+                    }
+                }
+                else {
+                    menuItemReferences.hidden = true;
+                    menuItemReplace.hidden = true;
+                    menuItemReplaceTextureToSprite.hidden = true;
+                    menuItemReImport.hidden = true;
+                    menuItemExtract.hidden =
+                        ['scene', 'texture', 'textureatlas'].indexOf(currentAsset.get('type')) === -1 || !currentAsset.get('meta');
+                }
+            }
+            else {
+                // no asset
+                menuItemExtract.hidden = true;
+                menuItemReImport.hidden = true;
+                menuItemDownload.hidden = true;
+                menuItemDuplicate.hidden = true;
+                menuItemEdit.hidden = true;
+                menuItemDelete.hidden = true;
+                menuItemReferences.hidden = true;
+                menuItemReplace.hidden = true;
+                menuItemReplaceTextureToSprite.hidden = true;
+                menuItemTextureToAtlas.hidden = true;
+                menuItemCreateSprite.hidden = true;
+                menuItemCreateSlicedSprite.hidden = true;
+            }
+            for (var i = 0; i < customMenuItems.length; i++) {
+                if (!customMenuItems[i].filter)
+                    continue;
+                customMenuItems[i].hidden = !customMenuItems[i].filter(currentAsset);
+            }
+        });
+        // for each asset added
+        editor.on('assets:add', function (asset) {
+            // get grid item
+            var item = editor.call('assets:panel:get', asset.get('id'));
+            if (!item)
+                return;
+            // 右键功能
+            var contextMenuHandler = function (evt) {
+                evt.stopPropagation();
+                evt.preventDefault();
+                // if (!editor.call('permissions:write')) return;
+                currentAsset = asset;
+                // 打开菜单
+                menu.open = true;
+                menu.position(evt.clientX + 1, evt.clientY);
+                // 
+            };
+            // grid
+            item.element.addEventListener('contextmenu', contextMenuHandler, false);
+            // 
+            // tree, 给tree item也加上右键菜单
+            if (item.tree) {
+                item.tree.elementTitle.addEventListener('contextmenu', contextMenuHandler, false);
+            }
+        });
+    }
+    return AssetsContextMenu;
+}());
+exports.AssetsContextMenu = AssetsContextMenu;
+},{"../../engine":77,"../../ui":96}],4:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var engine_1 = require("../../engine");
+var ui_1 = require("../../ui");
+var AssetsFilter = /** @class */ (function () {
+    function AssetsFilter() {
+        var root = engine_1.VeryEngine.root;
+        var assetsPanel = engine_1.VeryEngine.assets;
+        // var legacyScripts = editor.call('settings:project').get('useLegacyScripts');
+        var legacyScripts = false;
+        var currentFolder = null;
+        var currentPath = [];
+        var searchLastValue = '';
+        var searchTags = null;
+        // filters
+        var panelFilters = new ui_1.Panel();
+        panelFilters.class.add('filters');
+        assetsPanel.header.append(panelFilters);
+        var tagsCheck = function (asset, tags) {
+            var data = asset.get('tags');
+            if (!data.length)
+                return false;
+            // tags = pc.Tags.prototype._processArguments(tags);
+            if (!data.length || !tags.length)
+                return false;
+            for (var i = 0; i < tags.length; i++) {
+                if (tags[i].length === 1) {
+                    // single occurance
+                    if (data.indexOf(tags[i][0]) !== -1)
+                        return true;
+                }
+                else {
+                    // combined occurance
+                    var multiple = true;
+                    for (var t = 0; t < tags[i].length; t++) {
+                        if (data.indexOf(tags[i][t]) !== -1)
+                            continue;
+                        multiple = false;
+                        break;
+                    }
+                    if (multiple)
+                        return true;
+                }
+            }
+            return false;
+        };
+        var filter = function (type, item) {
+            if (!item)
+                return false;
+            var visible = true;
+            // type
+            if (visible && filterField.value !== 'all') {
+                if (type === 'asset') {
+                    var assetType = item.get('type');
+                    if (assetType === 'texture') {
+                        if (item.get('source')) {
+                            assetType = 'textureSource';
+                        }
+                        else {
+                            assetType = 'textureTarget';
+                        }
+                    }
+                    else if (assetType === 'textureatlas') {
+                        if (item.get('source')) {
+                            assetType = 'textureAtlasSource';
+                        }
+                        else {
+                            assetType = 'textureAtlasTarget';
+                        }
+                    }
+                    else if (assetType === 'font') {
+                        if (item.get('source')) {
+                            assetType = 'fontSource';
+                        }
+                        else {
+                            assetType = 'fontTarget';
+                        }
+                    }
+                    visible = assetType === filterField.value;
+                }
+                else if (type === 'script') {
+                    visible = filterField.value === 'script';
+                }
+            }
+            // query
+            if (visible && search.value) {
+                var name = (type === 'scripts') ? item : item.get(type === 'asset' ? 'name' : 'filename');
+                var normalSearch = true;
+                if (searchTags !== false && ((searchTags instanceof Array) || (search.value[0] === '[' && search.value.length > 2 && /^\[.+\]$/.test(search.value)))) {
+                    if (searchTags === null) {
+                        try {
+                            var raw = search.value.slice(1, -1);
+                            var bits = raw.split(',');
+                            var tags = [];
+                            var merge = '';
+                            for (var i = 0; i < bits.length; i++) {
+                                var tag = bits[i].trim();
+                                if (!tag)
+                                    continue;
+                                if ((tag[0] === '[' && tag[tag.length - 1] !== ']') || (merge && tag[tag.length - 1] !== ']')) {
+                                    merge += tag + ',';
+                                    continue;
+                                }
+                                if (merge && tag[tag.length - 1] === ']') {
+                                    tag = merge + tag;
+                                    merge = '';
+                                }
+                                if (tag[0] === '[' && tag.length > 2 && tag[tag.length - 1] === ']') {
+                                    var subRaw = tag.slice(1, -1);
+                                    var subBits = subRaw.split(',');
+                                    if (subBits.length === 1) {
+                                        var subTag = subBits[0].trim();
+                                        if (!subTag)
+                                            continue;
+                                        tags.push(subTag);
+                                    }
+                                    else {
+                                        var subTags = [];
+                                        for (var s = 0; s < subBits.length; s++) {
+                                            var subTag = subBits[s].trim();
+                                            if (!subTag)
+                                                continue;
+                                            subTags.push(subTag);
+                                        }
+                                        if (subTags.length === 0) {
+                                            continue;
+                                        }
+                                        else if (subTags.length === 1) {
+                                            tags.push(subTags[0]);
+                                        }
+                                        else {
+                                            tags.push(subTags);
+                                        }
+                                    }
+                                }
+                                else {
+                                    tags.push(tag);
+                                }
+                            }
+                            searchTags = tags;
+                            normalSearch = false;
+                        }
+                        catch (ex) {
+                            searchTags = false;
+                        }
+                    }
+                    else {
+                        normalSearch = false;
+                    }
+                    if (searchTags) {
+                        if (type === 'scripts' || (type === 'script' && legacyScripts)) {
+                            visible = false;
+                        }
+                        else {
+                            visible = tagsCheck(item, searchTags);
+                        }
+                    }
+                    else {
+                        normalSearch = true;
+                    }
+                }
+                else if (search.value[0] === '*' && search.value.length > 1) {
+                    try {
+                        visible = (new RegExp(search.value.slice(1), 'i')).test(name);
+                        normalSearch = false;
+                    }
+                    catch (ex) { }
+                }
+                if (normalSearch) {
+                    visible = name.toLowerCase().indexOf(search.value.toLowerCase()) !== -1;
+                    if (!visible && type === 'asset') {
+                        var id = parseInt(search.value, 10);
+                        if (id && id.toString() === search.value)
+                            visible = parseInt(item.get('id'), 10) === id;
+                    }
+                }
+            }
+            // folder
+            if (visible && !search.value) {
+                if (type === 'script' || currentFolder === 'scripts') {
+                    visible = currentFolder === 'scripts' && type === 'script';
+                }
+                else if (type === 'scripts') {
+                    visible = !currentFolder && filterField.value === 'all';
+                }
+                else {
+                    var path = item.get('path');
+                    if (currentFolder === null) {
+                        visible = path.length === 0;
+                    }
+                    else {
+                        visible = (path.length === currentPath.length + 1) && path[path.length - 1] === currentFolder;
+                    }
+                }
+            }
+            return visible;
+        };
+        editor.method('assets:panel:filter:default', function () {
+            return filter;
+        });
+        // options
+        var filterOptions;
+        if (editor.call('users:hasFlag', 'hasBundles')) {
+            filterOptions = {
+                options: {
+                    all: 'All',
+                    animation: 'Animation',
+                    audio: 'Audio',
+                    bundle: 'Asset Bundle',
+                    binary: 'Binary',
+                    cubemap: 'Cubemap',
+                    css: 'Css',
+                    fontTarget: 'Font',
+                    fontSource: 'Font (source)',
+                    json: 'Json',
+                    html: 'Html',
+                    material: 'Material',
+                    model: 'Model',
+                    scene: 'Model (source)',
+                    script: 'Script',
+                    shader: 'Shader',
+                    sprite: 'Sprite',
+                    text: 'Text',
+                    textureTarget: 'Texture',
+                    textureSource: 'Texture (source)',
+                    textureAtlasTarget: 'Texture Atlas',
+                    textureAtlasSource: 'Texture Atlas (source)'
+                }
+            };
+        }
+        else {
+            filterOptions = {
+                options: {
+                    all: 'All',
+                    animation: 'Animation',
+                    audio: 'Audio',
+                    binary: 'Binary',
+                    cubemap: 'Cubemap',
+                    css: 'Css',
+                    fontTarget: 'Font',
+                    fontSource: 'Font (source)',
+                    json: 'Json',
+                    html: 'Html',
+                    material: 'Material',
+                    model: 'Model',
+                    scene: 'Model (source)',
+                    script: 'Script',
+                    shader: 'Shader',
+                    sprite: 'Sprite',
+                    text: 'Text',
+                    textureTarget: 'Texture',
+                    textureSource: 'Texture (source)',
+                    textureAtlasTarget: 'Texture Atlas',
+                    textureAtlasSource: 'Texture Atlas (source)'
+                }
+            };
+        }
+        var filterField = new ui_1.SelectField(filterOptions);
+        filterField.class.add('options');
+        filterField.value = 'all';
+        filterField.renderChanges = false;
+        panelFilters.append(filterField);
+        filterField.on('change', function (value) {
+            if (value !== 'all') {
+                filterField.class.add('not-empty');
+            }
+            else {
+                filterField.class.remove('not-empty');
+            }
+            editor.call('assets:panel:filter', filter);
+        });
+        var tooltipFilter = ui_1.Tooltip.attach({
+            target: filterField.element,
+            text: 'Filter Assets',
+            align: 'bottom',
+            root: root
+        });
+        filterField.on('open', function () {
+            tooltipFilter.disabled = true;
+        });
+        filterField.on('close', function () {
+            tooltipFilter.disabled = false;
+        });
+        editor.method('assets:filter:search', function (query) {
+            if (query === undefined)
+                return search.value;
+            search.value = query;
+            return search.value;
+        });
+        editor.method('assets:filter:type', function (type) {
+            if (type === undefined)
+                return filterField.value;
+            filterField.value = type || 'all';
+        });
+        editor.method('assets:filter:type:disabled', function (state) {
+            filterField.disabled = state;
+        });
+        editor.on('assets:panel:currentFolder', function (asset) {
+            if (asset) {
+                if (typeof (asset) === 'string') {
+                    if (legacyScripts) {
+                        currentFolder = 'scripts';
+                    }
+                    else {
+                        currentFolder = null;
+                    }
+                    currentPath = null;
+                }
+                else {
+                    currentFolder = asset.get('id');
+                    // currentFolder = parseInt(asset.get('id'));
+                    currentPath = asset.get('path');
+                }
+            }
+            else {
+                currentFolder = null;
+                currentPath = null;
+            }
+            editor.call('assets:panel:filter', filter, true);
+        });
+        editor.on('assets:add', function (asset) {
+            if (filterField.value === 'all' && !search.value)
+                return;
+            if (!filter((asset.get('type') === 'script') ? 'script' : 'asset', asset))
+                editor.call('assets:panel:get', asset.get('id')).hidden = true;
+            else
+                editor.call('assets:panel:message', null); // clear possible no assets message
+        });
+        editor.on('sourcefiles:add', function (file) {
+            if (filterField.value === 'all' && !search.value)
+                return;
+            if (!filter('script', file))
+                editor.call('assets:panel:get', file.get('filename')).hidden = true;
+            else
+                editor.call('assets:panel:message', null); // clear possible no assets message
+        });
+        // search
+        var search = new ui_1.TextField('搜索');
+        search.blurOnEnter = false;
+        search.keyChange = true;
+        search.class.add('search');
+        search.renderChanges = false;
+        panelFilters.append(search);
+        search.element.addEventListener('keydown', function (evt) {
+            if (evt.keyCode === 27)
+                searchClear.click();
+        }, false);
+        // hotkeys
+        editor.call('hotkey:register', 'assets-focus-search', {
+            key: 'a',
+            alt: true,
+            callback: function (e) {
+                if (editor.call('picker:isOpen:otherThan', 'curve'))
+                    return;
+                search.focus();
+            }
+        });
+        var searchClear = document.createElement('div');
+        searchClear.innerHTML = '&#57650;';
+        searchClear.classList.add('clear');
+        search.element.appendChild(searchClear);
+        searchClear.addEventListener('click', function () {
+            search.value = '';
+        }, false);
+        search.on('change', function (value) {
+            value = value.trim();
+            if (searchLastValue === value)
+                return;
+            searchLastValue = value;
+            if (value) {
+                search.class.add('not-empty');
+            }
+            else {
+                search.class.remove('not-empty');
+            }
+            searchTags = null;
+            editor.call('assets:panel:filter', filter);
+        });
+    }
+    return AssetsFilter;
+}());
+exports.AssetsFilter = AssetsFilter;
+},{"../../engine":77,"../../ui":96}],5:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var ui_1 = require("../../ui");
+var engine_1 = require("../../engine");
+var AssetsPanelControl = /** @class */ (function () {
+    function AssetsPanelControl() {
+        var root = engine_1.VeryEngine.root;
+        var assetsPanel = engine_1.VeryEngine.assets;
+        // context menu
+        var menu = new ui_1.Menu();
+        root.append(menu);
+        var assets = {
+            'upload': {
+                title: 'Upload',
+                icon: '&#57909;'
+            },
+            'folder': {
+                title: 'Folder',
+                icon: '&#57657;'
+            },
+            'css': {
+                title: 'CSS',
+                icon: '&#57864;'
+            },
+            'cubemap': {
+                title: 'CubeMap',
+                icon: '&#57879;'
+            },
+            'html': {
+                title: 'HTML',
+                icon: '&#57864;'
+            },
+            'json': {
+                title: 'JSON',
+                icon: '&#57864;'
+            },
+            'material': {
+                title: 'Material',
+                icon: '&#57749;'
+            },
+            'script': {
+                title: 'Script',
+                icon: '&#57864;'
+            },
+            'shader': {
+                title: 'Shader',
+                icon: '&#57864;'
+            },
+            'text': {
+                title: 'Text',
+                icon: '&#57864;'
+            }
+        };
+        // if (editor.call('users:hasFlag', 'hasBundles')) {
+        //     assets.bundle = {
+        //         title: 'Asset Bundle',
+        //         icon: '&#58384;'
+        //     };
+        // }
+        var addNewMenuItem = function (key, data) {
+            // new folder
+            var item = new ui_1.MenuItem({
+                text: data.title,
+                icon: data.icon || '',
+                value: key
+            });
+            item.on('select', function () {
+                var args = {
+                    parent: editor.call('assets:panel:currentFolder')
+                };
+                if (key === 'upload') {
+                    editor.call('assets:upload:picker', args);
+                }
+                else if (key === 'script') {
+                    if (editor.call('settings:project').get('useLegacyScripts')) {
+                        editor.call('sourcefiles:new');
+                    }
+                    else {
+                        editor.call('picker:script-create', function (filename) {
+                            editor.call('assets:create:script', {
+                                filename: filename,
+                                boilerplate: true
+                            });
+                        });
+                    }
+                }
+                else {
+                    editor.call('assets:create:' + key, args);
+                }
+            });
+            menu.append(item);
+            if (key === 'script') {
+                editor.on('repositories:load', function (repositories) {
+                    if (repositories.get('current') !== 'directory')
+                        item.disabled = true;
+                });
+            }
+        };
+        var keys = Object.keys(assets);
+        for (var i = 0; i < keys.length; i++) {
+            if (!assets.hasOwnProperty(keys[i]))
+                continue;
+            addNewMenuItem(keys[i], assets[keys[i]]);
+        }
+        // controls
+        var controls = new ui_1.Panel();
+        // controls.enabled = false;
+        controls.class.add('assets-controls');
+        // controls.parent = assetsPanel;
+        // assetsPanel.headerElement!.insertBefore(controls.element!, assetsPanel.headerElementTitle!.nextSibling);
+        assetsPanel.header.append(controls);
+        editor.on('permissions:writeState', function (state) {
+            controls.enabled = state;
+        });
+        // add
+        var btnNew = new ui_1.Button();
+        // btnNew.hidden = !editor.call('permissions:write');
+        btnNew.class.add('create-asset');
+        btnNew.text = '&#57632;';
+        btnNew.on('click', function (evt) {
+            var rect = btnNew.element.getBoundingClientRect();
+            menu.position(rect.right, rect.top);
+            menu.open = true;
+        });
+        controls.append(btnNew);
+        var tooltipAdd = ui_1.Tooltip.attach({
+            target: btnNew.element,
+            text: '添加资源',
+            align: 'bottom',
+            root: root
+        });
+        menu.on('open', function (state) {
+            tooltipAdd.disabled = state;
+        });
+        // delete
+        var btnDelete = new ui_1.Button('&#57636;');
+        // btnDelete.hidden = !editor.call('permissions:write');
+        btnDelete.style.fontWeight = '200';
+        btnDelete.disabled = true;
+        btnDelete.class.add('delete');
+        btnDelete.on('click', function () {
+            if (!editor.call('permissions:write'))
+                return;
+            var type = editor.call('selector:type');
+            if (type !== 'asset')
+                return;
+            editor.call('assets:delete:picker', editor.call('selector:items'));
+        });
+        controls.append(btnDelete);
+        var tooltipDelete = ui_1.Tooltip.attach({
+            target: btnDelete.element,
+            text: 'Delete Asset',
+            align: 'bottom',
+            root: root
+        });
+        tooltipDelete.class.add('innactive');
+        editor.on('permissions:writeState', function (state) {
+            btnNew.hidden = !state;
+            btnDelete.hidden = !state;
+        });
+        // folder up
+        var btnUp = new ui_1.Button('&#58117;');
+        btnUp.style.fontWeight = '200';
+        btnUp.disabled = true;
+        btnUp.class.add('up');
+        btnUp.on('click', function () {
+            var folder = editor.call('assets:panel:currentFolder');
+            if (!folder)
+                return;
+            if (folder === 'scripts') {
+                editor.call('assets:panel:currentFolder', null);
+            }
+            else {
+                var path = folder.get('path');
+                if (path.length) {
+                    var parent = editor.call('assets:get', path[path.length - 1]);
+                    if (parent) {
+                        editor.call('assets:panel:currentFolder', parent);
+                    }
+                    else {
+                        editor.call('assets:panel:currentFolder', null);
+                    }
+                }
+                else {
+                    editor.call('assets:panel:currentFolder', null);
+                }
+            }
+        });
+        controls.append(btnUp);
+        editor.on('assets:panel:currentFolder', function (folder) {
+            if (folder) {
+                btnUp.disabled = false;
+                tooltipUp.class.remove('innactive');
+            }
+            else {
+                btnUp.disabled = true;
+                tooltipUp.class.add('innactive');
+            }
+        });
+        var tooltipUp = ui_1.Tooltip.attach({
+            target: btnUp.element,
+            text: 'Folder Up',
+            align: 'bottom',
+            root: root
+        });
+        tooltipUp.class.add('innactive');
+        var assetsGrid = engine_1.VeryEngine.assetsGrid;
+        // thumbnails size
+        var btnThumbSize = new ui_1.Button('&#57669;');
+        btnThumbSize.style.fontWeight = '200';
+        btnThumbSize.class.add('size');
+        btnThumbSize.on('click', function () {
+            if (assetsGrid.class.contains('small')) {
+                assetsGrid.class.remove('small');
+                tooltipThumbSize.html = '<span style="color:#fff">Large</span> / Small';
+                editor.call('localStorage:set', 'editor:assets:thumbnail:size', 'large');
+            }
+            else {
+                assetsGrid.class.add('small');
+                tooltipThumbSize.html = 'Large / <span style="color:#fff">Small</span>';
+                editor.call('localStorage:set', 'editor:assets:thumbnail:size', 'small');
+            }
+        });
+        controls.append(btnThumbSize);
+        var tooltipThumbSize = ui_1.Tooltip.attach({
+            target: btnThumbSize.element,
+            align: 'bottom',
+            root: root
+        });
+        var size = editor.call('localStorage:get', 'editor:assets:thumbnail:size');
+        if (size === 'small') {
+            assetsGrid.class.add('small');
+            tooltipThumbSize.html = 'Large / <span style="color:#fff">Small</span>';
+        }
+        else {
+            assetsGrid.class.remove('small');
+            tooltipThumbSize.html = '<span style="color:#fff">Large</span> / Small';
+        }
+        tooltipThumbSize.class.add('innactive');
+        editor.on('attributes:clear', function () {
+            // btnDuplicate.disabled = true;
+            btnDelete.disabled = true;
+            tooltipDelete.class.add('innactive');
+        });
+        editor.on('attributes:inspect[*]', function (type) {
+            if (type.startsWith('asset')) {
+                btnDelete.enabled = true;
+                tooltipDelete.class.remove('innactive');
+            }
+            else {
+                btnDelete.enabled = false;
+                tooltipDelete.class.add('innactive');
+            }
+            // btnDuplicate.enabled = type === 'asset.material';
+        });
+    }
+    return AssetsPanelControl;
+}());
+exports.AssetsPanelControl = AssetsPanelControl;
+},{"../../engine":77,"../../ui":96}],6:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var ui_1 = require("../../ui");
+var engine_1 = require("../../engine");
+var utility_1 = require("../utility");
+var AssetsPanel = /** @class */ (function () {
+    function AssetsPanel() {
+        var self = this;
+        var root = engine_1.VeryEngine.root;
+        var assetsPanel = engine_1.VeryEngine.assets;
+        var dragging = false;
+        var draggingData = {};
+        var legacyScripts = false;
+        var selector = {
+            type: '',
+            items: new Array(),
+            prev: {
+                type: '',
+                items: new Array()
+            }
+        };
+        var searching = false;
+        var overlay = new ui_1.TopElementContainer({
+            flex: true
+        });
+        overlay.class.add('progress-overlay');
+        assetsPanel.append(overlay);
+        var loading = new ui_1.Progress();
+        loading.progress = 0.01;
+        loading.on('progress:100', function () {
+            overlay.hidden = true;
+        });
+        overlay.append(loading);
+        // TODO：隐藏
+        overlay.hidden = true;
+        editor.method('assets:progress', function (progress) {
+            loading.progress = progress;
+        });
+        // folders panel
+        var folders = new ui_1.Panel();
+        folders.class.add('folders');
+        folders.flexShrink = '0';
+        folders.style.width = '200px';
+        folders.innerElement.style.width = '200px';
+        folders.foldable = false;
+        folders.horizontal = true;
+        folders.scroll = true;
+        folders.resizable = 'right';
+        folders.resizeMin = 100;
+        folders.resizeMax = 300;
+        assetsPanel.append(folders);
+        editor.method('assets:panel:folders', function () {
+            return folders;
+        });
+        // folder
+        var files = new ui_1.Panel();
+        files.class.add('files');
+        files.flexGrow = "1";
+        files.foldable = false;
+        files.horizontal = true;
+        files.scroll = true;
+        assetsPanel.append(files);
+        // grid
+        var grid = new ui_1.Grid();
+        // grid.enabled = false;
+        grid.class.add('assets');
+        files.append(grid);
+        engine_1.VeryEngine.assetsGrid = grid;
+        // tree
+        var tree = new ui_1.Tree();
+        // tree.enabled = false;
+        tree.draggable = false;
+        tree.class.add('assets');
+        folders.append(tree);
+        // tree root，Assets根目录
+        var treeRoot = new ui_1.TreeItem({
+            text: '/'
+        });
+        tree.append(treeRoot);
+        // tree.element!.appendChild(treeRoot.element!);
+        // tree.emit('append', treeRoot);
+        treeRoot.open = true;
+        treeRoot.class.add('current');
+        treeRoot.on('select', function () {
+            treeRoot.selected = false;
+        });
+        // tree width resizing
+        var resizeQueued = false;
+        var resizeTree = function () {
+            resizeQueued = false;
+            tree.element.style.width = '';
+            tree.element.style.width = (folders.innerElement.scrollWidth - 5) + 'px';
+        };
+        var resizeQueue = function () {
+            if (resizeQueued)
+                return;
+            resizeQueued = true;
+            requestAnimationFrame(resizeTree);
+        };
+        folders.on('resize', resizeQueue);
+        tree.on('open', resizeQueue);
+        tree.on('close', resizeQueue);
+        setInterval(resizeQueue, 1000);
+        var gridScripts;
+        var treeScripts;
+        var createLegacyScriptFolder = function () {
+            gridScripts = new ui_1.GridItem();
+            gridScripts.class.add('type-folder', 'scripts');
+            grid.append(gridScripts);
+            gridScripts.tree = treeScripts = new ui_1.TreeItem({
+                text: 'scripts'
+            });
+            gridScripts.tree.class.add('scripts');
+            gridScripts.tree.on('select', function () {
+                gridScripts.tree.selected = false;
+            });
+            treeRoot.append(gridScripts.tree);
+            gridScripts.on('select', function () {
+                editor.call('selector:clear');
+                if (!selector.type) {
+                    selector.prev.type = '';
+                    selector.prev.items = [];
+                }
+            });
+            // scripts open
+            gridScripts.element.addEventListener('dblclick', function () {
+                tree.clear();
+                editor.call('assets:filter:search', '');
+                editor.call('assets:panel:currentFolder', 'scripts');
+                // change back selection
+                if (selector.prev.type)
+                    editor.call('selector:set', selector.prev.type, selector.prev.items);
+            }, false);
+            var thumbnail = gridScripts.thumbnail = document.createElement('div');
+            thumbnail.classList.add('thumbnail', 'placeholder');
+            gridScripts.element.appendChild(thumbnail);
+            var icon = document.createElement('div');
+            icon.classList.add('icon');
+            gridScripts.element.appendChild(icon);
+            var label = gridScripts.labelElement = document.createElement('div');
+            label.classList.add('label');
+            label.textContent = 'scripts';
+            gridScripts.element.appendChild(label);
+            // context menu
+            var menu = new ui_1.Menu();
+            root.append(menu);
+            // script
+            var menuScript = new ui_1.MenuItem({
+                text: 'New Script',
+                value: 'script',
+                icon: '&#57864;'
+            });
+            menuScript.on('select', function () {
+                editor.call('sourcefiles:new');
+            });
+            menu.append(menuScript);
+            editor.on('repositories:load', function (repositories) {
+                if (repositories.get('current') !== 'directory')
+                    menuScript.disabled = true;
+            });
+            var onContextMenu = function (evt) {
+                evt.stopPropagation();
+                evt.preventDefault();
+                if (!editor.call('permissions:write'))
+                    return;
+                menu.position(evt.clientX + 1, evt.clientY);
+                menu.open = true;
+            };
+            gridScripts.element.addEventListener('contextmenu', onContextMenu, false);
+            treeScripts.elementTitle.addEventListener('contextmenu', onContextMenu, false);
+            resizeQueue();
+        };
+        if (legacyScripts)
+            createLegacyScriptFolder();
+        var currentFolder = null; // assets -> Observer
+        editor.method('assets:panel:currentFolder', function (asset) {
+            if (asset === undefined)
+                return currentFolder;
+            if (asset === currentFolder)
+                return null;
+            // current folder style remove
+            if (currentFolder && typeof (currentFolder) !== 'string' && assetsIndex[currentFolder.get('id')]) {
+                assetsIndex[currentFolder.get('id')].tree.class.remove('current');
+            }
+            else {
+                if (currentFolder === null) {
+                    treeRoot.class.remove('current');
+                }
+                else if (treeScripts && currentFolder === 'scripts') {
+                    treeScripts.class.remove('current');
+                }
+            }
+            currentFolder = asset;
+            // current folder style add
+            if (currentFolder && typeof (currentFolder) !== 'string') {
+                assetsIndex[currentFolder.get('id')].tree.class.add('current');
+                // open tree up
+                var path = currentFolder.get('path');
+                for (var i = 0; i < path.length; i++) {
+                    if (!assetsIndex[path[i]] || !assetsIndex[path[i]].tree)
+                        continue;
+                    assetsIndex[path[i]].tree.open = true;
+                }
+            }
+            else if (currentFolder === null) {
+                treeRoot.class.add('current');
+            }
+            else if (treeScripts && currentFolder === 'scripts') {
+                treeScripts.class.add('current');
+                editor.call('assets:filter:type', 'all');
+            }
+            if (legacyScripts)
+                gridScripts.hidden = currentFolder !== null;
+            editor.emit('assets:panel:currentFolder', currentFolder);
+            return currentFolder;
+        });
+        editor.call('hotkey:register', 'assets:fs:up', {
+            key: 'backspace',
+            callback: function () {
+                if (!currentFolder || editor.call('selector:type') !== 'asset')
+                    return;
+                var path = typeof (currentFolder) === 'string' ? [] : currentFolder.get('path');
+                if (path.length === 0) {
+                    editor.call('assets:panel:currentFolder', null);
+                }
+                else {
+                    editor.call('assets:panel:currentFolder', editor.call('assets:get', path[path.length - 1]));
+                }
+            }
+        });
+        editor.on('drop:active', function (state, type, data) {
+            dragging = state;
+            if (!dragging) {
+                grid.dragOver = undefined;
+                gridDropBorder.classList.remove('active');
+                treeDropBorder.classList.remove('active');
+            }
+        });
+        editor.on('drop:set', function (type, data) {
+            draggingData = data;
+        });
+        // IDrop
+        var dropRef = editor.call('drop:target', {
+            ref: folders.element,
+            hole: true,
+            passThrough: true,
+            filter: function (type, data) {
+                return type.startsWith('asset');
+            },
+            drop: function (type, data) {
+                if (!type || grid.dragOver === undefined || !type.startsWith('asset'))
+                    return;
+                var items = editor.call('selector:items');
+                var assets = [];
+                var addAsset = function (id) {
+                    var asset = editor.call('assets:get', id);
+                    // deselect moved asset
+                    if (items.indexOf(asset) !== -1)
+                        editor.call('selector:remove', asset);
+                    assets.push(asset);
+                };
+                if (data.ids) {
+                    for (var i = 0; i < data.ids.length; i++)
+                        addAsset(data.ids[i]);
+                }
+                else {
+                    addAsset(data.id);
+                }
+                editor.call('assets:fs:move', assets, grid.dragOver);
+            }
+        });
+        dropRef.element.classList.add('assets-drop-area');
+        var treeAppendQueue = {};
+        treeRoot.elementTitle.addEventListener('mouseover', function () {
+            if (!dragging || grid.dragOver === null || (!draggingData.id && !draggingData.ids))
+                return;
+            // already in that folder
+            var dragAsset = editor.call('assets:get', draggingData.id || draggingData.ids[0]);
+            if (!dragAsset.get('path').length)
+                return;
+            gridDropBorder.classList.remove('active');
+            var rect = treeRoot.elementTitle.getBoundingClientRect();
+            treeDropBorder.classList.add('active');
+            treeDropBorder.style.left = rect.left + 'px';
+            treeDropBorder.style.top = rect.top + 'px';
+            treeDropBorder.style.right = (window.innerWidth - rect.right) + 'px';
+            treeDropBorder.style.bottom = (window.innerHeight - rect.bottom) + 'px';
+            grid.dragOver = null;
+        }, false);
+        treeRoot.elementTitle.addEventListener('mouseout', function () {
+            if (!dragging || grid.dragOver === undefined)
+                return;
+            gridDropBorder.classList.remove('active');
+            treeDropBorder.classList.remove('active');
+            grid.dragOver = undefined;
+        }, false);
+        var dropRef2 = editor.call('drop:target', {
+            ref: files.element,
+            hole: true,
+            passThrough: true,
+            filter: function (type, data) {
+                return type.startsWith('asset');
+            },
+            drop: function (type, data) {
+                if (!type || grid.dragOver === undefined || !type.startsWith('asset'))
+                    return;
+                var assets = [];
+                var items = editor.call('selector:items');
+                var addAsset = function (id) {
+                    var asset = editor.call('assets:get', id);
+                    // deselect moved asset
+                    if (items.indexOf(asset) !== -1)
+                        editor.call('selector:remove', asset);
+                    assets.push(asset);
+                };
+                if (data.ids) {
+                    for (var i = 0; i < data.ids.length; i++) {
+                        addAsset(data.ids[i]);
+                    }
+                }
+                else {
+                    addAsset(data.id);
+                }
+                if (grid.dragOver.get('type') === 'folder') {
+                    editor.call('assets:fs:move', assets, grid.dragOver);
+                }
+                else if (grid.dragOver.get('type') === 'bundle') {
+                    var countAdded = editor.call('assets:bundles:addAssets', assets, grid.dragOver);
+                    if (countAdded) {
+                        var item = assetsIndex[grid.dragOver.get('id')];
+                        item.class.add('confirm-animation');
+                        setTimeout(function () {
+                            item.class.remove('confirm-animation');
+                        }, 800);
+                    }
+                }
+            }
+        });
+        dropRef2.element.classList.add('assets-drop-area');
+        editor.on('permissions:writeState', function (state) {
+            tree.enabled = state;
+            grid.enabled = state;
+        });
+        var labelNoAssets = new ui_1.Label(undefined, undefined, true);
+        labelNoAssets.renderChanges = false;
+        labelNoAssets.class.add('no-assets');
+        labelNoAssets.hidden = true;
+        files.append(labelNoAssets);
+        editor.method('assets:panel:message', function (msg) {
+            labelNoAssets.text = msg;
+            labelNoAssets.hidden = !msg;
+        });
+        var scriptsIndex = {};
+        var assetsIndex = {};
+        var assetsChanged = false;
+        // grid.assetsIndex = assetsIndex;
+        var gridDropBorder = document.createElement('div');
+        gridDropBorder.classList.add('assets-drop-border');
+        root.append(gridDropBorder);
+        var treeDropBorder = document.createElement('div');
+        treeDropBorder.classList.add('assets-drop-border');
+        root.append(treeDropBorder);
+        var tooltipAsset = new ui_1.Tooltip({
+            text: 'Asset',
+            align: 'top',
+            hoverable: false
+        });
+        root.append(tooltipAsset);
+        var tooltipTarget = null;
+        var tooltipTimeout = null;
+        var tooltipShow = function () {
+            if (!tooltipTarget)
+                return;
+            while (tooltipTarget && tooltipTarget.nodeName !== 'LI' && !tooltipTarget.classList.contains('ui-grid-item'))
+                tooltipTarget = tooltipTarget.parentNode;
+            if (!tooltipTarget || !tooltipTarget.ui)
+                return;
+            var rect = tooltipTarget.getBoundingClientRect();
+            var off = 16;
+            if (rect.width < 64)
+                off = rect.width / 2;
+            tooltipAsset.flip = rect.left + off > window.innerWidth / 2;
+            if (tooltipAsset.flip) {
+                tooltipAsset.position(rect.right - off, rect.bottom);
+            }
+            else {
+                tooltipAsset.position(rect.left + off, rect.bottom);
+            }
+            tooltipAsset.text = tooltipTarget.ui.asset.get('name');
+            tooltipAsset.hidden = false;
+        };
+        var onAssetItemHover = function (evt) {
+            if (tooltipTimeout) {
+                clearTimeout(tooltipTimeout);
+                tooltipTimeout = null;
+            }
+            tooltipTarget = evt.target;
+            tooltipTimeout = setTimeout(tooltipShow, 300);
+        };
+        var onAssetItemBlur = function () {
+            tooltipAsset.hidden = true;
+            if (tooltipTimeout) {
+                clearTimeout(tooltipTimeout);
+                tooltipTimeout = null;
+            }
+        };
+        var onAssetItemRemove = function () {
+            // if (!tooltipTarget || !tooltipTarget.ui || tooltipTarget.ui.asset !== this)
+            //     return;
+            if (!tooltipTarget || !tooltipTarget.ui)
+                return;
+            onAssetItemBlur();
+        };
+        grid.innerElement.addEventListener('mousewheel', function () {
+            tooltipAsset.hidden = true;
+            if (tooltipTimeout) {
+                clearTimeout(tooltipTimeout);
+                tooltipTimeout = null;
+            }
+        }, false);
+        tree.on('select', function (item) {
+            if (assetsChanged)
+                return;
+            if (item.asset) {
+                if (!ui_1.Tree._ctrl || !ui_1.Tree._ctrl()) {
+                    if (currentFolder !== item.asset) {
+                        item.selected = false;
+                    }
+                    else {
+                        editor.call('selector:set', 'asset', [item.asset]);
+                    }
+                }
+                else {
+                    editor.call('selector:add', 'asset', item.asset);
+                }
+            }
+            if (!item.asset) {
+                if (item === treeRoot) {
+                    editor.call('assets:filter:search', '');
+                    editor.call('assets:panel:currentFolder', null);
+                }
+                else if (item === treeScripts) {
+                    editor.call('assets:filter:search', '');
+                    editor.call('assets:panel:currentFolder', 'scripts');
+                }
+                return;
+            }
+            if (!ui_1.Tree._ctrl || !ui_1.Tree._ctrl()) {
+                editor.call('assets:filter:search', '');
+                editor.call('assets:panel:currentFolder', item.asset);
+            }
+        });
+        tree.on('deselect', function (item) {
+            if (assetsChanged)
+                return;
+            if (item.asset)
+                editor.call('selector:remove', item.asset);
+        });
+        grid.on('select', function (item) {
+            if (assetsChanged)
+                return;
+            if (item.asset) {
+                editor.call('selector:add', 'asset', item.asset);
+            }
+            // TODO
+            // } else if (item.script) {
+            //     editor.call('selector:add', 'asset', item.script);
+            // }
+        });
+        grid.on('deselect', function (item) {
+            console.error('grid deselect');
+            if (assetsChanged)
+                return;
+            if (item.asset) {
+                console.error(item);
+                console.error(item.asset);
+                editor.call('selector:remove', item.asset);
+            }
+            // } else if (item.script) {
+            //     editor.call('selector:remove', item.script);
+            // }
+        });
+        editor.on('selector:change', function (type, items) {
+            assetsChanged = true;
+            selector.prev.type = selector.type;
+            selector.prev.items = selector.items;
+            selector.type = editor.call('selector:type');
+            selector.items = editor.call('selector:items');
+            // console.error('type: ' + type);
+            // console.error(items);
+            if (type === 'asset') {
+                tree.clear();
+                items = items.slice(0);
+                var assets = [];
+                for (var i = 0; i < items.length; i++) {
+                    if (legacyScripts && items[i].get('type') === 'script') {
+                        assets.push(scriptsIndex[items[i].get('filename')]);
+                    }
+                    else {
+                        assets.push(assetsIndex[items[i].get('id')]);
+                        if (assets[i].tree) {
+                            assets[i].tree.selected = true;
+                            // open tree up
+                            var path = items[i].get('path');
+                            for (var n = 0; n < path.length; n++) {
+                                if (!assetsIndex[path[n]] || !assetsIndex[path[n]].tree)
+                                    continue;
+                                assetsIndex[path[n]].tree.open = true;
+                            }
+                        }
+                    }
+                }
+                grid.selected = assets;
+            }
+            else {
+                if ((legacyScripts && !(gridScripts.selected && grid.selected.length === 1)) || selector.type !== 'asset')
+                    grid.selected = [];
+                tree.clear();
+            }
+            assetsChanged = false;
+        });
+        // return grid
+        editor.method('assets:grid', function () {
+            return grid;
+        });
+        var searchingInProgress = false;
+        var searchingElement = null;
+        var searchingFunction = null;
+        var searchingBatchLimit = 512;
+        var searchNextBatch = function () {
+            var done = 0;
+            while (searchingElement && (searchingBatchLimit === 0 || done < searchingBatchLimit)) {
+                var item = searchingElement.ui;
+                if (item) {
+                    if (item.asset) {
+                        item.hidden = !searchingFunction('asset', item.asset);
+                    }
+                    else if (item.script) {
+                        item.hidden = !searchingFunction('script', item.script);
+                    }
+                    done++;
+                }
+                searchingElement = searchingElement.nextSibling;
+            }
+            if (!searchingElement) {
+                searchingInProgress = false;
+            }
+            else {
+                requestAnimationFrame(searchNextBatch);
+            }
+        };
+        // filter assets in grid
+        editor.method('assets:panel:filter', function (fn, immediate) {
+            if (!fn)
+                fn = editor.call('assets:panel:filter:default');
+            labelNoAssets.hidden = true;
+            // 获取grid的第一个元素（所有grid的集合）
+            searchingElement = grid.element.firstChild;
+            searchingFunction = fn;
+            var type = editor.call('assets:filter:type');
+            var search = editor.call('assets:filter:search');
+            if (!search || immediate) {
+                searchingBatchLimit = 0;
+            }
+            else {
+                searchingBatchLimit = 512;
+            }
+            if (!searchingInProgress) {
+                searchingInProgress = true;
+                requestAnimationFrame(searchNextBatch);
+            }
+            // navigate to selected assets folder
+            if (searching && !search) {
+                searching = false;
+                if (selector.type === 'asset') {
+                    var script = legacyScripts && selector.items[0].get('type') === 'script';
+                    var path = script ? [] : selector.items[0].get('path');
+                    var multiPath = false;
+                    for (var i = 1; i < selector.items.length; i++) {
+                        var item = selector.items[i];
+                        if (script !== (item.get('type') === 'script') || (!script && !path.equals(item.get('path')))) {
+                            multiPath = true;
+                            break;
+                        }
+                    }
+                    if (!multiPath) {
+                        if (path.length) {
+                            editor.call('assets:panel:currentFolder', editor.call('assets:get', path[path.length - 1]));
+                            assetsIndex[selector.items[0].get('id')].element.focus();
+                        }
+                        else if (script) {
+                            editor.call('assets:panel:currentFolder', 'scripts');
+                        }
+                        else {
+                            editor.call('assets:panel:currentFolder', null);
+                        }
+                    }
+                }
+            }
+            if (search)
+                searching = true;
+            if (legacyScripts)
+                gridScripts.hidden = !fn('scripts', 'scripts');
+        });
+        // get grid item by id
+        editor.method('assets:panel:get', function (id) {
+            return assetsIndex[id] || scriptsIndex[id];
+        });
+        // 插入子文件夹，如果有的话
+        var appendChildFolders = function (item) {
+            var queue = treeAppendQueue[item.asset.get('id')];
+            if (!queue || !queue.length)
+                return;
+            for (var i = 0; i < queue.length; i++) {
+                var closest = treeFindClosest(item.tree, queue[i].tree);
+                if (closest === -1) {
+                    item.tree.append(queue[i].tree);
+                }
+                else {
+                    item.tree.appendBefore(queue[i].tree, (item.tree.child(closest).ui));
+                }
+                appendChildFolders(queue[i]);
+            }
+            delete treeAppendQueue[item.asset.get('id')];
+        };
+        var treeFindClosest = function (parent, current, nameOld) {
+            // 文件改变之前的名字
+            nameOld = nameOld || current.text;
+            // ChildNode -> 当前parent下的其他item
+            var l = Array.prototype.slice.call(parent.element.childNodes, 1);
+            // if (item === treeRoot && legacyScripts)
+            //   l = l.slice(1);
+            if (parent === treeRoot)
+                l = l.slice(1);
+            var min = 0;
+            var max = l.length - 1;
+            var cur = -1;
+            var a, i;
+            var aN = '';
+            var bN = '';
+            if (l.length === 0) // 当前没有item，直接在末尾插入item
+                return -1;
+            // TODO: text是什么？名字？根据名字排列顺序？
+            // if (((a === current) ? nameOld.toLowerCase() : l[0].ui.text.toLowerCase()) === bN)
+            //   return 0;
+            while (min <= max) {
+                cur = Math.floor((min + max) / 2); // 二分法
+                a = l[cur];
+                aN = (a === current) ? nameOld.toLowerCase() : a.ui.text.toLowerCase();
+                bN = current.text.toLowerCase();
+                if (aN > bN) {
+                    max = cur - 1;
+                }
+                else if (aN < bN) {
+                    min = cur + 1;
+                }
+                else {
+                    return cur;
+                }
+            }
+            // if (aN.localeCompare(bN) > 0) {
+            //     return cur;
+            // }
+            if (aN > bN)
+                return cur;
+            if ((cur + 1) === l.length)
+                return -1;
+            return cur + 1;
+        };
+        // select all hotkey
+        // ctrl + a
+        editor.call('hotkey:register', 'asset:select-all', {
+            ctrl: true,
+            key: 'a',
+            callback: function () {
+                var assets = [];
+                for (var key in assetsIndex) {
+                    if (!assetsIndex[key].hidden)
+                        assets.push(assetsIndex[key].asset);
+                }
+                for (var key in scriptsIndex) {
+                    if (!scriptsIndex[key].hidden)
+                        assets.push(scriptsIndex[key].script);
+                }
+                if (assets.length) {
+                    editor.call('selector:set', 'asset', assets);
+                }
+                else {
+                    editor.call('selector:clear');
+                }
+            }
+        });
+        var renderQueue = [];
+        var renderQueueIndex = {};
+        var renderQueueUpdate = function () {
+            requestAnimationFrame(renderQueueUpdate);
+            if (!renderQueue.length)
+                return;
+            var items = 0;
+            while (items < 4 && renderQueue.length) {
+                items++;
+                var id = renderQueue.shift();
+                delete renderQueueIndex[id];
+                if (!assetsIndex[id] || !assetsIndex[id].thumbnail || !assetsIndex[id].thumbnail.render)
+                    continue;
+                assetsIndex[id].thumbnail.render();
+            }
+        };
+        requestAnimationFrame(renderQueueUpdate);
+        var renderQueueAdd = function (asset) {
+            var id = asset.get('id');
+            if (renderQueueIndex[id])
+                return;
+            if (!assetsIndex[id] || !assetsIndex[id].thumbnail || !assetsIndex[id].thumbnail.render)
+                return;
+            renderQueueIndex[id] = true;
+            renderQueue.push(id);
+        };
+        var renderQueueRemove = function (asset) {
+            var id = parseInt(asset.get('id'), 10);
+            if (!renderQueueIndex[id])
+                return;
+            var ind = renderQueue.indexOf(id);
+            if (ind !== -1)
+                renderQueue.splice(ind, 1);
+            delete renderQueueIndex[id];
+        };
+        var showGridDropHighlight = function (item) {
+            var clip = files.element.getBoundingClientRect();
+            var rect = item.element.getBoundingClientRect();
+            var top = Math.max(rect.top, clip.top);
+            var bottom = Math.min(rect.bottom, clip.bottom);
+            if ((bottom - top) > 8) {
+                gridDropBorder.classList.add('active');
+                gridDropBorder.style.left = rect.left + 'px';
+                gridDropBorder.style.top = top + 'px';
+                gridDropBorder.style.right = (window.innerWidth - rect.right) + 'px';
+                gridDropBorder.style.bottom = (window.innerHeight - bottom) + 'px';
+            }
+        };
+        var showTreeDropHighlight = function (item) {
+            var clip = files.element.getBoundingClientRect();
+            var rect = item.tree.elementTitle.getBoundingClientRect();
+            var top = Math.max(rect.top, clip.top);
+            var bottom = Math.min(rect.bottom, clip.bottom);
+            if (rect.height && (bottom - top) > 4) {
+                treeDropBorder.classList.add('active');
+                treeDropBorder.style.left = rect.left + 'px';
+                treeDropBorder.style.top = top + 'px';
+                treeDropBorder.style.right = (window.innerWidth - rect.right) + 'px';
+                treeDropBorder.style.bottom = (window.innerHeight - bottom) + 'px';
+            }
+        };
+        // Called when a folder asset is added
+        var onAddFolder = function (asset, item) {
+            item.tree = new ui_1.TreeItem({
+                text: asset.get('name')
+            });
+            item.tree.asset = asset;
+            var path = asset.get('path');
+            var parent;
+            // console.warn(path);
+            if (path.length) {
+                var parentFolderId = path[path.length - 1];
+                if (assetsIndex[parentFolderId]) {
+                    parent = assetsIndex[parentFolderId].tree;
+                }
+                else {
+                    if (!treeAppendQueue[parentFolderId])
+                        treeAppendQueue[parentFolderId] = [];
+                    treeAppendQueue[parentFolderId].push(item);
+                }
+            }
+            else {
+                parent = treeRoot;
+            }
+            // console.warn(item.text);
+            if (parent) {
+                var closest = treeFindClosest(parent, item.tree);
+                if (closest === -1) {
+                    parent.append(item.tree);
+                }
+                else {
+                    parent.appendBefore(item.tree, (parent.child(closest).ui));
+                }
+                appendChildFolders(item);
+            }
+            var onMouseOver = function () {
+                if (!dragging || grid.dragOver === asset)
+                    return;
+                // don't allow to drag on it self
+                if (draggingData.ids) {
+                    // multi-drag
+                    if (draggingData.ids.indexOf(parseInt(asset.get('id'), 10)) !== -1)
+                        return;
+                }
+                else if (draggingData.id) {
+                    // single-drag
+                    if (parseInt(asset.get('id'), 10) === parseInt(draggingData.id, 10))
+                        return;
+                }
+                else {
+                    // script file drag
+                    return;
+                }
+                // already in that folder
+                var dragAsset = editor.call('assets:get', draggingData.id || draggingData.ids[0]);
+                var path = dragAsset.get('path');
+                if (path.length && path[path.length - 1] === parseInt(asset.get('id'), 10))
+                    return;
+                // don't allow dragging into own child
+                if (draggingData.ids) {
+                    // multi-drag
+                    var assetPath = asset.get('path');
+                    for (var i = 0; i < draggingData.ids.length; i++) {
+                        if (assetPath.indexOf(draggingData.ids[i]) !== -1)
+                            return;
+                    }
+                }
+                else {
+                    // single-drag
+                    if (asset.get('path').indexOf(parseInt(dragAsset.get('id'), 10)) !== -1)
+                        return;
+                }
+                showGridDropHighlight(item);
+                showTreeDropHighlight(item);
+                grid.dragOver = asset;
+            };
+            var onMouseOut = function () {
+                if (!dragging || grid.dragOver !== asset)
+                    return;
+                gridDropBorder.classList.remove('active');
+                treeDropBorder.classList.remove('active');
+                grid.dragOver = undefined;
+            };
+            // draggable
+            item.tree.elementTitle.draggable = true;
+            item.element.addEventListener('mouseout', onMouseOut, false);
+            item.tree.elementTitle.addEventListener('mouseout', onMouseOut, false);
+            item.element.addEventListener('mouseover', onMouseOver, false);
+            item.tree.elementTitle.addEventListener('mouseover', onMouseOver, false);
+        };
+        // Called when a script asset is added
+        var onAddScript = function (asset, item, events) {
+            events.push(editor.on('assets[' + asset.get('id') + ']:scripts:collide', function (script) {
+                item.class.add('scripts-collide');
+            }));
+            events.push(editor.on('assets[' + asset.get('id') + ']:scripts:resolve', function (script) {
+                item.class.remove('scripts-collide');
+            }));
+        };
+        var onAddBundle = function (asset, item) {
+            var confirmElement = document.createElement('div');
+            confirmElement.classList.add('confirm');
+            confirmElement.classList.add('thumbnail');
+            item.element.appendChild(confirmElement);
+            var onMouseOver = function () {
+                if (!dragging || grid.dragOver === asset)
+                    return;
+                if (!draggingData.ids && !draggingData.id) {
+                    // script file drag
+                    return;
+                }
+                var assetIds = draggingData.ids ? draggingData.ids.slice() : [draggingData.id];
+                // don't allow to drag on it self
+                if (assetIds.indexOf(parseInt(asset.get('id'), 10)) !== -1) {
+                    return;
+                }
+                // make sure we'fe found at least 1 valid asset
+                var valid = false;
+                var bundleAssets = asset.get('data.assets');
+                for (var i = 0; i < assetIds.length; i++) {
+                    var draggedAsset = editor.call('assets:get', assetIds[i]);
+                    if (!draggedAsset)
+                        continue;
+                    if (bundleAssets.indexOf(draggedAsset.get('id')) !== -1)
+                        continue;
+                    if (!draggedAsset.get('source')) {
+                        var type = draggedAsset.get('type');
+                        if (['folder', 'script', 'bundle'].indexOf(type) === -1) {
+                            valid = true;
+                            break;
+                        }
+                    }
+                }
+                if (!valid)
+                    return;
+                showGridDropHighlight(item);
+                grid.dragOver = asset;
+            };
+            var onMouseOut = function () {
+                if (!dragging || grid.dragOver !== asset)
+                    return;
+                gridDropBorder.classList.remove('active');
+                grid.dragOver = undefined;
+            };
+            item.element.addEventListener('mouseout', onMouseOut, false);
+            item.element.addEventListener('mouseover', onMouseOver, false);
+        };
+        editor.on('assets:add', function (asset, pos) {
+            var events = [];
+            var item = new ui_1.GridItem();
+            item.asset = asset;
+            item.class.add('type-' + asset.get('type'));
+            item.element.addEventListener('mouseover', onAssetItemHover, false);
+            item.element.addEventListener('mouseout', onAssetItemBlur, false);
+            asset.once('destroy', onAssetItemRemove.bind(asset));
+            var onMouseDown = function (evt) {
+                evt.stopPropagation();
+            };
+            var onDragStart = function (evt) {
+                evt.preventDefault();
+                evt.stopPropagation();
+                if (!editor.call('permissions:write'))
+                    return;
+                var type = 'asset.' + asset.get('type');
+                var data = {
+                    id: asset.get('id'),
+                    ids: new Array()
+                };
+                var selectorType = editor.call('selector:type');
+                var selectorItems = editor.call('selector:items');
+                if (selectorType === 'asset' && selectorItems.length > 1) {
+                    var path = selectorItems[0].get('path');
+                    if (selectorItems.indexOf(asset) !== -1) {
+                        var ids = [];
+                        for (var i = 0; i < selectorItems.length; i++) {
+                            // don't allow multi-path dragging
+                            if (path.length !== selectorItems[i].get('path').length || path[path.length - 1] !== selectorItems[i].get('path')[path.length - 1])
+                                return;
+                            ids.push(parseInt(selectorItems[i].get('id'), 10));
+                        }
+                        type = 'assets';
+                        data = {
+                            id: '',
+                            ids: ids
+                        };
+                    }
+                }
+                editor.call('drop:set', type, data);
+                editor.call('drop:activate', true);
+            };
+            if (asset.get('type') === 'folder') {
+                onAddFolder(asset, item);
+                item.tree.elementTitle.addEventListener('mousedown', onMouseDown, false);
+                item.tree.elementTitle.addEventListener('dragstart', onDragStart, false);
+            }
+            else if (asset.get('type') === 'script') {
+                onAddScript(asset, item, events);
+            }
+            else if (asset.get('type') === 'bundle') {
+                // onAddBundle(asset, item, events);
+            }
+            var updateTask = function () {
+                var status = asset.get('task');
+                item.class.remove('task', 'failed', 'running');
+                if (status && typeof (status) === 'string' && status[0] !== '{') {
+                    item.class.add('task', status);
+                }
+            };
+            // add task status
+            updateTask();
+            asset.on('task:set', updateTask);
+            item.element.draggable = true;
+            item.element.addEventListener('mousedown', onMouseDown, false);
+            item.element.addEventListener('dragstart', onDragStart, false);
+            assetsIndex[asset.get('id')] = item;
+            // source
+            if (asset.get('source'))
+                item.class.add('source');
+            // TODO
+            // console.log(editor.call('assets:panel:filter:default'));
+            if (!editor.call('assets:panel:filter:default')('asset', asset)) {
+                // console.log('assets:panel:filter:default');
+                item.hidden = true;
+            }
+            var fileSize = asset.get('file.size');
+            if (!asset.get('source')) {
+                // update thumbnails change
+                asset.on('thumbnails.m:set', function (value) {
+                    if (value.startsWith('/api')) {
+                        // value = value.appendQuery('t=' + asset.get('file.hash'));
+                        value = utility_1.Tools.appendQuery(value, 't=' + asset.get('file.hash'));
+                    }
+                    thumbnail.style.backgroundImage = 'url(' + value + ')';
+                    thumbnail.classList.remove('placeholder');
+                });
+                asset.on('thumbnails.m:unset', function () {
+                    thumbnail.style.backgroundImage = 'none';
+                    thumbnail.classList.add('placeholder');
+                });
+            }
+            // folder open
+            if (asset.get('type') === 'folder') {
+                // 文件夹双击
+                item.element.addEventListener('dblclick', function () {
+                    tree.clear();
+                    item.tree.open = true;
+                    editor.call('assets:filter:search', '');
+                    editor.call('assets:panel:currentFolder', item.asset);
+                    // change back selection
+                    if (selector.type)
+                        editor.call('selector:set', selector.prev.type, selector.prev.items);
+                }, false);
+            }
+            // open sprite editor for textureatlas and sprite assets
+            if (asset.get('type') === 'sprite' || asset.get('type') === 'textureatlas') {
+                item.element.addEventListener('dblclick', function () {
+                    editor.call('picker:sprites', item.asset);
+                }, false);
+            }
+            var thumbnail;
+            var evtSceneSettings;
+            var evtAssetChanged;
+            if (asset.get('type') === 'material' || asset.get('type') === 'model' || asset.get('type') === 'sprite' || (asset.get('type') === 'font') && !asset.get('source')) {
+                var queuedRender = false;
+                thumbnail = document.createElement('img');
+                // thumbnail.changed = true;
+                thumbnail.width = 64;
+                thumbnail.height = 64;
+                if (asset.get('type') !== 'sprite') {
+                    thumbnail.classList.add('flipY');
+                }
+                var htmlCanvas = document.createElement('canvas');
+                htmlCanvas.width = 64;
+                htmlCanvas.height = 64;
+                htmlCanvas.style.display = 'none';
+                document.body.append(htmlCanvas);
+                var engine = new BABYLON.Engine(htmlCanvas, true);
+                var scene = new BABYLON.Scene(engine);
+                // scene.clearColor = BABYLON.Color4.FromColor3(BABYLON.Color3.Green());
+                scene.clearColor.a = 0;
+                var light = new BABYLON.DirectionalLight('light', new BABYLON.Vector3(45, 45, 0), scene);
+                var camera = new BABYLON.ArcRotateCamera("PreviewCamera", 10, 10, 10, new BABYLON.Vector3(0, 0, 0), scene);
+                // camera.setPosition(new BABYLON.Vector3(20, 200, 400));
+                camera.attachControl(htmlCanvas, true);
+                camera.lowerBetaLimit = 0.1;
+                camera.upperBetaLimit = (Math.PI / 2) * 0.99;
+                camera.lowerRadiusLimit = 150;
+                var box = BABYLON.MeshBuilder.CreateSphere('box', { diameter: 80 }, scene);
+                // engine.runRenderLoop(() => {
+                //     if (scene) {
+                //         scene.render();
+                //     }
+                // });
+                scene.render();
+                BABYLON.Tools.CreateScreenshotUsingRenderTarget(engine, camera, 64, function (data) {
+                    console.log(data);
+                    thumbnail.src = data;
+                });
+            }
+            else {
+                thumbnail = document.createElement('div');
+                // (<HTMLElement>thumbnail).widt
+            }
+            item.thumbnail = thumbnail;
+            thumbnail.classList.add('thumbnail');
+            item.element.appendChild(thumbnail);
+            if (asset.has('thumbnails') && !asset.get('source')) {
+                thumbnail.style.backgroundImage = 'url("' + asset.get('thumbnails') + '")';
+            }
+            else {
+                thumbnail.classList.add('placeholder');
+            }
+            var icon = document.createElement('div');
+            icon.classList.add('icon');
+            item.element.appendChild(icon);
+            var label = item.labelElement = document.createElement('div');
+            label.classList.add('label');
+            label.textContent = asset.get('name');
+            item.element.appendChild(label);
+            var users = item.users = document.createElement('div');
+            users.classList.add('users');
+            item.element.appendChild(users);
+            // update name/filename change
+            events.push(asset.on('name:set', function (name, nameOld) {
+                // grid
+                label.textContent = asset.get('name');
+                // tree
+                if (item.tree) {
+                    item.tree.text = asset.get('name');
+                    // resort element (move match alphabetical order)
+                    var parent = item.tree.parent;
+                    item.tree.parent.element.removeChild(item.tree.element);
+                    var closest = treeFindClosest(parent, item.tree, nameOld);
+                    if (closest === -1) {
+                        parent.element.appendChild(item.tree.element);
+                    }
+                    else {
+                        parent.element.insertBefore(item.tree.element, parent.child(closest));
+                    }
+                    resizeQueue();
+                }
+                keepLegacyScriptsAtTop();
+            }));
+            events.push(asset.on('path:set', function (path, pathOld) {
+                // show or hide based on filters
+                item.hidden = !editor.call('assets:panel:filter:default')('asset', asset);
+                if (item.tree) {
+                    if (!pathOld.length || !path.length || path[path.length - 1] !== pathOld[pathOld.length - 1]) {
+                        item.tree.parent.remove(item.tree);
+                        var parent;
+                        if (path.length) {
+                            parent = assetsIndex[path[path.length - 1]].tree;
+                        }
+                        else {
+                            parent = treeRoot;
+                        }
+                        var closest = treeFindClosest(parent, item.tree);
+                        if (closest === -1) {
+                            parent.append(item.tree);
+                        }
+                        else {
+                            parent.appendBefore(item.tree, (parent.child(closest).ui));
+                        }
+                    }
+                    if (currentFolder === asset)
+                        editor.emit('assets:panel:currentFolder', currentFolder);
+                }
+                keepLegacyScriptsAtTop();
+            }));
+            if (!asset.get('source')) {
+                // used event
+                var evtUnused = editor.on('assets:used:' + asset.get('id'), function (state) {
+                    if (state) {
+                        item.class.remove('unused');
+                    }
+                    else {
+                        item.class.add('unused');
+                    }
+                });
+                // used state
+                if (!editor.call('assets:used:get', asset.get('id')))
+                    item.class.add('unused');
+                // clean events
+                item.once('destroy', function () {
+                    evtUnused.unbind();
+                });
+            }
+            // clean events
+            item.once('destroy', function () {
+                editor.call('selector:remove', asset);
+                for (var i = 0; i < events.length; i++)
+                    events[i].unbind();
+                events = null;
+                delete assetsIndex[asset.get('id')];
+                if (evtSceneSettings)
+                    evtSceneSettings.unbind();
+                if (evtAssetChanged)
+                    evtAssetChanged.unbind();
+            });
+            // grid.append(item);
+            // append to grid
+            var assets = editor.call('assets:raw');
+            if (pos === -1 || !assets.data[pos + 1]) {
+                grid.append(item);
+            }
+            else {
+                grid.appendBefore(item, assetsIndex[assets.data[pos + 1].get('id')]);
+            }
+            resizeQueue();
+            keepLegacyScriptsAtTop();
+        });
+        var keepLegacyScriptsAtTop = function () {
+            if (!legacyScripts)
+                return;
+            // resort scripts folder in grid
+            gridScripts.element.parentNode.removeChild(gridScripts.element);
+            var first = grid.element.firstChild;
+            if (first) {
+                grid.element.insertBefore(gridScripts.element, first);
+            }
+            else {
+                grid.element.appendChild(gridScripts.element);
+            }
+            // resort scripts folder in tree
+            treeScripts.element.parentNode.removeChild(treeScripts.element);
+            var next = treeRoot.elementTitle.nextSibling;
+            if (next) {
+                treeRoot.element.insertBefore(treeScripts.element, next);
+            }
+            else {
+                treeRoot.element.appendChild(treeScripts.element);
+            }
+        };
+        editor.on('assets:move', function (asset, pos) {
+            var item = assetsIndex[asset.get('id')];
+            // remove
+            grid.element.removeChild(item.element);
+            // append
+            if (pos === -1) {
+                // to end
+                grid.append(item);
+            }
+            else {
+                // before another element
+                grid.appendBefore(item, assetsIndex[editor.call('assets:raw').data[pos + 1].get('id')]);
+            }
+        });
+        editor.on('assets:remove', function (asset) {
+            var treeItem = assetsIndex[asset.get('id')].tree;
+            if (treeItem) {
+                if (treeItem.parent)
+                    treeItem.parent.remove(treeItem);
+                treeItem.destroy();
+            }
+            assetsIndex[asset.get('id')].destroy();
+            resizeQueue();
+            // reselect current directory, if selected was removed
+            if (currentFolder && typeof (currentFolder) !== 'string') {
+                var id = parseInt(currentFolder.get('id'), 10);
+                var path = asset.get('path');
+                var ind = path.indexOf(id);
+                if (id === parseInt(asset.get('id'), 10) || ind !== -1) {
+                    if (ind === -1)
+                        ind = path.length - 1;
+                    var found = false;
+                    var i = ind + 1;
+                    while (i--) {
+                        if (assetsIndex[path[i]]) {
+                            found = true;
+                            editor.call('assets:panel:currentFolder', assetsIndex[path[i]].asset);
+                            break;
+                        }
+                    }
+                    if (!found)
+                        editor.call('assets:panel:currentFolder', null);
+                }
+            }
+        });
+        var addSourceFile = function (file) {
+            file.set('type', 'script');
+            var item = new ui_1.GridItem();
+            item.script = file;
+            item.class.add('type-script');
+            grid.append(item);
+            if (!editor.call('assets:panel:filter:default')('script', file)) {
+                item.hidden = true;
+            }
+            scriptsIndex[file.get('filename')] = item;
+            var thumbnail = document.createElement('div');
+            thumbnail.classList.add('thumbnail', 'placeholder');
+            item.element.appendChild(thumbnail);
+            var icon = document.createElement('div');
+            icon.classList.add('icon');
+            item.element.appendChild(icon);
+            var label = item.labelElement = document.createElement('div');
+            label.classList.add('label');
+            label.textContent = file.get('filename');
+            item.element.appendChild(label);
+            var users = item.users = document.createElement('div');
+            users.classList.add('users');
+            item.element.appendChild(users);
+            // update name/filename change
+            var evtNameSet = file.on('filename:set', function (value, valueOld) {
+                label.textContent = value;
+                scriptsIndex[value] = item;
+                delete scriptsIndex[valueOld];
+            });
+            item.on('destroy', function () {
+                editor.call('selector:remove', file);
+                evtNameSet.unbind();
+                delete scriptsIndex[file.get('filename')];
+            });
+            file.on('destroy', function () {
+                item.destroy();
+            });
+            editor.call('drop:item', {
+                element: item.element,
+                type: 'asset.script',
+                data: {
+                    filename: file.get('filename')
+                }
+            });
+        };
+        var removeSourceFile = function (file) {
+            file.destroy();
+        };
+        editor.on('sourcefiles:add', addSourceFile);
+        editor.on('sourcefiles:remove', removeSourceFile);
+    }
+    return AssetsPanel;
+}());
+exports.AssetsPanel = AssetsPanel;
+},{"../../engine":77,"../../ui":96,"../utility":67}],7:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var AssetsPreview = /** @class */ (function () {
+    function AssetsPreview() {
+        editor.method('preview:render', function (asset, width, height, canvas, args) {
+            width = width || 1;
+            height = height || 1;
+            // render
+            editor.call('preview:' + asset.get('type') + ':render', asset, width, height, canvas, args);
+        });
+    }
+    return AssetsPreview;
+}());
+exports.AssetsPreview = AssetsPreview;
+},{}],8:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var ui_1 = require("../../ui");
+var engine_1 = require("../../engine");
+var AssetsStore = /** @class */ (function () {
+    function AssetsStore() {
+        var assetsPanel = engine_1.VeryEngine.assets;
+        var btnStore = new ui_1.Button('资源库');
+        btnStore.class.add('store');
+        assetsPanel.header.append(btnStore);
+        btnStore.on('click', function () {
+            window.open('https://store.playcanvas.com/', '_blank');
+        });
+    }
+    return AssetsStore;
+}());
+exports.AssetsStore = AssetsStore;
+},{"../../engine":77,"../../ui":96}],9:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var engine_1 = require("../../engine");
+var lib_1 = require("../../lib");
+var AssetsUpload = /** @class */ (function () {
+    function AssetsUpload() {
+        // 当前任务记录
+        var uploadJobs = 0;
+        var userSettings = editor.call('settings:projectUser');
+        // var legacyScripts = editor.call('settings:project').get('useLegacyScripts');
+        var legacyScripts = false;
+        var targetExtensions = {
+            'jpg': true,
+            'jpeg': true,
+            'png': true,
+            'gif': true,
+            'css': true,
+            'html': true,
+            'json': true,
+            'xml': true,
+            'txt': true,
+            'vert': true,
+            'frag': true,
+            'glsl': true,
+            'mp3': true,
+            'ogg': true,
+            'wav': true,
+            'mp4': true,
+            'm4a': true,
+            'js': true,
+            'atlas': true
+        };
+        var typeToExt = {
+            'scene': ['fbx', 'dae', 'obj', '3ds'],
+            'text': ['txt', 'xml', 'atlas'],
+            'html': ['html'],
+            'css': ['css'],
+            'json': ['json'],
+            'texture': ['tif', 'tga', 'png', 'jpg', 'jpeg', 'gif', 'bmp', 'dds', 'hdr', 'exr'],
+            'audio': ['wav', 'mp3', 'mp4', 'ogg', 'm4a'],
+            'shader': ['glsl', 'frag', 'vert'],
+            'script': ['js'],
+            'font': ['ttf', 'ttc', 'otf', 'dfont']
+        };
+        var extToType = {};
+        for (var type in typeToExt) {
+            for (var i = 0; i < typeToExt[type].length; i++) {
+                extToType[typeToExt[type][i]] = type;
+            }
+        }
+        editor.method('assets:canUploadFiles', function (files) {
+            // check usage first
+            var totalSize = 0;
+            for (var i = 0; i < files.length; i++) {
+                totalSize += files[i].size;
+            }
+            // 计算用户当前空间用量，假如要限制每个用户的空间大小，超过则不允许再上传
+            // return config.owner.size + totalSize <= config.owner.diskAllowance;
+            console.log('资源总容量：' + (totalSize / 1024 / 1024));
+            return true;
+        });
+        var appendCommon = function (form, args) {
+            // NOTE
+            // non-file form data should be above file,
+            // to make it parsed on back-end first
+            // branch id
+            // form.append('branchId', "config.self.branch.id");
+            //
+            // parent folder
+            if (args.parent) {
+                if (args.parent instanceof lib_1.Observer) {
+                    form.append('parent', args.parent.get('id'));
+                }
+                else {
+                    var id = parseInt(args.parent, 10);
+                    if (!isNaN(id))
+                        form.append('parent', id + '');
+                }
+            }
+            // conversion pipeline specific parameters
+            var settings = editor.call('settings:projectUser');
+            switch (args.type) {
+                case 'texture':
+                case 'textureatlas':
+                    form.append('pow2', settings.get('editor.pipeline.texturePot'));
+                    form.append('searchRelatedAssets', settings.get('editor.pipeline.searchRelatedAssets'));
+                    break;
+                case 'scene':
+                    form.append('searchRelatedAssets', settings.get('editor.pipeline.searchRelatedAssets'));
+                    form.append('overwriteModel', settings.get('editor.pipeline.overwriteModel'));
+                    form.append('overwriteAnimation', settings.get('editor.pipeline.overwriteAnimation'));
+                    form.append('overwriteMaterial', settings.get('editor.pipeline.overwriteMaterial'));
+                    form.append('overwriteTexture', settings.get('editor.pipeline.overwriteTexture'));
+                    form.append('pow2', settings.get('editor.pipeline.texturePot'));
+                    form.append('preserveMapping', settings.get('editor.pipeline.preserveMapping'));
+                    break;
+                case 'font':
+                    break;
+                default:
+                    break;
+            }
+            // filename
+            if (args.filename) {
+                form.append('filename', args.filename);
+            }
+            // file
+            if (args.file && args.file.size) {
+                form.append('file', args.file, (args.filename || args.name));
+            }
+            return form;
+        };
+        var create = function (args) {
+            var form = new FormData();
+            // scope
+            // form.append('projectId', config.project.id);
+            // type
+            if (!args.type) {
+                console.error('\"type\" required for upload request');
+            }
+            form.append('type', args.type);
+            // name
+            if (args.name) {
+                form.append('name', args.name);
+            }
+            // tags
+            if (args.tags) {
+                form.append('tags', args.tags.join('\n'));
+            }
+            // source_asset_id
+            if (args.source_asset_id) {
+                form.append('source_asset_id', args.source_asset_id);
+            }
+            // data
+            if (args.data) {
+                form.append('data', JSON.stringify(args.data));
+            }
+            // meta
+            if (args.meta) {
+                form.append('meta', JSON.stringify(args.meta));
+            }
+            // preload
+            form.append('preload', args.preload === undefined ? true : args.preload);
+            form = appendCommon(form, args);
+            return form;
+        };
+        var update = function (assetId, args) {
+            var form = new FormData();
+            form = appendCommon(form, args);
+            return form;
+        };
+        editor.method('assets:uploadFile', function (args, fn) {
+            var method = 'POST';
+            var url = '/api/assets';
+            var form = null;
+            if (args.asset) {
+                var assetId = args.asset.get('id');
+                method = 'PUT';
+                url = '/api/assets/' + assetId;
+                form = update(assetId, args);
+            }
+            else {
+                form = create(args);
+            }
+            var job = ++uploadJobs;
+            editor.call('status:job', 'asset-upload:' + job, 0);
+            var data = {
+                url: url,
+                method: method,
+                auth: true,
+                data: form,
+                ignoreContentType: true,
+                headers: {
+                    Accept: 'application/json'
+                }
+            };
+            // 上传数据，具体入口
+            // Ajax(data)
+            //     .on('load', function (status, data) {
+            //         editor.call('status:job', 'asset-upload:' + job);
+            //         if (fn) {
+            //             fn(null, data);
+            //         }
+            //     })
+            //     .on('progress', function (progress) {
+            //         editor.call('status:job', 'asset-upload:' + job, progress);
+            //     })
+            //     .on('error', function (status, data) {
+            //         if (/Disk allowance/.test(data)) {
+            //             data += '. <a href="/upgrade" target="_blank">UPGRADE</a> to get more disk space.';
+            //         }
+            //         editor.call('status:error', data);
+            //         editor.call('status:job', 'asset-upload:' + job);
+            //         if (fn) {
+            //             fn(data);
+            //         }
+            //     });
+        });
+        editor.method('assets:upload:files', function (files) {
+            if (!editor.call('assets:canUploadFiles', files)) {
+                // var msg = 'Disk allowance exceeded. <a href="/upgrade" target="_blank">UPGRADE</a> to get more disk space.';
+                // editor.call('status:error', msg);
+                return;
+            }
+            var currentFolder = editor.call('assets:panel:currentFolder');
+            // 遍历每一个文件
+            for (var i = 0; i < files.length; i++) {
+                var path = [];
+                if (currentFolder && currentFolder.get)
+                    path = currentFolder.get('path').concat(parseInt(currentFolder.get('id'), 10));
+                console.error(path);
+                var source = false;
+                var ext1 = files[i].name.split('.');
+                if (ext1.length === 1)
+                    continue;
+                var ext = ext1[ext1.length - 1].toLowerCase();
+                if (legacyScripts && ext === 'js') {
+                    editor.call('assets:upload:script', files[i]);
+                }
+                else {
+                    var type = extToType[ext] || 'binary';
+                    var source = type !== 'binary' && !targetExtensions[ext];
+                    // check if we need to convert textures to texture atlases
+                    // if (type === 'texture' && userSettings.get('editor.pipeline.textureDefaultToAtlas')) {
+                    //     type = 'textureatlas';
+                    // }
+                    // can we overwrite another asset?
+                    var sourceAsset = null;
+                    var candidates = editor.call('assets:find', function (item) {
+                        // check files in current folder only
+                        if (!item.get('path').equals(path))
+                            return false;
+                        // try locate source when dropping on its targets
+                        if (source && !item.get('source') && item.get('source_asset_id')) {
+                            var itemSource = editor.call('assets:get', item.get('source_asset_id'));
+                            if (itemSource && itemSource.get('type') === type && itemSource.get('name').toLowerCase() === files[i].name.toLowerCase()) {
+                                sourceAsset = itemSource;
+                                return false;
+                            }
+                        }
+                        if (item.get('source') === source && item.get('name').toLowerCase() === files[i].name.toLowerCase()) {
+                            // we want the same type or try to replace a texture atlas with the same name if one exists
+                            if (item.get('type') === type || (type === 'texture' && item.get('type') === 'textureatlas')) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    });
+                    // candidates contains [index, asset] entries. Each entry
+                    // represents an asset that could be overwritten by the uploaded asset.
+                    // Use the first candidate by default (or undefined if the array is empty).
+                    // If we are uploading a texture try to find a textureatlas candidate and
+                    // if one exists then overwrite the textureatlas instead.
+                    var asset = candidates[0];
+                    if (type === 'texture') {
+                        for (var j = 0; j < candidates.length; j++) {
+                            if (candidates[j][1].get('type') === 'textureatlas') {
+                                asset = candidates[j];
+                                type = 'textureatlas';
+                                break;
+                            }
+                        }
+                    }
+                    var data = null;
+                    if (ext === 'js') {
+                        data = {
+                            order: 100,
+                            scripts: {}
+                        };
+                    }
+                    editor.call('assets:uploadFile', {
+                        asset: asset ? asset[1] : sourceAsset,
+                        file: files[i],
+                        type: type,
+                        name: files[i].name,
+                        parent: editor.call('assets:panel:currentFolder'),
+                        pipeline: true,
+                        data: data,
+                        meta: asset ? asset[1].get('meta') : null
+                    }, function (err, data) {
+                        if (err || ext !== 'js')
+                            return;
+                        var onceAssetLoad = function (asset) {
+                            var url = asset.get('file.url');
+                            if (url) {
+                                editor.call('scripts:parse', asset);
+                            }
+                            else {
+                                asset.once('file.url:set', function () {
+                                    editor.call('scripts:parse', asset);
+                                });
+                            }
+                        };
+                        var asset = editor.call('assets:get', data.id);
+                        if (asset) {
+                            onceAssetLoad(asset);
+                        }
+                        else {
+                            editor.once('assets:add[' + data.id + ']', onceAssetLoad);
+                        }
+                    });
+                }
+            }
+        });
+        // 上传文件或文件夹，文件上传入口
+        editor.method('assets:upload:picker', function (args) {
+            args = args || {};
+            var parent = args.parent || editor.call('assets:panel:currentFolder');
+            var fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            // fileInput.accept = '';
+            fileInput.multiple = true;
+            fileInput.style.display = 'none';
+            fileInput.style.verticalAlign = 'middle';
+            fileInput.style.textAlign = 'center';
+            engine_1.VeryEngine.assets.append(fileInput);
+            var onChange = function () {
+                editor.call('assets:upload:files', fileInput.files);
+                // 上传文件以后，开始做一些处理
+                // 解析.babylon文件，初步处理以后上传给服务器
+                var fl = fileInput.files.length;
+                var i = 0;
+                while (i < fl) {
+                    // localize file var in the loop
+                    var file = fileInput.files[i];
+                    console.log('name: ' + file.name);
+                    console.warn('type: ' + file.type);
+                    console.warn('size: ' + file.size);
+                    // console.warn('lastModified: ' + file.lastModified);
+                    i++;
+                }
+                fileInput.value = '';
+                fileInput.removeEventListener('change', onChange);
+                fileInput.parentNode.removeChild(fileInput);
+            };
+            fileInput.addEventListener('change', onChange, false);
+            fileInput.click();
+        });
+    }
+    return AssetsUpload;
+}());
+exports.AssetsUpload = AssetsUpload;
+},{"../../engine":77,"../../lib":81}],10:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var lib_1 = require("../../lib");
 var Assets = /** @class */ (function () {
     function Assets() {
-        var assetsOverlay = new ui_1.Panel();
-        assetsOverlay.class.add('overlay');
-        engine_1.VeryEngine.assetPanel.append(assetsOverlay);
-        var p = new ui_1.Progress();
-        p.on('progress:100', function () {
-            assetsOverlay.hidden = true;
+        // var uniqueIdToItemId: any = {};
+        // assets资源排序：folder资源排列在最前面，按文件夹名字排列；其他资源按name进行后续排序;
+        var assets = new lib_1.ObserverList({
+            index: 'id',
+            sorted: function (a, b) {
+                var a1 = a.get('type') === 'folder';
+                var b1 = b.get('type') === 'folder';
+                if (a1 !== b1) {
+                    if (a1 && !b1)
+                        return -1;
+                    else
+                        return 1;
+                }
+                var na = a.get('name').toLowerCase();
+                var nb = b.get('name').toLowerCase();
+                if (na === nb) {
+                    return 0;
+                }
+                else if (na > nb) {
+                    return 1;
+                }
+                else {
+                    return -1;
+                }
+                // return a.get('name').toLowerCase().localeCompare(b.get('name').toLowerCase(), 'en');
+            }
         });
-        assetsOverlay.append(p);
-        p.hidden = false;
-        p.progress = 1;
+        // return assets ObserverList
+        editor.method('assets:raw', function () {
+            return assets;
+        });
+        // allow adding assets
+        editor.method('assets:add', function (asset) {
+            // uniqueIdToItemId[asset.get('uniqueId')] = asset.get('id');
+            var pos = assets.add(asset);
+            if (pos === null)
+                return;
+            asset.on('name:set', function (name, nameOld) {
+                name = name.toLowerCase();
+                nameOld = nameOld.toLowerCase();
+                var ind = assets.data.indexOf(asset);
+                var pos = assets.positionNextClosest(asset, function (a, b) {
+                    var a1 = a.get('type') === 'folder';
+                    var b1 = b.get('type') === 'folder';
+                    if (a1 !== b1) {
+                        if (a1 && !b1)
+                            return -1;
+                        else
+                            return 1;
+                    }
+                    var na = a.get('name').toLowerCase();
+                    var nb = b.get('name').toLowerCase();
+                    if (na === nb) {
+                        return 0;
+                    }
+                    else if (na > nb) {
+                        return 1;
+                    }
+                    else {
+                        return -1;
+                    }
+                    // return a.get('name').toLowerCase().localeCompare(b.get('name').toLowerCase(), 'en');
+                });
+                if (pos === -1 && (ind + 1) == assets.data.length)
+                    return;
+                if (ind !== -1 && (ind + 1 === pos) || (ind === pos))
+                    return;
+                if (ind < pos)
+                    pos--;
+                assets.move(asset, pos);
+                editor.emit('assets:move', asset, pos);
+            });
+            // publish added asset
+            editor.emit('assets:add[' + asset.get('id') + ']', asset, pos);
+            editor.emit('assets:add', asset, pos);
+        });
+        // allow removing assets
+        editor.method('assets:remove', function (asset) {
+            assets.remove(asset);
+        });
+        // remove all assets
+        editor.method('assets:clear', function () {
+            assets.clear();
+            editor.emit('assets:clear');
+            // uniqueIdToItemId = {};
+        });
+        // get asset by id
+        editor.method('assets:get', function (id) {
+            return assets.get(id);
+        });
+        // get asset by unique id
+        // editor.method('assets:getUnique', function (uniqueId: string) {
+        //     var id = uniqueIdToItemId[uniqueId];
+        //     return id ? assets.get(id) : null;
+        // });
+        // find assets by function
+        editor.method('assets:find', function (fn) {
+            return assets.find(fn);
+        });
+        // find one asset by function
+        editor.method('assets:findOne', function (fn) {
+            return assets.findOne(fn);
+        });
+        editor.method('assets:map', function (fn) {
+            assets.map(fn);
+        });
+        editor.method('assets:list', function () {
+            return assets.array();
+        });
+        // publish remove asset
+        assets.on('remove', function (asset) {
+            asset.destroy();
+            editor.emit('assets:remove', asset);
+            editor.emit('assets:remove[' + asset.get('id') + ']');
+            // delete uniqueIdToItemId[asset.get('uniqueId')];
+        });
     }
     return Assets;
 }());
 exports.Assets = Assets;
-},{"../../engine":49,"../../ui":68}],4:[function(require,module,exports){
+},{"../../lib":81}],11:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./assets"));
-},{"./assets":3}],5:[function(require,module,exports){
+__export(require("./assets-panel"));
+__export(require("./assets-preview"));
+__export(require("./assets-panel-control"));
+__export(require("./assets-context-menu"));
+__export(require("./assets-filter"));
+__export(require("./assets-upload"));
+__export(require("./assets-store"));
+__export(require("./keeper"));
+},{"./assets":10,"./assets-context-menu":3,"./assets-filter":4,"./assets-panel":6,"./assets-panel-control":5,"./assets-preview":7,"./assets-store":8,"./assets-upload":9,"./keeper":12}],12:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var assets_panel_1 = require("./assets-panel");
+var assets_panel_control_1 = require("./assets-panel-control");
+var assets_filter_1 = require("./assets-filter");
+var assets_upload_1 = require("./assets-upload");
+var assets_store_1 = require("./assets-store");
+var assets_context_menu_1 = require("./assets-context-menu");
+var test_1 = require("./test");
+var assets_1 = require("./assets");
+var AssetsKeeper = /** @class */ (function () {
+    function AssetsKeeper() {
+        var assets = new assets_1.Assets();
+        var assetPanel = new assets_panel_1.AssetsPanel();
+        var panelControl = new assets_panel_control_1.AssetsPanelControl();
+        var filter = new assets_filter_1.AssetsFilter();
+        var contextMenu = new assets_context_menu_1.AssetsContextMenu();
+        var upload = new assets_upload_1.AssetsUpload();
+        var library = new assets_store_1.AssetsStore();
+        var test = new test_1.TestAssets();
+    }
+    return AssetsKeeper;
+}());
+exports.AssetsKeeper = AssetsKeeper;
+},{"./assets":10,"./assets-context-menu":3,"./assets-filter":4,"./assets-panel":6,"./assets-panel-control":5,"./assets-store":8,"./assets-upload":9,"./test":13}],13:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var lib_1 = require("../../lib");
+var TestAssets = /** @class */ (function () {
+    function TestAssets() {
+        // path中后一个文件夹为最近文件夹
+        var p1 = new lib_1.Observer({ id: 'p1', name: '1.png', file: { url: 'pic/1.png' }, path: ['1', '7'], type: 'texture', thumbnails: 'pic/1.png' });
+        var p2 = new lib_1.Observer({ id: 'p2', name: '2.png', file: { url: 'pic/2.png' }, path: ['1', '7'], type: 'texture', thumbnails: 'pic/2.png' });
+        var p3 = new lib_1.Observer({ id: 'p3', name: '3.png', file: { url: 'pic/3.png' }, path: ['1', '7'], type: 'texture', thumbnails: 'pic/3.png' });
+        var p4 = new lib_1.Observer({ id: 'p4', name: '4.jpg', file: { url: 'pic/4.jpg' }, path: ['1', '7'], type: 'texture', thumbnails: 'pic/4.jpg' });
+        var p5 = new lib_1.Observer({ id: 'p5', name: '5.png', file: { url: 'pic/5.png' }, path: ['1', '7'], type: 'texture', thumbnails: 'pic/5.png' });
+        var p6 = new lib_1.Observer({ id: 'p6', name: '6.png', file: { url: 'pic/6.png' }, path: ['1', '7'], type: 'texture', thumbnails: 'pic/6.png' });
+        editor.call('assets:add', p1);
+        editor.call('assets:add', p2);
+        editor.call('assets:add', p3);
+        editor.call('assets:add', p4);
+        editor.call('assets:add', p5);
+        editor.call('assets:add', p6);
+        var a3 = new lib_1.Observer({ id: '3', name: '文件夹3', path: ['1'], type: 'folder' });
+        var a4 = new lib_1.Observer({ id: '4', name: '文件夹4', path: ['1'], type: 'folder' });
+        var a5 = new lib_1.Observer({ id: '5', name: '5文件夹', path: ['1'], type: 'folder' });
+        var a6 = new lib_1.Observer({ id: '6', name: '北京', path: ['1'], type: 'folder' });
+        var a7 = new lib_1.Observer({ id: '7', name: '浙江', path: ['1'], type: 'folder' });
+        var a8 = new lib_1.Observer({ id: '8', name: '_杭州', path: ['1'], type: 'folder' });
+        var a9 = new lib_1.Observer({ id: '9', name: '^西湖', path: ['1'], type: 'folder' });
+        var a10 = new lib_1.Observer({ id: '10', name: 'aaa', path: ['1'], type: 'folder' });
+        var a11 = new lib_1.Observer({ id: '11', name: 'ccc', path: ['1'], type: 'folder' });
+        var a12 = new lib_1.Observer({ id: '12', name: 'b被子', path: ['1'], type: 'folder' });
+        var a1 = new lib_1.Observer({ id: '1', name: '文件夹1', path: [], type: 'folder' });
+        var a2 = new lib_1.Observer({ id: '2', name: '文件夹2', path: [], type: 'folder' });
+        editor.call('assets:add', a3);
+        editor.call('assets:add', a4);
+        editor.call('assets:add', a5);
+        editor.call('assets:add', a6);
+        editor.call('assets:add', a7);
+        editor.call('assets:add', a8);
+        editor.call('assets:add', a9);
+        editor.call('assets:add', a10);
+        editor.call('assets:add', a11);
+        editor.call('assets:add', a12);
+        editor.call('assets:add', a1);
+        editor.call('assets:add', a2);
+        var t1 = new lib_1.Observer({ id: 't1', name: '0.jpg', file: { url: 'scene/1.jpg' }, path: [], type: 'texture', thumbnails: 'scene/0.jpg' });
+        var t2 = new lib_1.Observer({ id: 't2', name: '1.jpg', file: { url: 'scene/1.jpg' }, path: [], type: 'texture', thumbnails: 'scene/1.jpg' });
+        var t3 = new lib_1.Observer({ id: 't3', name: '2.jpg', file: { url: 'scene/1.jpg' }, path: [], type: 'texture', thumbnails: 'scene/2.jpg' });
+        var t4 = new lib_1.Observer({ id: 't4', name: '3.jpg', file: { url: 'scene/1.jpg' }, path: [], type: 'texture', thumbnails: 'scene/3.jpg' });
+        editor.call('assets:add', t1);
+        editor.call('assets:add', t2);
+        editor.call('assets:add', t3);
+        editor.call('assets:add', t4);
+        var img1 = new lib_1.Observer({ id: 'img1', name: 'a.mat', path: [], type: 'material' });
+        editor.call('assets:add', img1);
+    }
+    return TestAssets;
+}());
+exports.TestAssets = TestAssets;
+},{"../../lib":81}],14:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var ui_1 = require("../../../ui");
+var AttributeAssetsTexture = /** @class */ (function () {
+    function AttributeAssetsTexture() {
+        var panelsStates = {};
+        editor.on('attributes:inspect[asset]', function (assets) {
+            console.error('attributes:inspect[asset]');
+            console.error(assets);
+            for (var i = 0; i < assets.length; i++) {
+                if (assets[i].get('type') !== 'texture' && assets[i].get('type') !== 'textureatlas' || assets[i].get('source'))
+                    return;
+            }
+            var events = [];
+            var ids = [];
+            for (var i = 0; i < assets.length; i++)
+                ids.push(assets[i].get('id'));
+            var id = ids.sort(function (a, b) {
+                return a.localeCompare(b);
+            }).join(',');
+            var panelState = panelsStates[id];
+            var panelStateNew = false;
+            if (!panelState) {
+                panelStateNew = true;
+                panelState = panelsStates[id] = {};
+                panelState['texture'] = false;
+                panelState['compression'] = false;
+            }
+            // 多个材质，改变属性面板标题
+            if (assets.length > 1) {
+                var numTextures = 0;
+                var numTextureAtlases = 0;
+                for (var i = 0; i < assets.length; i++) {
+                    if (assets[i].get('type') === 'texture') {
+                        numTextures++;
+                    }
+                    else {
+                        numTextureAtlases++;
+                    }
+                }
+                var msg = '';
+                var comma = '';
+                if (numTextures) {
+                    msg += numTextures + ' Texture' + (numTextures > 1 ? 's' : '');
+                    comma = ', ';
+                }
+                if (numTextureAtlases) {
+                    msg += comma + numTextureAtlases + ' Texture Atlas' + (numTextureAtlases > 1 ? 'es' : '');
+                }
+                editor.call('attributes:header', msg);
+            }
+            // properties panel
+            var panel = editor.call('attributes:addPanel', {
+                name: 'Texture',
+                foldable: true,
+                folded: panelState['texture']
+            });
+            panel.class.add('component');
+            panel.on('fold', function () { panelState['texture'] = true; });
+            panel.on('unfold', function () { panelState['texture'] = false; });
+            // reference
+            editor.call('attributes:reference:attach', 'asset:texture:asset', panel, panel.headerElement);
+            // Calculate Meta按钮，暂时没用其实
+            var btnGetMeta = new ui_1.Button('Calculate Meta');
+            btnGetMeta.class.add('calculate-meta', 'large-with-icon');
+            var btnGetMetaVisibility = function () {
+                var visible = false;
+                for (var i = 0; i < assets.length; i++) {
+                    if (!visible && !assets[i].get('meta'))
+                        visible = true;
+                }
+                btnGetMeta.hidden = !visible;
+            };
+            btnGetMeta.on('click', function () {
+                if (!editor.call('permissions:write'))
+                    return;
+                for (var i = 0; i < assets.length; i++) {
+                    if (assets[i].get('meta'))
+                        continue;
+                    editor.call('realtime:send', 'pipeline', {
+                        name: 'meta',
+                        id: assets[i].get('uniqueId')
+                    });
+                }
+                btnGetMeta.enabled = false;
+            });
+            panel.append(btnGetMeta);
+            btnGetMetaVisibility();
+            for (var i = 0; i < assets.length; i++) {
+                if (btnGetMeta.hidden && !assets[i].get('meta'))
+                    btnGetMeta.hidden = false;
+                events.push(assets[i].on('meta:set', function () {
+                    btnGetMetaVisibility();
+                }));
+                events.push(assets[i].on('meta:unset', function () {
+                    btnGetMeta.hidden = false;
+                }));
+            }
+            // width
+            var fieldWidth = editor.call('attributes:addField', {
+                parent: panel,
+                name: 'Width',
+                link: assets,
+                path: 'meta.width',
+                placeholder: 'pixels'
+            });
+            // reference
+            editor.call('attributes:reference:attach', 'asset:texture:width', fieldWidth.parent.innerElement.firstChild.ui);
+            // height
+            var fieldHeight = editor.call('attributes:addField', {
+                parent: panel,
+                name: 'Height',
+                link: assets,
+                path: 'meta.height',
+                placeholder: 'pixels'
+            });
+            // reference
+            editor.call('attributes:reference:attach', 'asset:texture:height', fieldHeight.parent.innerElement.firstChild.ui);
+            // depth
+            var fieldDepth = editor.call('attributes:addField', {
+                parent: panel,
+                name: 'Depth',
+                link: assets,
+                path: 'meta.depth',
+                placeholder: 'bit'
+            });
+            var checkDepthField = function () {
+                if (!fieldDepth.value)
+                    fieldDepth.element.innerHTML = 'unknown';
+            };
+            checkDepthField();
+            fieldDepth.on('change', checkDepthField);
+            // reference
+            editor.call('attributes:reference:attach', 'asset:texture:depth', fieldDepth.parent.innerElement.firstChild.ui);
+            // alpha
+            var fieldAlpha = editor.call('attributes:addField', {
+                parent: panel,
+                name: 'Alpha',
+                link: assets,
+                path: 'meta.alpha'
+            });
+            var checkAlphaField = function () {
+                if (!fieldAlpha.value)
+                    fieldAlpha.element.innerHTML = 'false';
+            };
+            checkAlphaField();
+            fieldAlpha.on('change', checkAlphaField);
+            // reference
+            editor.call('attributes:reference:attach', 'asset:texture:alpha', fieldAlpha.parent.innerElement.firstChild.ui);
+            // interlaced
+            var fieldInterlaced = editor.call('attributes:addField', {
+                parent: panel,
+                name: 'Interlaced',
+                link: assets,
+                path: 'meta.interlaced'
+            });
+            var checkInterlacedField = function () {
+                if (!fieldInterlaced.value)
+                    fieldInterlaced.element.innerHTML = 'false';
+            };
+            checkInterlacedField();
+            fieldInterlaced.on('change', checkInterlacedField);
+            // reference
+            editor.call('attributes:reference:attach', 'asset:texture:interlaced', fieldInterlaced.parent.innerElement.firstChild.ui);
+            // rgbm
+            var fieldRgbm = editor.call('attributes:addField', {
+                parent: panel,
+                name: 'Rgbm',
+                link: assets,
+                path: 'data.rgbm',
+                type: 'checkbox'
+            });
+            // reference
+            editor.call('attributes:reference:attach', 'asset:texture:rgbm', fieldRgbm.parent.innerElement.firstChild.ui);
+            // mipmaps
+            var fieldMips = editor.call('attributes:addField', {
+                parent: panel,
+                name: 'Mipmaps',
+                link: assets,
+                path: 'data.mipmaps',
+                type: 'checkbox'
+            });
+            // reference
+            editor.call('attributes:reference:attach', 'asset:texture:mipmaps', fieldMips.parent.innerElement.firstChild.ui);
+            // filtering
+            var fieldFiltering = editor.call('attributes:addField', {
+                parent: panel,
+                name: 'Filtering',
+                type: 'string',
+                enum: {
+                    '': '...',
+                    'nearest': 'Point',
+                    'linear': 'Linear'
+                }
+            });
+            // reference
+            editor.call('attributes:reference:attach', 'asset:texture:filtering', fieldFiltering.parent.innerElement.firstChild.ui);
+            // preview
+            if (assets.length === 1) {
+                var root = editor.call('attributes.rootPanel');
+                var reloadImage = function () {
+                    // if (assets[0].get('file.url') && assets[0].get('file.hash')) {
+                    //     image.src = assets[0].get('file.url').appendQuery('t=' + assets[0].get('file.hash'));
+                    //     previewContainer.style.display = '';
+                    // } else {
+                    //     previewContainer.style.display = 'none';
+                    // }
+                    if (assets[0].get('file.url')) {
+                        image.src = assets[0].get('file.url');
+                        previewContainer.style.display = '';
+                    }
+                    else {
+                        previewContainer.style.display = 'none';
+                    }
+                };
+                var previewContainer = document.createElement('div');
+                previewContainer.classList.add('asset-preview-container');
+                var preview = document.createElement('div');
+                preview.classList.add('asset-preview');
+                var image = new Image();
+                image.onload = function () {
+                    root.class.add('animate');
+                    preview.style.backgroundImage = 'url("' + image.src + '")';
+                };
+                reloadImage();
+                previewContainer.appendChild(preview);
+                preview.addEventListener('click', function () {
+                    if (root.element.classList.contains('large')) {
+                        root.element.classList.remove('large');
+                    }
+                    else {
+                        root.element.classList.add('large');
+                    }
+                }, false);
+                root.class.add('asset-preview');
+                root.element.insertBefore(previewContainer, root.innerElement);
+                var eventsPreview = [];
+                eventsPreview.push(assets[0].on('file.hash:set', reloadImage));
+                eventsPreview.push(assets[0].on('file.url:set', reloadImage));
+                panel.on('destroy', function () {
+                    for (var i = 0; i < eventsPreview.length; i++)
+                        eventsPreview[i].unbind();
+                    previewContainer.parentNode.removeChild(previewContainer);
+                    root.class.remove('asset-preview', 'animate');
+                });
+            }
+            panel.once('destroy', function () {
+                for (var i = 0; i < events.length; i++)
+                    events[i].unbind();
+            });
+        });
+    }
+    return AttributeAssetsTexture;
+}());
+exports.AttributeAssetsTexture = AttributeAssetsTexture;
+},{"../../../ui":96}],15:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var ui_1 = require("../../ui");
+var AttributesAssets = /** @class */ (function () {
+    function AttributesAssets() {
+        var sourceRuntimeOptions = {
+            '-1': 'various',
+            '0': 'yes',
+            '1': 'no'
+        };
+        var editableTypes = {
+            'script': 1,
+            'css': 1,
+            'html': 1,
+            'shader': 1,
+            'text': 1,
+            'json': 1
+        };
+        var legacyScripts = false;
+        var assetsPanel = null;
+        editor.on('attributes:inspect[asset]', function (assets) {
+            var events = [];
+            // unfold panel
+            var panel = editor.call('attributes.rootPanel');
+            if (panel.folded)
+                panel.folded = false;
+            var multi = assets.length > 1;
+            var type = ((assets[0].get('source') && assets[0].get('type') !== 'folder') ? 'source ' : '') + assets[0].get('type');
+            if (multi) {
+                editor.call('attributes:header', assets.length + ' assets');
+                for (var i = 0; i < assets.length; i++) {
+                    if (type !== ((assets[0].get('source') && assets[0].get('type') !== 'folder') ? 'source ' : '') + assets[i].get('type')) {
+                        type = '';
+                        break;
+                    }
+                }
+            }
+            else {
+                editor.call('attributes:header', type);
+            }
+            // panel
+            var panel = editor.call('attributes:addPanel');
+            panel.class.add('component');
+            assetsPanel = panel;
+            panel.once('destroy', function () {
+                assetsPanel = null;
+                for (var i = 0; i < events.length; i++)
+                    events[i].unbind();
+                events = null;
+            });
+            // 暂时不考虑
+            /*
+            var allBundles = editor.call('assets:bundles:list');
+            var bundlesEnum = { "": "" };
+            for (var i = 0; i < allBundles.length; i++) {
+                bundlesEnum[allBundles[i].get('id')] = allBundles[i].get('name');
+            }
+            */
+            if (multi) {
+                var fieldFilename = editor.call('attributes:addField', {
+                    parent: panel,
+                    name: 'Assets',
+                    value: assets.length
+                });
+                var scriptSelected = false;
+            }
+            else {
+                if (legacyScripts && assets[0].get('type') === 'script') {
+                    // filename
+                    var fieldFilename = editor.call('attributes:addField', {
+                        parent: panel,
+                        name: 'Filename',
+                        // type: 'string',
+                        link: assets[0],
+                        path: 'filename'
+                    });
+                    // reference
+                    editor.call('attributes:reference:attach', 'asset:script:filename', fieldFilename.parent.innerElement.firstChild.ui);
+                }
+                else {
+                    // id
+                    var fieldId = editor.call('attributes:addField', {
+                        parent: panel,
+                        name: 'ID',
+                        link: assets[0],
+                        path: 'id'
+                    });
+                    // reference
+                    editor.call('attributes:reference:attach', 'asset:id', fieldId.parent.innerElement.firstChild.ui);
+                    // name
+                    var fieldName = editor.call('attributes:addField', {
+                        parent: panel,
+                        name: 'Name',
+                        type: 'string',
+                        value: assets[0].get('name')
+                    });
+                    events.push(assets[0].on('name:set', function (newName) {
+                        fieldName.value = newName;
+                    }));
+                    events.push(fieldName.on('change', function (newName) {
+                        if (newName !== assets[0].get('name')) {
+                            editor.call('assets:rename', assets[0], newName);
+                        }
+                    }));
+                    fieldName.class.add('asset-name');
+                    // reference
+                    editor.call('attributes:reference:attach', 'asset:name', fieldName.parent.innerElement.firstChild.ui);
+                    if (!assets[0].get('source') && assets[0].get('type') !== 'folder') {
+                        // tags
+                        var fieldTags = editor.call('attributes:addField', {
+                            parent: panel,
+                            name: 'Tags',
+                            placeholder: 'Add Tag',
+                            type: 'tags',
+                            tagType: 'string',
+                            link: assets[0],
+                            path: 'tags'
+                        });
+                        // reference
+                        editor.call('attributes:reference:attach', 'asset:tags', fieldTags.parent.parent.innerElement.firstChild.ui);
+                    }
+                    // runtime
+                    var runtime = sourceRuntimeOptions[assets[0].get('source') ? '1' : '0'];
+                    // var runtime = sourceRuntimeOptions['0'];
+                    if (assets[0].get('type') === 'folder')
+                        runtime = sourceRuntimeOptions['1'];
+                    var fieldRuntime = editor.call('attributes:addField', {
+                        parent: panel,
+                        name: 'Runtime',
+                        value: runtime
+                    });
+                    // reference
+                    editor.call('attributes:reference:attach', 'asset:runtime', fieldRuntime.parent.innerElement.firstChild.ui);
+                    // taskInfo
+                    var fieldFailed = editor.call('attributes:addField', {
+                        parent: panel,
+                        name: 'Failed',
+                        link: assets[0],
+                        path: 'taskInfo'
+                    });
+                    fieldFailed.class.add('error');
+                    var checkFailed = function () {
+                        fieldFailed.parent.hidden = assets[0].get('task') !== 'failed' || !assets[0].get('taskInfo');
+                    };
+                    checkFailed();
+                    events.push(assets[0].on('task:set', checkFailed));
+                    events.push(assets[0].on('taskInfo:set', checkFailed));
+                    events.push(assets[0].on('taskInfo:unset', checkFailed));
+                }
+                // type
+                var fieldType = editor.call('attributes:addField', {
+                    parent: panel,
+                    name: 'Type',
+                    value: type
+                });
+                // reference
+                editor.call('attributes:reference:attach', 'asset:type', fieldType.parent.innerElement.firstChild.ui);
+                // reference type
+                if (!assets[0].get('source'))
+                    editor.call('attributes:reference:asset:' + assets[0].get('type') + ':asset:attach', fieldType);
+                if (!(legacyScripts && assets[0].get('type') === 'script') && assets[0].get('type') !== 'folder' && !assets[0].get('source')) {
+                    // preload
+                    var fieldPreload = editor.call('attributes:addField', {
+                        parent: panel,
+                        name: 'Preload',
+                        type: 'checkbox',
+                        link: assets[0],
+                        path: 'preload'
+                    });
+                    fieldPreload.parent.class.add('preload');
+                    editor.call('attributes:reference:attach', 'asset:preload', fieldPreload.parent.innerElement.firstChild.ui);
+                }
+                // size
+                /*
+                if (assets[0].has('file') || assets[0].get('type') === 'bundle') {
+                    var size = assets[0].get('type') === 'bundle' ? editor.call('assets:bundles:calculateSize', assets[0]) : assets[0].get('file.size');
+                    var fieldSize = editor.call('attributes:addField', {
+                        parent: panel,
+                        name: 'Size',
+                        value: bytesToHuman(size)
+                    });
+
+                    var evtSize = [];
+                    evtSize.push(assets[0].on('file:set', function (value) {
+                        fieldSize.text = bytesToHuman(value ? value.size : 0);
+                    }));
+
+                    evtSize.push(assets[0].on('file.size:set', function (value) {
+                        fieldSize.text = bytesToHuman(value);
+                    }));
+
+                    if (assets[0].get('type') === 'bundle') {
+                        var recalculateSize = function () {
+                            fieldSize.text = bytesToHuman(editor.call('assets:bundles:calculateSize', assets[0]));
+                        };
+
+                        evtSize.push(assets[0].on('data.assets:set', recalculateSize));
+                        evtSize.push(assets[0].on('data.assets:insert', recalculateSize));
+                        evtSize.push(assets[0].on('data.assets:remove', recalculateSize));
+                    }
+
+                    panel.once('destroy', function () {
+                        for (var i = 0; i < evtSize.length; i++) {
+                            evtSize[i].unbind();
+                        }
+                        evtSize.length = 0;
+                    });
+
+                    // reference
+                    editor.call('attributes:reference:attach', 'asset:size', fieldSize.parent.innerElement.firstChild.ui);
+                }
+                */
+                // 下载区域按钮
+                var panelButtons = new ui_1.Panel();
+                panelButtons.class.add('buttons');
+                panel.append(panelButtons);
+                // download
+                if (assets[0].get('type') !== 'folder' && !(legacyScripts && assets[0].get('type') === 'script') && assets[0].get('type') !== 'sprite') {
+                    // download
+                    var btnDownload = new ui_1.Button();
+                    btnDownload.hidden = !editor.call('permissions:read');
+                    var evtBtnDownloadPermissions = editor.on('permissions:set:' + 'id', function () {
+                        btnDownload.hidden = !editor.call('permissions:read');
+                    });
+                    btnDownload.text = 'Download';
+                    btnDownload.class.add('download-asset', 'large-with-icon');
+                    btnDownload.element.addEventListener('click', function (evt) {
+                        // if (btnDownload.prevent)
+                        //     return;
+                        // 下载
+                        if (assets[0].get('source') || assets[0].get('type') === 'texture' || assets[0].get('type') === 'audio') {
+                            window.open(assets[0].get('file.url'));
+                        }
+                        else {
+                            window.open('/api/assets/' + assets[0].get('id') + '/download?branchId=' + 'id');
+                        }
+                    });
+                    panelButtons.append(btnDownload);
+                    btnDownload.once('destroy', function () {
+                        evtBtnDownloadPermissions.unbind();
+                    });
+                }
+            }
+        });
+        editor.on('attributes:assets:toggleInfo', function (enabled) {
+            if (assetsPanel) {
+                assetsPanel.hidden = !enabled;
+            }
+        });
+        editor.method('attributes:assets:panel', function () {
+            return assetsPanel;
+        });
+    }
+    return AttributesAssets;
+}());
+exports.AttributesAssets = AttributesAssets;
+},{"../../ui":96}],16:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var AttributesEntity = /** @class */ (function () {
@@ -439,7 +4031,7 @@ var AttributesFieldArgs = /** @class */ (function () {
     return AttributesFieldArgs;
 }());
 exports.AttributesFieldArgs = AttributesFieldArgs;
-},{}],6:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var AttributeHistory = /** @class */ (function () {
@@ -448,16 +4040,16 @@ var AttributeHistory = /** @class */ (function () {
     return AttributeHistory;
 }());
 exports.AttributeHistory = AttributeHistory;
-},{}],7:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ui_1 = require("../../ui");
 var engine_1 = require("../../engine");
 var AttributesPanel = /** @class */ (function () {
     function AttributesPanel() {
-        this.inspectedItems = [];
+        // private inspectedItems: EventHandle[] = [];
         this.title = '属性面板';
-        this.root = engine_1.VeryEngine.attributesPanel;
+        this.root = engine_1.VeryEngine.attributes;
         this.init();
     }
     AttributesPanel.prototype.init = function () {
@@ -466,7 +4058,7 @@ var AttributesPanel = /** @class */ (function () {
         editor.method('attributes:clear', this.clearPanel);
         // set header
         editor.method('attributes:header', function (text) {
-            self.root.header = text;
+            self.root.headerText = text;
         });
         // return root panel
         editor.method('attributes.rootPanel', function () {
@@ -484,1576 +4076,572 @@ var AttributesPanel = /** @class */ (function () {
             panel.folded = args.folded || false;
             return panel;
         });
-        // var historyState = function (item, state) {
-        //   if (item.history !== undefined) {
-        //     if (typeof (item.history) === 'boolean') {
-        //       item.history = state;
-        //     } else {
-        //       item.history.enabled = state;
-        //     }
-        //   } else {
-        //     if (item._parent && item._parent.history !== undefined) {
-        //       item._parent.history.enabled = state;
-        //     }
-        //   }
-        // };
-        /* *
-    
-        // 属性面板添加field，关联相关数据
-        editor.method('attributes:addField', function (args: any) {
-          var panel = args.panel;
-    
-          if (!panel) {
-            panel = new Panel();
-            panel.flexWrap = 'nowrap';
-            panel.WebkitFlexWrap = 'nowrap';
-            panel.style!.display = '';
-    
-            if (args.type) {
-              panel.class!.add('field-' + args.type);
-            } else {
-              panel.class!.add('field');
+        // TODO
+        var historyState = function (item, state) {
+            if (item.history !== undefined) {
+                if (typeof (item.history) === 'boolean') {
+                    item.history = state;
+                }
+                else {
+                    item.history.enabled = state;
+                }
             }
-    
-            (args.parent || self.root).append(panel);
-          }
-    
-          if (args.name) {
-            var label = new Label(args.name);
-            label.class!.add('label-field');
-            panel._label = label;
-            panel.append(label);
-    
-            if (args.reference) {
-              var tooltip = label.tooltip = editor.call('attributes:reference', {
-                element: label.element,
-                title: args.reference.title,
-                subTitle: args.reference.subTitle,
-                description: args.reference.description
-              });
-    
-              tooltip.attach({
-                target: label,
-                element: label.element
-              });
+            else {
+                if (item._parent && item._parent.history !== undefined) {
+                    item._parent.history.enabled = state;
+                }
             }
-          }
-    
-          var field: Element;
-    
-          args.linkEvents = [];
-    
-          // if we provide multiple paths for a single Observer then turn args.link into an array
-          if (args.paths && args.paths instanceof Array && args.link && !(args.link instanceof Array)) {
-            var link = args.link;
-            args.link = [];
-            for (var i = 0; i < args.paths.length; i++) {
-              args.link.push(link);
-            }
-          }
-    
-          var linkField = args.linkField = function () {
-            if (args.link) {
-              var link = function (field: Element, path?: string | string[]) {
-                var data = {
-                  field: field,
-                  type: args.type,
-                  slider: args.slider,
-                  enum: args.enum,
-                  link: args.link,
-                  trim: args.trim,
-                  name: args.name,
-                  stopHistory: args.stopHistory,
-                  paths: [''],
-                  path: ''
-                };
-    
-                if (!path) {
-                  path = args.paths || args.path;
-                }
-    
-                if (path instanceof Array) {
-                  data.paths = path;
-                } else {
-                  data.path = path || '';
-                }
-    
-                args.linkEvents = args.linkEvents.concat(editor.call('attributes:linkField', data));
-    
-                // Give the field a uniquely addressable css class that we can target from Selenium
-                if (field.element && typeof path === 'string') {
-                  field.element.classList.add('field-path-' + path.replace(/\./g, '-'));
-                }
-              };
-    
-              if (field instanceof Array) {
-                for (var i = 0; i < field.length; i++) {
-                  var paths = args.paths;
-    
-                  if (paths) {
-                    paths = paths.map(function (p: string) {
-                      return p + '.' + i;
-                    });
-                  }
-    
-                  link(field[i], paths || (args.path + '.' + i));
-                }
-              } else {
-                link(field);
-              }
-            }
-          };
-    
-          var unlinkField = args.unlinkField = function () {
-            for (var i = 0; i < args.linkEvents.length; i++)
-              args.linkEvents[i].unbind();
-    
-            args.linkEvents = [];
-          };
-    
-          switch (args.type) {
-            case 'string':
-              if (args.enum) {
-                field = new SelectField({
-                  options: args.enum
-                });
-              } else {
-                field = new TextField();
-              }
-    
-              field.value = args.value || '';
-              field.flexGrow = '1';
-    
-              if (args.placeholder) {
-                if (field instanceof SelectField) {
-                  (<SelectField>field).placeholder = args.placeholder;
-                } else {
-                  (<TextField>field).placeholder = args.placeholder;
-                }
-              }
-    
-              linkField();
-    
-              panel.append(field);
-              break;
-    
-            case 'tags':
-              // TODO: why isn't this in a seperate class/file???
-    
-              var innerPanel = new Panel();
-              var tagType = args.tagType || 'string';
-    
-              if (args.enum) {
-                field = new SelectField({
-                  options: args.enum,
-                  type: tagType
-                });
-                field.renderChanges = false;
-                field.on('change', function (value: any) {
-                  if (tagType === 'string') {
-                    if (!value) return;
-    
-                    value = value.trim();
-                  }
-    
-                  addTag(value);
-                  field.value = '';
-                });
-    
-                innerPanel.append(field);
-    
-              } else {
-                field = new TextField();
-                (<TextField>field).blurOnEnter = false;
-                field.renderChanges = false;
-    
-                field.element!.addEventListener('keydown', function (evt) {
-                  if (evt.keyCode !== 13 || !field.value)
-                    return;
-    
-                  addTag(field.value.trim());
-                  field.value = '';
-                });
-    
-                innerPanel.append(field);
-    
-                var btnAdd = new Button('&#57632');
-                btnAdd.flexGrow = '0';
-                btnAdd.on('click', function () {
-                  if (!field.value)
-                    return;
-    
-                  addTag(field.value.trim());
-                  field.value = '';
-                });
-                innerPanel.append(btnAdd);
-              }
-    
-    
-              var tagsPanel = new Panel();
-              tagsPanel.class!.add('tags');
-              tagsPanel.flex = true;
-              innerPanel.append(tagsPanel);
-    
-              var tagItems = {};
-              var tagIndex = {};
-              var tagList = [];
-    
-              var onRemoveClick = function () {
-                if (innerPanel.disabled)
-                  return;
-    
-                removeTag(this.tag);
-              };
-    
-              var removeTag = function (tag) {
-                if (tagType === 'string' && !tag) {
-                  return;
-                } else if (tag === null || tag === undefined) {
-                  return;
-                }
-    
-                if (!tagIndex.hasOwnProperty(tag))
-                  return;
-    
-                var records = [];
-    
-                for (var i = 0; i < args.link.length; i++) {
-                  var path = pathAt(args, i);
-                  if (args.link[i].get(path).indexOf(tag) === -1)
-                    continue;
-    
-                  records.push({
-                    get: args.link[i].history !== undefined ? args.link[i].history._getItemFn : null,
-                    item: args.link[i],
-                    path: path,
-                    value: tag
-                  });
-    
-                  historyState(args.link[i], false);
-                  args.link[i].removeValue(path, tag);
-                  historyState(args.link[i], true);
-                }
-    
-                if (!args.stopHistory) {
-                  editor.call('history:add', {
-                    name: pathAt(args, 0),
-                    undo: function () {
-                      for (var i = 0; i < records.length; i++) {
-                        var item;
-                        if (records[i].get) {
-                          item = records[i].get();
-                          if (!item)
-                            continue;
-                        } else {
-                          item = records[i].item;
-                        }
-    
-                        historyState(item, false);
-                        item.insert(records[i].path, records[i].value);
-                        historyState(item, true);
-                      }
-                    },
-                    redo: function () {
-                      for (var i = 0; i < records.length; i++) {
-                        var item;
-                        if (records[i].get) {
-                          item = records[i].get();
-                          if (!item)
-                            continue;
-                        } else {
-                          item = records[i].item;
-                        }
-    
-                        historyState(item, false);
-                        item.removeValue(records[i].path, records[i].value);
-                        historyState(item, true);
-                      }
-                    }
-                  });
-                }
-              };
-    
-              var addTag = function (tag) {
-                var records = [];
-    
-                // convert to number if needed
-                if (args.tagType === 'number') {
-                  tag = parseInt(tag, 10);
-                  if (isNaN(tag))
-                    return;
-                }
-    
-                for (var i = 0; i < args.link.length; i++) {
-                  var path = pathAt(args, i);
-                  if (args.link[i].get(path).indexOf(tag) !== -1)
-                    continue;
-    
-                  records.push({
-                    get: args.link[i].history !== undefined ? args.link[i].history._getItemFn : null,
-                    item: args.link[i],
-                    path: path,
-                    value: tag
-                  });
-    
-                  historyState(args.link[i], false);
-                  args.link[i].insert(path, tag);
-                  historyState(args.link[i], true);
-                }
-    
-                if (!args.stopHistory) {
-                  editor.call('history:add', {
-                    name: pathAt(args, 0),
-                    undo: function () {
-                      for (var i = 0; i < records.length; i++) {
-                        var item;
-                        if (records[i].get) {
-                          item = records[i].get();
-                          if (!item)
-                            continue;
-                        } else {
-                          item = records[i].item;
-                        }
-    
-                        historyState(item, false);
-                        item.removeValue(records[i].path, records[i].value);
-                        historyState(item, true);
-                      }
-                    },
-                    redo: function () {
-                      for (var i = 0; i < records.length; i++) {
-                        var item;
-                        if (records[i].get) {
-                          item = records[i].get();
-                          if (!item)
-                            continue;
-                        } else {
-                          item = records[i].item;
-                        }
-    
-                        historyState(item, false);
-                        item.insert(records[i].path, records[i].value);
-                        historyState(item, true);
-                      }
-                    }
-                  });
-                }
-              };
-    
-              var onInsert = function (tag) {
-                if (!tagIndex.hasOwnProperty(tag)) {
-                  tagIndex[tag] = 0;
-                  tagList.push(tag);
-                }
-    
-                tagIndex[tag]++;
-                insertElement(tag);
-              };
-    
-              var onRemove = function (tag) {
-                if (!tagIndex[tag])
-                  return;
-    
-                tagIndex[tag]--;
-    
-                if (!tagIndex[tag]) {
-                  tagsPanel.innerElement.removeChild(tagItems[tag]);
-                  var ind = tagList.indexOf(tag);
-                  if (ind !== -1)
-                    tagList.splice(ind, 1);
-    
-                  delete tagItems[tag];
-                  delete tagIndex[tag];
-                } else {
-                  if (tagIndex[tag] === args.link.length) {
-                    tagItems[tag].classList.remove('partial');
-                  } else {
-                    tagItems[tag].classList.add('partial');
-                  }
-                }
-              };
-    
-              // when tag field is initialized
-              var onSet = function (values) {
-                for (var i = 0; i < values.length; i++) {
-                  var value = values[i];
-                  onInsert(value);
-                }
-              };
-    
-              var insertElement = function (tag) {
-                if (!tagItems[tag]) {
-                  sortTags();
-    
-                  var item = document.createElement('div');
-                  tagItems[tag] = item;
-                  item.classList.add('tag');
-                  var itemText = document.createElement('span');
-                  itemText.textContent = args.tagToString ? args.tagToString(tag) : tag;
-                  item.appendChild(itemText);
-    
-                  // the original tag value before tagToString is called. Useful
-                  // if the tag value is an id for example
-                  item.originalValue = tag;
-    
-                  // attach click handler on text part of the tag - bind the listener
-                  // to the tag item so that `this` refers to that tag in the listener
-                  if (args.onClickTag) {
-                    itemText.addEventListener('click', args.onClickTag.bind(item));
-                  }
-    
-                  var icon = document.createElement('span');
-                  icon.innerHTML = '&#57650;';
-                  icon.classList.add('icon');
-                  icon.tag = tag;
-                  icon.addEventListener('click', onRemoveClick, false);
-                  item.appendChild(icon);
-    
-                  var ind = tagList.indexOf(tag);
-                  if (tagItems[tagList[ind + 1]]) {
-                    tagsPanel.appendBefore(item, tagItems[tagList[ind + 1]]);
-                  } else {
-                    tagsPanel.append(item);
-                  }
-                }
-    
-                if (tagIndex[tag] === args.link.length) {
-                  tagItems[tag].classList.remove('partial');
-                } else {
-                  tagItems[tag].classList.add('partial');
-                }
-              };
-    
-              var sortTags = function () {
-                tagList.sort(function (a, b) {
-                  if (args.tagToString) {
-                    a = args.tagToString(a);
-                    b = args.tagToString(b);
-                  }
-    
-                  if (a > b) {
-                    return 1;
-                  } else if (a < b) {
-                    return -1;
-                  } else {
-                    return 0;
-                  }
-                });
-              };
-    
-              if (args.placeholder)
-                field.placeholder = args.placeholder;
-    
-              // list
-              args.linkEvents = [];
-    
-              args.linkField = function () {
-                if (args.link) {
-                  if (!(args.link instanceof Array))
-                    args.link = [args.link];
-    
-                  for (var i = 0; i < args.link.length; i++) {
-                    var path = pathAt(args, i);
-                    var tags = args.link[i].get(path);
-    
-                    args.linkEvents.push(args.link[i].on(path + ':set', onSet));
-                    args.linkEvents.push(args.link[i].on(path + ':insert', onInsert));
-                    args.linkEvents.push(args.link[i].on(path + ':remove', onRemove));
-    
-                    if (!tags)
-                      continue;
-    
-                    for (var t = 0; t < tags.length; t++) {
-                      if (tagType === 'string' && !tags[t]) {
-                        continue;
-                      } else if (tags[t] === null || tags[t] === undefined) {
-                        continue;
-                      }
-    
-                      if (!tagIndex.hasOwnProperty(tags[t])) {
-                        tagIndex[tags[t]] = 0;
-                        tagList.push(tags[t]);
-                      }
-    
-                      tagIndex[tags[t]]++;
-                    }
-                  }
-                }
-    
-                sortTags();
-    
-                for (var i = 0; i < tagList.length; i++)
-                  insertElement(tagList[i]);
-              };
-    
-              args.unlinkField = function () {
-                for (var i = 0; i < args.linkEvents.length; i++)
-                  args.linkEvents[i].unbind();
-    
-                args.linkEvents = [];
-    
-                for (var key in tagItems)
-                  tagsPanel.innerElement.removeChild(tagItems[key]);
-    
-                tagList = [];
-                tagIndex = {};
-                tagItems = {};
-              };
-    
-              args.linkField();
-    
-              panel.once('destroy', args.unlinkField);
-    
-              panel.append(innerPanel);
-              break;
-    
-            case 'text':
-              field = new TextAreaField();
-    
-              field.value = args.value || '';
-              field.flexGrow = '1';
-    
-              if (args.placeholder)
-                field.placeholder = args.placeholder;
-    
-              linkField();
-    
-              panel.append(field);
-              break;
-    
-            case 'number':
-              if (args.enum) {
-                field = new SelectField({
-                  options: args.enum,
-                  type: 'number'
-                });
-              } else if (args.slider) {
-                field = new Slider();
-              } else {
-                field = new NumberField();
-              }
-    
-              field.value = args.value || 0;
-              field.flexGrow = '1';
-    
-              if (args.allowNull) {
-                field.allowNull = true;
-              }
-    
-              if (args.placeholder)
-                field.placeholder = args.placeholder;
-    
-              if (args.precision != null)
-                field.precision = args.precision;
-    
-              if (args.step != null)
-                field.step = args.step;
-    
-              if (args.min != null)
-                field.min = args.min;
-    
-              if (args.max != null)
-                field.max = args.max;
-    
-              linkField();
-    
-              panel.append(field);
-              break;
-    
-            case 'checkbox':
-              if (args.enum) {
-                field = new SelectField({
-                  options: args.enum,
-                  type: 'boolean'
-                });
-                field.flexGrow = '1';
-              } else {
-                field = new Checkbox();
-              }
-    
-              field.value = args.value || 0;
-              field.class!.add('tick');
-    
-              linkField();
-    
-              panel.append(field);
-              break;
-    
-            case 'vec2':
-            case 'vec3':
-            case 'vec4':
-              var channels = parseInt(args.type[3], 10);
-              field = [];
-    
-              for (var i = 0; i < channels; i++) {
-                field[i] = new NumberField();
-                field[i].flexGrow = '1';
-                field[i].style!.width = '24px';
-                field[i].value = (args.value && args.value[i]) || 0;
-                panel.append(field[i]);
-    
-                if (args.placeholder)
-                  field[i].placeholder = args.placeholder[i];
-    
-                if (args.precision != null)
-                  field[i].precision = args.precision;
-    
-                if (args.step != null)
-                  field[i].step = args.step;
-    
-                if (args.min != null)
-                  field[i].min = args.min;
-    
-                if (args.max != null)
-                  field[i].max = args.max;
-    
-                // if (args.link)
-                //     field[i].link(args.link, args.path + '.' + i);
-              }
-    
-              linkField();
-              break;
-    
-            case 'rgb':
-              field = new ColorField();
-    
-              if (args.channels != null)
-                field.channels = args.channels;
-    
-              linkField();
-    
-              var colorPickerOn = false;
-              field.on('click', function () {
-                colorPickerOn = true;
-                var first = true;
-    
-                // set picker color
-                editor.call('picker:color', field.value);
-    
-                // picking starts
-                var evtColorPickStart = editor.on('picker:color:start', function () {
-                  first = true;
-                });
-    
-                // picked color
-                var evtColorPick = editor.on('picker:color', function (color) {
-                  first = false;
-                  field.value = color;
-                });
-    
-                // position picker
-                var rectPicker = editor.call('picker:color:rect');
-                var rectField = field.element.getBoundingClientRect();
-                editor.call('picker:color:position', rectField.left - rectPicker.width, rectField.top);
-    
-                // color changed, update picker
-                var evtColorToPicker = field.on('change', function () {
-                  editor.call('picker:color:set', this.value);
-                });
-    
-                // picker closed
-                editor.once('picker:color:close', function () {
-                  evtColorPick.unbind();
-                  evtColorPickStart.unbind();
-                  evtColorToPicker.unbind();
-                  colorPickerOn = false;
-                  field.element.focus();
-                });
-              });
-    
-              // close picker if field destroyed
-              field.on('destroy', function () {
-                if (colorPickerOn)
-                  editor.call('picker:color:close');
-              });
-    
-              panel.append(field);
-              break;
-    
-            case 'asset':
-              field = new ImageField(args.kind === 'material' || args.kind === 'model' || args.kind === 'cubemap' || args.kind === 'font' || args.kind === 'sprite');
-              var evtPick;
-    
-              if (label) {
-                label.renderChanges = false;
-                field._label = label;
-    
-                label.style!.width = '32px';
-                label.flexGrow = '1';
-              }
-    
-    
-              var panelFields = document.createElement('div');
-              panelFields.classList.add('top');
-    
-              var panelControls = document.createElement('div');
-              panelControls.classList.add('controls');
-    
-              var fieldTitle = field._title = new Label();
-              fieldTitle.text = 'Empty';
-              fieldTitle.parent = panel;
-              fieldTitle.flexGrow = '1';
-              fieldTitle.placeholder = '...';
-    
-              var btnEdit = new Button('&#57648;');
-              btnEdit.disabled = true;
-              btnEdit.parent = panel;
-              btnEdit.flexGrow = '0';
-    
-              var btnRemove = new Button('&#57650;');
-              btnRemove.disabled = true;
-              btnRemove.parent = panel;
-              btnRemove.flexGrow = '0';
-    
-              fieldTitle.on('click', function () {
-                var asset = editor.call('assets:get', field.value);
-                editor.call('picker:asset', {
-                  type: args.kind,
-                  currentAsset: asset
-                });
-    
-                evtPick = editor.once('picker:asset', function (asset) {
-                  var oldValues = {};
-                  if (args.onSet && args.link && args.link instanceof Array) {
-                    for (var i = 0; i < args.link.length; i++) {
-                      var id = 0;
-                      if (args.link[i]._type === 'asset') {
-                        id = args.link[i].get('id');
-                      } else if (args.link[i]._type === 'entity') {
-                        id = args.link[i].get('resource_id');
-                      } else {
-                        continue;
-                      }
-    
-                      oldValues[id] = args.link[i].get(pathAt(args, i));
-                    }
-                  }
-    
-                  field.emit('beforechange', asset.get('id'));
-                  field.value = asset.get('id');
-                  evtPick = null;
-                  if (args.onSet) args.onSet(asset, oldValues);
-                });
-    
-                editor.once('picker:asset:close', function () {
-                  if (evtPick) {
-                    evtPick.unbind();
-                    evtPick = null;
-                  }
-                  field.element.focus();
-                });
-              });
-    
-              field.on('click', function () {
-                if (!this.value)
-                  return;
-    
-                var asset = editor.call('assets:get', this.value);
-                if (!asset) return;
-                editor.call('selector:set', 'asset', [asset]);
-    
-                if (legacyScripts && asset.get('type') === 'script') {
-                  editor.call('assets:panel:currentFolder', 'scripts');
-                } else {
-                  var path = asset.get('path');
-                  if (path.length) {
-                    editor.call('assets:panel:currentFolder', editor.call('assets:get', path[path.length - 1]));
-                  } else {
-                    editor.call('assets:panel:currentFolder', null);
-                  }
-                }
-              });
-              btnEdit.on('click', function () {
-                field.emit('click');
-              });
-    
-              btnRemove.on('click', function () {
-                field.emit('beforechange', null);
-                field.value = null;
-              });
-    
-              var watch = null;
-              var watchAsset = null;
-              var renderQueued;
-              var queueRender;
-    
-              var evtThumbnailChange;
-              var updateThumbnail = function (empty) {
-                var asset = editor.call('assets:get', field.value);
-    
-                if (watch) {
-                  editor.call('assets:' + watchAsset.get('type') + ':unwatch', watchAsset, watch);
-                  watchAsset = watch = null;
-                }
-    
-                if (empty) {
-                  field.image = '';
-                } else if (!asset) {
-                  field.image = config.url.home + '/editor/scene/img/asset-placeholder-texture.png';
-                } else {
-                  if (asset.has('thumbnails.m')) {
-                    var src = asset.get('thumbnails.m');
-                    if (src.startsWith('data:image/png;base64')) {
-                      field.image = asset.get('thumbnails.m');
-                    } else {
-                      field.image = config.url.home + asset.get('thumbnails.m').appendQuery('t=' + asset.get('file.hash'));
-                    }
-                  } else {
-                    field.image = '/editor/scene/img/asset-placeholder-' + asset.get('type') + '.png';
-                  }
-    
-                  if (args.kind === 'material' || args.kind === 'model' || args.kind === 'cubemap' || args.kind == 'font' || args.kind === 'sprite') {
-                    watchAsset = asset;
-                    watch = editor.call('assets:' + args.kind + ':watch', {
-                      asset: watchAsset,
-                      autoLoad: true,
-                      callback: queueRender
-                    });
-                  }
-                }
-    
-                if (queueRender)
-                  queueRender();
-              };
-    
-              if (args.kind === 'material' || args.kind === 'model' || args.kind === 'font' || args.kind === 'sprite') {
-                if (args.kind !== 'sprite') {
-                  field.elementImage.classList.add('flipY');
-                }
-    
-                var renderPreview = function () {
-                  renderQueued = false;
-    
-                  if (watchAsset) {
-                    // render
-                    editor.call('preview:render', watchAsset, 128, 128, field.elementImage);
-                  } else {
-                    var ctx = field.elementImage.ctx;
-                    if (!ctx)
-                      ctx = field.elementImage.ctx = field.elementImage.getContext('2d');
-    
-                    ctx.clearRect(0, 0, field.elementImage.width, field.elementImage.height);
-                  }
-                };
-    
-                renderPreview();
-    
-                queueRender = function () {
-                  if (renderQueued) return;
-                  renderQueued = true;
-                  requestAnimationFrame(renderPreview);
-                };
-    
-                var evtSceneSettings = editor.on('preview:scene:changed', queueRender);
-    
-                field.once('destroy', function () {
-                  evtSceneSettings.unbind();
-                  evtSceneSettings = null;
-    
-                  if (watch) {
-                    editor.call('assets:' + watchAsset.get('type') + ':unwatch', watchAsset, watch);
-                    watchAsset = watch = null;
-                  }
-                });
-              } else if (args.kind === 'cubemap') {
-                field.elementImage.width = 60;
-                field.elementImage.height = 60;
-    
-                var positions = [[30, 22], [0, 22], [15, 7], [15, 37], [15, 22], [45, 22]];
-                var images = [null, null, null, null, null, null];
-    
-                var renderPreview = function () {
-                  renderQueued = false;
-    
-                  var ctx = field.elementImage.ctx;
-                  if (!ctx)
-                    ctx = field.elementImage.ctx = field.elementImage.getContext('2d');
-    
-                  ctx.clearRect(0, 0, field.elementImage.width, field.elementImage.height);
-    
-                  if (watchAsset) {
-                    for (var i = 0; i < 6; i++) {
-                      var id = watchAsset.get('data.textures.' + i);
-                      var image = null;
-    
-                      if (id) {
-                        var texture = editor.call('assets:get', id);
-                        if (texture) {
-                          var hash = texture.get('file.hash');
-                          if (images[i] && images[i].hash === hash) {
-                            image = images[i];
-                          } else {
-                            var url = texture.get('thumbnails.s');
-    
-                            if (images[i])
-                              images[i].onload = null;
-    
-                            images[i] = null;
-    
-                            if (url) {
-                              image = images[i] = new Image();
-                              image.hash = hash;
-                              image.onload = queueRender;
-                              image.src = url.appendQuery('t=' + hash);
+        };
+        // get the right path from args
+        var pathAt = function (args, index) {
+            return args.paths ? args.paths[index] : args.path;
+        };
+        editor.method('attributes:linkField', function (args) {
+            var changeField, changeFieldQueue;
+            args.field._changing = false;
+            var events = [];
+            if (!(args.link instanceof Array))
+                args.link = [args.link];
+            var update = function () {
+                var different = false;
+                var path = pathAt(args, 0);
+                var value = args.link[0].has(path) ? args.link[0].get(path) : undefined;
+                if (args.type === 'rgb') {
+                    if (value) {
+                        for (var i = 1; i < args.link.length; i++) {
+                            path = pathAt(args, i);
+                            if (!value.equals(args.link[i].get(path))) {
+                                value = null;
+                                different = true;
+                                break;
                             }
-                          }
-                        } else if (images[i]) {
-                          images[i].onload = null;
-                          images[i] = null;
                         }
-                      } else if (images[i]) {
-                        images[i].onload = null;
-                        images[i] = null;
-                      }
-    
-                      if (image) {
-                        ctx.drawImage(image, positions[i][0], positions[i][1], 15, 15);
-                      } else {
-                        ctx.beginPath();
-                        ctx.rect(positions[i][0], positions[i][1], 15, 15);
-                        ctx.fillStyle = '#000';
-                        ctx.fill();
-                      }
                     }
-                  }
-                };
-    
-                renderPreview();
-    
-                queueRender = function () {
-                  if (renderQueued) return;
-                  renderQueued = true;
-                  requestAnimationFrame(renderPreview);
-                };
-    
-                field.once('destroy', function () {
-                  if (watch) {
-                    editor.call('assets:cubemap:unwatch', watchAsset, watch);
-                    watchAsset = watch = null;
-                  }
-                });
-              }
-    
-              linkField();
-    
-              var updateField = function () {
-                var value = field.value;
-    
-                fieldTitle.text = field.class!.contains('null') ? 'various' : 'Empty';
-    
-                btnEdit.disabled = !value;
-                btnRemove.disabled = !value && !field.class!.contains('null');
-    
-                if (evtThumbnailChange) {
-                  evtThumbnailChange.unbind();
-                  evtThumbnailChange = null;
+                    if (value) {
+                        value = value.map(function (v) {
+                            return Math.floor(v * 255);
+                        });
+                    }
                 }
-    
-                if (!value) {
-                  if (field.class!.contains('star'))
-                    fieldTitle.text = '* ' + fieldTitle.text;
-    
-                  field.empty = true;
-                  updateThumbnail(true);
-    
-                  return;
+                else if (args.type === 'asset') {
+                    var countUndefined = value === undefined ? 1 : 0;
+                    for (var i = 1; i < args.link.length; i++) {
+                        path = pathAt(args, i);
+                        if (!args.link[i].has(path)) {
+                            countUndefined++;
+                            continue;
+                        }
+                        var val = args.link[i].get(path);
+                        if ((value || 0) !== (args.link[i].get(path) || 0)) {
+                            if (value !== undefined) {
+                                value = args.enum ? '' : null;
+                                different = true;
+                                break;
+                            }
+                        }
+                        value = val;
+                    }
+                    if (countUndefined && countUndefined != args.link.length) {
+                        args.field.class.add('star');
+                        if (!/^\* /.test(args.field._title.text))
+                            args.field._title.text = '* ' + args.field._title.text;
+                    }
+                    else {
+                        args.field.class.remove('star');
+                        if (/^\* /.test(args.field._title.text))
+                            args.field._title.text = args.field._title.text.substring(2);
+                    }
+                    if (different) {
+                        args.field.class.add('null');
+                        args.field._title.text = 'various';
+                    }
+                    else {
+                        args.field.class.remove('null');
+                    }
                 }
-    
-                field.empty = false;
-    
-                var asset = editor.call('assets:get', value);
-    
-                if (!asset)
-                  return updateThumbnail();
-    
-                evtThumbnailChange = asset.on('file.hash.m:set', updateThumbnail);
-                updateThumbnail();
-    
-                fieldTitle.text = asset.get('name');
-    
-                if (field.class!.contains('star'))
-                  fieldTitle.text = '* ' + fieldTitle.text;
-              };
-              field.on('change', updateField);
-    
-              if (args.value)
-                field.value = args.value;
-    
-              updateField();
-    
-              var dropRef = editor.call('drop:target', {
-                ref: panel.element,
-                filter: function (type, data) {
-                  var rectA = root.innerElement.getBoundingClientRect();
-                  var rectB = panel.element.getBoundingClientRect();
-                  return data.id && (args.kind === '*' || type === 'asset.' + args.kind) && parseInt(data.id, 10) !== field.value && !editor.call('assets:get', parseInt(data.id, 10)).get('source') && rectB.top > rectA.top && rectB.bottom < rectA.bottom;
-                },
-                drop: function (type, data) {
-                  if ((args.kind !== '*' && type !== 'asset.' + args.kind) || editor.call('assets:get', parseInt(data.id, 10)).get('source'))
-                    return;
-    
-                  var oldValues = {};
-                  if (args.onSet && args.link && args.link instanceof Array) {
+                else if (args.type === 'entity' || !args.type) {
+                    for (var i = 1; i < args.link.length; i++) {
+                        path = pathAt(args, i);
+                        if (value !== args.link[i].get(path)) {
+                            value = 'various';
+                            different = true;
+                            break;
+                        }
+                    }
+                    if (different) {
+                        args.field.class.add('null');
+                        args.field.text = 'various';
+                    }
+                    else {
+                        args.field.class.remove('null');
+                    }
+                }
+                else {
+                    var valueFound = false;
                     for (var i = 0; i < args.link.length; i++) {
-                      var id = 0;
-                      if (args.link[i]._type === 'asset') {
-                        id = args.link[i].get('id');
-                      } else if (args.link[i]._type === 'entity') {
-                        id = args.link[i].get('resource_id');
-                      } else {
-                        continue;
-                      }
-    
-                      oldValues[id] = args.link[i].get(pathAt(args, i));
-                    }
-                  }
-    
-                  field.emit('beforechange', parseInt(data.id, 10));
-                  field.value = parseInt(data.id, 10);
-    
-                  if (args.onSet) {
-                    var asset = editor.call('assets:get', parseInt(data.id, 10));
-                    if (asset) args.onSet(asset, oldValues);
-                  }
-                },
-                over: function (type, data) {
-                  if (args.over)
-                    args.over(type, data);
-                },
-                leave: function () {
-                  if (args.leave)
-                    args.leave();
-                }
-              });
-              field.on('destroy', function () {
-                dropRef.unregister();
-                if (evtThumbnailChange) {
-                  evtThumbnailChange.unbind();
-                  evtThumbnailChange = null;
-                }
-              });
-    
-              // thumbnail
-              panel.append(field);
-              // right side
-              panel.append(panelFields);
-              // controls
-              panelFields.appendChild(panelControls);
-              // label
-              if (label) {
-                panel.innerElement.removeChild(label.element);
-                panelControls.appendChild(label.element);
-              }
-              panelControls.classList.remove('label-field');
-              // edit
-              panelControls.appendChild(btnEdit.element);
-              // remove
-              panelControls.appendChild(btnRemove.element);
-    
-              // title
-              panelFields.appendChild(fieldTitle.element);
-              break;
-    
-            // entity picker
-            case 'entity':
-              field = new Label();
-              field.class!.add('add-entity');
-              field.flexGrow = '1';
-              field.class!.add('null');
-    
-              field.text = 'Select Entity';
-              field.placeholder = '...';
-    
-              panel.append(field);
-    
-              var icon = document.createElement('span');
-              icon.classList.add('icon');
-    
-              icon.addEventListener('click', function (e) {
-                e.stopPropagation();
-    
-                if (editor.call('permissions:write'))
-                  field.text = '';
-              });
-    
-              field.on('change', function (value) {
-                if (value) {
-                  var entity = editor.call('entities:get', value);
-                  if (!entity) {
-                    field.text = null;
-                    return;
-                  }
-    
-                  field.element.innerHTML = entity.get('name');
-                  field.element.appendChild(icon);
-                  field.placeholder = '';
-    
-                  if (value !== 'various')
-                    field.class.remove('null');
-                } else {
-                  field.element.innerHTML = 'Select Entity';
-                  field.placeholder = '...';
-                  field.class!.add('null');
-                }
-              });
-    
-              linkField();
-    
-              var getCurrentEntity = function () {
-                var entity = null;
-                if (args.link) {
-                  if (!(args.link instanceof Array)) {
-                    args.link = [args.link];
-                  }
-    
-                  // get initial value only if it's the same for all
-                  // links otherwise set it to null
-                  for (var i = 0, len = args.link.length; i < len; i++) {
-                    var val = args.link[i].get(pathAt(args, i));
-                    if (entity !== val) {
-                      if (entity) {
-                        entity = null;
-                        break;
-                      } else {
-                        entity = val;
-                      }
-                    }
-                  }
-                }
-    
-                return entity;
-              };
-    
-              field.on('click', function () {
-                var evtEntityPick = editor.once('picker:entity', function (entity) {
-                  field.text = entity ? entity.get('resource_id') : null;
-                  evtEntityPick = null;
-                });
-    
-                var initialValue = getCurrentEntity();
-    
-                editor.call('picker:entity', initialValue, args.filter || null);
-    
-                editor.once('picker:entity:close', function () {
-                  if (evtEntityPick) {
-                    evtEntityPick.unbind();
-                    evtEntityPick = null;
-                  }
-                });
-              });
-    
-              // highlight on hover
-              field.on('hover', function () {
-                var entity = getCurrentEntity();
-                if (!entity) return;
-    
-                editor.call('entities:panel:highlight', entity, true);
-    
-                field.once('blur', function () {
-                  editor.call('entities:panel:highlight', entity, false);
-                });
-    
-                field.once('click', function () {
-                  editor.call('entities:panel:highlight', entity, false);
-                });
-              });
-    
-              var dropRef = editor.call('drop:target', {
-                ref: field.element,
-                filter: function (type, data) {
-                  var rectA = root.innerElement.getBoundingClientRect();
-                  var rectB = field.element.getBoundingClientRect();
-                  return type === 'entity' && data.resource_id !== field.value && rectB.top > rectA.top && rectB.bottom < rectA.bottom;
-                },
-                drop: function (type, data) {
-                  if (type !== 'entity')
-                    return;
-    
-                  field.value = data.resource_id;
-                },
-                over: function (type, data) {
-                  if (args.over)
-                    args.over(type, data);
-                },
-                leave: function () {
-                  if (args.leave)
-                    args.leave();
-                }
-              });
-              field.on('destroy', function () {
-                dropRef.unregister();
-              });
-    
-              break;
-            case 'image':
-              panel.flex = false;
-    
-              field = new Image();
-              field.style!.maxWidth = '100%';
-              field.style!.display = 'block';
-              field.src = args.src;
-    
-              panel.append(field);
-              break;
-    
-            case 'progress':
-              field = new Progress();
-              field.flexGrow = '1';
-    
-              panel.append(field);
-              break;
-    
-            case 'code':
-              field = new Code();
-              field.flexGrow = '1';
-    
-              if (args.value)
-                field.text = args.value;
-    
-              panel.append(field);
-              break;
-    
-            case 'button':
-              field = new Button();
-              field.flexGrow = '1';
-              field.text = args.text || 'Button';
-              panel.append(field);
-              break;
-    
-            case 'element':
-              field = args.element;
-              panel.append(field);
-              break;
-    
-            case 'curveset':
-              field = new ui.CurveField(args);
-              field.flexGrow = '1';
-              field.text = args.text || '';
-    
-              // Warning: Curve fields do not currently support multiselect
-              if (args.link) {
-                var link = args.link;
-                if (args.link instanceof Array)
-                  link = args.link[0];
-    
-                var path = pathAt(args, 0);
-    
-                field.link(link, args.canRandomize ? [path, path + '2'] : [path]);
-              }
-    
-              var curvePickerOn = false;
-    
-              var toggleCurvePicker = function () {
-                if (!field.class!.contains('disabled') && !curvePickerOn) {
-                  editor.call('picker:curve', field.value, args);
-    
-                  curvePickerOn = true;
-    
-                  // position picker
-                  var rectPicker = editor.call('picker:curve:rect');
-                  var rectField = field.element.getBoundingClientRect();
-                  editor.call('picker:curve:position', rectField.right - rectPicker.width, rectField.bottom);
-    
-                  args.keepZoom = false;
-    
-                  var combine = false;
-    
-                  var evtChangeStart = editor.on('picker:curve:change:start', function () {
-                    combine = true;
-                  });
-    
-                  var evtChangeEnd = editor.on('picker:curve:change:end', function () {
-                    combine = false;
-                  });
-    
-                  var evtPickerChanged = editor.on('picker:curve:change', function (paths, values) {
-                    if (!field._link) return;
-    
-                    var link = field._link;
-    
-                    var previous = {
-                      paths: [],
-                      values: []
-                    };
-    
-                    var path;
-                    for (var i = 0, len = paths.length; i < len; i++) {
-                      path = pathAt(args, 0); // always use 0 because we do not support multiselect
-                      // use the second curve path if needed
-                      if (args.canRandomize && paths[i][0] !== '0') {
-                        path += '2';
-                      }
-    
-                      path += paths[i].substring(1);
-    
-                      previous.paths.push(path);
-                      previous.values.push(field._link.get(path));
-                    }
-    
-    
-                    var undo = function () {
-                      var item = link;
-                      if (link.history && link.history._getItemFn) {
-                        item = link.history._getItemFn();
-                      }
-    
-                      if (!item) return;
-    
-                      args.keepZoom = true;
-    
-                      var history = false;
-                      if (item.history) {
-                        history = item.history.enabled;
-                        item.history.enabled = false;
-                      }
-    
-                      for (var i = 0, len = previous.paths.length; i < len; i++) {
-                        item.set(previous.paths[i], previous.values[i]);
-                      }
-    
-                      if (item.history)
-                        item.history.enabled = history;
-    
-                      args.keepZoom = false;
-                    };
-    
-                    var redo = function () {
-                      var item = link;
-                      if (link.history && link.history._getItemFn) {
-                        item = link.history._getItemFn();
-                      }
-    
-                      if (!item) return;
-    
-                      args.keepZoom = true;
-    
-                      var history = false;
-                      if (item.history) {
-                        history = item.history.enabled;
-                        item.history.enabled = false;
-                      }
-    
-                      for (var i = 0, len = paths.length; i < len; i++) {
-                        path = pathAt(args, 0); // always use 0 because we do not support multiselect
-                        // use the second curve path if needed
-                        if (args.canRandomize && paths[i][0] !== '0') {
-                          path += '2';
+                        path = pathAt(args, i);
+                        if (!args.link[i].has(path))
+                            continue;
+                        if (!valueFound) {
+                            valueFound = true;
+                            value = args.link[i].get(path);
                         }
-    
-                        path += paths[i].substring(1);
-    
-                        item.set(path, values[i]);
-                      }
-    
-                      if (item.history)
-                        item.history.enabled = history;
-    
-                      args.keepZoom = false;
-                    };
-    
-                    redo();
-    
-                    // add custom history event
-                    editor.call('history:' + (combine ? 'update' : 'add'), {
-                      name: path + '.curves',
-                      undo: undo,
-                      redo: redo
-                    });
-    
-                  });
-    
-                  var evtRefreshPicker = field.on('change', function (value) {
-                    editor.call('picker:curve:set', value, args);
-                  });
-    
-                  editor.once('picker:curve:close', function () {
-                    evtRefreshPicker.unbind();
-                    evtPickerChanged.unbind();
-                    evtChangeStart.unbind();
-                    evtChangeEnd.unbind();
-                    curvePickerOn = false;
-                  });
-                }
-              };
-    
-              // open curve editor on click
-              field.on('click', toggleCurvePicker);
-    
-              // close picker if field destroyed
-              field.on('destroy', function () {
-                if (curvePickerOn) {
-                  editor.call('picker:curve:close');
-                }
-              });
-    
-              panel.append(field);
-              break;
-    
-            case 'gradient':
-              field = new ui.CurveField(args);
-              field.flexGrow = '1';
-              field.text = args.text || '';
-    
-              if (args.link) {
-                var link = args.link;
-                if (args.link instanceof Array)
-                  link = args.link[0];
-                var path = pathAt(args, 0);
-                field.link(link, [path]);
-              }
-    
-              var gradientPickerVisible = false;
-    
-              var toggleGradientPicker = function () {
-                if (!field.class!.contains('disabled') && !gradientPickerVisible) {
-                  editor.call('picker:gradient', field.value, args);
-    
-                  gradientPickerVisible = true;
-    
-                  // position picker
-                  var rectPicker = editor.call('picker:gradient:rect');
-                  var rectField = field.element.getBoundingClientRect();
-                  editor.call('picker:gradient:position', rectField.right - rectPicker.width, rectField.bottom);
-    
-                  var evtPickerChanged = editor.on('picker:curve:change', function (paths, values) {
-                    if (!field._link) return;
-    
-                    var link = field._link;
-    
-                    var previous = {
-                      paths: [],
-                      values: []
-                    };
-    
-                    var path;
-                    for (var i = 0; i < paths.length; i++) {
-                      // always use 0 because we do not support multiselect
-                      path = pathAt(args, 0) + paths[i].substring(1);
-                      previous.paths.push(path);
-                      previous.values.push(field._link.get(path));
+                        else {
+                            var v = args.link[i].get(path);
+                            if ((value || 0) !== (v || 0)) {
+                                value = args.enum ? '' : null;
+                                different = true;
+                                break;
+                            }
+                        }
                     }
-    
-                    var undo = function () {
-                      var item = link;
-                      if (link.history && link.history._getItemFn) {
-                        item = link.history._getItemFn();
-                      }
-    
-                      if (!item) return;
-    
-                      var history = false;
-                      if (item.history) {
-                        history = item.history.enabled;
-                        item.history.enabled = false;
-                      }
-    
-                      for (var i = 0; i < previous.paths.length; i++) {
-                        item.set(previous.paths[i], previous.values[i]);
-                      }
-    
-                      if (item.history)
-                        item.history.enabled = history;
-                    };
-    
-                    var redo = function () {
-                      var item = link;
-                      if (link.history && link.history._getItemFn) {
-                        item = link.history._getItemFn();
-                      }
-    
-                      if (!item) return;
-    
-                      var history = false;
-                      if (item.history) {
-                        history = item.history.enabled;
-                        item.history.enabled = false;
-                      }
-    
-                      for (var i = 0; i < paths.length; i++) {
-                        // always use 0 because we do not support multiselect
-                        path = pathAt(args, 0) + paths[i].substring(1);
-                        item.set(path, values[i]);
-                      }
-    
-                      if (item.history)
-                        item.history.enabled = history;
-                    };
-    
-                    redo();
-    
-                    editor.call('history:' + 'add', {
-                      name: path + '.curves',
-                      undo: undo,
-                      redo: redo
-                    });
-                  });
-    
-                  var evtRefreshPicker = field.on('change', function (value) {
-                    editor.call('picker:gradient:set', value, args);
-                  });
-    
-                  editor.once('picker:gradient:close', function () {
-                    evtRefreshPicker.unbind();
-                    evtPickerChanged.unbind();
-                    gradientPickerVisible = false;
-                  });
                 }
-              };
-    
-              // open curve editor on click
-              field.on('click', toggleGradientPicker);
-    
-              panel.append(field);
-              break;
-    
-            case 'array':
-              field = editor.call('attributes:addArray', args);
-              panel.append(field);
-    
-              break;
-    
-            default:
-              field = new Label();
-              field.flexGrow = '1';
-              (<Label>field).text = args.value || '';
-              field.class!.add('selectable');
-    
-              if (args.placeholder)
-                (<Label>field).placeholder = args.placeholder;
-    
-              linkField();
-    
-              panel.append(field);
-              break;
-          }
-    
-          if (args.className && field instanceof Element) {
-            field.class!.add(args.className);
-          }
-    
-          return field;
-        });
-    
-        */
-        editor.on('attributes:clear', function () {
-            for (var i = 0; i < self.inspectedItems.length; i++) {
-                self.inspectedItems[i].unbind();
+                args.field._changing = true;
+                args.field.value = value;
+                if (args.type === 'checkbox')
+                    args.field._onLinkChange(value);
+                args.field._changing = false;
+                if (args.enum) {
+                    var opt = args.field.optionElements[''];
+                    if (opt)
+                        opt.style.display = value !== '' ? 'none' : '';
+                }
+                else {
+                    args.field.proxy = value == null ? '...' : null;
+                }
+            };
+            changeField = function (value) {
+                if (args.field._changing)
+                    return;
+                // TODO
+                if (args.enum) {
+                    // var opt = this.optionElements[''];
+                    // if (opt) opt.style.display = value !== '' ? 'none' : '';
+                }
+                else {
+                    // this.proxy = value === null ? '...' : null;
+                }
+                if (args.trim)
+                    value = value.trim();
+                if (args.type === 'rgb') {
+                    value = value.map(function (v) {
+                        return v / 255;
+                    });
+                }
+                else if (args.type === 'asset') {
+                    args.field.class.remove('null');
+                }
+                var items = [];
+                // set link value
+                args.field._changing = true;
+                if (args.type === "string" && args.trim)
+                    args.field.value = value;
+                for (var i = 0; i < args.link.length; i++) {
+                    var path = pathAt(args, i);
+                    if (!args.link[i].has(path))
+                        continue;
+                    items.push({
+                        get: args.link[i].history !== undefined ? args.link[i].history._getItemFn : null,
+                        item: args.link[i],
+                        value: args.link[i].has(path) ? args.link[i].get(path) : undefined
+                    });
+                    historyState(args.link[i], false);
+                    args.link[i].set(path, value);
+                    historyState(args.link[i], true);
+                }
+                args.field._changing = false;
+                // history
+                if (args.type !== 'rgb' && !args.slider && !args.stopHistory) {
+                    editor.call('history:add', {
+                        name: pathAt(args, 0),
+                        undo: function () {
+                            var different = false;
+                            for (var i = 0; i < items.length; i++) {
+                                var path = pathAt(args, i);
+                                var item;
+                                if (items[i].get) {
+                                    item = items[i].get();
+                                    if (!item)
+                                        continue;
+                                }
+                                else {
+                                    item = items[i].item;
+                                }
+                                if (!different && items[0].value !== items[i].value)
+                                    different = true;
+                                historyState(item, false);
+                                if (items[i].value === undefined)
+                                    item.unset(path);
+                                else
+                                    item.set(path, items[i].value);
+                                historyState(item, true);
+                            }
+                            if (different) {
+                                args.field.class.add('null');
+                            }
+                            else {
+                                args.field.class.remove('null');
+                            }
+                        },
+                        redo: function () {
+                            for (var i = 0; i < items.length; i++) {
+                                var path = pathAt(args, i);
+                                var item;
+                                if (items[i].get) {
+                                    item = items[i].get();
+                                    if (!item)
+                                        continue;
+                                }
+                                else {
+                                    item = items[i].item;
+                                }
+                                historyState(item, false);
+                                if (value === undefined)
+                                    item.unset(path);
+                                else
+                                    item.set(path, value);
+                                item.set(path, value);
+                                historyState(item, true);
+                            }
+                            args.field.class.remove('null');
+                        }
+                    });
+                }
+            };
+            changeFieldQueue = function () {
+                if (args.field._changing)
+                    return;
+                args.field._changing = true;
+                setTimeout(function () {
+                    args.field._changing = false;
+                    update();
+                }, 0);
+            };
+            var historyStart, historyEnd;
+            if (args.type === 'rgb' || args.slider) {
+                historyStart = function () {
+                    var items = [];
+                    for (var i = 0; i < args.link.length; i++) {
+                        var v = args.link[i].get(pathAt(args, i));
+                        if (v instanceof Array)
+                            v = v.slice(0);
+                        items.push({
+                            get: args.link[i].history !== undefined ? args.link[i].history._getItemFn : null,
+                            item: args.link[i],
+                            value: v
+                        });
+                    }
+                    return items;
+                };
+                historyEnd = function (items, value) {
+                    // history
+                    editor.call('history:add', {
+                        name: pathAt(args, 0),
+                        undo: function () {
+                            for (var i = 0; i < items.length; i++) {
+                                var item;
+                                if (items[i].get) {
+                                    item = items[i].get();
+                                    if (!item)
+                                        continue;
+                                }
+                                else {
+                                    item = items[i].item;
+                                }
+                                historyState(item, false);
+                                item.set(pathAt(args, i), items[i].value);
+                                historyState(item, true);
+                            }
+                        },
+                        redo: function () {
+                            for (var i = 0; i < items.length; i++) {
+                                var item;
+                                if (items[i].get) {
+                                    item = items[i].get();
+                                    if (!item)
+                                        continue;
+                                }
+                                else {
+                                    item = items[i].item;
+                                }
+                                historyState(item, false);
+                                item.set(pathAt(args, i), value);
+                                historyState(item, true);
+                            }
+                        }
+                    });
+                };
             }
-            self.inspectedItems = [];
+            if (args.type === 'rgb') {
+                var colorPickerOn = false;
+                events.push(args.field.on('click', function () {
+                    colorPickerOn = true;
+                    // set picker color
+                    editor.call('picker:color', args.field.value);
+                    var items = [];
+                    // picking starts
+                    var evtColorPickStart = editor.on('picker:color:start', function () {
+                        items = historyStart();
+                    });
+                    // picked color
+                    var evtColorPick = editor.on('picker:color', function (color) {
+                        args.field.value = color;
+                    });
+                    var evtColorPickEnd = editor.on('picker:color:end', function () {
+                        historyEnd(items.slice(0), args.field.value.map(function (v) {
+                            return v / 255;
+                        }));
+                    });
+                    // position picker
+                    var rectPicker = editor.call('picker:color:rect');
+                    var rectField = args.field.element.getBoundingClientRect();
+                    editor.call('picker:color:position', rectField.left - rectPicker.width, rectField.top);
+                    // color changed, update picker
+                    var evtColorToPicker = args.field.on('change', function () {
+                        // TODO
+                        // editor.call('picker:color:set', this.value);
+                    });
+                    // picker closed
+                    editor.once('picker:color:close', function () {
+                        evtColorPick.unbind();
+                        evtColorPickStart.unbind();
+                        evtColorPickEnd.unbind();
+                        evtColorToPicker.unbind();
+                        colorPickerOn = false;
+                        args.field.element.focus();
+                    });
+                }));
+                // close picker if field destroyed
+                args.field.once('destroy', function () {
+                    if (colorPickerOn)
+                        editor.call('picker:color:close');
+                });
+            }
+            else if (args.slider) {
+                var sliderRecords;
+                events.push(args.field.on('start', function () {
+                    sliderRecords = historyStart();
+                }));
+                events.push(args.field.on('end', function () {
+                    historyEnd(sliderRecords.slice(0), args.field.value);
+                }));
+            }
+            update();
+            events.push(args.field.on('change', changeField));
+            for (var i = 0; i < args.link.length; i++) {
+                events.push(args.link[i].on(pathAt(args, i) + ':set', changeFieldQueue));
+                events.push(args.link[i].on(pathAt(args, i) + ':unset', changeFieldQueue));
+            }
+            events.push(args.field.once('destroy', function () {
+                for (var i = 0; i < events.length; i++)
+                    events[i].unbind();
+            }));
+            return events;
+        });
+        // add field
+        editor.method('attributes:addField', function (args) {
+            var panel = args.panel;
+            if (!panel) {
+                panel = new ui_1.Panel();
+                panel.flexWrap = 'nowrap';
+                panel.WebkitFlexWrap = 'nowrap';
+                panel.style.display = '';
+                if (args.type) {
+                    panel.class.add('field-' + args.type);
+                }
+                else {
+                    panel.class.add('field');
+                }
+                (args.parent || self.root).append(panel);
+            }
+            if (args.name) {
+                var label = new ui_1.Label(args.name);
+                label.class.add('label-field');
+                panel._label = label;
+                panel.append(label);
+                if (args.reference) {
+                    var tooltip = label.tooltip = editor.call('attributes:reference', {
+                        element: label.element,
+                        title: args.reference.title,
+                        subTitle: args.reference.subTitle,
+                        description: args.reference.description
+                    });
+                    tooltip.attach({
+                        target: label,
+                        element: label.element
+                    });
+                }
+            }
+            var field;
+            args.linkEvents = [];
+            // if we provide multiple paths for a single Observer then turn args.link into an array
+            if (args.paths && args.paths instanceof Array && args.link && !(args.link instanceof Array)) {
+                var link = args.link;
+                args.link = [];
+                for (var i = 0; i < args.paths.length; i++) {
+                    args.link.push(link);
+                }
+            }
+            var linkField = args.linkField = function () {
+                if (args.link) {
+                    var link = function (field, path) {
+                        var data = {
+                            field: field,
+                            type: args.type,
+                            slider: args.slider,
+                            enum: args.enum,
+                            link: args.link,
+                            trim: args.trim,
+                            name: args.name,
+                            stopHistory: args.stopHistory,
+                            paths: new Array(),
+                            path: ''
+                        };
+                        if (!path) {
+                            path = args.paths || args.path;
+                        }
+                        if (path instanceof Array) {
+                            data.paths = path;
+                        }
+                        else {
+                            data.path = path;
+                        }
+                        args.linkEvents = args.linkEvents.concat(editor.call('attributes:linkField', data));
+                        // Give the field a uniquely addressable css class that we can target from Selenium
+                        if (field.element && typeof path === 'string') {
+                            field.element.classList.add('field-path-' + path.replace(/\./g, '-'));
+                        }
+                    };
+                    if (field instanceof Array) {
+                        for (var i = 0; i < field.length; i++) {
+                            var paths = args.paths;
+                            if (paths) {
+                                paths = paths.map(function (p) {
+                                    return p + '.' + i.toString();
+                                });
+                            }
+                            link(field[i], paths || (args.path + '.' + i));
+                        }
+                    }
+                    else {
+                        link(field);
+                    }
+                }
+            };
+            var unlinkField = args.unlinkField = function () {
+                for (var i = 0; i < args.linkEvents.length; i++)
+                    args.linkEvents[i].unbind();
+                args.linkEvents = [];
+            };
+            switch (args.type) {
+                case 'string':
+                    if (args.enum) {
+                        field = new ui_1.SelectField({
+                            options: args.enum
+                        });
+                    }
+                    else {
+                        field = new ui_1.TextField();
+                    }
+                    field.value = args.value || '';
+                    field.flexGrow = 1;
+                    if (args.placeholder)
+                        field.placeholder = args.placeholder;
+                    linkField();
+                    panel.append(field);
+                    break;
+                case 'text':
+                    field = new ui_1.TextAreaField();
+                    field.value = args.value || '';
+                    field.flexGrow = 1;
+                    if (args.placeholder)
+                        field.placeholder = args.placeholder;
+                    linkField();
+                    panel.append(field);
+                    break;
+                case 'number':
+                    if (args.enum) {
+                        field = new ui_1.SelectField({
+                            options: args.enum,
+                            type: 'number'
+                        });
+                    }
+                    else if (args.slider) {
+                        field = new ui_1.Slider();
+                    }
+                    else {
+                        field = new ui_1.NumberField();
+                    }
+                    field.value = args.value || 0;
+                    field.flexGrow = 1;
+                    if (args.allowNull) {
+                        field.allowNull = true;
+                    }
+                    if (args.placeholder)
+                        field.placeholder = args.placeholder;
+                    if (args.precision != null)
+                        field.precision = args.precision;
+                    if (args.step != null)
+                        field.step = args.step;
+                    if (args.min != null)
+                        field.min = args.min;
+                    if (args.max != null)
+                        field.max = args.max;
+                    linkField();
+                    panel.append(field);
+                    break;
+                case 'checkbox':
+                    if (args.enum) {
+                        field = new ui_1.SelectField({
+                            options: args.enum,
+                            type: 'boolean'
+                        });
+                        field.flexGrow = 1;
+                    }
+                    else {
+                        field = new ui_1.Checkbox();
+                    }
+                    field.value = args.value || 0;
+                    field.class.add('tick');
+                    linkField();
+                    panel.append(field);
+                    break;
+                default:
+                    field = new ui_1.Label();
+                    field.flexGrow = '1';
+                    field.text = args.value || '';
+                    field.class.add('selectable');
+                    if (args.placeholder)
+                        field.placeholder = args.placeholder;
+                    linkField();
+                    panel.append(field);
+                    break;
+            }
+            if (args.className && field instanceof ui_1.Element) {
+                field.class.add(args.className);
+            }
+            return field;
+        });
+        var inspectedItems = [];
+        editor.on('attributes:clear', function () {
+            for (var i = 0; i < inspectedItems.length; i++) {
+                inspectedItems[i].unbind();
+            }
+            inspectedItems = [];
         });
         editor.method('attributes:inspect', function (type, item) {
             self.clearPanel();
             // clear if destroyed
-            self.inspectedItems.push(item.once('destroy', function () {
+            inspectedItems.push(item.once('destroy', function () {
                 editor.call('attributes:clear');
             }));
-            self.root.header = type;
+            self.root.headerText = type;
             editor.emit('attributes:inspect[' + type + ']', [item]);
             editor.emit('attributes:inspect[*]', type, [item]);
         });
         editor.on('selector:change', function (type, items) {
             self.clearPanel();
-            console.warn('选中entity长度：' + items.length);
+            console.warn('selector:change：type --- ' + type + '* length --- ' + items.length);
             // nothing selected
             if (items.length === 0) {
                 var label = new ui_1.Label('请选择物体或资源');
@@ -2062,17 +4650,20 @@ var AttributesPanel = /** @class */ (function () {
                 label.style.width = '100%';
                 // label.style!.height = '22px';
                 self.root.append(label);
-                self.root.header = self.title;
+                self.root.headerText = self.title;
                 return;
             }
             // clear if destroyed
             for (var i = 0; i < items.length; i++) {
                 // TODO：当前item为空
-                self.inspectedItems.push(items[i].once('destroy', function () {
+                console.error(items[i]);
+                inspectedItems.push(items[i].once('destroy', function () {
                     editor.call('attributes:clear');
                 }));
             }
-            self.root.header = type;
+            self.root.headerText = type;
+            console.error(type);
+            console.error(items);
             editor.emit('attributes:inspect[' + type + ']', items);
             editor.emit('attributes:inspect[*]', type, items);
         });
@@ -2087,7 +4678,7 @@ var AttributesPanel = /** @class */ (function () {
     return AttributesPanel;
 }());
 exports.AttributesPanel = AttributesPanel;
-},{"../../engine":49,"../../ui":68}],8:[function(require,module,exports){
+},{"../../engine":77,"../../ui":96}],19:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ui_1 = require("../../ui");
@@ -2097,8 +4688,8 @@ var AttributesReference = /** @class */ (function () {
     function AttributesReference() {
         this.index = {};
         this.missing = {};
-        this.root = engine_1.VeryEngine.rootPanel;
-        this.attributesPanel = engine_1.VeryEngine.attributesPanel;
+        this.root = engine_1.VeryEngine.root;
+        this.attributesPanel = engine_1.VeryEngine.attributes;
         this.init();
     }
     AttributesReference.prototype.init = function () {
@@ -2223,7 +4814,7 @@ var AttributesReference = /** @class */ (function () {
     return AttributesReference;
 }());
 exports.AttributesReference = AttributesReference;
-},{"../../engine":49,"../../ui":68}],9:[function(require,module,exports){
+},{"../../engine":77,"../../ui":96}],20:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -2233,7 +4824,356 @@ __export(require("./attributes-panel"));
 __export(require("./attributes-entity"));
 __export(require("./attributes-history"));
 __export(require("./attributes-reference"));
-},{"./attributes-entity":5,"./attributes-history":6,"./attributes-panel":7,"./attributes-reference":8}],10:[function(require,module,exports){
+__export(require("./attributes-assets"));
+__export(require("./keeper"));
+},{"./attributes-assets":15,"./attributes-entity":16,"./attributes-history":17,"./attributes-panel":18,"./attributes-reference":19,"./keeper":21}],21:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var attributes_panel_1 = require("./attributes-panel");
+var attributes_reference_1 = require("./attributes-reference");
+var attributes_entity_1 = require("./attributes-entity");
+var attributes_assets_1 = require("./attributes-assets");
+var attributes_history_1 = require("./attributes-history");
+var attributes_assets_texture_1 = require("./assets/attributes-assets-texture");
+var AttributesKeeper = /** @class */ (function () {
+    function AttributesKeeper() {
+        var attributesPanel = new attributes_panel_1.AttributesPanel();
+        var attributesHistory = new attributes_history_1.AttributeHistory();
+        var attributesReference = new attributes_reference_1.AttributesReference();
+        var attributesEntity = new attributes_entity_1.AttributesEntity();
+        var attributesAsset = new attributes_assets_1.AttributesAssets();
+        var attributesAssetsTexture = new attributes_assets_texture_1.AttributeAssetsTexture();
+    }
+    return AttributesKeeper;
+}());
+exports.AttributesKeeper = AttributesKeeper;
+},{"./assets/attributes-assets-texture":14,"./attributes-assets":15,"./attributes-entity":16,"./attributes-history":17,"./attributes-panel":18,"./attributes-reference":19}],22:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var Drop = /** @class */ (function () {
+    function Drop() {
+        // overlay
+        var overlay = document.createElement('div');
+        overlay.classList.add('drop-overlay');
+        editor.call('layout.root').append(overlay);
+        // var imgDrag = new Image();
+        // // imgDrag.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAACWCAYAAAAfduJyAAAAFUlEQVQoU2NkYGBgYBwlRsNgJKQDAOAfAJflUZweAAAAAElFTkSuQmCC';
+        // // imgDrag.style.display = 'none';
+        var parts = ['top', 'right', 'bottom', 'left'];
+        var partsElement = [];
+        for (var i = 0; i < parts.length; i++) {
+            var part = document.createElement('div');
+            part.classList.add('drop-overlay-hole-part', parts[i]);
+            editor.call('layout.root').append(part);
+            partsElement.push(part);
+        }
+        // areas
+        var areas = document.createElement('div');
+        areas.classList.add('drop-areas');
+        editor.call('layout.root').append(areas);
+        var active = false;
+        var currentType = '';
+        var currentData = {};
+        var currentElement = null;
+        var dragOver = false;
+        var items = [];
+        var itemOver = null;
+        var activate = function (state) {
+            if (!editor.call('permissions:write'))
+                return;
+            if (active === state)
+                return;
+            active = state;
+            if (active) {
+                overlay.classList.add('active');
+                areas.classList.add('active');
+                editor.call('cursor:set', 'grabbing');
+            }
+            else {
+                overlay.classList.remove('active');
+                areas.classList.remove('active');
+                dragOver = false;
+                currentType = '';
+                currentData = {};
+                editor.emit('drop:set', currentType, currentData);
+                editor.call('cursor:clear');
+            }
+            var onMouseUp = function () {
+                window.removeEventListener('mouseup', onMouseUp);
+                activate(false);
+            };
+            window.addEventListener('mouseup', onMouseUp, false);
+            editor.emit('drop:active', active);
+        };
+        editor.method('drop:activate', activate);
+        editor.method('drop:active', function () {
+            return active;
+        });
+        // prevent drop file of redirecting
+        window.addEventListener('dragenter', function (evt) {
+            evt.preventDefault();
+            if (!editor.call('permissions:write'))
+                return;
+            if (dragOver)
+                return;
+            dragOver = true;
+            if (!currentType) {
+                currentType = 'files';
+                editor.emit('drop:set', currentType, currentData);
+            }
+            activate(true);
+        }, false);
+        window.addEventListener('dragover', function (evt) {
+            evt.preventDefault();
+            if (!editor.call('permissions:write'))
+                return;
+            evt.dataTransfer.dropEffect = 'move';
+            if (dragOver)
+                return;
+            dragOver = true;
+            activate(true);
+        }, false);
+        window.addEventListener('dragleave', function (evt) {
+            evt.preventDefault();
+            if (evt.clientX !== 0 || evt.clientY !== 0)
+                return;
+            if (!editor.call('permissions:write'))
+                return;
+            if (!dragOver)
+                return;
+            dragOver = false;
+            setTimeout(function () {
+                if (dragOver)
+                    return;
+                activate(false);
+            }, 0);
+        }, false);
+        window.addEventListener('drop', function (evt) {
+            evt.preventDefault();
+            activate(false);
+        }, false);
+        var evtDragOver = function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.target.classList.add('over');
+            if (itemOver && itemOver !== e.target)
+                evtDragLeave.call(itemOver, e);
+            itemOver = e.target;
+            if (itemOver._ref && itemOver._ref.over && currentType) {
+                var data = currentData;
+                if (currentType == 'files' && e.dataTransfer)
+                    data = e.dataTransfer.files;
+                itemOver._ref.over(currentType, data);
+            }
+        };
+        var evtDragLeave = function (e) {
+            if (e)
+                e.preventDefault();
+            e.target.classList.remove('over');
+            var that = e.target;
+            if (that._ref && that._ref.leave && currentType)
+                that._ref.leave();
+            if (itemOver === e.target)
+                itemOver = null;
+        };
+        var fixChromeFlexBox = function (item) {
+            // workaround for chrome
+            // for z-index + flex-grow weird reflow bug
+            // need to force reflow in next frames
+            // if (!window.chrome)
+            //     return;
+            // 不准确，这个参数用户可修改
+            if (window.navigator.userAgent.indexOf('Chrome') < 0) {
+                return;
+            }
+            // if (window.MessageEvent && !document.getBoxObjectFor)
+            //     return;
+            // only for those who have flexgrow
+            var flex = item.style.flexGrow;
+            if (flex) {
+                // changing overflow triggers reflow
+                var overflow = item.style.overflow;
+                item.style.overflow = 'hidden';
+                // need to skip 2 frames, 1 is not enough
+                requestAnimationFrame(function () {
+                    requestAnimationFrame(function () {
+                        // change back to what it was
+                        item.style.overflow = overflow;
+                    });
+                });
+            }
+        };
+        editor.method('drop:target', function (obj) {
+            items.push(obj);
+            obj.element = document.createElement('div');
+            obj.element._ref = obj;
+            obj.element.classList.add('drop-area');
+            if (obj.hole)
+                obj.element.classList.add('hole');
+            if (obj.passThrough)
+                obj.element.style.pointerEvents = 'none';
+            areas.appendChild(obj.element);
+            obj.evtDrop = function (e) {
+                e.preventDefault();
+                if (!currentType)
+                    return;
+                // leave event
+                if (obj.element.classList.contains('over')) {
+                    if (obj.leave && currentType)
+                        obj.leave();
+                    obj.element.classList.remove('over');
+                }
+                var data = currentData;
+                if (currentType == 'files' && e.dataTransfer)
+                    data = e.dataTransfer.files;
+                if (obj.drop)
+                    obj.drop(currentType, data);
+            };
+            obj.element.addEventListener('dragenter', evtDragOver, false);
+            obj.element.addEventListener('mouseenter', evtDragOver, false);
+            obj.element.addEventListener('dragleave', evtDragLeave, false);
+            obj.element.addEventListener('mouseleave', evtDragLeave, false);
+            var dropOn = obj.element;
+            if (obj.passThrough)
+                dropOn = obj.ref;
+            dropOn.addEventListener('drop', obj.evtDrop, false);
+            dropOn.addEventListener('mouseup', obj.evtDrop, false);
+            obj.unregister = function () {
+                if (!obj.element.classList.contains('drop-area'))
+                    return;
+                obj.element.removeEventListener('dragenter', evtDragOver);
+                obj.element.removeEventListener('mouseenter', evtDragOver);
+                obj.element.removeEventListener('dragleave', evtDragLeave);
+                obj.element.removeEventListener('mouseleave', evtDragLeave);
+                dropOn.removeEventListener('drop', obj.evtDrop);
+                dropOn.removeEventListener('mouseup', obj.evtDrop);
+                var ind = items.indexOf(obj);
+                if (ind !== -1)
+                    items.splice(ind, 1);
+                if (obj.ref.classList.contains('drop-ref-highlight')) {
+                    obj.ref.classList.remove('drop-ref-highlight');
+                    fixChromeFlexBox(obj.ref);
+                }
+                obj.element.classList.remove('drop-area');
+                areas.removeChild(obj.element);
+            };
+            return obj;
+        });
+        editor.method('drop:item', function (args) {
+            args.element.draggable = true;
+            args.element.addEventListener('mousedown', function (evt) {
+                evt.stopPropagation();
+            }, false);
+            args.element.addEventListener('dragstart', function (evt) {
+                evt.preventDefault();
+                evt.stopPropagation();
+                if (!editor.call('permissions:write'))
+                    return;
+                currentType = args.type;
+                currentData = args.data;
+                itemOver = null;
+                editor.emit('drop:set', currentType, currentData);
+                activate(true);
+            }, false);
+        });
+        editor.method('drop:set', function (type, data) {
+            currentType = type || '',
+                currentData = data || {};
+            editor.emit('drop:set', currentType, currentData);
+        });
+        editor.on('drop:active', function (state) {
+            areas.style.pointerEvents = '';
+            if (state) {
+                var bottom = 0;
+                var top = window.innerHeight;
+                var left = window.innerWidth;
+                var right = 0;
+                for (var i = 0; i < items.length; i++) {
+                    var visible = !items[i].disabled;
+                    if (visible) {
+                        if (items[i].filter) {
+                            visible = items[i].filter(currentType, currentData);
+                        }
+                        else if (items[i].type !== currentType) {
+                            visible = false;
+                        }
+                    }
+                    if (visible) {
+                        var rect = items[i].ref.getBoundingClientRect();
+                        var depth = 4;
+                        var parent = items[i].ref;
+                        while (depth--) {
+                            if (!rect.width || !rect.height || !parent.offsetHeight || window.getComputedStyle(parent).getPropertyValue('visibility') === 'hidden') {
+                                visible = false;
+                                break;
+                            }
+                            parent = parent.parentNode;
+                        }
+                    }
+                    if (visible) {
+                        items[i].element.style.display = 'block';
+                        if (items[i].hole) {
+                            items[i].element.style.left = (rect.left + 2) + 'px';
+                            items[i].element.style.top = (rect.top + 2) + 'px';
+                            items[i].element.style.width = (rect.width - 4) + 'px';
+                            items[i].element.style.height = (rect.height - 4) + 'px';
+                            overlay.classList.remove('active');
+                            if (top > rect.top)
+                                top = rect.top;
+                            if (bottom < rect.bottom)
+                                bottom = rect.bottom;
+                            if (left > rect.left)
+                                left = rect.left;
+                            if (right < rect.right)
+                                right = rect.right;
+                            partsElement[0].classList.add('active');
+                            partsElement[0].style.height = top + 'px';
+                            partsElement[1].classList.add('active');
+                            partsElement[1].style.top = top + 'px';
+                            partsElement[1].style.bottom = (window.innerHeight - bottom) + 'px';
+                            partsElement[1].style.width = (window.innerWidth - right) + 'px';
+                            partsElement[2].classList.add('active');
+                            partsElement[2].style.height = (window.innerHeight - bottom) + 'px';
+                            partsElement[3].classList.add('active');
+                            partsElement[3].style.top = top + 'px';
+                            partsElement[3].style.bottom = (window.innerHeight - bottom) + 'px';
+                            partsElement[3].style.width = left + 'px';
+                            if (items[i].passThrough)
+                                areas.style.pointerEvents = 'none';
+                        }
+                        else {
+                            items[i].element.style.left = (rect.left + 1) + 'px';
+                            items[i].element.style.top = (rect.top + 1) + 'px';
+                            items[i].element.style.width = (rect.width - 2) + 'px';
+                            items[i].element.style.height = (rect.height - 2) + 'px';
+                            items[i].ref.classList.add('drop-ref-highlight');
+                        }
+                    }
+                    else {
+                        items[i].element.style.display = 'none';
+                        if (items[i].ref.classList.contains('drop-ref-highlight')) {
+                            items[i].ref.classList.remove('drop-ref-highlight');
+                            fixChromeFlexBox(items[i].ref);
+                        }
+                    }
+                }
+            }
+            else {
+                for (var i = 0; i < parts.length; i++)
+                    partsElement[i].classList.remove('active');
+                for (var i = 0; i < items.length; i++) {
+                    if (!items[i].ref.classList.contains('drop-ref-highlight'))
+                        continue;
+                    items[i].ref.classList.remove('drop-ref-highlight');
+                    fixChromeFlexBox(items[i].ref);
+                }
+            }
+        });
+    }
+    return Drop;
+}());
+exports.Drop = Drop;
+},{}],23:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -2304,7 +5244,7 @@ var Editor = /** @class */ (function (_super) {
     return Editor;
 }(lib_1.Events));
 exports.Editor = Editor;
-},{"../lib":53}],11:[function(require,module,exports){
+},{"../lib":81}],24:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var middleware_1 = require("../middleware");
@@ -2319,13 +5259,51 @@ var Entities = /** @class */ (function () {
     // 3.尝试建立property；
     // 4.串联Assets结构与UI；
     Entities.prototype.addRaw = function (entity_data) {
-        console.log('***entity-data***');
-        console.log(entity_data);
+        // console.log('***entity-data***');
+        // console.log(entity_data);
+        // 目标，创建babylon scene资源
+        // Editor模式和Publish模式有何异同？
+        // Editor需要有一个Observer的中间层，需要建立层级关系，需要记录增改删除操作
+        // Publish可以从scene数据直接加载资源即可；
         var gameObject = this.createGameObject(entity_data);
         // add component
         // children
         // parent
         this.container.addGameObject(gameObject);
+    };
+    Entities.prototype.addEntity = function (entity) {
+    };
+    Entities.prototype.create = function (entity) {
+        var type = entity.get('type');
+        type = type.toLowerCase();
+        if (type === 'root') {
+            // 不需要生成
+        }
+        else if (type === 'mesh') {
+            // 模型
+            // 首先加载数据，生成babylon mesh数据结构
+            // 提取地址，http或者其他方式加载
+            // Http下载，加入回调函数处理，查看babylon默认的处理方式；
+            // scenes数据如何从Assets数据中拿数据，到babylon中间件中寻找缓存
+        }
+        else if (type === 'empty') {
+            // 空物体
+        }
+        else if (type === 'camera') {
+            // node作为父物体
+        }
+        else if (type === 'light') {
+            // node作为父物体
+        }
+        else if (type === 'particle') {
+            // 貌似没有相对应的结构
+        }
+        else if (type === 'sprite') {
+            // 貌似没有相对应的结构
+        }
+        // 根据要求生成GameObject
+        var instance = new middleware_1.GameObject(entity.get('name'));
+        return instance;
     };
     Entities.prototype.createGameObject = function (entity) {
         // TODO: 解析是node还是mesh
@@ -2356,7 +5334,7 @@ var Entities = /** @class */ (function () {
     return Entities;
 }());
 exports.Entities = Entities;
-},{"../middleware":28}],12:[function(require,module,exports){
+},{"../middleware":43}],25:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var entities_1 = require("./entities");
@@ -2372,6 +5350,7 @@ var EntityLoad = /** @class */ (function () {
         // editor.call('selector:clear');
         // editor.call('entities:clear');
         // editor.call('attributes:clear');
+        // Loader.append(row_data);
         // 加载进度条计算
         var total = Object.keys(row_data.entities).length;
         var i = 0;
@@ -2380,11 +5359,11 @@ var EntityLoad = /** @class */ (function () {
             // 是否需要加入一个中间结构
             this._entities.addRaw(row_data.entities[key]);
             var entity = new lib_1.Observer(row_data.entities[key]);
-            debug.warn(entity.get('name'));
-            debug.warn(entity.get('resource_id'));
-            if (entity.has('components.rigidbody')) {
-                debug.warn(entity.get('components.rigidbody.type'));
-            }
+            // debug.warn(entity.get('name'));
+            // debug.warn(entity.get('resource_id'));
+            // if (entity.has('components.rigidbody')) {
+            //     debug.warn(entity.get('components.rigidbody.type'));
+            // }
             // editor.call('entities:add', new Observer(data.entities[key]));
             // p.progress = (++i / total) * 0.8 + 0.1;
         }
@@ -2396,7 +5375,7 @@ var EntityLoad = /** @class */ (function () {
     return EntityLoad;
 }());
 exports.EntityLoad = EntityLoad;
-},{"../../lib":53,"./entities":11}],13:[function(require,module,exports){
+},{"../../lib":81,"./entities":24}],26:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Entity = /** @class */ (function () {
@@ -2407,7 +5386,7 @@ var Entity = /** @class */ (function () {
     return Entity;
 }());
 exports.Entity = Entity;
-},{}],14:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -2416,7 +5395,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./entity"));
 __export(require("./entities"));
 __export(require("./entity-load"));
-},{"./entities":11,"./entity":13,"./entity-load":12}],15:[function(require,module,exports){
+},{"./entities":24,"./entity":26,"./entity-load":25}],28:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ui_1 = require("../../ui");
@@ -2575,46 +5554,49 @@ var HierarchyContextMenu = /** @class */ (function () {
     return HierarchyContextMenu;
 }());
 exports.HierarchyContextMenu = HierarchyContextMenu;
-},{"../../ui":68}],16:[function(require,module,exports){
+},{"../../ui":96}],29:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var HierarchyMenu = /** @class */ (function () {
-    function HierarchyMenu() {
-        var componentsLogos = editor.call('components:logos');
-    }
-    return HierarchyMenu;
-}());
-exports.HierarchyMenu = HierarchyMenu;
-},{}],17:[function(require,module,exports){
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var ui_1 = require("../../ui");
 var engine_1 = require("../../engine");
-var HierarchyPanel = /** @class */ (function () {
-    function HierarchyPanel() {
-        this.hierarchyMain = new ui_1.Panel();
-        this.hierarchyMain.class.add('hierarchy-controls');
-        this.hierarchyMain.parent = engine_1.VeryEngine.hierarchyPanel;
-        engine_1.VeryEngine.hierarchyPanel.headerAppend(this.hierarchyMain);
-        // console.log('hierarchy-controls');
-        // controls delete (Button)
-        var btnDelete = new ui_1.Button('&#57636;');
-        btnDelete.class.add('delete');
-        btnDelete.style.fontWeight = '200';
-        btnDelete.on('click', function () {
-            var type = editor.call('selector:type');
-            if (type !== 'entity')
-                return;
-            editor.call('entities:delete', editor.call('selector:items'));
+var ui_1 = require("../../ui");
+var HierarchyControl = /** @class */ (function () {
+    function HierarchyControl() {
+        var root = engine_1.VeryEngine.root;
+        var panel = engine_1.VeryEngine.hierarchy;
+        // 层级菜单控制菜单
+        var controls = new ui_1.TopElementContainer({
+            flex: true,
+            flexDirection: 'row',
+            alignItems: 'center',
         });
-        this.hierarchyMain.append(btnDelete);
-        var tooltipDelete = ui_1.Tooltip.attach({
-            target: btnDelete.element,
-            text: '删除',
+        controls.class.add('hierarchy-controls');
+        // TODO: 分享项目给他人时，是否允许修改
+        // controls.hidden = !editor.call('permissions:write');
+        // editor.on('permissions:writeState', function (state: boolean) {
+        //     controls.hidden = !state;
+        // });
+        panel.header.append(controls);
+        // controls add
+        var btnAdd = new ui_1.Button('&#57632;');
+        btnAdd.class.add('add');
+        btnAdd.on('click', function () {
+            // menuEntities.open = true;
+            // let rect = btnAdd.element.getBoundingClientRect();
+            // menuEntities.position(rect.left, rect.top);
+        });
+        controls.append(btnAdd);
+        ui_1.Tooltip.attach({
+            target: btnAdd.element,
+            text: '添加',
             align: 'top',
-            root: engine_1.VeryEngine.rootPanel
+            root: root
         });
-        tooltipDelete.class.add('innactive');
+        editor.on('attributes:clear', function () {
+            btnDuplicate.disabled = true;
+            btnDelete.disabled = true;
+            tooltipDelete.class.add('innactive');
+            tooltipDuplicate.class.add('innactive');
+        });
         // controls duplicate
         var btnDuplicate = new ui_1.Button('&#57638;');
         btnDuplicate.disabled = true;
@@ -2625,32 +5607,72 @@ var HierarchyPanel = /** @class */ (function () {
             if (type === 'entity' && items.length)
                 editor.call('entities:duplicate', items);
         });
-        this.hierarchyMain.append(btnDuplicate);
+        controls.append(btnDuplicate);
         var tooltipDuplicate = ui_1.Tooltip.attach({
             target: btnDuplicate.element,
             text: '复制',
             align: 'top',
-            root: engine_1.VeryEngine.rootPanel
+            root: root
         });
         tooltipDuplicate.class.add('innactive');
+        // controls delete (Button)
+        var btnDelete = new ui_1.Button('&#57636;');
+        btnDelete.class.add('delete');
+        btnDelete.style.fontWeight = '200';
+        btnDelete.on('click', function () {
+            var type = editor.call('selector:type');
+            if (type !== 'entity')
+                return;
+            editor.call('entities:delete', editor.call('selector:items'));
+        });
+        controls.append(btnDelete);
+        var tooltipDelete = ui_1.Tooltip.attach({
+            target: btnDelete.element,
+            text: '删除',
+            align: 'top',
+            root: root
+        });
+        tooltipDelete.class.add('innactive');
         // TODO: Menu
         // let menuEntities = ui.Menu.fromData(editor.call('menu:entities:new'));
         // root.append(menuEntities);
-        // controls add
-        var btnAdd = new ui_1.Button('&#57632;');
-        btnAdd.class.add('add');
-        btnAdd.on('click', function () {
-            // menuEntities.open = true;
-            // let rect = btnAdd.element.getBoundingClientRect();
-            // menuEntities.position(rect.left, rect.top);
+        // TODO: 选择到了hierarchy的scene一行
+        editor.on('attributes:inspect[*]', function (type, items) {
+            var root = editor.call('entities:root');
+            if (type === 'entity' && items[0] !== root) {
+                btnDelete.enabled = true;
+                btnDuplicate.enabled = true;
+                tooltipDelete.class.remove('innactive');
+                tooltipDuplicate.class.remove('innactive');
+            }
+            else {
+                btnDelete.enabled = false;
+                btnDuplicate.enabled = false;
+                tooltipDelete.class.add('innactive');
+                tooltipDuplicate.class.add('innactive');
+            }
         });
-        this.hierarchyMain.append(btnAdd);
-        ui_1.Tooltip.attach({
-            target: btnAdd.element,
-            text: '添加',
-            align: 'top',
-            root: engine_1.VeryEngine.rootPanel
-        });
+    }
+    return HierarchyControl;
+}());
+exports.HierarchyControl = HierarchyControl;
+},{"../../engine":77,"../../ui":96}],30:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var HierarchyMenu = /** @class */ (function () {
+    function HierarchyMenu() {
+        var componentsLogos = editor.call('components:logos');
+    }
+    return HierarchyMenu;
+}());
+exports.HierarchyMenu = HierarchyMenu;
+},{}],31:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var ui_1 = require("../../ui");
+var engine_1 = require("../../engine");
+var HierarchyPanel = /** @class */ (function () {
+    function HierarchyPanel() {
         this.init();
     }
     HierarchyPanel.prototype.init = function () {
@@ -2658,7 +5680,7 @@ var HierarchyPanel = /** @class */ (function () {
         // hierarchy index
         var uiItemIndex = {};
         var awaitingParent = {};
-        var panel = engine_1.VeryEngine.hierarchyPanel;
+        var panel = engine_1.VeryEngine.hierarchy;
         var hierarchy = new ui_1.Tree();
         engine_1.VeryEngine.hierarchyTree = hierarchy;
         // TODO: hierarchy权限管理，有些人可看不可编辑；
@@ -2670,7 +5692,7 @@ var HierarchyPanel = /** @class */ (function () {
         var resizeTree = function () {
             resizeQueued = false;
             hierarchy.element.style.width = '';
-            hierarchy.element.style.width = (panel.innerElement.scrollWidth - 5) + 'px';
+            hierarchy.element.style.width = (panel.content.dom.scrollWidth - 5) + 'px';
         };
         var resizeQueue = function () {
             if (resizeQueued)
@@ -2719,11 +5741,11 @@ var HierarchyPanel = /** @class */ (function () {
                 window.removeEventListener('mousemove', dragEvt);
                 return;
             }
-            var rect = panel.innerElement.getBoundingClientRect();
-            if ((evt.clientY - rect.top) < 32 && panel.innerElement.scrollTop > 0) {
+            var rect = panel.content.dom.getBoundingClientRect();
+            if ((evt.clientY - rect.top) < 32 && panel.content.dom.scrollTop > 0) {
                 dragScroll = -1;
             }
-            else if ((rect.bottom - evt.clientY) < 32 && (panel.innerElement.scrollHeight - (rect.height + panel.innerElement.scrollTop)) > 0) {
+            else if ((rect.bottom - evt.clientY) < 32 && (panel.content.dom.scrollHeight - (rect.height + panel.content.dom.scrollTop)) > 0) {
                 dragScroll = 1;
             }
             else {
@@ -2734,7 +5756,7 @@ var HierarchyPanel = /** @class */ (function () {
             dragTimer = setInterval(function () {
                 if (dragScroll === 0)
                     return;
-                panel.innerElement.scrollTop += dragScroll * 8;
+                panel.content.dom.scrollTop += dragScroll * 8;
                 hierarchy._dragOver = null;
                 hierarchy._updateDragHandle();
             }, 1000 / 60);
@@ -2801,66 +5823,74 @@ var HierarchyPanel = /** @class */ (function () {
     return HierarchyPanel;
 }());
 exports.HierarchyPanel = HierarchyPanel;
-},{"../../engine":49,"../../ui":68}],18:[function(require,module,exports){
+},{"../../engine":77,"../../ui":96}],32:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ui_1 = require("../../ui");
 var engine_1 = require("../../engine");
 var HierarchySearch = /** @class */ (function () {
     function HierarchySearch() {
-        this.changing = false;
-        this.itemsIndex = {};
-        this.lastSearch = '';
-        var self = this;
+        editor.method('entities:fuzzy-search', function (query) {
+            var items = [];
+            var entities = editor.call('entities:list');
+            for (var i = 0; i < entities.length; i++)
+                items.push([entities[i].get('name'), entities[i]]);
+            return editor.call('search:items', items, query);
+        });
+        var panel = engine_1.VeryEngine.hierarchy;
+        var hierarchy = editor.call('entities:hierarchy');
+        var changing = false;
+        var itemsIndex = {};
         // 结果列表
-        this.results = new ui_1.List();
-        this.results.element.tabIndex = 0;
-        this.results.hidden = true;
-        this.results.class.add('search-results');
-        engine_1.VeryEngine.hierarchyPanel.append(this.results);
-        this.initResult();
-        // 搜索区域控制
-        this.search = new ui_1.TextField('搜索');
-        this.initSearchField();
-        // 搜索结果clear控制
-        this.searchClear = document.createElement('div');
-        this.searchClear.innerHTML = '&#57650;';
-        this.searchClear.classList.add('clear');
-        this.search.element.appendChild(this.searchClear);
-        this.searchClear.addEventListener('click', function () {
-            self.search.value = '';
+        var results = new ui_1.List();
+        results.element.tabIndex = 0;
+        results.hidden = true;
+        results.class.add('search-results');
+        panel.append(results);
+        var lastSearch = '';
+        var search = new ui_1.TextField('搜索');
+        search.blurOnEnter = false;
+        search.keyChange = true;
+        search.class.add('search');
+        search.renderChanges = false;
+        panel.prepend(search);
+        // panel.element!.insertBefore(search.element!, panel.innerElement);
+        var searchClear = document.createElement('div');
+        searchClear.innerHTML = '&#57650;';
+        searchClear.classList.add('clear');
+        search.element.appendChild(searchClear);
+        searchClear.addEventListener('click', function () {
+            search.value = '';
         }, false);
-    }
-    HierarchySearch.prototype.initResult = function () {
-        var self = this;
         // clear on escape
-        this.results.element.addEventListener('keydown', function (evt) {
+        results.element.addEventListener('keydown', function (evt) {
             if (evt.keyCode === 27) { // esc
-                self.searchClear.click();
+                searchClear.click();
             }
-            else if (evt.keyCode === 13) { // enter，TODO: 回车键选择
-                if (!self.results.selected) {
-                    // let firstElement = self.results.element!.firstElementChild;
-                    // if (firstElement && (<HTMLElement>firstElement).ui && (<HTMLElement>firstElement).ui.entity)
-                    //   editor.call('selector:set', 'entity', [firstElement.ui.entity]);
+            else if (evt.keyCode === 13) { // enter
+                // 搜索结果出现以后，按下enter键
+                if (!results.selected) {
+                    var firstElement = results.element.firstChild;
+                    if (firstElement && firstElement.ui && firstElement.ui.entity)
+                        editor.call('selector:set', 'entity', [firstElement.ui.entity]);
                 }
-                self.search.value = '';
+                search.value = '';
             }
             else if (evt.keyCode === 40) { // down
-                self.selectNext();
+                selectNext();
                 evt.stopPropagation();
             }
             else if (evt.keyCode === 38) { // up
-                self.selectPrev();
+                selectPrev();
                 evt.stopPropagation();
             }
         }, false);
         // deselecting
-        this.results.unbind('deselect', this.results._onDeselect);
-        this.results._onDeselect = function (item) {
-            var ind = this.selected.indexOf(item);
+        results.unbind('deselect', results._onDeselect);
+        results._onDeselect = function (item) {
+            var ind = results.selected.indexOf(item);
             if (ind !== -1)
-                this.selected.splice(ind, 1);
+                results.selected.splice(ind, 1);
             if (this._changing)
                 return;
             if (ui_1.List._ctrl && ui_1.List._ctrl()) {
@@ -2868,30 +5898,25 @@ var HierarchySearch = /** @class */ (function () {
             else {
                 this._changing = true;
                 var items = editor.call('selector:type') === 'entity' && editor.call('selector:items') || [];
-                // TODO: 
-                console.log('_onDeselect');
-                // let inSelected = items.indexOf(item.entity) !== -1;
-                // if (items.length >= 2 && inSelected) {
-                //   let selected = this.selected;
-                //   for (let i = 0; i < selected.length; i++)
-                //     selected[i].selected = false;
-                //   item.selected = true;
-                // }
+                var inSelected = items.indexOf(item.entity) !== -1;
+                if (items.length >= 2 && inSelected) {
+                    var selected = this.selected;
+                    for (var i = 0; i < selected.length; i++)
+                        selected[i].selected = false;
+                    item.selected = true;
+                }
                 this._changing = false;
             }
             this.emit('change');
         };
-        this.results.on('deselect', this.results._onDeselect);
+        results.on('deselect', results._onDeselect);
         // results selection change
-        this.results.on('change', function () {
-            if (self.changing)
+        results.on('change', function () {
+            if (changing)
                 return;
-            if (self.results.selected) {
-                editor.call('selector:set', 'entity', self.results.selected.map(function (item) {
-                    console.log('entity change');
-                    return;
-                    // TODO
-                    // return item.entity;
+            if (results.selected) {
+                editor.call('selector:set', 'entity', results.selected.map(function (item) {
+                    return item.entity;
                 }));
             }
             else {
@@ -2900,197 +5925,249 @@ var HierarchySearch = /** @class */ (function () {
         });
         // selector change
         editor.on('selector:change', function (type, items) {
-            if (self.changing)
+            if (changing)
                 return;
-            self.changing = true;
+            changing = true;
             if (type === 'entity') {
-                self.results.selected = [];
-                // TODO
+                results.selected = [];
                 for (var i = 0; i < items.length; i++) {
-                    // let item = self.itemsIndex[items[i].get('resource_id')];
-                    // if (!item) continue;
-                    // item.selected = true;.
+                    var item = itemsIndex[items[i].get('resource_id')];
+                    if (!item)
+                        continue;
+                    item.selected = true;
                 }
             }
             else {
-                self.results.selected = [];
+                results.selected = [];
             }
-            self.changing = false;
+            changing = false;
         });
-    };
-    HierarchySearch.prototype.initSearchField = function () {
-        var self = this;
-        this.search.blurOnEnter = false;
-        this.search.keyChange = true;
-        this.search.class.add('search');
-        this.search.renderChanges = false;
-        engine_1.VeryEngine.hierarchyPanel.element.insertBefore(this.search.element, engine_1.VeryEngine.hierarchyPanel.innerElement);
-        this.search.element.addEventListener('keydown', function (evt) {
+        var selectNext = function () {
+            // list item
+            var children = results.element.children;
+            // could be nothing or only one item to select
+            if (!children.length)
+                return;
+            var toSelect = null;
+            // 被选择的item
+            var items = results.element.querySelectorAll('.ui-list-item.selected');
+            var multi = (ui_1.List._ctrl && ui_1.List._ctrl()) || (ui_1.List._shift && ui_1.List._shift());
+            if (items.length) {
+                var last = items[items.length - 1];
+                var next = last.nextSibling; // 下一个list item
+                if (next) {
+                    // select next
+                    toSelect = next.ui;
+                }
+                else {
+                    // loop through
+                    if (!multi)
+                        toSelect = children[0].ui;
+                }
+            }
+            else {
+                // select first
+                toSelect = children[0].ui;
+            }
+            if (toSelect) {
+                if (!multi)
+                    results.selected = [];
+                toSelect.selected = true;
+            }
+        };
+        var selectPrev = function () {
+            var children = results.element.children;
+            // could be nothing or only one item to select
+            if (!children.length)
+                return;
+            var toSelect = null;
+            var items = results.element.querySelectorAll('.ui-list-item.selected');
+            var multi = (ui_1.List._ctrl && ui_1.List._ctrl()) || (ui_1.List._shift && ui_1.List._shift());
+            if (items.length) {
+                var first = items[0];
+                var prev = first.previousSibling;
+                if (prev) {
+                    // select previous
+                    toSelect = prev.ui;
+                }
+                else {
+                    // loop through
+                    if (!multi)
+                        toSelect = children[children.length - 1].ui;
+                }
+            }
+            else {
+                // select last
+                toSelect = children[children.length - 1].ui;
+            }
+            if (toSelect) {
+                if (!multi)
+                    results.selected = [];
+                toSelect.selected = true;
+            }
+        };
+        search.element.addEventListener('keydown', function (evt) {
             if (evt.keyCode === 27) {
                 searchClear.click();
             }
             else if (evt.keyCode === 13) {
-                if (!self.results.selected.length) {
-                    // TODO
-                    // let firstElement = self.results.element!.firstElementChild;
-                    // if (firstElement && (<HTMLElement>firstElement).ui && (<HTMLElement>firstElement).ui.entity)
-                    //   editor.call('selector:set', 'entity', [(<HTMLElement>firstElement).ui.entity]);
+                if (!results.selected.length) {
+                    var firstElement = results.element.firstChild;
+                    if (firstElement && firstElement.ui && firstElement.ui.entity)
+                        editor.call('selector:set', 'entity', [firstElement.ui.entity]);
                 }
-                self.search.value = '';
+                search.value = '';
             }
             else if (evt.keyCode === 40) { // down
                 editor.call('hotkey:updateModifierKeys', evt);
-                self.selectNext();
+                selectNext();
                 evt.stopPropagation();
                 evt.preventDefault();
             }
             else if (evt.keyCode === 38) { // up
                 editor.call('hotkey:updateModifierKeys', evt);
-                self.selectPrev();
+                selectPrev();
                 evt.stopPropagation();
                 evt.preventDefault();
             }
             else if (evt.keyCode === 65 && evt.ctrlKey) { // ctrl + a
                 var toSelect = [];
-                var items = self.results.element.querySelectorAll('.ui-list-item');
-                for (var i = 0; i < items.length; i++) {
+                var items = results.element.querySelectorAll('.ui-list-item');
+                for (var i = 0; i < items.length; i++)
                     toSelect.push(items[i].ui);
-                }
-                // TODO
-                console.log('全选');
-                // self.results.selected = toSelect;
+                results.selected = toSelect;
                 evt.stopPropagation();
                 evt.preventDefault();
             }
         }, false);
-        this.search.on('change', function (value) {
-            value = value.trim();
-            if (self.lastSearch === value)
+        // if entity added, check if it maching query
+        editor.on('entities:add', function (entity) {
+            var query = search.value.trim();
+            if (!query)
                 return;
-            self.lastSearch = value;
-            if (value) {
-                self.search.class.add('not-empty');
-            }
-            else {
-                self.search.class.remove('not-empty');
-            }
-            self.performSearch();
+            var items = [[entity.get('name'), entity]];
+            var result = editor.call('search:items', items, query);
+            if (!result.length)
+                return;
+            performSearch();
         });
-        var searchClear = document.createElement('div');
-        searchClear.innerHTML = '&#57650;';
-        searchClear.classList.add('clear');
-        this.search.element.appendChild(searchClear);
-        searchClear.addEventListener('click', function () {
-            self.search.value = '';
-        }, false);
-    };
-    HierarchySearch.prototype.selectNext = function () {
-        var children = this.results.element.children;
-        // could be nothing or only one item to select
-        if (!children.length || !children.length)
-            return;
-        var toSelect = null;
-        var items = this.results.element.querySelectorAll('.ui-list-item.selected');
-        var multi = ui_1.List._ctrl() || ui_1.List._shift();
-        if (items.length) {
-            var last = items[items.length - 1];
-            var next = last.nextElementSibling;
-            if (next) {
-                // select next
-                toSelect = next.ui;
+        var addItem = function (entity) {
+            var events = [];
+            var item = new ui_1.ListItem(entity.get('name'));
+            item.disabledClick = true;
+            item.entity = entity;
+            if (entity.get('children').length)
+                item.class.add('container');
+            // relate to tree item
+            var treeItem = editor.call('entities:panel:get', entity.get('resource_id'));
+            item.disabled = treeItem.disabled;
+            var onStateChange = function () {
+                item.disabled = treeItem.disabled;
+            };
+            events.push(treeItem.on('enable', onStateChange));
+            events.push(treeItem.on('disable', onStateChange));
+            var onNameSet = function (name) {
+                item.text = name;
+            };
+            // TODO
+            events.push(entity.on('name:set', onNameSet));
+            // icon
+            var components = Object.keys(entity.get('components'));
+            for (var c = 0; c < components.length; c++)
+                item.class.add('c-' + components[c]);
+            var onContextMenu = function (evt) {
+                var openned = editor.call('entities:contextmenu:open', entity, evt.clientX, evt.clientY);
+                if (openned) {
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                }
+            };
+            var onDblClick = function (evt) {
+                search.value = '';
+                editor.call('selector:set', 'entity', [entity]);
+                evt.stopPropagation();
+                evt.preventDefault();
+            };
+            item.element.addEventListener('contextmenu', onContextMenu);
+            item.element.addEventListener('dblclick', onDblClick);
+            events.push(item.once('destroy', function () {
+                for (var i = 0; i < events.length; i++)
+                    events[i].unbind();
+                events = null;
+                item.element.removeEventListener('contextmenu', onContextMenu);
+                item.element.removeEventListener('dblclick', onDblClick);
+            }));
+            events.push(treeItem.once('destroy', function () {
+                // if entity removed, perform search again
+                performSearch();
+            }));
+            return item;
+        };
+        var performSearch = function () {
+            var query = lastSearch;
+            // clear results list
+            results.clear();
+            itemsIndex = {};
+            if (query) {
+                var result = editor.call('entities:fuzzy-search', query);
+                hierarchy.hidden = true;
+                results.hidden = false;
+                var selected = [];
+                if (editor.call('selector:type') === 'entity')
+                    selected = editor.call('selector:items');
+                for (var i = 0; i < result.length; i++) {
+                    var item = addItem(result[i]);
+                    itemsIndex[result[i].get('resource_id')] = item;
+                    if (selected.indexOf(result[i]) !== -1)
+                        item.selected = true;
+                    results.append(item);
+                }
             }
             else {
-                // loop through
-                if (!multi)
-                    toSelect = children[0].ui;
+                results.hidden = true;
+                hierarchy.hidden = false;
             }
-        }
-        else {
-            // select first
-            toSelect = children[0].ui;
-        }
-        if (toSelect) {
-            if (!multi)
-                this.results.selected = [];
-            // TODO
-            // toSelect.selected = true;
-        }
-    };
-    HierarchySearch.prototype.selectPrev = function () {
-        var children = this.results.element.children;
-        // could be nothing or only one item to select
-        if (!children || !children.length)
-            return;
-        var toSelect = null;
-        var items = this.results.element.querySelectorAll('.ui-list-item.selected');
-        var multi = ui_1.List._ctrl() || ui_1.List._shift();
-        if (items.length) {
-            var first = items[0];
-            var prev = first.previousElementSibling;
-            if (prev) {
-                // select previous
-                toSelect = prev.ui;
+        };
+        search.on('change', function (value) {
+            value = value.trim();
+            if (lastSearch === value)
+                return;
+            lastSearch = value;
+            if (value) {
+                search.class.add('not-empty');
             }
             else {
-                // loop through
-                if (!multi)
-                    toSelect = children[children.length - 1].ui;
+                search.class.remove('not-empty');
             }
-        }
-        else {
-            // select last
-            toSelect = children[children.length - 1].ui;
-        }
-        if (toSelect) {
-            if (!multi)
-                this.results.selected = [];
-            // TODO
-            // toSelect.selected = true;
-        }
-    };
-    ;
-    HierarchySearch.prototype.performSearch = function () {
-        var query = this.lastSearch;
-        // clear results list
-        this.results.clear();
-        this.itemsIndex = {};
-        if (query) {
-            var result = editor.call('entities:fuzzy-search', query);
-            engine_1.VeryEngine.hierarchyTree.hidden = true;
-            this.results.hidden = false;
-            var selected = [];
-            if (editor.call('selector:type') === 'entity')
-                selected = editor.call('selector:items');
-            // TODO
-            for (var i = 0; i < result.length; i++) {
-                // let item = this.addItem(result[i]);
-                // this.itemsIndex[result[i].get('resource_id')] = item;
-                // if (selected.indexOf(result[i]) !== -1)
-                //   item.selected = true;
-                // this.results.append(item);
-            }
-        }
-        else {
-            this.results.hidden = true;
-            engine_1.VeryEngine.hierarchyTree.hidden = false;
-        }
-    };
-    ;
+            performSearch();
+        });
+    }
     return HierarchySearch;
 }());
 exports.HierarchySearch = HierarchySearch;
-},{"../../engine":49,"../../ui":68}],19:[function(require,module,exports){
+},{"../../engine":77,"../../ui":96}],33:[function(require,module,exports){
+"use strict";
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+__export(require("./keeper"));
+__export(require("./hierarchy-panel"));
+__export(require("./hierarchy-menu"));
+__export(require("./hierarchy-control"));
+__export(require("./hierarchy-search"));
+__export(require("./hierarchy-context-menu"));
+},{"./hierarchy-context-menu":28,"./hierarchy-control":29,"./hierarchy-menu":30,"./hierarchy-panel":31,"./hierarchy-search":32,"./keeper":34}],34:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var ui_1 = require("../../ui");
-var engine_1 = require("../../engine");
 var hierarchy_search_1 = require("./hierarchy-search");
 var hierarchy_menu_1 = require("./hierarchy-menu");
 var hierarchy_context_menu_1 = require("./hierarchy-context-menu");
 var hierarchy_panel_1 = require("./hierarchy-panel");
-var Hierarchy = /** @class */ (function () {
+var hierarchy_control_1 = require("./hierarchy-control");
+var HierarchyKeeper = /** @class */ (function () {
     // public hierarchyMain: Panel;
-    function Hierarchy() {
+    function HierarchyKeeper() {
         // this.hierarchyMain = new Panel();
         // this.hierarchyMain.class!.add('hierarchy-controls');
         // this.hierarchyMain.parent = VeryEngine.hierarchyPanel;
@@ -3152,170 +6229,17 @@ var Hierarchy = /** @class */ (function () {
         // });
         // hierarchy panel
         var hierarchyMainPanel = new hierarchy_panel_1.HierarchyPanel();
-        var contextMenu = new hierarchy_context_menu_1.HierarchyContextMenu();
-        // 搜索区域：Search Field
-        var searchField = new hierarchy_search_1.HierarchySearch();
         // 全局菜单
         var contextMenuLogo = new hierarchy_menu_1.HierarchyMenu();
-        // this.init();
+        var controlMenu = new hierarchy_control_1.HierarchyControl();
+        // 搜索区域：Search Field
+        var searchField = new hierarchy_search_1.HierarchySearch();
+        var contextMenu = new hierarchy_context_menu_1.HierarchyContextMenu();
     }
-    Hierarchy.prototype.init = function () {
-        // left control
-        // hierarchy index
-        var uiItemIndex = {};
-        var awaitingParent = {};
-        var panel = engine_1.VeryEngine.hierarchyPanel;
-        var hierarchy = new ui_1.Tree();
-        engine_1.VeryEngine.hierarchyTree = hierarchy;
-        // TODO: hierarchy权限管理，有些人可看不可编辑；
-        // hierarchy.allowRenaming = editor.call('permissions:write');
-        hierarchy.draggable = hierarchy.allowRenaming;
-        hierarchy.class.add('hierarchy');
-        panel.append(hierarchy);
-        var resizeQueued = false;
-        var resizeTree = function () {
-            resizeQueued = false;
-            hierarchy.element.style.width = '';
-            hierarchy.element.style.width = (panel.innerElement.scrollWidth - 5) + 'px';
-        };
-        var resizeQueue = function () {
-            if (resizeQueued)
-                return;
-            resizeQueued = true;
-            requestAnimationFrame(resizeTree);
-        };
-        panel.on('resize', resizeQueue);
-        hierarchy.on('open', resizeQueue);
-        hierarchy.on('close', resizeQueue);
-        setInterval(resizeQueue, 1000);
-        // return hierarchy
-        editor.method('entities:hierarchy', function () {
-            return hierarchy;
-        });
-        // list item selected
-        hierarchy.on('select', function (item) {
-            // open items till parent
-            var parent = item.parent;
-            while (parent && parent instanceof ui_1.TreeItem) {
-                parent.open = true;
-                parent = parent.parent;
-            }
-            // focus
-            item.elementTitle.focus();
-            // add selection
-            // TODO
-            console.log('selector:add entity');
-            // editor.call('selector:add', 'entity', item.entity);
-        });
-        // list item deselected
-        hierarchy.on('deselect', function (item) {
-            // TODO:
-            console.log('selector:remove entity');
-            // editor.call('selector:remove', item.entity);
-        });
-        // scrolling on drag
-        var dragScroll = 0;
-        var dragTimer = null;
-        ;
-        var dragLastEvt;
-        var dragEvt = function (evt) {
-            if (!hierarchy._dragging) {
-                clearInterval(Number(dragTimer));
-                window.removeEventListener('mousemove', dragEvt);
-                return;
-            }
-            var rect = panel.innerElement.getBoundingClientRect();
-            if ((evt.clientY - rect.top) < 32 && panel.innerElement.scrollTop > 0) {
-                dragScroll = -1;
-            }
-            else if ((rect.bottom - evt.clientY) < 32 && (panel.innerElement.scrollHeight - (rect.height + panel.innerElement.scrollTop)) > 0) {
-                dragScroll = 1;
-            }
-            else {
-                dragScroll = 0;
-            }
-        };
-        hierarchy.on('dragstart', function () {
-            dragTimer = setInterval(function () {
-                if (dragScroll === 0)
-                    return;
-                panel.innerElement.scrollTop += dragScroll * 8;
-                hierarchy._dragOver = null;
-                hierarchy._updateDragHandle();
-            }, 1000 / 60);
-            dragScroll = 0;
-            window.addEventListener('mousemove', dragEvt, false);
-            // TODO:
-            console.log('get drag TreeItem entity resourceId');
-            // let resourceId = hierarchy._dragItems[0].entity.get('resource_id');
-            // editor.call('drop:set', 'entity', { resource_id: resourceId });
-            // editor.call('drop:activate', true);
-        });
-        hierarchy.on('dragend', function () {
-            editor.call('drop:activate', false);
-            editor.call('drop:set');
-        });
-        // TODO
-        // let target = editor.call('drop:target', {
-        //   ref: panel.innerElement,
-        //   type: 'entity',
-        //   hole: true,
-        //   passThrough: true
-        // });
-        // target.element.style.outline = 'none';
-        var classList = ['tree-item-entity', 'entity-id-' + 'ids-to-be-done', 'c-model'];
-        // if (isRoot) {
-        //   classList.push('tree-item-root');
-        // }
-        var rootElement = new ui_1.TreeItem({
-            text: 'Scene',
-            classList: classList
-        });
-        rootElement.class.remove('c-model');
-        hierarchy.element.appendChild(rootElement.element);
-        hierarchy.emit('append', rootElement);
-        for (var i = 0; i < 10; i++) {
-            var element1 = new ui_1.TreeItem({
-                text: '物体名' + (i + 1),
-                classList: classList
-            });
-            editor.emit('entities:add', element1);
-            hierarchy.emit('append', element1);
-            rootElement.append(element1);
-            for (var k = 0; k < 5; k++) {
-                var element2 = new ui_1.TreeItem({
-                    text: '子物体名' + (k + 1),
-                    classList: classList
-                });
-                editor.emit('entities:add', element2);
-                hierarchy.emit('append', element2);
-                element1.append(element2);
-                for (var x = 0; x < 5; x++) {
-                    var element3 = new ui_1.TreeItem({
-                        text: '二级子物体' + (x + 1),
-                        classList: classList
-                    });
-                    editor.emit('entities:add', element3);
-                    hierarchy.emit('append', element3);
-                    element2.append(element3);
-                }
-            }
-        }
-        // element.append();
-    };
-    return Hierarchy;
+    return HierarchyKeeper;
 }());
-exports.Hierarchy = Hierarchy;
-},{"../../engine":49,"../../ui":68,"./hierarchy-context-menu":15,"./hierarchy-menu":16,"./hierarchy-panel":17,"./hierarchy-search":18}],20:[function(require,module,exports){
-"use strict";
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
-Object.defineProperty(exports, "__esModule", { value: true });
-__export(require("./hierarchy"));
-__export(require("./hierarchy-search"));
-__export(require("./hierarchy-menu"));
-},{"./hierarchy":19,"./hierarchy-menu":16,"./hierarchy-search":18}],21:[function(require,module,exports){
+exports.HierarchyKeeper = HierarchyKeeper;
+},{"./hierarchy-context-menu":28,"./hierarchy-control":29,"./hierarchy-menu":30,"./hierarchy-panel":31,"./hierarchy-search":32}],35:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Hotkeys = /** @class */ (function () {
@@ -3825,7 +6749,7 @@ var Hotkeys = /** @class */ (function () {
     return Hotkeys;
 }());
 exports.Hotkeys = Hotkeys;
-},{}],22:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -3843,36 +6767,43 @@ __export(require("./utility"));
 __export(require("./entity"));
 __export(require("./middleware"));
 __export(require("./initialize-after"));
-},{"./assets":4,"./editor":10,"./entity":14,"./hierarchy":20,"./hotkeys":21,"./initialize-after":23,"./initialize-before":24,"./layout":25,"./middleware":28,"./toolbar":34,"./utility":41,"./viewport":42}],23:[function(require,module,exports){
+__export(require("./localstorage"));
+__export(require("./search"));
+__export(require("./drop"));
+},{"./assets":11,"./drop":22,"./editor":23,"./entity":27,"./hierarchy":33,"./hotkeys":35,"./initialize-after":37,"./initialize-before":38,"./layout":39,"./localstorage":40,"./middleware":43,"./search":46,"./toolbar":50,"./utility":67,"./viewport":69}],37:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var attributes_1 = require("./attributes");
+var toolbar_1 = require("./toolbar");
 var InitializeAfter = /** @class */ (function () {
     function InitializeAfter() {
         // attributes
-        var attributesReference = new attributes_1.AttributesReference();
-        var attributesPanel = new attributes_1.AttributesPanel();
-        var attributesEntity = new attributes_1.AttributesEntity();
+        var attributes = new attributes_1.AttributesKeeper();
+        // toolbar
+        var toolbar = new toolbar_1.ToolbarKeeper();
     }
     return InitializeAfter;
 }());
 exports.InitializeAfter = InitializeAfter;
-},{"./attributes":9}],24:[function(require,module,exports){
+},{"./attributes":20,"./toolbar":50}],38:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var hotkeys_1 = require("./hotkeys");
 var utility_1 = require("./utility");
 var selector_1 = require("./selector");
 var realtime_1 = require("./web/realtime");
+var localstorage_1 = require("./localstorage");
 var InitializeBefore = /** @class */ (function () {
     function InitializeBefore() {
         this.init();
     }
     InitializeBefore.prototype.init = function () {
         // axois默认请求头设置，全局通过json方式传送和接收数据
-        axios.defaults.headers.post["Content-Type"] = "application/json";
+        // axios.defaults.headers.post["Content-Type"] = "application/json";
         // 全局快捷键注册
         var hotkeys = new hotkeys_1.Hotkeys();
+        // localstorage
+        var localstorage = new localstorage_1.LocalStorage();
         // components-logos
         var logos = new utility_1.ComponentsLogos();
         // 屏蔽浏览器默认右键菜单
@@ -3885,7 +6816,7 @@ var InitializeBefore = /** @class */ (function () {
     return InitializeBefore;
 }());
 exports.InitializeBefore = InitializeBefore;
-},{"./hotkeys":21,"./selector":31,"./utility":41,"./web/realtime":47}],25:[function(require,module,exports){
+},{"./hotkeys":35,"./localstorage":40,"./selector":47,"./utility":67,"./web/realtime":74}],39:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ui_1 = require("../ui");
@@ -3927,166 +6858,176 @@ var Layout = /** @class */ (function () {
     }
     Layout.prototype.init = function () {
         // main container
-        var root = new ui_1.Panel();
-        root.element.id = 'ui-root';
-        root.flex = true;
-        root.flexDirection = 'column';
-        root.flexWrap = 'nowrap';
-        root.scroll = true;
-        document.body.appendChild(root.element);
-        // expose
-        editor.method('layout.root', function () { return root; });
-        engine_1.VeryEngine.rootPanel = root;
-        // top panel TODO: top干嘛用？
-        var top = new ui_1.Panel();
-        top.style.backgroundColor = '#5f6f72';
-        top.style.cursor = 'pointer';
-        top.element.id = 'ui-top';
-        top.flexShrink = '0';
-        top.once('click', function () {
-            top.destroy();
-            // TODO
-            top.style.marginTop = '';
+        var root = new ui_1.TopElementContainer({
+            id: 'layout-root',
+            grid: true
         });
-        root.append(top);
-        // middle panel
-        var middle = new ui_1.Panel();
-        middle.element.id = 'ui-middle';
-        middle.flexible = true;
-        middle.flexGrow = '1';
-        root.append(middle);
-        // bottom panel (status)
-        var bottom = new ui_1.Panel();
-        bottom.element.id = 'ui-bottom';
-        bottom.flexShrink = '0';
-        root.append(bottom);
+        document.body.appendChild(root.dom);
         // expose
-        editor.method('layout.bottom', function () { return bottom; });
-        // toolbar panel (left)
-        var toolbar = new ui_1.Panel();
-        toolbar.element.id = 'ui-toolbar';
-        toolbar.flexShrink = '0';
-        toolbar.style.width = '45px';
-        middle.append(toolbar);
+        editor.method('layout.root', function () {
+            return root;
+        });
+        engine_1.VeryEngine.root = root;
+        // toolbar (left)
+        var toolbar = new ui_1.TopElementContainer({
+            id: 'layout-toolbar',
+            flex: true
+        });
+        root.append(toolbar);
         // expose
         editor.method('layout.toolbar', function () { return toolbar; });
-        engine_1.VeryEngine.toolbarPanel = toolbar;
+        engine_1.VeryEngine.toolbar = toolbar;
         // hierarchy
-        var hierarchyPanel = new ui_1.Panel('树形结构窗口');
-        hierarchyPanel.enabled = true;
-        hierarchyPanel.class.add('hierarchy');
-        hierarchyPanel.flexShrink = '0';
-        var hierarchyPanelSize = editor.call('localStorage:get', 'editor:layout:hierarchy:width') || '256px';
-        hierarchyPanel.style.width = hierarchyPanelSize;
-        hierarchyPanel.innerElement.style.width = hierarchyPanelSize;
-        hierarchyPanel.foldable = true;
-        hierarchyPanel.folded = editor.call('localStorage:get', 'editor:layout:hierarchy:fold') || false;
-        hierarchyPanel.horizontal = true;
-        hierarchyPanel.scroll = true;
-        hierarchyPanel.resizable = 'right';
-        hierarchyPanel.resizeMin = 196;
-        hierarchyPanel.resizeMax = 512;
+        var hierarchyPanel = new ui_1.TopElementPanel({
+            headerText: '层级菜单',
+            id: 'layout-hierarchy',
+            flex: true,
+            enabled: false,
+            width: editor.call('localStorage:get', 'editor:layout:hierarchy:width') || 256,
+            panelType: 'normal',
+            collapsible: true,
+            collapseHorizontally: true,
+            collapsed: editor.call('localStorage:get', 'editor:layout:hierarchy:collapse') || window.innerWidth <= 480,
+            scrollable: true,
+            resizable: 'right',
+            resizeMin: 196,
+            resizeMax: 512
+        });
         hierarchyPanel.on('resize', function () {
-            editor.call('localStorage:set', 'editor:layout:hierarchy:width', hierarchyPanel.style.width);
+            editor.call('localStorage:set', 'editor:layout:hierarchy:width', hierarchyPanel.width);
         });
-        hierarchyPanel.on('fold', function () {
-            editor.call('localStorage:set', 'editor:layout:hierarchy:fold', true);
+        hierarchyPanel.on('collapse', function () {
+            editor.call('localStorage:set', 'editor:layout:hierarchy:collapse', true);
         });
-        hierarchyPanel.on('unfold', function () {
-            editor.call('localStorage:set', 'editor:layout:hierarchy:fold', false);
+        hierarchyPanel.on('expand', function () {
+            editor.call('localStorage:set', 'editor:layout:hierarchy:collapse', false);
         });
-        middle.append(hierarchyPanel);
+        root.append(hierarchyPanel);
         // expose
-        editor.method('layout.left', function () { return hierarchyPanel; });
+        editor.method('layout.hierarchy', function () { return hierarchyPanel; });
         editor.on('permissions:writeState', function (state) {
             hierarchyPanel.enabled = state;
         });
-        if (window.innerWidth <= 480) {
-            hierarchyPanel.folded = true;
-        }
-        engine_1.VeryEngine.hierarchyPanel = hierarchyPanel;
-        // center panel
-        var center = new ui_1.Panel();
-        center.flexible = true;
-        center.flexGrow = '1';
-        center.flexDirection = 'column';
-        middle.append(center);
-        // viewport panel
-        var viewport = new ui_1.Panel();
-        viewport.flexible = true;
-        viewport.flexGrow = '1';
+        engine_1.VeryEngine.hierarchy = hierarchyPanel;
+        // viewport
+        var viewport = new ui_1.TopElementContainer({
+            id: 'layout-viewport'
+        });
         viewport.class.add('viewport');
-        center.append(viewport);
+        root.append(viewport);
         // expose
         editor.method('layout.viewport', function () { return viewport; });
-        engine_1.VeryEngine.viewPanel = viewport;
-        // assets panel
-        var assetsPanel = new ui_1.Panel('资源窗口');
+        engine_1.VeryEngine.viewportPanel = viewport;
+        // assets
+        var assetsPanel = new ui_1.TopElementPanel({
+            id: 'layout-assets',
+            headerText: '资源面板',
+            flex: true,
+            flexDirection: 'row',
+            panelType: 'normal',
+            collapsible: true,
+            collapsed: editor.call('localStorage:get', 'editor:layout:assets:collapse') || window.innerHeight <= 480,
+            height: editor.call('localStorage:get', 'editor:layout:assets:height') || 212,
+            scrollable: true,
+            resizable: 'top',
+            resizeMin: 106,
+            resizeMax: 106 * 6
+        });
         assetsPanel.class.add('assets');
-        assetsPanel.foldable = true;
-        assetsPanel.folded = editor.call('localStorage:get', 'editor:layout:assets:fold') || false;
-        assetsPanel.flexShrink = '0';
-        assetsPanel.innerElement.style.height = editor.call('localStorage:get', 'editor:layout:assets:height') || '212px';
-        assetsPanel.scroll = true;
-        assetsPanel.resizable = 'top';
-        assetsPanel.resizeMin = 106;
-        assetsPanel.resizeMax = 106 * 6;
-        assetsPanel.headerSize = -1;
         assetsPanel.on('resize', function () {
-            editor.call('localStorage:set', 'editor:layout:assets:height', assetsPanel.innerElement.style.height);
+            editor.call('localStorage:set', 'editor:layout:assets:height', assetsPanel.height);
         });
-        assetsPanel.on('fold', function () {
-            editor.call('localStorage:set', 'editor:layout:assets:fold', true);
+        assetsPanel.on('collapse', function () {
+            editor.call('localStorage:set', 'editor:layout:assets:collapse', true);
         });
-        assetsPanel.on('unfold', function () {
-            editor.call('localStorage:set', 'editor:layout:assets:fold', false);
+        assetsPanel.on('expand', function () {
+            editor.call('localStorage:set', 'editor:layout:assets:collapse', false);
         });
-        center.append(assetsPanel);
+        root.append(assetsPanel);
         // expose
         editor.method('layout.assets', function () { return assetsPanel; });
-        if (window.innerHeight <= 480) {
-            assetsPanel.folded = true;
-        }
-        engine_1.VeryEngine.assetPanel = assetsPanel;
-        // attributes panel
-        var attributesPanel = new ui_1.Panel('属性窗口');
-        attributesPanel.enabled = true;
+        engine_1.VeryEngine.assets = assetsPanel;
+        // attributes
+        var attributesPanel = new ui_1.TopElementPanel({
+            id: 'layout-attributes',
+            headerText: 'INSPECTOR',
+            enabled: false,
+            panelType: 'normal',
+            width: editor.call('localStorage:get', 'editor:layout:attributes:width') || 320,
+            collapsible: true,
+            collapseHorizontally: true,
+            collapsed: editor.call('localStorage:get', 'editor:layout:attributes:collapse') || false,
+            scrollable: true,
+            resizable: 'left',
+            resizeMin: 256,
+            resizeMax: 512
+        });
         attributesPanel.class.add('attributes');
-        attributesPanel.flexShrink = '0';
-        var attributesPanelWidth = editor.call('localStorage:get', 'editor:layout:attributes:width') || '320px';
-        attributesPanel.style.width = attributesPanelWidth;
-        attributesPanel.innerElement.style.width = attributesPanelWidth;
-        attributesPanel.horizontal = true;
-        attributesPanel.foldable = true;
-        attributesPanel.folded = editor.call('localStorage:get', 'editor:layout:attributes:fold') || false;
-        attributesPanel.scroll = true;
-        attributesPanel.resizable = 'left';
-        attributesPanel.resizeMin = 256;
-        attributesPanel.resizeMax = 512;
         attributesPanel.on('resize', function () {
-            editor.call('localStorage:set', 'editor:layout:attributes:width', attributesPanel.innerElement.style.width);
+            editor.call('localStorage:set', 'editor:layout:attributes:width', attributesPanel.width);
         });
-        attributesPanel.on('fold', function () {
-            editor.call('localStorage:set', 'editor:layout:attributes:fold', true);
+        attributesPanel.on('collapse', function () {
+            editor.call('localStorage:set', 'editor:layout:attributes:collapse', true);
         });
-        attributesPanel.on('unfold', function () {
-            editor.call('localStorage:set', 'editor:layout:attributes:fold', false);
+        attributesPanel.on('expand', function () {
+            editor.call('localStorage:set', 'editor:layout:attributes:collapse', false);
         });
-        middle.append(attributesPanel);
+        root.append(attributesPanel);
         // expose
-        editor.method('layout.right', function () { return attributesPanel; });
+        editor.method('layout.attributes', function () { return attributesPanel; });
         editor.on('permissions:writeState', function (state) {
             attributesPanel.enabled = state;
         });
+        engine_1.VeryEngine.attributes = attributesPanel;
+        // status bar
+        var statusBar = new ui_1.TopElementContainer({
+            id: 'layout-statusbar',
+            flex: true,
+            flexDirection: 'row'
+        });
+        root.append(statusBar);
+        // expose
+        editor.method('layout.statusBar', function () { return statusBar; });
+        engine_1.VeryEngine.statusBar = statusBar;
         if (window.innerWidth <= 720) {
-            attributesPanel.folded = true;
+            // attributesPanel.folded = true;
+            console.warn('folder');
         }
-        engine_1.VeryEngine.attributesPanel = attributesPanel;
     };
     return Layout;
 }());
 exports.Layout = Layout;
-},{"../engine":49,"../ui":68}],26:[function(require,module,exports){
+},{"../engine":77,"../ui":96}],40:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var LocalStorage = /** @class */ (function () {
+    function LocalStorage() {
+        // Get a key from the local storage
+        editor.method('localStorage:get', function (key) {
+            var value = localStorage.getItem(key);
+            if (value) {
+                try {
+                    value = JSON.parse(value);
+                }
+                catch (e) {
+                    console.error(e);
+                }
+            }
+            return value;
+        });
+        // Set a key-value pair in localStorage
+        editor.method('localStorage:set', function (key, value) {
+            localStorage.setItem(key, JSON.stringify(value));
+        });
+        // Returns true if the key exists in the local storage
+        editor.method('localStorage:has', function (key) {
+            return !!localStorage.getItem(key);
+        });
+    }
+    return LocalStorage;
+}());
+exports.LocalStorage = LocalStorage;
+},{}],41:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var transform_1 = require("./transform");
@@ -4146,7 +7087,7 @@ var Component = /** @class */ (function () {
     return Component;
 }());
 exports.Component = Component;
-},{"./gameobject":27,"./transform":30}],27:[function(require,module,exports){
+},{"./gameobject":42,"./transform":45}],42:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var transform_1 = require("./transform");
@@ -4296,6 +7237,13 @@ var GameObject = /** @class */ (function () {
             }
         }
     };
+    GameObject.prototype.addMesh = function (mesh) {
+        // 删除空物体
+        if (this._transform.mesh === null && this._transform.transformNode) {
+            this._transform.transformNode.dispose();
+        }
+        this._transform.mesh = mesh;
+    };
     GameObject.prototype.setActive = function (value) {
     };
     GameObject.prototype.setActiveRecursively = function (value) {
@@ -4305,7 +7253,7 @@ var GameObject = /** @class */ (function () {
     return GameObject;
 }());
 exports.GameObject = GameObject;
-},{"../../engine":49,"./transform":30}],28:[function(require,module,exports){
+},{"../../engine":77,"./transform":45}],43:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -4315,7 +7263,7 @@ __export(require("./transform"));
 __export(require("./gameobject"));
 __export(require("./component"));
 __export(require("./middle-container"));
-},{"./component":26,"./gameobject":27,"./middle-container":29,"./transform":30}],29:[function(require,module,exports){
+},{"./component":41,"./gameobject":42,"./middle-container":44,"./transform":45}],44:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var MiddleContainer = /** @class */ (function () {
@@ -4328,7 +7276,7 @@ var MiddleContainer = /** @class */ (function () {
     return MiddleContainer;
 }());
 exports.MiddleContainer = MiddleContainer;
-},{}],30:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Transform = /** @class */ (function () {
@@ -4405,6 +7353,9 @@ var Transform = /** @class */ (function () {
     Object.defineProperty(Transform.prototype, "mesh", {
         get: function () {
             return this._mesh;
+        },
+        set: function (val) {
+            this._mesh = val;
         },
         enumerable: true,
         configurable: true
@@ -4772,7 +7723,200 @@ var Transform = /** @class */ (function () {
     return Transform;
 }());
 exports.Transform = Transform;
-},{}],31:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var Search = /** @class */ (function () {
+    function Search() {
+        // calculate, how many string `a`
+        // requires edits, to become string `b`
+        editor.method('search:stringEditDistance', function (a, b) {
+            // Levenshtein distance
+            // https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#JavaScript
+            if (a.length === 0)
+                return b.length;
+            if (b.length === 0)
+                return a.length;
+            if (a === b)
+                return 0;
+            var i, j;
+            var matrix = [];
+            for (i = 0; i <= b.length; i++)
+                matrix[i] = [i];
+            for (j = 0; j <= a.length; j++)
+                matrix[0][j] = j;
+            for (i = 1; i <= b.length; i++) {
+                for (j = 1; j <= a.length; j++) {
+                    if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1];
+                    }
+                    else {
+                        matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
+                    }
+                }
+            }
+            return matrix[b.length][a.length];
+        });
+        // calculate, how many characters string `b`
+        // contains of a string `a`
+        editor.method('search:charsContains', function (a, b) {
+            if (a === b)
+                return a.length;
+            var contains = 0;
+            var ind = {};
+            var i;
+            for (i = 0; i < b.length; i++)
+                ind[b.charAt(i)] = true;
+            for (i = 0; i < a.length; i++) {
+                if (ind[a.charAt(i)])
+                    contains++;
+            }
+            return contains;
+        });
+        // tokenize string into array of tokens
+        editor.method('search:stringTokenize', function (name) {
+            var tokens = [];
+            // camelCase
+            // upperCASE123
+            var string = name.replace(/([^A-Z])([A-Z][^A-Z])/g, '$1 $2').replace(/([A-Z0-9]{2,})/g, ' $1');
+            // space notation
+            // dash-notation
+            // underscore_notation
+            var parts = string.split(/(\s|\-|_)/g);
+            // filter valid tokens
+            for (var i = 0; i < parts.length; i++) {
+                parts[i] = parts[i].toLowerCase().trim();
+                if (parts[i] && parts[i] !== '-' && parts[i] !== '_')
+                    tokens.push(parts[i]);
+            }
+            return tokens;
+        });
+        var searchItems = function (items, search, args) {
+            var results = [];
+            for (var i = 0; i < items.length; i++) {
+                var item = items[i];
+                // direct hit
+                if (item.subFull !== Infinity) {
+                    results.push(item);
+                    if (item.edits === Infinity)
+                        item.edits = 0;
+                    if (item.sub === Infinity)
+                        item.sub = item.subFull;
+                    continue;
+                }
+                else if (item.name === search || item.name.indexOf(search) === 0) {
+                    results.push(item);
+                    if (item.edits === Infinity)
+                        item.edits = 0;
+                    if (item.sub === Infinity)
+                        item.sub = 0;
+                    continue;
+                }
+                // check if name contains enough of search characters
+                var contains = editor.call('search:charsContains', search, item.name);
+                if (contains / search.length < args.containsCharsTolerance)
+                    continue;
+                var editsCandidate = Infinity;
+                var subCandidate = Infinity;
+                // for each token
+                for (var t = 0; t < item.tokens.length; t++) {
+                    // direct token match
+                    if (item.tokens[t] === search) {
+                        editsCandidate = 0;
+                        subCandidate = t;
+                        break;
+                    }
+                    var edits = editor.call('search:stringEditDistance', search, item.tokens[t]);
+                    if ((subCandidate === Infinity || edits < editsCandidate) && item.tokens[t].indexOf(search) !== -1) {
+                        // search is a substring of a token
+                        subCandidate = t;
+                        editsCandidate = edits;
+                        continue;
+                    }
+                    else if (subCandidate === Infinity && edits < editsCandidate) {
+                        // new edits candidate, not a substring of a token
+                        if ((edits / Math.max(search.length, item.tokens[t].length)) <= args.editsDistanceTolerance) {
+                            // check if edits tolerance is satisfied
+                            editsCandidate = edits;
+                        }
+                    }
+                }
+                // no match candidate
+                if (editsCandidate === Infinity)
+                    continue;
+                // add new result
+                results.push(item);
+                item.edits = item.edits === Infinity ? editsCandidate : item.edits + editsCandidate;
+                item.sub = item.sub === Infinity ? subCandidate : item.sub + subCandidate;
+            }
+            return results;
+        };
+        // perform search through items
+        // items is an array with arrays of two values
+        // where first value is a string to be searched by
+        // and second value is an object to be found
+        /*
+        [
+            [ 'camera', {object} ],
+            [ 'New Entity', {object} ],
+            [ 'Sun', {object} ]
+        ]
+        */
+        editor.method('search:items', function (items, search, args) {
+            search = (search || '').toLowerCase().trim();
+            if (!search)
+                return [];
+            var searchTokens = editor.call('search:stringTokenize', search);
+            if (!searchTokens.length)
+                return [];
+            args = args || {};
+            args.containsCharsTolerance = args.containsCharsTolerance || 0.5;
+            args.editsDistanceTolerance = args.editsDistanceTolerance || 0.5;
+            var result = [];
+            var records = [];
+            for (var i = 0; i < items.length; i++) {
+                var subInd = items[i][0].toLowerCase().trim().indexOf(search);
+                records.push({
+                    name: items[i][0],
+                    item: items[i][1],
+                    tokens: editor.call('search:stringTokenize', items[i][0]),
+                    edits: Infinity,
+                    subFull: (subInd !== -1) ? subInd : Infinity,
+                    sub: Infinity
+                });
+            }
+            // search each token
+            for (var i = 0; i < searchTokens.length; i++)
+                records = searchItems(records, searchTokens[i], args);
+            // sort result first by substring? then by edits number
+            records.sort(function (a, b) {
+                if (a.subFull !== b.subFull) {
+                    return a.subFull - b.subFull;
+                }
+                else if (a.sub !== b.sub) {
+                    return a.sub - b.sub;
+                }
+                else if (a.edits !== b.edits) {
+                    return a.edits - b.edits;
+                }
+                else {
+                    return a.name.length - b.name.length;
+                }
+            });
+            // return only items without match information
+            for (var i = 0; i < records.length; i++)
+                records[i] = records[i].item;
+            // limit number of results
+            if (args.hasOwnProperty('limitResults') && records.length > args.limitResults) {
+                records = records.slice(0, args.limitResults);
+            }
+            return records;
+        });
+    }
+    return Search;
+}());
+exports.Search = Search;
+},{}],47:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -4780,7 +7924,7 @@ function __export(m) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./selector"));
 __export(require("./selector-history"));
-},{"./selector":33,"./selector-history":32}],32:[function(require,module,exports){
+},{"./selector":49,"./selector-history":48}],48:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var SelectorHistory = /** @class */ (function () {
@@ -4789,104 +7933,693 @@ var SelectorHistory = /** @class */ (function () {
     return SelectorHistory;
 }());
 exports.SelectorHistory = SelectorHistory;
-},{}],33:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var lib_1 = require("../../lib");
 var Selector = /** @class */ (function () {
     function Selector() {
         this.enabled = true;
+        this.legacyScripts = false;
+        this.type = '';
+        this.length = 0;
         this.selector = new lib_1.ObserverList();
         this.evtChange = false;
         this.init();
     }
     Selector.prototype.init = function () {
         var self = this;
-        // 某个面板选中item
+        var index = {};
+        var keyByType = function (type) {
+            switch (type) {
+                case 'entity':
+                    return 'resource_id';
+                case 'asset':
+                    return 'id';
+            }
+            return '';
+        };
+        var setIndex = function (type, item) {
+            var key = keyByType(type);
+            if (!key)
+                return;
+            if (!index[type])
+                index[type] = {};
+            index[type][item.get(key)] = item.once('destroy', function () {
+                var state = editor.call('selector:history');
+                if (state)
+                    editor.call('selector:history', false);
+                self.selector.remove(item);
+                delete index[type][item.get(key)];
+                if (state)
+                    editor.call('selector:history', true);
+            });
+        };
+        var removeIndex = function (type, item) {
+            if (!index[type])
+                return;
+            var key = keyByType(type);
+            if (!key)
+                return;
+            var ind = index[type][item.get(key)];
+            if (!ind)
+                return;
+            ind.unbind();
+        };
+        var evtChange = false;
+        var evtChangeFn = function () {
+            evtChange = false;
+            console.log(self.selector.type);
+            console.log(self.selector.array());
+            editor.emit('selector:change', self.selector.type, self.selector.array());
+        };
+        // adding
+        self.selector.on('add', function (item) {
+            // add index
+            setIndex(self.type, item);
+            editor.emit('selector:add', item, self.type);
+            if (!evtChange) {
+                evtChange = true;
+                setTimeout(evtChangeFn, 0);
+            }
+        });
+        // removing
+        self.selector.on('remove', function (item) {
+            editor.emit('selector:remove', item, self.type);
+            // remove index
+            removeIndex(self.type, item);
+            if (self.length === 0)
+                self.type = '';
+            if (!evtChange) {
+                evtChange = true;
+                setTimeout(evtChangeFn, 0);
+            }
+        });
+        // selecting item (toggle)
+        editor.method('selector:toggle', function (type, item) {
+            if (!self.enabled)
+                return;
+            if (self.selector.length && self.selector.type !== type) {
+                self.selector.clear();
+            }
+            self.selector.type = type;
+            if (self.selector.has(item)) {
+                self.selector.remove(item);
+            }
+            else {
+                self.selector.add(item);
+            }
+        });
+        // selecting list of items
+        editor.method('selector:set', function (type, items) {
+            if (!self.enabled)
+                return;
+            self.selector.clear();
+            if (!type || !items.length)
+                return;
+            // make sure items still exist
+            if (type === 'asset') {
+                items = items.filter(function (item) {
+                    return (self.legacyScripts && item.get('type') === 'script') || !!editor.call('assets:get', item.get('id'));
+                });
+            }
+            else if (type === 'entity') {
+                items = items.filter(function (item) {
+                    return !!editor.call('entities:get', item.get('resource_id'));
+                });
+            }
+            if (!items.length)
+                return;
+            // type
+            self.selector.type = type;
+            // remove
+            // TODO: 删除不重合的部分
+            // self.selector.find(function (item: Observer) {
+            //     return items.indexOf(item) === -1;
+            // }).forEach(function (item: Observer) {
+            //     self.selector.remove(item);
+            // });
+            // add
+            for (var i = 0; i < items.length; i++)
+                self.selector.add(items[i]);
+        });
+        // 某个面板选中item // selecting item hierarchy选择物体
         editor.method('selector:add', function (type, item) {
             if (!self.enabled)
                 return;
             if (self.selector.has(item))
                 return;
-            // console.warn('selector add入口');
+            console.warn('selector add入口');
+            console.warn(item);
             if (self.selector.length > 0 && self.selector.type !== type)
                 self.selector.clear();
             self.selector.type = type;
             self.selector.add(item);
         });
         // deselecting item
-        editor.method('selector:remove', function (type, item) {
-            // console.warn('selector:remove 移除');
+        editor.method('selector:remove', function (item) {
             if (!self.enabled)
                 return;
             if (!self.selector.has(item))
                 return;
             self.selector.remove(item);
         });
-        // observer-list中有添加item
-        this.selector.on('add', function (item) {
-            // add index TODO
-            // this.setIndex(self.selector.type, item);
-            // console.warn('selector list 中 add item');
-            editor.emit('selector:add', item, self.selector.type);
-            if (!self.evtChange) {
-                self.evtChange = true;
-                setTimeout(self.evtChangeFn.bind(self), 0);
-            }
+        // deselecting
+        editor.method('selector:clear', function () {
+            if (!self.enabled)
+                return;
+            self.selector.clear();
         });
-        // removing
-        this.selector.on('remove', function (item) {
-            editor.emit('selector:remove', item, self.selector.type);
-            // remove index
-            // this.removeIndex(self.selector.type, item);
-            if (self.selector.length === 0)
-                self.selector.type = '';
-            if (!self.evtChange) {
-                self.evtChange = true;
-                setTimeout(self.evtChangeFn.bind(self), 0);
-            }
+        // return select type
+        editor.method('selector:type', function () {
+            return self.selector.type;
         });
-    };
-    Selector.prototype.keyByType = function (type) {
-        switch (type) {
-            case 'entity':
-                return 'resource_id';
-            case 'asset':
-                return 'id';
-        }
-        return '';
-    };
-    // private setIndex(type: string, item: Observer): void {
-    //   var key = this.keyByType(type);
-    //   if (!key) return;
-    //   if (!index[type])
-    //     index[type] = {};
-    //   index[type][item.get[key]] = item.once('destroy', function () {
-    //     var state = editor.call('selector:history');
-    //     if (state)
-    //       editor.call('selector:history', false);
-    //     selector.remove(item);
-    //     delete index[type][item.get[key]];
-    //     if (state)
-    //       editor.call('selector:history', true);
-    //   });
-    // }
-    Selector.prototype.evtChangeFn = function () {
-        this.evtChange = false;
-        console.log('selector change 事件');
-        editor.emit('selector:change', this.selector.type, this.selector.array());
+        // return selected count
+        editor.method('selector:count', function () {
+            return self.selector.length;
+        });
+        // return selected items
+        editor.method('selector:items', function () {
+            return self.selector.array();
+        });
+        // return selected items without making copy of array
+        editor.method('selector:itemsRaw', function () {
+            return self.selector.data;
+        });
+        // return if it has item
+        editor.method('selector:has', function (item) {
+            return self.selector.has(item);
+        });
+        editor.method('selector:enabled', function (state) {
+            self.enabled = state;
+        });
     };
     return Selector;
 }());
 exports.Selector = Selector;
-},{"../../lib":53}],34:[function(require,module,exports){
+},{"../../lib":81}],50:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./toolbar-top-control"));
-},{"./toolbar-top-control":35}],35:[function(require,module,exports){
+__export(require("./keeper"));
+__export(require("./toolbar-logo"));
+__export(require("./toolbar-gizmos"));
+__export(require("./toolbar-history"));
+__export(require("./toolbar-help"));
+__export(require("./toolbar-control"));
+__export(require("./toolbar-editor-settings"));
+__export(require("./toolbar-publish"));
+__export(require("./toolbar-scene"));
+},{"./keeper":51,"./toolbar-control":52,"./toolbar-editor-settings":53,"./toolbar-gizmos":54,"./toolbar-help":55,"./toolbar-history":56,"./toolbar-logo":57,"./toolbar-publish":58,"./toolbar-scene":59,"./toolbar-top-control":60}],51:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var toolbar_logo_1 = require("./toolbar-logo");
+var toolbar_gizmos_1 = require("./toolbar-gizmos");
+var toolbar_history_1 = require("./toolbar-history");
+var toolbar_help_1 = require("./toolbar-help");
+var toolbar_control_1 = require("./toolbar-control");
+var toolbar_editor_settings_1 = require("./toolbar-editor-settings");
+var toolbar_publish_1 = require("./toolbar-publish");
+var toolbar_scene_1 = require("./toolbar-scene");
+var ToolbarKeeper = /** @class */ (function () {
+    function ToolbarKeeper() {
+        var logo = new toolbar_logo_1.ToolbarLogo();
+        var gizmos = new toolbar_gizmos_1.ToolbarGizmos();
+        var history = new toolbar_history_1.ToolbarHistory();
+        var help = new toolbar_help_1.ToolbarHelp();
+        var control = new toolbar_control_1.ToolbarControl();
+        var settings = new toolbar_editor_settings_1.ToolbarEditorSettings();
+        var publish = new toolbar_publish_1.ToolbarPublish();
+        var scene = new toolbar_scene_1.ToolbarScene();
+    }
+    return ToolbarKeeper;
+}());
+exports.ToolbarKeeper = ToolbarKeeper;
+},{"./toolbar-control":52,"./toolbar-editor-settings":53,"./toolbar-gizmos":54,"./toolbar-help":55,"./toolbar-history":56,"./toolbar-logo":57,"./toolbar-publish":58,"./toolbar-scene":59}],52:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var engine_1 = require("../../engine");
+var ui_1 = require("../../ui");
+var ToolbarControl = /** @class */ (function () {
+    function ToolbarControl() {
+        var toolbar = engine_1.VeryEngine.toolbar;
+        var button = new ui_1.Button('&#57654;');
+        button.class.add('pc-icon', 'help-controls', 'bottom');
+        toolbar.append(button);
+        button.on('click', function () {
+            editor.call('help:controls');
+        });
+        editor.on('help:controls:open', function () {
+            button.class.add('active');
+        });
+        editor.on('help:controls:close', function () {
+            button.class.remove('active');
+        });
+        ui_1.Tooltip.attach({
+            target: button.element,
+            text: 'Controls',
+            align: 'left',
+            root: editor.call('layout.root')
+        });
+    }
+    return ToolbarControl;
+}());
+exports.ToolbarControl = ToolbarControl;
+},{"../../engine":77,"../../ui":96}],53:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var engine_1 = require("../../engine");
+var ui_1 = require("../../ui");
+var ToolbarEditorSettings = /** @class */ (function () {
+    function ToolbarEditorSettings() {
+        var toolbar = engine_1.VeryEngine.toolbar;
+        // settings button
+        var button = new ui_1.Button('&#57652;');
+        button.class.add('pc-icon', 'editor-settings', 'bottom');
+        toolbar.append(button);
+        button.on('click', function () {
+            editor.call('selector:set', 'editorSettings', [editor.call('settings:projectUser')]);
+        });
+        editor.on('attributes:clear', function () {
+            button.class.remove('active');
+        });
+        editor.on('attributes:inspect[editorSettings]', function () {
+            editor.call('attributes.rootPanel').collapsed = false;
+            button.class.add('active');
+        });
+        editor.on('viewport:expand', function (state) {
+            button.disabled = state;
+        });
+        ui_1.Tooltip.attach({
+            target: button.element,
+            text: 'Settings',
+            align: 'left',
+            root: editor.call('layout.root')
+        });
+    }
+    return ToolbarEditorSettings;
+}());
+exports.ToolbarEditorSettings = ToolbarEditorSettings;
+},{"../../engine":77,"../../ui":96}],54:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var ui_1 = require("../../ui");
+var ToolbarGizmos = /** @class */ (function () {
+    function ToolbarGizmos() {
+        var root = editor.call('layout.root');
+        var toolbar = editor.call('layout.toolbar');
+        var activeGizmo = null;
+        var gizmoButtons = {};
+        // create gizmo type buttons
+        [{
+                icon: '&#57617;',
+                tooltip: 'Translate',
+                op: 'translate'
+            }, {
+                icon: '&#57619;',
+                tooltip: 'Rotate',
+                op: 'rotate'
+            }, {
+                icon: '&#57618;',
+                tooltip: 'Scale',
+                op: 'scale'
+            }, {
+                icon: '&#57666;',
+                tooltip: 'Resize Element Component',
+                op: 'resize'
+            }].forEach(function (item, index) {
+            var button = new ui_1.Button(item.icon);
+            // button.hidden = !editor.call('permissions:write');
+            button.op = item.op;
+            button.class.add('pc-icon');
+            gizmoButtons[item.op] = button;
+            button.on('click', function () {
+                if (activeGizmo.op === button.op)
+                    return;
+                activeGizmo.class.remove('active');
+                activeGizmo.tooltip.class.add('innactive');
+                activeGizmo = button;
+                activeGizmo.class.add('active');
+                activeGizmo.tooltip.class.remove('innactive');
+                editor.call('gizmo:type', button.op);
+            });
+            toolbar.append(button);
+            button.tooltip = ui_1.Tooltip.attach({
+                target: button.element,
+                text: item.tooltip,
+                align: 'left',
+                root: root
+            });
+            if (item.op === 'translate') {
+                activeGizmo = button;
+                button.class.add('active');
+            }
+            else {
+                button.tooltip.class.add('innactive');
+            }
+        });
+        // coordinate system
+        var buttonWorld = new ui_1.Button('&#57624;');
+        // buttonWorld.hidden = !editor.call('permissions:write');
+        buttonWorld.class.add('pc-icon', 'active');
+        toolbar.append(buttonWorld);
+        buttonWorld.on('click', function () {
+            if (buttonWorld.class.contains('active')) {
+                buttonWorld.class.remove('active');
+                tooltipWorld.html = 'World / <span style="color:#fff">Local</span>';
+            }
+            else {
+                buttonWorld.class.add('active');
+                tooltipWorld.html = '<span style="color:#fff">World</span> / Local';
+            }
+            editor.call('gizmo:coordSystem', buttonWorld.class.contains('active') ? 'world' : 'local');
+        });
+        var tooltipWorld = ui_1.Tooltip.attach({
+            target: buttonWorld.element,
+            align: 'left',
+            root: root
+        });
+        tooltipWorld.html = '<span style="color:#fff">World</span> / Local';
+        tooltipWorld.class.add('innactive');
+        // toggle grid snap
+        var buttonSnap = new ui_1.Button('&#57622;');
+        // buttonSnap.hidden = !editor.call('permissions:write');
+        buttonSnap.class.add('pc-icon');
+        buttonSnap.on('click', function () {
+            if (buttonSnap.class.contains('active')) {
+                buttonSnap.class.remove('active');
+                tooltipSnap.class.add('innactive');
+            }
+            else {
+                buttonSnap.class.add('active');
+                tooltipSnap.class.remove('innactive');
+            }
+            editor.call('gizmo:snap', buttonSnap.class.contains('active'));
+        });
+        toolbar.append(buttonSnap);
+        var tooltipSnap = ui_1.Tooltip.attach({
+            target: buttonSnap.element,
+            text: 'Snap',
+            align: 'left',
+            root: root
+        });
+        tooltipSnap.class.add('innactive');
+        editor.on('permissions:writeState', function (state) {
+            for (var key in gizmoButtons) {
+                // gizmoButtons[key].hidden = !state;
+            }
+            // buttonWorld.hidden = !state;
+            // buttonSnap.hidden = !state;
+        });
+        // focus on entity
+        var buttonFocus = new ui_1.Button('&#57623;');
+        buttonFocus.disabled = true;
+        buttonFocus.class.add('pc-icon');
+        buttonFocus.on('click', function () {
+            editor.call('viewport:focus');
+        });
+        toolbar.append(buttonFocus);
+        editor.on('attributes:clear', function () {
+            buttonFocus.disabled = true;
+            tooltipFocus.class.add('innactive');
+        });
+        editor.on('attributes:inspect[*]', function (type) {
+            buttonFocus.disabled = type !== 'entity';
+            if (type === 'entity') {
+                tooltipFocus.class.remove('innactive');
+            }
+            else {
+                tooltipFocus.class.add('innactive');
+            }
+        });
+        var tooltipFocus = ui_1.Tooltip.attach({
+            target: buttonFocus.element,
+            text: 'Focus',
+            align: 'left',
+            root: root
+        });
+        tooltipFocus.class.add('innactive');
+    }
+    return ToolbarGizmos;
+}());
+exports.ToolbarGizmos = ToolbarGizmos;
+},{"../../ui":96}],55:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var engine_1 = require("../../engine");
+var ui_1 = require("../../ui");
+var ToolbarHelp = /** @class */ (function () {
+    function ToolbarHelp() {
+        var toolbar = engine_1.VeryEngine.toolbar;
+        var button = new ui_1.Button('&#57656;');
+        button.class.add('pc-icon', 'help-howdoi', 'bottom', 'push-top');
+        toolbar.append(button);
+        button.on('click', function () {
+            editor.call('help:howdoi:toggle');
+        });
+        editor.on('help:howdoi:open', function () {
+            button.class.add('active');
+        });
+        editor.on('help:howdoi:close', function () {
+            button.class.remove('active');
+        });
+        ui_1.Tooltip.attach({
+            target: button.element,
+            text: 'How do I...?',
+            align: 'left',
+            root: editor.call('layout.root')
+        });
+    }
+    return ToolbarHelp;
+}());
+exports.ToolbarHelp = ToolbarHelp;
+},{"../../engine":77,"../../ui":96}],56:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var engine_1 = require("../../engine");
+var ui_1 = require("../../ui");
+var ToolbarHistory = /** @class */ (function () {
+    function ToolbarHistory() {
+        var root = engine_1.VeryEngine.root;
+        var toolbar = engine_1.VeryEngine.toolbar;
+        // undo
+        var buttonUndo = new ui_1.Button('&#57620;');
+        // buttonUndo.hidden = !editor.call('permissions:write');
+        buttonUndo.class.add('pc-icon');
+        buttonUndo.enabled = editor.call('history:canUndo');
+        toolbar.append(buttonUndo);
+        editor.on('history:canUndo', function (state) {
+            buttonUndo.enabled = state;
+            if (state) {
+                tooltipUndo.class.remove('innactive');
+            }
+            else {
+                tooltipUndo.class.add('innactive');
+            }
+        });
+        buttonUndo.on('click', function () {
+            editor.call('history:undo');
+        });
+        var tooltipUndo = ui_1.Tooltip.attach({
+            target: buttonUndo.element,
+            text: 'Undo',
+            align: 'left',
+            root: root
+        });
+        if (!editor.call('history:canUndo'))
+            tooltipUndo.class.add('innactive');
+        // redo
+        var buttonRedo = new ui_1.Button('&#57621;');
+        // buttonRedo.hidden = !editor.call('permissions:write');
+        buttonRedo.class.add('pc-icon');
+        buttonRedo.enabled = editor.call('history:canRedo');
+        toolbar.append(buttonRedo);
+        editor.on('history:canRedo', function (state) {
+            buttonRedo.enabled = state;
+            if (state) {
+                tooltipRedo.class.remove('innactive');
+            }
+            else {
+                tooltipRedo.class.add('innactive');
+            }
+        });
+        buttonRedo.on('click', function () {
+            editor.call('history:redo');
+        });
+        var tooltipRedo = ui_1.Tooltip.attach({
+            target: buttonRedo.element,
+            text: 'Redo',
+            align: 'left',
+            root: root
+        });
+        if (!editor.call('history:canUndo'))
+            tooltipRedo.class.add('innactive');
+        editor.on('permissions:writeState', function (state) {
+            buttonUndo.hidden = buttonRedo.hidden = !state;
+        });
+    }
+    return ToolbarHistory;
+}());
+exports.ToolbarHistory = ToolbarHistory;
+},{"../../engine":77,"../../ui":96}],57:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var ui_1 = require("../../ui");
+var ToolbarLogo = /** @class */ (function () {
+    function ToolbarLogo() {
+        var root = editor.call('layout.root');
+        var toolbar = editor.call('layout.toolbar');
+        var logo = new ui_1.Button();
+        logo.class.add('logo');
+        logo.on('click', function () {
+            // menu.open = true;
+            console.log('logo click');
+        });
+        toolbar.append(logo);
+    }
+    return ToolbarLogo;
+}());
+exports.ToolbarLogo = ToolbarLogo;
+},{"../../ui":96}],58:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var engine_1 = require("../../engine");
+var ui_1 = require("../../ui");
+var ToolbarPublish = /** @class */ (function () {
+    function ToolbarPublish() {
+        var toolbar = engine_1.VeryEngine.toolbar;
+        var button = new ui_1.Button('&#57911;');
+        button.class.add('pc-icon', 'publish-download');
+        toolbar.append(button);
+        button.on('click', function () {
+            editor.call('picker:publish');
+        });
+        editor.on('picker:publish:open', function () {
+            button.class.add('active');
+        });
+        editor.on('picker:publish:close', function () {
+            button.class.remove('active');
+        });
+        ui_1.Tooltip.attach({
+            target: button.element,
+            text: 'Publish / Download',
+            align: 'left',
+            root: editor.call('layout.root')
+        });
+    }
+    return ToolbarPublish;
+}());
+exports.ToolbarPublish = ToolbarPublish;
+},{"../../engine":77,"../../ui":96}],59:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var engine_1 = require("../../engine");
+var ui_1 = require("../../ui");
+var ToolbarScene = /** @class */ (function () {
+    function ToolbarScene() {
+        var root = engine_1.VeryEngine.root;
+        var viewport = engine_1.VeryEngine.viewportPanel;
+        var panel = new ui_1.Panel();
+        panel.class.add('widget-title');
+        viewport.append(panel);
+        editor.method('layout.toolbar.scene', function () {
+            return panel;
+        });
+        var projectName = new ui_1.Label();
+        // TODO
+        projectName.text = '当前项目名称';
+        projectName.class.add('project-name');
+        projectName.renderChanges = false;
+        panel.append(projectName);
+        projectName.on('click', function (argument) {
+            // window.open('/project/' + config.project.id, '_blank');
+        });
+        ui_1.Tooltip.attach({
+            target: projectName.element,
+            text: 'Project',
+            align: 'top',
+            root: root
+        });
+        var sceneName = new ui_1.Label();
+        // TODO
+        sceneName.text = '当前Scene Name';
+        sceneName.class.add('scene-name');
+        sceneName.renderChanges = false;
+        panel.append(sceneName);
+        ui_1.Tooltip.attach({
+            target: sceneName.element,
+            text: 'Settings',
+            align: 'top',
+            root: root
+        });
+        editor.on('scene:name', function (name) {
+            sceneName.text = name;
+        });
+        sceneName.on('click', function () {
+            editor.call('selector:set', 'editorSettings', [editor.call('settings:projectUser')]);
+        });
+        editor.on('attributes:clear', function () {
+            sceneName.class.remove('active');
+        });
+        editor.on('attributes:inspect[editorSettings]', function () {
+            sceneName.class.add('active');
+        });
+        editor.on('scene:unload', function () {
+            sceneName.text = '';
+        });
+        // if (!config.project.settings.useLegacyScripts) {
+        //     var name = config.self.branch.name;
+        //     if (name.length > 33) {
+        //         name = name.substring(0, 30) + '...';
+        //     }
+        //     var branchButton = new ui.Label({
+        //         text: name
+        //     });
+        //     branchButton.class.add('branch-name');
+        //     panel.append(branchButton);
+        //     branchButton.on('click', function () {
+        //         editor.call('picker:versioncontrol');
+        //     });
+        //     Tooltip.attach({
+        //         target: branchButton.element,
+        //         text: 'Version Control',
+        //         align: 'top',
+        //         root: root
+        //     });
+        //     // hide version control picker if we are not part of the team
+        //     if (!editor.call('permissions:read')) {
+        //         branchButton.hidden = true;
+        //     }
+        //     editor.on('permissions:set', function () {
+        //         branchButton.hidden = !editor.call('permissions:read');
+        //     });
+        // }
+        var sceneList = new ui_1.Label();
+        sceneList.class.add('scene-list');
+        panel.append(sceneList);
+        ui_1.Tooltip.attach({
+            target: sceneList.element,
+            text: 'Manage Scenes',
+            align: 'top',
+            root: root
+        });
+        sceneList.on('click', function () {
+            editor.call('picker:scene');
+        });
+        editor.on('picker:scene:open', function () {
+            sceneList.class.add('active');
+        });
+        editor.on('picker:scene:close', function () {
+            sceneList.class.remove('active');
+        });
+    }
+    return ToolbarScene;
+}());
+exports.ToolbarScene = ToolbarScene;
+},{"../../engine":77,"../../ui":96}],60:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ui_1 = require("../../ui");
@@ -4896,7 +8629,7 @@ var ToolbarTopControl = /** @class */ (function () {
         // panel
         var panel = new ui_1.Panel();
         panel.class.add('top-controls');
-        engine_1.VeryEngine.viewPanel.append(panel);
+        engine_1.VeryEngine.viewportPanel.append(panel);
         editor.method('layout.toolbar.launch', function () {
             return panel;
         });
@@ -4922,13 +8655,191 @@ var ToolbarTopControl = /** @class */ (function () {
             target: buttonExpand.element,
             text: '最大化',
             align: 'top',
-            root: engine_1.VeryEngine.rootPanel
+            root: engine_1.VeryEngine.root
         });
     }
     return ToolbarTopControl;
 }());
 exports.ToolbarTopControl = ToolbarTopControl;
-},{"../../engine":49,"../../ui":68}],36:[function(require,module,exports){
+},{"../../engine":77,"../../ui":96}],61:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var lib_1 = require("../../lib");
+var Ajax = /** @class */ (function () {
+    function Ajax(args) {
+        if (typeof (args) === 'string')
+            args = { url: args };
+        return new AjaxRequest(args);
+    }
+    Ajax.get = function (url) {
+        return new AjaxRequest({ url: url });
+    };
+    Ajax.post = function (url, data) {
+        return new AjaxRequest({
+            method: 'POST',
+            url: url,
+            data: data
+        });
+    };
+    Ajax.put = function (url, data) {
+        return new AjaxRequest({
+            method: 'PUT',
+            url: url,
+            data: data
+        });
+    };
+    Ajax.delete = function (url) {
+        return new AjaxRequest({
+            method: 'DELETE',
+            url: url
+        });
+    };
+    Ajax.param = function (name, value) {
+        Ajax.params[name] = value;
+    };
+    Ajax.params = {};
+    return Ajax;
+}());
+exports.Ajax = Ajax;
+var AjaxRequest = /** @class */ (function (_super) {
+    __extends(AjaxRequest, _super);
+    function AjaxRequest(args) {
+        var _this = _super.call(this) || this;
+        _this._progress = 0;
+        if (!args) {
+            throw new Error('ajax请求无参数，请检查！');
+        }
+        _this._progress = 0.0;
+        _this.emit('progress', _this._progress);
+        _this._xhr = new XMLHttpRequest();
+        // send cookies
+        if (args.cookies)
+            _this._xhr.withCredentials = true;
+        // events
+        _this._xhr.addEventListener('load', _this._onLoad.bind(_this), false);
+        // this._xhr.addEventListener('progress', this._onProgress.bind(this), false);
+        _this._xhr.upload.addEventListener('progress', _this._onProgress.bind(_this), false);
+        _this._xhr.addEventListener('error', _this._onError.bind(_this), false);
+        _this._xhr.addEventListener('abort', _this._onAbort.bind(_this), false);
+        // url
+        var url = args.url;
+        // query
+        if (args.query && Object.keys(args.query).length) {
+            if (url.indexOf('?') === -1) {
+                url += '?';
+            }
+            var query = [];
+            for (var key in args.query) {
+                query.push(key + '=' + args.query[key]);
+            }
+            url += query.join('&');
+        }
+        // templating
+        var parts = url.split('{{');
+        if (parts.length > 1) {
+            for (var i = 1; i < parts.length; i++) {
+                var ends = parts[i].indexOf('}}');
+                var key = parts[i].slice(0, ends);
+                if (Ajax.params[key] === undefined)
+                    continue;
+                // replace
+                parts[i] = Ajax.params[key] + parts[i].slice(ends + 2);
+            }
+            url = parts.join('');
+        }
+        // open request
+        _this._xhr.open(args.method || 'GET', url, true);
+        // 返回数据是否为json格式
+        _this.notJson = args.notJson || false;
+        // header for PUT/POST
+        if (!args.ignoreContentType && (args.method === 'PUT' || args.method === 'POST' || args.method === 'DELETE'))
+            _this._xhr.setRequestHeader('Content-Type', 'application/json');
+        // TODO: 权限header参数
+        // if (args.auth && config.accessToken) {
+        //     this._xhr.setRequestHeader('Authorization', 'Bearer ' + config.accessToken);
+        // }
+        if (args.headers) {
+            for (var key in args.headers)
+                _this._xhr.setRequestHeader(key, args.headers[key]);
+        }
+        // stringify data if needed
+        if (args.data && typeof (args.data) !== 'string' && !(args.data instanceof FormData)) {
+            args.data = JSON.stringify(args.data);
+        }
+        // make request
+        _this._xhr.send(args.data || null);
+        return _this;
+    }
+    AjaxRequest.prototype._onLoad = function () {
+        this._progress = 1.0;
+        this.emit('progress', 1.0);
+        if (this._xhr.status === 200 || this._xhr.status === 201) {
+            if (this.notJson) {
+                this.emit('load', this._xhr.status, this._xhr.responseText);
+            }
+            else {
+                try {
+                    var json = JSON.parse(this._xhr.responseText);
+                }
+                catch (ex) {
+                    this.emit('error', this._xhr.status || 0, new Error('invalid json'));
+                    return;
+                }
+                this.emit('load', this._xhr.status, json);
+            }
+        }
+        else {
+            try {
+                var json = JSON.parse(this._xhr.responseText);
+                var msg = json.message;
+                if (!msg) {
+                    msg = json.error || (json.response && json.response.error);
+                }
+                if (!msg) {
+                    msg = this._xhr.responseText;
+                }
+                this.emit('error', this._xhr.status, msg);
+            }
+            catch (ex) {
+                this.emit('error', this._xhr.status);
+            }
+        }
+    };
+    AjaxRequest.prototype._onError = function (evt) {
+        this.emit('error', 0, evt);
+    };
+    AjaxRequest.prototype._onAbort = function (evt) {
+        this.emit('error', 0, evt);
+    };
+    AjaxRequest.prototype._onProgress = function (evt) {
+        if (!evt.lengthComputable)
+            return;
+        var progress = evt.loaded / evt.total;
+        if (progress !== this._progress) {
+            this._progress = progress;
+            this.emit('progress', this._progress);
+        }
+    };
+    AjaxRequest.prototype.abort = function () {
+        this._xhr.abort();
+    };
+    return AjaxRequest;
+}(lib_1.Events));
+exports.AjaxRequest = AjaxRequest;
+},{"../../lib":81}],62:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ComponentsLogos = /** @class */ (function () {
@@ -4970,7 +8881,7 @@ var ComponentsLogos = /** @class */ (function () {
     return ComponentsLogos;
 }());
 exports.ComponentsLogos = ComponentsLogos;
-},{}],37:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ContextMenu = /** @class */ (function () {
@@ -4983,7 +8894,7 @@ var ContextMenu = /** @class */ (function () {
     return ContextMenu;
 }());
 exports.ContextMenu = ContextMenu;
-},{}],38:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Debug = /** @class */ (function () {
@@ -5021,7 +8932,7 @@ var Debug = /** @class */ (function () {
     return Debug;
 }());
 exports.Debug = Debug;
-},{}],39:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 (function (process,setImmediate){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -5509,7 +9420,7 @@ var EventProxy = /** @class */ (function () {
 exports.EventProxy = EventProxy;
 }).call(this,require('_process'),require("timers").setImmediate)
 
-},{"_process":1,"timers":2}],40:[function(require,module,exports){
+},{"_process":1,"timers":2}],66:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var GUID = /** @class */ (function () {
@@ -5527,7 +9438,7 @@ var GUID = /** @class */ (function () {
     return GUID;
 }());
 exports.GUID = GUID;
-},{}],41:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -5538,7 +9449,225 @@ __export(require("./context-menu"));
 __export(require("./guid"));
 __export(require("./eventproxy"));
 __export(require("./debug"));
-},{"./components-logos":36,"./context-menu":37,"./debug":38,"./eventproxy":39,"./guid":40}],42:[function(require,module,exports){
+__export(require("./tools"));
+__export(require("./ajax"));
+},{"./ajax":61,"./components-logos":62,"./context-menu":63,"./debug":64,"./eventproxy":65,"./guid":66,"./tools":68}],68:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var engine_1 = require("../../engine");
+var Tools = /** @class */ (function () {
+    function Tools() {
+    }
+    Tools.GetFilename = function (path) {
+        var index = path.lastIndexOf("/");
+        if (index < 0) {
+            return path;
+        }
+        return path.substring(index + 1);
+    };
+    Tools.GetFolderPath = function (uri, returnUnchangedIfNoSlash) {
+        if (returnUnchangedIfNoSlash === void 0) { returnUnchangedIfNoSlash = false; }
+        var index = uri.lastIndexOf("/");
+        if (index < 0) {
+            if (returnUnchangedIfNoSlash) {
+                return uri;
+            }
+            return "";
+        }
+        return uri.substring(0, index + 1);
+    };
+    // TODO
+    Tools.Error = function (message) {
+        debug.error(message);
+    };
+    Tools.CleanUrl = function (url) {
+        url = url.replace(/#/mg, "%23");
+        return url;
+    };
+    Tools.loadBabylon = function () {
+        // axios.defaults.responseType = 'json';
+        axios.get('scene/dude.json')
+            .then(function (respone) {
+            console.warn(typeof respone.data);
+            // console.log(respone.data.toString());
+            console.log(respone.data);
+            // console.log(respone.data.meshes);
+            // scene数据 -> mesh -> name -> babylon.meshes array -> id ？ 貌似导出的id应该是不重合的
+            // 加载blue
+            Tools.loadBlue(respone.data, 'scene/');
+        });
+        var success = function (data, url) {
+            // console.error(data);
+            // console.error(data);
+            // console.error(url);
+        };
+        // BABYLON.Tools.LoadFile('scene/scene.babylon', success);
+        // console.error('length: ' + Object.keys(BABYLON.FilesInputStore.FilesToLoad).length);
+        // for (let key in BABYLON.FilesInputStore.FilesToLoad) {
+        //     console.error('key: ' + key);
+        //     console.error(BABYLON.FilesInputStore.FilesToLoad[key]);
+        // }
+    };
+    Tools.loadBlue = function (data, rootUrl) {
+        // 根据ID加载资源 -> mesh -> material -> animations
+        // 属性面板和Assets显示完整模型? -> container中包含模型，两边使用 -> 但是如果一边删除了模型，container中也没了
+        // ?在new Mesh时，mesh已经添加到对应的scene，难办了，如何实现缓存？只实现数据的缓存？
+        // 再搞一个中间结构缓存原始数据？
+        // scene数据 -> .babylon数据缓存 -> model -> mesh | 几何 + material + texture -> 进行快速关联 -> 如何把texture提交进去
+        // texture数据如何实现缓存，直接将数据交给engine中的数据结构？
+        // Lights
+        if (data.lights !== undefined && data.lights !== null) {
+            for (var index = 0, cache = data.lights.length; index < cache; index++) {
+                var parsedLight = data.lights[index];
+                var light = BABYLON.Light.Parse(parsedLight, engine_1.VeryEngine.viewScene);
+                if (light) {
+                    // container.lights.push(light);
+                    // log += (index === 0 ? "\n\tLights:" : "");
+                    // log += "\n\t\t" + light.toString(fullDetails);
+                }
+            }
+        }
+        // Animations
+        if (data.animations !== undefined && data.animations !== null) {
+            for (var index = 0, cache = data.animations.length; index < cache; index++) {
+                var parsedAnimation = data.animations[index];
+                var internalClass = BABYLON._TypeStore.GetClass("BABYLON.Animation");
+                if (internalClass) {
+                    var animation = internalClass.Parse(parsedAnimation);
+                    engine_1.VeryEngine.viewScene.animations.push(animation);
+                    // container.animations.push(animation);
+                    // log += (index === 0 ? "\n\tAnimations:" : "");
+                    // log += "\n\t\t" + animation.toString(fullDetails);
+                }
+            }
+        }
+        // Materials
+        if (data.materials !== undefined && data.materials !== null) {
+            for (var index = 0, cache = data.materials.length; index < cache; index++) {
+                var parsedMaterial = data.materials[index];
+                var mat = BABYLON.Material.Parse(parsedMaterial, engine_1.VeryEngine.viewScene, rootUrl);
+                // container.materials.push(mat);
+                // log += (index === 0 ? "\n\tMaterials:" : "");
+                // log += "\n\t\t" + mat.toString(fullDetails);
+            }
+        }
+        if (data.multiMaterials !== undefined && data.multiMaterials !== null) {
+            for (var index = 0, cache = data.multiMaterials.length; index < cache; index++) {
+                var parsedMultiMaterial = data.multiMaterials[index];
+                var mmat = BABYLON.MultiMaterial.ParseMultiMaterial(parsedMultiMaterial, engine_1.VeryEngine.viewScene);
+                // container.multiMaterials.push(mmat);
+                // log += (index === 0 ? "\n\tMultiMaterials:" : "");
+                // log += "\n\t\t" + mmat.toString(fullDetails);
+            }
+        }
+        // Skeletons
+        if (data.skeletons !== undefined && data.skeletons !== null) {
+            for (var index = 0, cache = data.skeletons.length; index < cache; index++) {
+                var parsedSkeleton = data.skeletons[index];
+                var skeleton = BABYLON.Skeleton.Parse(parsedSkeleton, engine_1.VeryEngine.viewScene);
+                skeleton.beginAnimation("bone55Animation", true);
+                // container.skeletons.push(skeleton);
+                // log += (index === 0 ? "\n\tSkeletons:" : "");
+                // log += "\n\t\t" + skeleton.toString(fullDetails);
+            }
+        }
+        // Geometries
+        var geometries = data.geometries;
+        if (geometries !== undefined && geometries !== null) {
+            var addedGeometry = new Array();
+            // VertexData
+            var vertexData = geometries.vertexData;
+            if (vertexData !== undefined && vertexData !== null) {
+                for (var index = 0, cache = vertexData.length; index < cache; index++) {
+                    var parsedVertexData = vertexData[index];
+                    addedGeometry.push(BABYLON.Geometry.Parse(parsedVertexData, engine_1.VeryEngine.viewScene, rootUrl));
+                }
+            }
+            // addedGeometry.forEach((g) => {
+            //     if (g) {
+            //         container.geometries.push(g);
+            //     }
+            // });
+        }
+        // meshes
+        if (data.meshes !== undefined && data.meshes !== null) {
+            for (var index = 0, cache = data.meshes.length; index < cache; index++) {
+                var parsedMesh = data.meshes[index];
+                var mesh = BABYLON.Mesh.Parse(parsedMesh, engine_1.VeryEngine.viewScene, rootUrl);
+                // container.meshes.push(mesh);
+                // log += (index === 0 ? "\n\tMeshes:" : "");
+                // log += "\n\t\t" + mesh.toString(fullDetails);
+            }
+        }
+        // 创建之前先搞一个blob？
+        // let tex = new BABYLON.Texture('scene/头像.png', VeryEngine.viewScene);
+        // console.log(tex);
+        console.log(engine_1.VeryEngine.viewEngine._internalTexturesCache);
+        // setTimeout(() => {
+        //     VeryEngine.viewScene.render();
+        //     BABYLON.Tools.CreateScreenshot(VeryEngine.viewEngine, VeryEngine.viewScene.activeCamera!, 1600);
+        // }, 2000);
+        // 信息交换
+    };
+    // public static LoadFile(url: string, onSuccess: (data: string | ArrayBuffer, responseURL?: string) => void, onProgress?: (data: any) => void, useArrayBuffer?: boolean, onError?: (request?: WebRequest, exception?: any) => void): IFileRequest {
+    //     url = Tools.CleanUrl(url);
+    //     url = Tools.PreprocessUrl(url);
+    //     // 在本地缓存中存在此文件， TODO: 还有本地上传的情况处理
+    //     if (url.indexOf("file:") !== -1) {
+    //         // const fileName = decodeURIComponent(url.substring(5).toLowerCase());
+    //         // if (FilesInputStore.FilesToLoad[fileName]) {
+    //         //     // 缓存文件
+    //         //     return Tools.ReadFile(FilesInputStore.FilesToLoad[fileName], onSuccess, onProgress, useArrayBuffer);
+    //         // }
+    //     }
+    //     const loadUrl = Tools.BaseUrl + url;
+    //     let aborted = false;
+    //     const fileRequest: IFileRequest = {
+    //         onCompleteObservable: new Observable<IFileRequest>(),
+    //         abort: () => aborted = true,
+    //     };
+    // }
+    /**
+     * name字符串合法性检查，不允许出现 “\/*<>?|"':” 等字符串，若存在，则返回false；
+     * @param name 待检查的name字符串；
+     */
+    Tools.isLegalName = function (name) {
+        // var re = /[^\u4e00-\u9fa5]/; // 中文正则
+        // var pattern = new RegExp("[`\\-~!@#$^&*()=|{}':;',\\[\\].<>《》/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？12345678990]"); // 特殊符号
+        var illegalPattern = /[\\\/*<>?|"':]/;
+        if (illegalPattern.test(name)) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    };
+    /**
+     * 字符串排序，特殊字符在最前头，其余按照字母顺序进行排列
+     * @param a 第1个字符串；
+     * @param b 第2个字符串；
+     */
+    Tools.stringCompare = function (a, b) {
+        a = a.toLowerCase();
+        b = b.toLowerCase();
+        if (a === b) {
+            return 0;
+        }
+        // TODO: 目前采用了js默认的比较函数，由于Safari等浏览器不支持locals参数，英文默认在中文之后，特殊字符在最前
+        return a.localeCompare(b);
+    };
+    Tools.appendQuery = function (origin, query) {
+        var separator = origin.indexOf('?') !== -1 ? '&' : '?';
+        return this + separator + query;
+    };
+    Tools.BaseUrl = "";
+    Tools.PreprocessUrl = function (url) {
+        return url;
+    };
+    return Tools;
+}());
+exports.Tools = Tools;
+},{"../../engine":77}],69:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -5548,7 +9677,7 @@ __export(require("./viewport"));
 __export(require("./viewport-expand"));
 __export(require("./viewport-application"));
 __export(require("./viewport-instance-create"));
-},{"./viewport":46,"./viewport-application":43,"./viewport-expand":44,"./viewport-instance-create":45}],43:[function(require,module,exports){
+},{"./viewport":73,"./viewport-application":70,"./viewport-expand":71,"./viewport-instance-create":72}],70:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ViewportApplication = /** @class */ (function () {
@@ -5557,7 +9686,7 @@ var ViewportApplication = /** @class */ (function () {
     return ViewportApplication;
 }());
 exports.ViewportApplication = ViewportApplication;
-},{}],44:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var engine_1 = require("../../engine");
@@ -5567,9 +9696,9 @@ var engine_1 = require("../../engine");
 var ViewportExpand = /** @class */ (function () {
     function ViewportExpand() {
         var panels = [];
-        panels.push(engine_1.VeryEngine.hierarchyPanel);
-        panels.push(engine_1.VeryEngine.assetPanel);
-        panels.push(engine_1.VeryEngine.attributesPanel);
+        panels.push(engine_1.VeryEngine.hierarchy);
+        panels.push(engine_1.VeryEngine.assets);
+        panels.push(engine_1.VeryEngine.attributes);
         var expanded = false;
         window.editor.method('viewport:expand', function (state) {
             if (state === undefined)
@@ -5595,7 +9724,7 @@ var ViewportExpand = /** @class */ (function () {
     return ViewportExpand;
 }());
 exports.ViewportExpand = ViewportExpand;
-},{"../../engine":49}],45:[function(require,module,exports){
+},{"../../engine":77}],72:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ViewportInstanceCreate = /** @class */ (function () {
@@ -5607,7 +9736,7 @@ var ViewportInstanceCreate = /** @class */ (function () {
     return ViewportInstanceCreate;
 }());
 exports.ViewportInstanceCreate = ViewportInstanceCreate;
-},{}],46:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ui_1 = require("../../ui");
@@ -5617,30 +9746,9 @@ var viewport_expand_1 = require("./viewport-expand");
 var Viewport = /** @class */ (function () {
     function Viewport() {
         var _this = this;
+        this.init();
         var self = this;
-        this.canvas = new ui_1.Canvas('canvas-3d');
-        engine_1.VeryEngine.viewCanvas = this.canvas;
-        this._canvas = this.canvas.element;
-        // 去掉Babylon的蓝色边框
-        this._canvas.style.outline = 'none';
-        // add canvas
-        editor.call('layout.viewport').prepend(this.canvas);
-        // get canvas
-        editor.method('viewport:canvas', function () {
-            return self.canvas;
-        });
-        // update viewpot 视窗大小
-        setInterval(function () {
-            var rect = engine_1.VeryEngine.viewPanel.element.getBoundingClientRect();
-            self.canvas.resize(Math.floor(rect.width), Math.floor(rect.height));
-        }, 100 / 6);
-        // if(this._engine) this._engine.dispose();
-        this._engine = new BABYLON.Engine(this._canvas, true);
         var engine = this._engine;
-        window.addEventListener("resize", function () {
-            engine.resize();
-        });
-        this._scene = new BABYLON.Scene(this._engine);
         // TODO: 设定相机
         var camera = new BABYLON.ArcRotateCamera("MainCamera", 0, 0, 10, new BABYLON.Vector3(0, 0, 0), this._scene);
         camera.setPosition(new BABYLON.Vector3(20, 200, 400));
@@ -5656,50 +9764,68 @@ var Viewport = /** @class */ (function () {
         // TODO: 加载scene.babylon场景文件，当前为默认
         // 默认Editor场景，加载保存的某一个场景资源
         // 资源的父子关系以及模型
+        /*
         BABYLON.SceneLoader.Append("./scene/", "scene.babylon", this._scene, function (scene) {
-            // do something with the scene
-            // 加载过度动画关
-            // engine.hideLoadingUI();
-            // Keyboard events
-            var blue = scene.getMeshByName('blue');
-            scene.actionManager = new BABYLON.ActionManager(scene);
-            scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger, function (evt) {
-                inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
-            }));
-            scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyUpTrigger, function (evt) {
-                inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
-            }));
-            // // Game/Render loop
-            scene.onBeforeRenderObservable.add(function () {
-                if (inputMap["w"] || inputMap["ArrowUp"]) {
-                    blue.position.z -= 100 * engine.getDeltaTime() / 1000;
-                }
-                if (inputMap["a"] || inputMap["ArrowLeft"]) {
-                    blue.position.x += 100 * engine.getDeltaTime() / 1000;
-                }
-                if (inputMap["s"] || inputMap["ArrowDown"]) {
-                    blue.position.z += 100 * engine.getDeltaTime() / 1000;
-                }
-                if (inputMap["d"] || inputMap["ArrowRight"]) {
-                    blue.position.x -= 100 * engine.getDeltaTime() / 1000;
-                }
-            });
-            // sphere
-            var sphere = scene.getMeshByName('sphere');
-            sphere.actionManager = new BABYLON.ActionManager(scene);
-            sphere.actionManager.registerAction(new BABYLON.SetValueAction({ trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger, parameter: blue }, sphere, "scaling", new BABYLON.Vector3(2, 2, 2)));
-            sphere.actionManager.registerAction(new BABYLON.SetValueAction({ trigger: BABYLON.ActionManager.OnIntersectionExitTrigger, parameter: blue }, sphere, "scaling", new BABYLON.Vector3(1, 1, 1)));
-            var i = 0;
-            // WebSocket 测试
-            // scene.onKeyboardObservable.add( kbInfo => {
-            //   if(kbInfo.type === BABYLON.KeyboardEventTypes.KEYUP) {
-            //     if(kbInfo.event.keyCode === 65) {
-            //       // editor.call('send', '按下次数：' + (i++) + "!");
-            //       editor.call('send', '{"data": {"a": 123, "b": "qwe"}}');
-            //     }
-            //   }
-            // });
+          // do something with the scene
+          // 加载过度动画关
+          // engine.hideLoadingUI();
+    
+          // Keyboard events
+          var blue = scene.getMeshByName('blue')!;
+    
+          scene.actionManager = new BABYLON.ActionManager(scene);
+          scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger, function (evt) {
+            inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
+          }));
+          scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyUpTrigger, function (evt) {
+            inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
+          }));
+    
+    
+          // // Game/Render loop
+          scene.onBeforeRenderObservable.add(() => {
+    
+            if (inputMap["w"] || inputMap["ArrowUp"]) {
+              blue.position.z -= 100 * engine.getDeltaTime() / 1000;
+            }
+            if (inputMap["a"] || inputMap["ArrowLeft"]) {
+              blue.position.x += 100 * engine.getDeltaTime() / 1000;
+            }
+            if (inputMap["s"] || inputMap["ArrowDown"]) {
+              blue.position.z += 100 * engine.getDeltaTime() / 1000;
+            }
+            if (inputMap["d"] || inputMap["ArrowRight"]) {
+              blue.position.x -= 100 * engine.getDeltaTime() / 1000;
+            }
+          })
+    
+          // sphere
+          var sphere = scene.getMeshByName('sphere')!;
+          sphere.actionManager = new BABYLON.ActionManager(scene);
+    
+          sphere.actionManager.registerAction(new BABYLON.SetValueAction(
+            { trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger, parameter: blue },
+            sphere, "scaling", new BABYLON.Vector3(2, 2, 2)));
+    
+          sphere.actionManager.registerAction(new BABYLON.SetValueAction(
+            { trigger: BABYLON.ActionManager.OnIntersectionExitTrigger, parameter: blue }
+            , sphere, "scaling", new BABYLON.Vector3(1, 1, 1)));
+    
+          let i: number = 0;
+    
+          // WebSocket 测试
+          // scene.onKeyboardObservable.add( kbInfo => {
+          //   if(kbInfo.type === BABYLON.KeyboardEventTypes.KEYUP) {
+          //     if(kbInfo.event.keyCode === 65) {
+          //       // editor.call('send', '按下次数：' + (i++) + "!");
+          //       editor.call('send', '{"data": {"a": 123, "b": "qwe"}}');
+          //     }
+          //   }
+          // });
+    
         });
+    
+        */
         this._engine.runRenderLoop(function () {
             if (_this._canvas.width !== _this._canvas.clientWidth) {
                 _this._engine.resize();
@@ -5714,6 +9840,35 @@ var Viewport = /** @class */ (function () {
         // return this;
         this.expandControl();
     }
+    Viewport.prototype.init = function () {
+        var self = this;
+        this.canvas = new ui_1.Canvas('canvas-viewport');
+        engine_1.VeryEngine.viewCanvas = this.canvas;
+        this._canvas = this.canvas.element;
+        // 去掉Babylon的蓝色边框
+        this._canvas.style.outline = 'none';
+        // add canvas
+        editor.call('layout.viewport').prepend(this.canvas);
+        // get canvas
+        editor.method('viewport:canvas', function () {
+            return self.canvas;
+        });
+        // update viewpot 视窗大小
+        setInterval(function () {
+            var rect = engine_1.VeryEngine.viewportPanel.element.getBoundingClientRect();
+            self.canvas.resize(Math.floor(rect.width), Math.floor(rect.height));
+        }, 100 / 6);
+        // if(this._engine) this._engine.dispose();
+        this._engine = new BABYLON.Engine(this._canvas, true);
+        engine_1.VeryEngine.viewEngine = this._engine;
+        var engine = this._engine;
+        window.addEventListener("resize", function () {
+            engine.resize();
+        });
+        this._scene = new BABYLON.Scene(this._engine);
+        engine_1.VeryEngine.viewScene = this._scene;
+        this._scene.clearColor = new BABYLON.Color4(0, 0, 0, 1);
+    };
     Viewport.prototype.expandControl = function () {
         var control = new toolbar_1.ToolbarTopControl();
         var expandView = new viewport_expand_1.ViewportExpand();
@@ -5721,7 +9876,7 @@ var Viewport = /** @class */ (function () {
     return Viewport;
 }());
 exports.Viewport = Viewport;
-},{"../../engine":49,"../../ui":68,"../toolbar":34,"./viewport-expand":44}],47:[function(require,module,exports){
+},{"../../engine":77,"../../ui":96,"../toolbar":50,"./viewport-expand":71}],74:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var utility_1 = require("../utility");
@@ -5732,10 +9887,10 @@ var Realtime = /** @class */ (function () {
         var self = this;
         var ep = utility_1.EventProxy.create();
         ep.all('settings', ['assets', 'scenes'], function (data1, data2, data3) {
-            console.log(data1);
-            console.log(data2);
+            // console.log(data1);
+            // console.log(data2);
             // console.error(data2["data"]["18818365"]["data"]["aoMapTiling"][0]);
-            console.log(data3);
+            // console.log(data3);
         });
         ep.bind('ok', function (msg) {
             console.warn('ok');
@@ -5762,6 +9917,7 @@ var Realtime = /** @class */ (function () {
             .then(function (response) {
             // console.log('response: ' + response.data);
             ep.emit('scenes', response.data);
+            debug.log('加载场景: ' + response.data.data.scenes[0].name);
             self.getScene(response.data.data.scenes[0].id);
         })
             .catch(function (error) {
@@ -5814,11 +9970,13 @@ var Realtime = /** @class */ (function () {
         var self = this;
         axios.post("/api/getScene", { scene: id })
             .then(function (response) {
-            // console.log(response.data);
+            // console.log(response.data.data);
             // 加载场景，json数据
+            // assets数据加载如何与场景数据加载相互结合？assets数据应该可以提前下载，到scene数据初始化时进行组合
+            // 若要材质数据，则需要从.babylon中进行提取
             // 如何关联到其他脚本
-            debug.error(typeof response.data.data);
-            debug.error(response.data.data);
+            debug.log('加载场景成功，场景数据：');
+            debug.log(response.data.data);
             self.load.scene_raw(response.data.data);
             // for (var key in response.data.data) {
             //   if (typeof (response.data.data[key]) === 'object') {
@@ -5840,7 +9998,16 @@ var Realtime = /** @class */ (function () {
     return Realtime;
 }());
 exports.Realtime = Realtime;
-},{"../entity":14,"../utility":41}],48:[function(require,module,exports){
+},{"../entity":27,"../utility":67}],75:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var Application = /** @class */ (function () {
+    function Application() {
+    }
+    return Application;
+}());
+exports.Application = Application;
+},{}],76:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var BabylonEngine = /** @class */ (function () {
@@ -5849,7 +10016,7 @@ var BabylonEngine = /** @class */ (function () {
     return BabylonEngine;
 }());
 exports.BabylonEngine = BabylonEngine;
-},{}],49:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -5857,16 +10024,19 @@ function __export(m) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./babylon-engine"));
 __export(require("./very-engine"));
-},{"./babylon-engine":48,"./very-engine":50}],50:[function(require,module,exports){
+__export(require("./application"));
+},{"./application":75,"./babylon-engine":76,"./very-engine":78}],78:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var VeryEngine = /** @class */ (function () {
+    // public static 
     function VeryEngine() {
     }
     return VeryEngine;
 }());
 exports.VeryEngine = VeryEngine;
-},{}],51:[function(require,module,exports){
+// export veryconfig
+},{}],79:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -5876,7 +10046,7 @@ __export(require("./lib"));
 __export(require("./editor"));
 __export(require("./ui"));
 __export(require("./engine"));
-},{"./editor":22,"./engine":49,"./lib":53,"./ui":68}],52:[function(require,module,exports){
+},{"./editor":36,"./engine":77,"./lib":81,"./ui":96}],80:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Events = /** @class */ (function () {
@@ -6019,7 +10189,7 @@ var EventHandle = /** @class */ (function () {
     return EventHandle;
 }());
 exports.EventHandle = EventHandle;
-},{}],53:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -6028,7 +10198,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./events"));
 __export(require("./observer"));
 __export(require("./observer-list"));
-},{"./events":52,"./observer":55,"./observer-list":54}],54:[function(require,module,exports){
+},{"./events":80,"./observer":83,"./observer-list":82}],82:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -6049,12 +10219,13 @@ var ObserverList = /** @class */ (function (_super) {
     __extends(ObserverList, _super);
     function ObserverList(options) {
         var _this = _super.call(this) || this;
+        _this.sorted = null;
         options = options || {};
         _this.type = '';
         _this.data = [];
         _this._indexed = {};
         _this.sorted = options.sorted || null;
-        _this.index = options.index || null;
+        _this.id = options.id || '';
         return _this;
     }
     Object.defineProperty(ObserverList.prototype, "length", {
@@ -6065,53 +10236,56 @@ var ObserverList = /** @class */ (function (_super) {
         configurable: true
     });
     ObserverList.prototype.get = function (index) {
-        if (this.index) {
+        if (this.id && typeof index === 'string') {
             return this._indexed[index] || null;
         }
         else {
-            return this.data[index] || null;
+            return typeof index === 'number' ? this.data[index] || null : null;
         }
     };
     ObserverList.prototype.set = function (index, val) {
-        if (this.index) {
+        if (this.id) {
             this._indexed[index] = val;
         }
         else {
-            this.data[index] = val;
+            if (typeof index === 'number')
+                this.data[index] = val;
         }
     };
-    // public indexof(item: Observer): number {
-    //   if (this.index) {
-    //     let index: number =
-    //       (item instanceof Observer && item.get(this.index)) || item[this.index];
-    //     return (this._indexed[index] && index) || null;
-    //   } else {
-    //     let ind = this.data.indexOf(item);
-    //     return ind !== -1 ? ind : null;
-    //   }
-    // }
-    // public position = function (b: any, fn: any) {
-    //   let l = this.data;
-    //   let min = 0;
-    //   let max = l.length - 1;
-    //   let cur;
-    //   let a, i;
-    //   fn = fn || this.sorted;
-    //   while (min <= max) {
-    //     cur = Math.floor((min + max) / 2);
-    //     a = l[cur];
-    //     i = fn(a, b);
-    //     if (i === 1) {
-    //       max = cur - 1;
-    //     } else if (i === -1) {
-    //       min = cur + 1;
-    //     } else {
-    //       return cur;
-    //     }
-    //   }
-    //   return -1;
-    // };
-    // 2分法求最近距离
+    ObserverList.prototype.indexof = function (item) {
+        // if (this.id) {
+        //     let index: string = item.get(this.id);
+        //     return (this._indexed[index] && index) || -1;
+        // } else {
+        //     return this.data.indexOf(item);
+        // }
+        return this.data.indexOf(item);
+    };
+    ObserverList.prototype.position = function (b, fn) {
+        var l = this.data;
+        var min = 0;
+        var max = l.length - 1;
+        var cur;
+        var a, i;
+        fn = fn || this.sorted;
+        while (min <= max) {
+            cur = Math.floor((min + max) / 2);
+            a = l[cur];
+            i = fn(a, b);
+            if (i === 1) {
+                max = cur - 1;
+            }
+            else if (i === -1) {
+                min = cur + 1;
+            }
+            else {
+                return cur;
+            }
+        }
+        return -1;
+    };
+    ;
+    // 2分法求最近距离，对文件显示进行排序
     ObserverList.prototype.positionNextClosest = function (b, fn) {
         var l = this.data;
         var min = 0;
@@ -6121,6 +10295,7 @@ var ObserverList = /** @class */ (function (_super) {
         fn = fn || this.sorted;
         if (l.length === 0)
             return -1;
+        // 名字与第一个元素相同的情况
         if (fn(l[0], b) === 0)
             return 0;
         while (min <= max) {
@@ -6145,40 +10320,40 @@ var ObserverList = /** @class */ (function (_super) {
     };
     ;
     ObserverList.prototype.has = function (item) {
-        // if (this.index) {
-        //   let index =
-        //     (item instanceof Observer && item.get(this.index)) || item[this.index];
-        //   return !!this._indexed[index];
-        // } else {
-        //   return this.data.indexOf(item) !== -1;
-        // }
-        return this.data.indexOf(item) !== -1;
+        if (this.id) {
+            var index = item.get(this.id);
+            return !!this._indexed[index];
+        }
+        else {
+            return this.data.indexOf(item) !== -1;
+        }
     };
     ;
     ObserverList.prototype.add = function (item) {
         if (this.has(item))
             return -1;
-        // let index = this.data.length;
-        // if (this.index) {
-        //   index =
-        //     (item instanceof Observer && item.get(this.index)) || item[this.index];
-        //   this._indexed[index] = item;
-        // }
+        var index = this.data.length;
+        if (this.id) {
+            index = item.get(this.id);
+            this._indexed[index] = item;
+        }
         var pos = 0;
-        this.data.push(item);
-        pos = this.data.length - 1;
-        // if (this.sorted) {
-        //   pos = this.positionNextClosest(item);
-        //   if (pos !== -1) {
-        //     this.data.splice(pos, 0, item);
-        //   } else {
-        //     this.data.push(item);
-        //   }
-        // } else {
-        //   this.data.push(item);
-        //   pos = this.data.length - 1;
-        // }
-        this.emit('add', item, this.data.length);
+        if (this.sorted) {
+            pos = this.positionNextClosest(item, this.sorted);
+            // console.error('name: ' + item.get('name') + ' ,,, pos: ' + pos.toString());
+            if (pos !== -1) {
+                this.data.splice(pos, 0, item);
+            }
+            else {
+                this.data.push(item);
+            }
+        }
+        else {
+            this.data.push(item);
+            pos = this.data.length - 1;
+        }
+        // 回调函数
+        this.emit('add', item);
         return pos;
     };
     ;
@@ -6193,91 +10368,99 @@ var ObserverList = /** @class */ (function (_super) {
         }
     };
     ;
-    // TODO
     ObserverList.prototype.remove = function (item) {
         if (!this.has(item))
             return;
         var ind = this.data.indexOf(item);
-        // let index = ind;
-        // if (this.index) {
-        //   index =
-        //     (item instanceof Observer && item.get(this.index)) || item[this.index];
-        //   delete this._indexed[index];
-        // }
+        if (this.id) {
+            var index = item.get(this.id);
+            delete this._indexed[index];
+        }
         this.data.splice(ind, 1);
-        this.emit("remove", item, ind);
+        this.emit('remove', item, ind);
     };
     ;
     ObserverList.prototype.removeByKey = function (index) {
-        if (this.index) {
+        if (this.id) {
             var item = this._indexed[index];
             if (!item)
                 return;
             var ind = this.data.indexOf(item);
             this.data.splice(ind, 1);
             delete this._indexed[index];
-            this.emit("remove", item, ind);
+            this.emit('remove', item, ind);
         }
         else {
             if (this.data.length < index)
                 return;
             var item = this.data[index];
             this.data.splice(index, 1);
-            this.emit("remove", item, index);
+            this.emit('remove', item, index);
         }
     };
     ;
-    // public removeBy(fn: Function) {
-    //   let i = this.data.length;
-    //   while (i--) {
-    //     if (!fn(this.data[i])) continue;
-    //     if (this.index) {
-    //       delete this._indexed[this.data[i][this.index]];
-    //     }
-    //     this.data.splice(i, 1);
-    //     this.emit("remove", this.data[i], i);
-    //   }
-    // };
+    ObserverList.prototype.removeBy = function (fn) {
+        var i = this.data.length;
+        while (i--) {
+            if (!fn(this.data[i]))
+                continue;
+            if (this.id) {
+                delete this._indexed[this.data[i].get(this.id)];
+            }
+            this.data.splice(i, 1);
+            this.emit('remove', this.data[i], i);
+        }
+    };
+    ;
     ObserverList.prototype.clear = function () {
         var items = this.data.slice(0);
         this.data = [];
         this._indexed = {};
         var i = items.length;
         while (i--) {
-            this.emit("remove", items[i], i);
+            this.emit('remove', items[i], i);
         }
     };
     ;
-    // public forEach(fn: Function) {
-    //   for (let i = 0; i < this.data.length; i++) {
-    //     fn(this.data[i], (this.index && this.data[i][this.index]) || i);
-    //   }
-    // };
-    // public find(fn: Function) {
-    //   let items = [];
-    //   for (let i = 0; i < this.data.length; i++) {
-    //     if (!fn(this.data[i])) continue;
-    //     let index = i;
-    //     if (this.index) index = this.data[i][this.index];
-    //     items.push([index, this.data[i]]);
-    //   }
-    //   return items;
-    // };
-    // public findOne(fn: Function) {
-    //   for (let i = 0; i < this.data.length; i++) {
-    //     if (!fn(this.data[i])) continue;
-    //     let index = i;
-    //     if (this.index) index = this.data[i][this.index];
-    //     return [index, this.data[i]];
-    //   }
-    //   return null;
-    // };
-    // public map(fn: Function) {
-    //   return this.data.map(fn);
-    // };
-    // public sort(fn: Function) {
-    //   this.data.sort(fn);
-    // };
+    ObserverList.prototype.forEach = function (fn) {
+        for (var i = 0; i < this.data.length; i++) {
+            fn(this.data[i], (this.id && this.data[i].get(this.id)) || i);
+        }
+    };
+    ;
+    ObserverList.prototype.find = function (fn) {
+        var items = [];
+        for (var i = 0; i < this.data.length; i++) {
+            if (!fn(this.data[i]))
+                continue;
+            var index = i;
+            if (this.id)
+                index = this.data[i].get(this.id);
+            items.push([index, this.data[i]]);
+        }
+        return items;
+    };
+    ;
+    ObserverList.prototype.findOne = function (fn) {
+        for (var i = 0; i < this.data.length; i++) {
+            if (!fn(this.data[i]))
+                continue;
+            var index = i;
+            if (this.id)
+                index = this.data[i].get(this.id);
+            return [index, this.data[i]];
+        }
+        return null;
+    };
+    ;
+    ObserverList.prototype.map = function (fn) {
+        return this.data.map(fn);
+    };
+    ;
+    ObserverList.prototype.sort = function (fn) {
+        this.data.sort(fn);
+    };
+    ;
     ObserverList.prototype.array = function () {
         return this.data.slice(0);
     };
@@ -6285,7 +10468,7 @@ var ObserverList = /** @class */ (function (_super) {
     return ObserverList;
 }(events_1.Events));
 exports.ObserverList = ObserverList;
-},{"./events":52}],55:[function(require,module,exports){
+},{"./events":80}],83:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -6400,8 +10583,8 @@ var Observer = /** @class */ (function (_super) {
             }
         }
         else {
-            debug.warn(this.className + '.parserObject, 为止数据类型:' + value);
-            // this.set(key, );
+            // 目前看，null和undefined会经过这里
+            // debug.warn(this.className + '.parserObject, 为止数据类型:' + value);
         }
     };
     Observer.prototype.has = function (path) {
@@ -6604,60 +10787,58 @@ var Observer = /** @class */ (function (_super) {
     //   return;
     // };
     // 将json对象复制解析出来
-    Observer.prototype.patch = function (data) {
-        if (typeof data !== "object") {
-            debug.warn(this.className + ': 不是正确的json对象，打印：\n' + data);
-            return;
-        }
-        for (var key in data) {
-            if (typeof data[key] === "object" && !this._data.hasOwnProperty(key)) {
-                // 对象属性
-                debug.log('对象属性：' + key);
-                debug.log(data[key]);
-                // this._prepare(this, key, data[key]);
-            }
-            else if (this._data[key] !== data[key]) {
-                // 一般属性
-                debug.log('一般属性：' + key);
-                debug.log(data[key]);
-                // this.set(key, data[key]);
-            }
-        }
-    };
-    Observer.prototype.set2 = function (path, value, silent, remote, force) {
-        var keys = path.split('.');
-        var length = keys.length;
-        var key = keys[length - 1];
-        var node = this;
-        var nodePath = '';
-        var obj = this;
-        var state;
-        for (var i = 0; i < length - 1; i++) {
-            if (node instanceof Array) {
-                // TODO: 这是啥啊？
-                // node = node[keys[i]];
-                if (node instanceof Observer) {
-                    path = keys.slice(i + 1).join('.');
-                    obj = node;
-                }
-            }
-            else {
-                if (i < length && typeof (node._data[keys[i]]) !== 'object') {
-                    if (node._data[keys[i]])
-                        obj.unset((node.__path ? node.__path + '.' : '') + keys[i]);
-                    node._data[keys[i]] = {
-                        _path: path,
-                        _keys: [],
-                        _data: {}
-                    };
-                    node._keys.push(keys[i]);
-                }
-                if (i === length - 1 && node.__path)
-                    nodePath = node.__path + '.' + keys[i];
-                node = node._data[keys[i]];
-            }
-        }
-    };
+    // public patch(data: any): void {
+    //   if (typeof data !== "object") {
+    //     debug.warn(this.className + ': 不是正确的json对象，打印：\n' + data);
+    //     return;
+    //   }
+    //   for (let key in data) {
+    //     if (typeof data[key] === "object" && !this._data.hasOwnProperty(key)) {
+    //       // 对象属性
+    //       debug.log('对象属性：' + key);
+    //       debug.log(data[key]);
+    //       // this._prepare(this, key, data[key]);
+    //     } else if (this._data[key] !== data[key]) {
+    //       // 一般属性
+    //       debug.log('一般属性：' + key);
+    //       debug.log(data[key]);
+    //       // this.set(key, data[key]);
+    //     }
+    //   }
+    // }
+    // public set2(path: string, value: any, silent?: boolean, remote?: boolean, force?: boolean): void {
+    //   var keys = path.split('.');
+    //   var length = keys.length;
+    //   var key = keys[length - 1];
+    //   var node: any = this;
+    //   var nodePath = '';
+    //   var obj: any = this;
+    //   var state;
+    //   for (var i = 0; i < length - 1; i++) {
+    //     if (node instanceof Array) {
+    //       // TODO: 这是啥啊？
+    //       // node = node[keys[i]];
+    //       if (node instanceof Observer) {
+    //         path = keys.slice(i + 1).join('.');
+    //         obj = node;
+    //       }
+    //     } else {
+    //       if (i < length && typeof (node._data[keys[i]]) !== 'object') {
+    //         if (node._data[keys[i]])
+    //           obj.unset((node.__path ? node.__path + '.' : '') + keys[i]);
+    //         node._data[keys[i]] = {
+    //           _path: path,
+    //           _keys: [],
+    //           _data: {}
+    //         };
+    //         node._keys.push(keys[i]);
+    //       }
+    //       if (i === length - 1 && node.__path)
+    //         nodePath = node.__path + '.' + keys[i];
+    //       node = node._data[keys[i]];
+    //     }
+    //   }
+    // }
     // public json(target?: Observer): Observer {
     //   let obj: { [key: string]: any } = {};
     //   let node = target === undefined ? this : target;
@@ -6728,7 +10909,7 @@ var Observer = /** @class */ (function (_super) {
     return Observer;
 }(events_1.Events));
 exports.Observer = Observer;
-},{"./events":52}],56:[function(require,module,exports){
+},{"./events":80}],84:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -6751,17 +10932,30 @@ var initialize = new editor_1.InitializeBefore();
 // 整体布局
 var layout = new editor_1.Layout();
 layout.init();
+var drop = new editor_1.Drop();
+var search = new editor_1.Search();
+// 层级菜单
+var hierarchy = new editor_1.HierarchyKeeper();
+// 资源菜单
+var assetsKeeper = new editor_1.AssetsKeeper();
+// 初始化全局信息类
+var initializeAfter = new editor_1.InitializeAfter();
 // 编辑视窗
 var viewport = new editor_1.Viewport();
 engine_1.VeryEngine.viewport = viewport;
-// 层级菜单
-var hierarchy = new editor_1.Hierarchy();
-// 资源菜单
-var assets = new editor_1.Assets();
-// 初始化全局信息类
-var initializeAfter = new editor_1.InitializeAfter();
+editor_1.Tools.loadBabylon();
 // 加载资源
 // 关联资源
+// 本地数据库测试
+// VeryEngine.database = new Database();
+// VeryEngine.database.connect('test', 'store', 1, ['xxx']);
+// let im = new Image();
+// im.src = "test.jpeg";
+// im.onload = () => {
+//   console.log('--------------');
+//   console.log(im.name);
+//   console.log(im.sizes);
+// }
 /* TEST
 editor.once('load', () => {
   console.log('once');
@@ -6809,7 +11003,7 @@ editor.call('method', 123);
 // for(let i: number = 0; i < parent.childNodes.length; i++) {
 //   console.log(parent.childNodes[i] instanceof HTMLElement);
 // }
-},{"./editor":22,"./engine":49,"./index":51}],57:[function(require,module,exports){
+},{"./editor":36,"./engine":77,"./index":79}],85:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -6871,7 +11065,7 @@ var Bubble = /** @class */ (function (_super) {
     return Bubble;
 }(element_1.Element));
 exports.Bubble = Bubble;
-},{"./element":64}],58:[function(require,module,exports){
+},{"./element":92}],86:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -6892,6 +11086,8 @@ var Button = /** @class */ (function (_super) {
     __extends(Button, _super);
     function Button(text) {
         var _this = _super.call(this) || this;
+        _this.tooltip = null;
+        _this.op = '';
         _this._text = text ? text : '';
         _this.element = document.createElement('div');
         _this.element.classList.add('ui-button');
@@ -6940,7 +11136,7 @@ var Button = /** @class */ (function (_super) {
     return Button;
 }(element_1.Element));
 exports.Button = Button;
-},{"./element":64}],59:[function(require,module,exports){
+},{"./element":92}],87:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -7013,7 +11209,7 @@ var Canvas = /** @class */ (function (_super) {
     return Canvas;
 }(element_1.Element));
 exports.Canvas = Canvas;
-},{"./element":64}],60:[function(require,module,exports){
+},{"./element":92}],88:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -7101,7 +11297,7 @@ var Checkbox = /** @class */ (function (_super) {
     return Checkbox;
 }(element_1.Element));
 exports.Checkbox = Checkbox;
-},{"./element":64}],61:[function(require,module,exports){
+},{"./element":92}],89:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -7139,7 +11335,7 @@ var Code = /** @class */ (function (_super) {
     return Code;
 }(container_element_1.ContainerElement));
 exports.Code = Code;
-},{"./container-element":63}],62:[function(require,module,exports){
+},{"./container-element":91}],90:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -7366,7 +11562,7 @@ var ColorField = /** @class */ (function (_super) {
     return ColorField;
 }(element_1.Element));
 exports.ColorField = ColorField;
-},{"./element":64}],63:[function(require,module,exports){
+},{"./element":92}],91:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -7602,7 +11798,7 @@ var ContainerElement = /** @class */ (function (_super) {
     ;
     // TODO：怕不对
     ContainerElement.prototype.clear = function () {
-        console.log('clear');
+        // console.log('clear');
         var node;
         this._observer.disconnect();
         // console.log(this._innerElement);
@@ -7620,7 +11816,7 @@ var ContainerElement = /** @class */ (function (_super) {
     return ContainerElement;
 }(element_1.Element));
 exports.ContainerElement = ContainerElement;
-},{"./element":64}],64:[function(require,module,exports){
+},{"./element":92}],92:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -7961,7 +12157,7 @@ var Element = /** @class */ (function (_super) {
     return Element;
 }(lib_1.Events));
 exports.Element = Element;
-},{"../lib":53}],65:[function(require,module,exports){
+},{"../lib":81}],93:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -8068,7 +12264,7 @@ var GridItemArgs = /** @class */ (function () {
     return GridItemArgs;
 }());
 exports.GridItemArgs = GridItemArgs;
-},{"./element":64}],66:[function(require,module,exports){
+},{"./element":92}],94:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -8093,6 +12289,7 @@ var Grid = /** @class */ (function (_super) {
         _this.element = document.createElement('ul');
         _this.element.tabIndex = 0;
         _this.element.classList.add('ui-grid');
+        _this.innerElement = _this.element;
         _this._lastSelect = null;
         _this._selecting = false;
         _this._multiSelect = multiSelect !== undefined ? multiSelect : true;
@@ -8109,6 +12306,27 @@ var Grid = /** @class */ (function (_super) {
             for (var i = 0; i < elements.length; i++)
                 items.push((elements[i].ui));
             return items;
+        },
+        set: function (val) {
+            if (this._selecting)
+                return;
+            this._selecting = true;
+            // deselecting
+            var items = this.selected;
+            for (var i = 0; i < items.length; i++) {
+                if (val && val.indexOf(items[i]) !== -1)
+                    continue;
+                items[i].selected = false;
+            }
+            if (!val)
+                return;
+            // selecting
+            for (var i = 0; i < val.length; i++) {
+                if (!val[i])
+                    continue;
+                val[i].selected = true;
+            }
+            this._selecting = false;
         },
         enumerable: true,
         configurable: true
@@ -8212,7 +12430,7 @@ var Grid = /** @class */ (function (_super) {
     return Grid;
 }(container_element_1.ContainerElement));
 exports.Grid = Grid;
-},{"../editor":22,"./container-element":63}],67:[function(require,module,exports){
+},{"../editor":36,"./container-element":91}],95:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -8341,12 +12559,13 @@ var ImageField = /** @class */ (function (_super) {
     return ImageField;
 }(element_1.Element));
 exports.ImageField = ImageField;
-},{"./element":64}],68:[function(require,module,exports){
+},{"./element":92}],96:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
+__export(require("./top/index"));
 __export(require("./link"));
 __export(require("./element"));
 __export(require("./container-element"));
@@ -8375,7 +12594,7 @@ __export(require("./image-field"));
 __export(require("./number-field"));
 __export(require("./slider"));
 __export(require("./select-field"));
-},{"./bubble":57,"./button":58,"./canvas":59,"./checkbox":60,"./code":61,"./color-field":62,"./container-element":63,"./element":64,"./grid":66,"./grid-item":65,"./image-field":67,"./label":69,"./link":70,"./list":72,"./list-item":71,"./menu":74,"./menu-item":73,"./number-field":75,"./overlay":76,"./panel":77,"./progress":78,"./select-field":79,"./slider":80,"./text-field":81,"./textarea-field":82,"./tooltip":83,"./tree":85,"./tree-item":84}],69:[function(require,module,exports){
+},{"./bubble":85,"./button":86,"./canvas":87,"./checkbox":88,"./code":89,"./color-field":90,"./container-element":91,"./element":92,"./grid":94,"./grid-item":93,"./image-field":95,"./label":97,"./link":98,"./list":100,"./list-item":99,"./menu":102,"./menu-item":101,"./number-field":103,"./overlay":104,"./panel":105,"./progress":106,"./select-field":107,"./slider":108,"./text-field":109,"./textarea-field":110,"./tooltip":111,"./top/index":112,"./tree":117,"./tree-item":116}],97:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -8482,7 +12701,7 @@ var Label = /** @class */ (function (_super) {
     return Label;
 }(element_1.Element));
 exports.Label = Label;
-},{"./element":64}],70:[function(require,module,exports){
+},{"./element":92}],98:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // TODO
@@ -8517,7 +12736,7 @@ var LinkSchema = /** @class */ (function () {
     return LinkSchema;
 }());
 exports.LinkSchema = LinkSchema;
-},{}],71:[function(require,module,exports){
+},{}],99:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -8543,6 +12762,7 @@ var ListItem = /** @class */ (function (_super) {
         _this._allowDeselect = allowDeselect || false;
         _this.element = document.createElement('li');
         _this.element.classList.add('ui-list-item');
+        _this.element.ui = _this;
         _this.elementText = document.createElement('span');
         _this.elementText.textContent = _this._text;
         _this.element.appendChild(_this.elementText);
@@ -8595,7 +12815,7 @@ var ListItem = /** @class */ (function (_super) {
     return ListItem;
 }(element_1.Element));
 exports.ListItem = ListItem;
-},{"./element":64}],72:[function(require,module,exports){
+},{"./element":92}],100:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -8619,6 +12839,7 @@ var List = /** @class */ (function (_super) {
         var _this = _super.call(this) || this;
         _this.element = document.createElement('ul');
         _this.element.classList.add('ui-list');
+        _this.innerElement = _this.element;
         _this._selectable = selectable || true;
         _this._changing = false;
         _this._selected = [];
@@ -8731,7 +12952,7 @@ var List = /** @class */ (function (_super) {
     return List;
 }(container_element_1.ContainerElement));
 exports.List = List;
-},{"../editor":22,"./container-element":63}],73:[function(require,module,exports){
+},{"../editor":36,"./container-element":91}],101:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -8909,7 +13130,7 @@ var MenuItem = /** @class */ (function (_super) {
     return MenuItem;
 }(container_element_1.ContainerElement));
 exports.MenuItem = MenuItem;
-},{"./container-element":63}],74:[function(require,module,exports){
+},{"./container-element":91}],102:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -8947,7 +13168,7 @@ var Menu = /** @class */ (function (_super) {
         _this.element.appendChild(_this.elementOverlay);
         _this.innerElement = document.createElement('div');
         _this.innerElement.classList.add('inner');
-        _this.elementOverlay.appendChild(_this.innerElement);
+        _this.element.appendChild(_this.innerElement);
         // this._index = { };
         // this._hovered = [ ];
         _this._clickableSubmenus = args.clickableSubmenus;
@@ -9132,7 +13353,7 @@ var Menu = /** @class */ (function (_super) {
     return Menu;
 }(container_element_1.ContainerElement));
 exports.Menu = Menu;
-},{"./container-element":63,"./menu-item":73}],75:[function(require,module,exports){
+},{"./container-element":91,"./menu-item":101}],103:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -9349,7 +13570,7 @@ var NumberField = /** @class */ (function (_super) {
     return NumberField;
 }(element_1.Element));
 exports.NumberField = NumberField;
-},{"./element":64}],76:[function(require,module,exports){
+},{"./element":92}],104:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -9460,7 +13681,7 @@ var Overlay = /** @class */ (function (_super) {
     return Overlay;
 }(container_element_1.ContainerElement));
 exports.Overlay = Overlay;
-},{"./container-element":63}],77:[function(require,module,exports){
+},{"./container-element":91}],105:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -9827,7 +14048,7 @@ var Panel = /** @class */ (function (_super) {
     return Panel;
 }(container_element_1.ContainerElement));
 exports.Panel = Panel;
-},{"./container-element":63}],78:[function(require,module,exports){
+},{"./container-element":91}],106:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -9963,7 +14184,7 @@ var Progress = /** @class */ (function (_super) {
     return Progress;
 }(element_1.Element));
 exports.Progress = Progress;
-},{"./element":64}],79:[function(require,module,exports){
+},{"./element":92}],107:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -10368,7 +14589,7 @@ var SelectField = /** @class */ (function (_super) {
     return SelectField;
 }(element_1.Element));
 exports.SelectField = SelectField;
-},{"./element":64}],80:[function(require,module,exports){
+},{"./element":92}],108:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -10620,7 +14841,7 @@ var Slider = /** @class */ (function (_super) {
     return Slider;
 }(element_1.Element));
 exports.Slider = Slider;
-},{"./element":64}],81:[function(require,module,exports){
+},{"./element":92}],109:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -10800,7 +15021,7 @@ var TextField = /** @class */ (function (_super) {
     return TextField;
 }(element_1.Element));
 exports.TextField = TextField;
-},{"./element":64}],82:[function(require,module,exports){
+},{"./element":92}],110:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -10982,7 +15203,7 @@ var TextAreaField = /** @class */ (function (_super) {
     return TextAreaField;
 }(element_1.Element));
 exports.TextAreaField = TextAreaField;
-},{"./element":64}],83:[function(require,module,exports){
+},{"./element":92}],111:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -11244,7 +15465,1074 @@ var Tooltip = /** @class */ (function (_super) {
     return Tooltip;
 }(container_element_1.ContainerElement));
 exports.Tooltip = Tooltip;
-},{"./container-element":63}],84:[function(require,module,exports){
+},{"./container-element":91}],112:[function(require,module,exports){
+"use strict";
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+__export(require("./top-element"));
+__export(require("./top-element-container"));
+__export(require("./top-element-panel"));
+},{"./top-element":115,"./top-element-container":113,"./top-element-panel":114}],113:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var top_element_1 = require("./top-element");
+var TopElementContainer = /** @class */ (function (_super) {
+    __extends(TopElementContainer, _super);
+    function TopElementContainer(args) {
+        var _this = _super.call(this, document.createElement('div'), args) || this;
+        _this.RESIZE_HANDLE_SIZE = 4;
+        _this.VALID_RESIZABLE_VALUES = [
+            null,
+            'top',
+            'right',
+            'bottom',
+            'left'
+        ];
+        _this._flex = false;
+        _this._grid = false;
+        _this._scrollable = false;
+        _this._resizable = null;
+        _this._resizeMin = 0;
+        _this._resizeMax = 0;
+        _this._domContent = null;
+        if (!args)
+            args = {};
+        var dom = _this.dom;
+        dom.classList.add('pcui-container');
+        _this._domEventScroll = _this._onScroll.bind(_this);
+        _this.domContent = dom;
+        // pcui.Element.call(this, dom, args);
+        // pcui.IContainer.call(this);
+        // pcui.IFlex.call(this);
+        // pcui.IGrid.call(this);
+        // pcui.IScrollable.call(this);
+        // pcui.IResizable.call(this);
+        // scroll
+        _this.scrollable = args.scrollable !== undefined ? args.scrollable : false;
+        // flex
+        _this.flex = !!args.flex;
+        // grid
+        var grid = !!args.grid;
+        if (grid) {
+            if (_this.flex) {
+                console.error('Invalid pcui.Container arguments: "grid" and "flex" cannot both be true.');
+                grid = false;
+            }
+        }
+        _this.grid = grid;
+        // resize related
+        _this._domResizeHandle = null;
+        _this._domEventResizeStart = _this._onResizeStart.bind(_this);
+        _this._domEventResizeMove = _this._onResizeMove.bind(_this);
+        _this._domEventResizeEnd = _this._onResizeEnd.bind(_this);
+        _this._domEventResizeTouchStart = _this._onResizeTouchStart.bind(_this);
+        _this._domEventResizeTouchMove = _this._onResizeTouchMove.bind(_this);
+        _this._domEventResizeTouchEnd = _this._onResizeTouchEnd.bind(_this);
+        _this._resizeTouchId = null;
+        _this._resizeData = null;
+        _this._resizeHorizontally = true;
+        _this.resizable = args.resizable || null;
+        _this._resizeMin = 100;
+        _this._resizeMax = 300;
+        if (args.resizeMin !== undefined) {
+            _this.resizeMin = args.resizeMin;
+        }
+        if (args.resizeMax !== undefined) {
+            _this.resizeMax = args.resizeMax;
+        }
+        return _this;
+    }
+    Object.defineProperty(TopElementContainer.prototype, "flex", {
+        get: function () {
+            return this._flex;
+        },
+        set: function (value) {
+            if (value === this._flex)
+                return;
+            this._flex = value;
+            if (value) {
+                this.class.add('pcui-flex');
+            }
+            else {
+                this.class.remove('pcui-flex');
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TopElementContainer.prototype, "grid", {
+        get: function () {
+            return this._grid;
+        },
+        set: function (value) {
+            if (value === this._grid)
+                return;
+            this._grid = value;
+            if (value) {
+                this.class.add('pcui-grid');
+            }
+            else {
+                this.class.remove('pcui-grid');
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TopElementContainer.prototype, "scrollable", {
+        get: function () {
+            return this._scrollable;
+        },
+        set: function (value) {
+            if (value === this._scrollable)
+                return;
+            this._scrollable = value;
+            if (value) {
+                this.class.add('pcui-scrollable');
+            }
+            else {
+                this.class.remove('pcui-scrollable');
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TopElementContainer.prototype, "resizable", {
+        get: function () {
+            return this._resizable;
+        },
+        set: function (value) {
+            if (value === this._resizable)
+                return;
+            if (this.VALID_RESIZABLE_VALUES.indexOf(value) === -1) {
+                console.error('Invalid resizable value: must be one of ' + this.VALID_RESIZABLE_VALUES.join(','));
+                return;
+            }
+            // remove old class
+            if (this._resizable) {
+                this.class.remove('pcui-resizable-' + this._resizable);
+            }
+            this._resizable = value;
+            this._resizeHorizontally = (value === 'right' || value === 'left');
+            if (value) {
+                // add resize class and create / append resize handle
+                this.class.add('pcui-resizable');
+                this.class.add('pcui-resizable-' + value);
+                if (!this._domResizeHandle) {
+                    this._createResizeHandle();
+                }
+                this.dom.appendChild(this._domResizeHandle);
+            }
+            else {
+                // remove resize class and resize handle
+                this.class.remove('pcui-resizable');
+                if (this._domResizeHandle) {
+                    this.dom.removeChild(this._domResizeHandle);
+                }
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TopElementContainer.prototype, "resizeMin", {
+        get: function () {
+            return this._resizeMin;
+        },
+        set: function (value) {
+            this._resizeMin = Math.max(0, Math.min(value, this._resizeMax));
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TopElementContainer.prototype, "resizeMax", {
+        get: function () {
+            return this._resizeMax;
+        },
+        set: function (value) {
+            this._resizeMax = Math.max(this._resizeMin, value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TopElementContainer.prototype, "domContent", {
+        get: function () {
+            return this._domContent;
+        },
+        set: function (value) {
+            if (this._domContent === value)
+                return;
+            if (this._domContent) {
+                this._domContent.removeEventListener('scroll', this._domEventScroll);
+            }
+            this._domContent = value;
+            if (this._domContent) {
+                this._domContent.addEventListener('scroll', this._domEventScroll);
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    TopElementContainer.prototype.append = function (element) {
+        var dom = this._getDomFromElement(element);
+        this._domContent.appendChild(dom);
+        this._onAppendChild(element);
+    };
+    ;
+    TopElementContainer.prototype.appendBefore = function (element, referenceElement) {
+        var dom = this._getDomFromElement(element);
+        this._domContent.appendChild(dom);
+        var referenceDom = referenceElement && this._getDomFromElement(referenceElement);
+        if ((referenceDom)) {
+            this._domContent.insertBefore(dom, referenceDom);
+        }
+        else {
+            this._domContent.appendChild(dom);
+        }
+        this._onAppendChild(element);
+    };
+    ;
+    TopElementContainer.prototype.appendAfter = function (element, referenceElement) {
+        var dom = this._getDomFromElement(element);
+        var referenceDom = referenceElement && this._getDomFromElement(referenceElement);
+        var elementBefore = referenceDom ? referenceDom.nextSibling : null;
+        if (elementBefore) {
+            this._domContent.insertBefore(dom, elementBefore);
+        }
+        else {
+            this._domContent.appendChild(dom);
+        }
+        this._onAppendChild(element);
+    };
+    ;
+    TopElementContainer.prototype.prepend = function (element) {
+        var dom = this._getDomFromElement(element);
+        var first = this._domContent.firstChild;
+        if (first) {
+            this._domContent.insertBefore(dom, first);
+        }
+        else {
+            this._domContent.appendChild(dom);
+        }
+        this._onAppendChild(element);
+    };
+    ;
+    TopElementContainer.prototype.remove = function (element) {
+        var html = (element instanceof HTMLElement);
+        if (!html && element.parent !== this)
+            return;
+        var dom = this._getDomFromElement(element);
+        this._domContent.removeChild(dom);
+        if (!html)
+            element.parent = null;
+        this.emit('remove', element);
+    };
+    ;
+    TopElementContainer.prototype.clear = function () {
+        if (this._domContent) {
+            var i = this._domContent.childNodes.length;
+            while (i--) {
+                var node = this._domContent.childNodes[i];
+                if (node.ui) {
+                    node.ui.destroy();
+                }
+            }
+            this._domContent.innerHTML = '';
+        }
+    };
+    ;
+    TopElementContainer.prototype._getDomFromElement = function (element) {
+        if (element instanceof HTMLElement)
+            return element;
+        else if (element instanceof top_element_1.TopElement)
+            return element.dom;
+        else
+            return element.element;
+        // if (element.dom) {
+        //     return element.dom;
+        // }
+        // if (element.element) {
+        //     // console.log('Legacy ui.Element passed to pcui.Container', this.class, element.class);
+        //     return element.element;
+        // }
+        // return element;
+    };
+    ;
+    TopElementContainer.prototype._onAppendChild = function (element) {
+        if (element instanceof top_element_1.TopElement)
+            element.parent = this;
+        this.emit('append', element);
+    };
+    ;
+    TopElementContainer.prototype._onScroll = function (evt) {
+        this.emit('scroll', evt);
+    };
+    ;
+    TopElementContainer.prototype._createResizeHandle = function () {
+        var handle = document.createElement('div');
+        handle.classList.add('pcui-resizable-handle');
+        handle.ui = this;
+        handle.addEventListener('mousedown', this._domEventResizeStart);
+        handle.addEventListener('touchstart', this._domEventResizeTouchStart);
+        this._domResizeHandle = handle;
+    };
+    ;
+    TopElementContainer.prototype._onResizeStart = function (evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+        window.addEventListener('mousemove', this._domEventResizeMove);
+        window.addEventListener('mouseup', this._domEventResizeEnd);
+        this._resizeStart();
+    };
+    ;
+    TopElementContainer.prototype._onResizeMove = function (evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+        this._resizeMove(evt.clientX, evt.clientY);
+    };
+    ;
+    TopElementContainer.prototype._onResizeEnd = function (evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+        window.removeEventListener('mousemove', this._domEventResizeMove);
+        window.removeEventListener('mouseup', this._domEventResizeEnd);
+        this._resizeEnd();
+    };
+    ;
+    TopElementContainer.prototype._onResizeTouchStart = function (evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+        for (var i = 0; i < evt.changedTouches.length; i++) {
+            var touch = evt.changedTouches[i];
+            if (touch.target === this._domResizeHandle) {
+                this._resizeTouchId = touch.identifier;
+            }
+        }
+        window.addEventListener('touchmove', this._domEventResizeTouchMove);
+        window.addEventListener('touchend', this._domEventResizeTouchEnd);
+        this._resizeStart();
+    };
+    ;
+    TopElementContainer.prototype._onResizeTouchMove = function (evt) {
+        for (var i = 0; i < evt.changedTouches.length; i++) {
+            var touch = evt.changedTouches[i];
+            if (touch.identifier !== this._resizeTouchId) {
+                continue;
+            }
+            evt.stopPropagation();
+            evt.preventDefault();
+            this._resizeMove(touch.clientX, touch.clientY);
+            break;
+        }
+    };
+    ;
+    TopElementContainer.prototype._onResizeTouchEnd = function (evt) {
+        for (var i = 0; i < evt.changedTouches.length; i++) {
+            var touch = evt.changedTouches[i];
+            if (touch.identifier === this._resizeTouchId) {
+                continue;
+            }
+            this._resizeTouchId = null;
+            evt.preventDefault();
+            evt.stopPropagation();
+            window.removeEventListener('touchmove', this._domEventResizeTouchMove);
+            window.removeEventListener('touchend', this._domEventResizeTouchEnd);
+            this._resizeEnd();
+            break;
+        }
+    };
+    ;
+    TopElementContainer.prototype._resizeStart = function () {
+        this.class.add('pcui-resizable-resizing');
+    };
+    ;
+    TopElementContainer.prototype._resizeMove = function (x, y) {
+        // if we haven't initialized resizeData do so now
+        if (!this._resizeData) {
+            this._resizeData = {
+                x: x,
+                y: y,
+                width: this.dom.clientWidth,
+                height: this.dom.clientHeight
+            };
+            return;
+        }
+        if (this._resizeHorizontally) {
+            // horizontal resizing
+            var offsetX = this._resizeData.x - x;
+            if (this._resizable === 'right') {
+                offsetX = -offsetX;
+            }
+            this.width = this.RESIZE_HANDLE_SIZE + Math.max(this._resizeMin, Math.min(this._resizeMax, (this._resizeData.width + offsetX)));
+        }
+        else {
+            // vertical resizing
+            var offsetY = this._resizeData.y - y;
+            if (this._resizable === 'bottom') {
+                offsetY = -offsetY;
+            }
+            this.height = Math.max(this._resizeMin, Math.min(this._resizeMax, (this._resizeData.height + offsetY)));
+        }
+        this.emit('resize');
+    };
+    ;
+    TopElementContainer.prototype._resizeEnd = function () {
+        this._resizeData = null;
+        this.class.remove('pcui-resizable-resizing');
+    };
+    ;
+    TopElementContainer.prototype.destroy = function () {
+        this.domContent = null;
+        if (this._domResizeHandle) {
+            this._domResizeHandle.removeEventListener('mousedown', this._domEventResizeStart);
+            window.removeEventListener('mousemove', this._domEventResizeMove);
+            window.removeEventListener('mouseup', this._domEventResizeEnd);
+            this._domResizeHandle.removeEventListener('touchstart', this._domEventResizeTouchStart);
+            window.removeEventListener('touchmove', this._domEventResizeTouchMove);
+            window.removeEventListener('touchend', this._domEventResizeTouchEnd);
+        }
+        this._domResizeHandle = null;
+        this._domEventResizeStart = null;
+        this._domEventResizeMove = null;
+        this._domEventResizeEnd = null;
+        this._domEventResizeTouchStart = null;
+        this._domEventResizeTouchMove = null;
+        this._domEventResizeTouchEnd = null;
+        _super.prototype.destroy.call(this);
+    };
+    ;
+    return TopElementContainer;
+}(top_element_1.TopElement));
+exports.TopElementContainer = TopElementContainer;
+},{"./top-element":115}],114:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var top_element_container_1 = require("./top-element-container");
+var TopElementPanel = /** @class */ (function (_super) {
+    __extends(TopElementPanel, _super);
+    function TopElementPanel(args) {
+        var _this = _super.call(this, args) || this;
+        _this._headerSize = 0;
+        _this._collapsible = false;
+        _this._collapsed = false;
+        _this._collapseHorizontally = false;
+        _this._reflowTimeout = null;
+        _this._widthBeforeCollapse = null;
+        _this._heightBeforeCollapse = null;
+        if (!args)
+            args = {};
+        var panelArgs = Object.assign({}, args);
+        panelArgs.flex = true;
+        delete panelArgs.flexDirection;
+        delete panelArgs.scrollable;
+        _this.class.add('pcui-panel');
+        if (args.panelType) {
+            _this.class.add('pcui-panel-' + args.panelType);
+        }
+        // do not call reflow on every update while
+        // we are initializing
+        _this._suspendReflow = true;
+        // initialize header container
+        // this._initializeHeader(args);
+        // header container
+        _this._containerHeader = new top_element_container_1.TopElementContainer({
+            flex: true,
+            flexDirection: 'row'
+        });
+        _this._containerHeader.class.add('pcui-panel-header');
+        // header title
+        _this._domHeaderTitle = document.createElement('span');
+        _this._domHeaderTitle.textContent = args.headerText || '';
+        _this._domHeaderTitle.classList.add('pcui-panel-header-title');
+        _this._domHeaderTitle.ui = _this._containerHeader;
+        _this._containerHeader.dom.appendChild(_this._domHeaderTitle);
+        // use native click listener because the pcui.Element#click event is only fired
+        // if the element is enabled. However we still want to catch header click events in order
+        // to collapse them
+        _this._containerHeader.dom.addEventListener('click', _this._onHeaderClick.bind(_this));
+        _this.append(_this._containerHeader);
+        // initialize content container
+        // this._initializeContent(args);
+        _this._containerContent = new top_element_container_1.TopElementContainer({
+            flex: args.flex,
+            flexDirection: args.flexDirection,
+            scrollable: args.scrollable
+        });
+        _this._containerContent.class.add('pcui-panel-content');
+        _this.appendAfter(_this._containerContent, _this._containerHeader);
+        // event handlers
+        _this._evtAppend = null;
+        _this._evtRemove = null;
+        // header size
+        _this.headerSize = args.headerSize !== undefined ? args.headerSize : 32;
+        // collapse related
+        _this._reflowTimeout = null;
+        _this._widthBeforeCollapse = null;
+        _this._heightBeforeCollapse = null;
+        // if we initialize the panel collapsed
+        // then use the width / height passed in the arguments
+        // as the size to expand to
+        if (args.collapsed) {
+            if (args.width) {
+                _this._widthBeforeCollapse = args.width;
+            }
+            if (args.height) {
+                _this._heightBeforeCollapse = args.height;
+            }
+        }
+        _this.collapsible = args.collapsible || false;
+        _this.collapsed = args.collapsed || false;
+        _this.collapseHorizontally = args.collapseHorizontally || false;
+        // set the contents container to be the content DOM element
+        // from now on calling append functions on the panel will append themn
+        // elements to the contents container
+        _this.domContent = _this._containerContent.dom;
+        // execute reflow now after all fields have been initialized
+        _this._suspendReflow = false;
+        _this._reflow();
+        return _this;
+    }
+    Object.defineProperty(TopElementPanel.prototype, "collapsible", {
+        get: function () {
+            return this._collapsible;
+        },
+        set: function (value) {
+            if (value === this._collapsible)
+                return;
+            this._collapsible = value;
+            if (this._evtAppend) {
+                this._evtAppend.unbind();
+                this._evtAppend = null;
+            }
+            if (this._evtRemove) {
+                this._evtRemove.unbind();
+                this._evtRemove = null;
+            }
+            if (value) {
+                // listen to append / remove events so we can change our height
+                var onChange = this._onChildrenChange.bind(this);
+                this._evtAppend = this._containerContent.on('append', onChange);
+                this._evtRemove = this._containerContent.on('remove', onChange);
+                this.class.add('pcui-collapsible');
+            }
+            else {
+                this.class.remove('pcui-collapsible');
+            }
+            this._reflow();
+            if (this.collapsed) {
+                this.emit(value ? 'collapse' : 'expand');
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TopElementPanel.prototype, "collapsed", {
+        get: function () {
+            return this._collapsed;
+        },
+        set: function (value) {
+            if (this._collapsed === value)
+                return;
+            this._collapsed = value;
+            if (value) {
+                this.class.add('pcui-collapsed');
+            }
+            else {
+                this.class.remove('pcui-collapsed');
+            }
+            this._reflow();
+            if (this.collapsible) {
+                this.emit(value ? 'collapse' : 'expand');
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TopElementPanel.prototype, "collapseHorizontally", {
+        get: function () {
+            return this._collapseHorizontally;
+        },
+        set: function (value) {
+            if (this._collapseHorizontally === value)
+                return;
+            this._collapseHorizontally = value;
+            if (value) {
+                this.class.add('pcui-panel-horizontal');
+            }
+            else {
+                this.class.remove('pcui-panel-horizontal');
+            }
+            this._reflow();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TopElementPanel.prototype, "content", {
+        get: function () {
+            return this._containerContent;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TopElementPanel.prototype, "header", {
+        get: function () {
+            return this._containerHeader;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TopElementPanel.prototype, "headerText", {
+        get: function () {
+            return this._domHeaderTitle.textContent || '';
+        },
+        set: function (value) {
+            this._domHeaderTitle.textContent = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TopElementPanel.prototype, "headerSize", {
+        get: function () {
+            return this._headerSize;
+        },
+        set: function (value) {
+            this._headerSize = value;
+            var style = this._containerHeader.dom.style;
+            style.height = Math.max(0, value) + 'px';
+            style.lineHeight = style.height;
+            this._reflow();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    TopElementPanel.prototype._onHeaderClick = function (evt) {
+        if (!this._collapsible)
+            return;
+        if (evt.target !== this.header.dom && evt.target !== this._domHeaderTitle)
+            return;
+        // toggle collapsed
+        this.collapsed = !this.collapsed;
+    };
+    ;
+    TopElementPanel.prototype._onChildrenChange = function () {
+        if (!this.collapsible || this.collapsed || this._collapseHorizontally || this.hidden) {
+            return;
+        }
+        this.height = this.headerSize + this._containerContent.dom.clientHeight;
+    };
+    ;
+    // Collapses or expands the panel as needed
+    TopElementPanel.prototype._reflow = function () {
+        var self = this;
+        if (this._suspendReflow) {
+            return;
+        }
+        if (this._reflowTimeout) {
+            cancelAnimationFrame(this._reflowTimeout);
+            this._reflowTimeout = null;
+        }
+        if (this.hidden || !this.collapsible)
+            return;
+        if (this.collapsed && this.collapseHorizontally) {
+            this._containerHeader.style.top = -this.headerSize + 'px';
+        }
+        else {
+            this._containerHeader.style.top = '';
+        }
+        // we rely on the content width / height and we have to
+        // wait for 1 frame before we can get the final values back
+        this._reflowTimeout = requestAnimationFrame(function () {
+            self._reflowTimeout = null;
+            if (self.collapsed) {
+                // remember size before collapse
+                if (!self._widthBeforeCollapse) {
+                    self._widthBeforeCollapse = self.dom.clientWidth;
+                }
+                if (!self._heightBeforeCollapse) {
+                    self._heightBeforeCollapse = self.dom.clientHeight;
+                }
+                if (self._collapseHorizontally) {
+                    self.height = '';
+                    self.width = self.headerSize;
+                }
+                else {
+                    self.height = self.headerSize;
+                }
+            }
+            else {
+                if (self._collapseHorizontally) {
+                    self.height = '';
+                    if (self._widthBeforeCollapse !== null) {
+                        self.width = self._widthBeforeCollapse;
+                    }
+                }
+                else {
+                    if (self._heightBeforeCollapse !== null) {
+                        self.height = self._heightBeforeCollapse;
+                    }
+                }
+                // reset before collapse vars
+                self._widthBeforeCollapse = null;
+                self._heightBeforeCollapse = null;
+            }
+        }.bind(self));
+    };
+    ;
+    TopElementPanel.prototype.destroy = function () {
+        if (this._reflowTimeout) {
+            cancelAnimationFrame(this._reflowTimeout);
+            this._reflowTimeout = null;
+        }
+        _super.prototype.destroy.call(this);
+    };
+    ;
+    return TopElementPanel;
+}(top_element_container_1.TopElementContainer));
+exports.TopElementPanel = TopElementPanel;
+},{"./top-element-container":113}],115:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var lib_1 = require("../../lib");
+var TopElement = /** @class */ (function (_super) {
+    __extends(TopElement, _super);
+    // public get innerElement(): Nullable<HTMLElement> {
+    //     return this.domContent;
+    // }
+    // public set innerElement(value: Nullable<HTMLElement>) {
+    //     this.domContent = value;
+    // }
+    function TopElement(dom, args) {
+        var _this = _super.call(this) || this;
+        _this.SIMPLE_CSS_PROPERTIES = {
+            'flexDirection': 'flex-direction',
+            'flexGrow': 'flex-grow',
+            'flexBasis': 'flex-basis',
+            'flexShrink': 'flex-shrink',
+            'flexWrap': 'flex-wrap',
+            'alignItems': 'align-items',
+            'justifyContent': 'justify-content'
+        };
+        _this._destroyed = false;
+        _this._enabled = true;
+        _this._hidden = false;
+        _this._parent = null;
+        _this._evtParentDestroy = null;
+        _this._evtParentDisable = null;
+        _this._evtParentEnable = null;
+        if (!args)
+            args = {};
+        _this._destroyed = false;
+        _this._enabled = true;
+        _this._hidden = false;
+        _this._parent = null;
+        _this._domEventClick = _this._onClick.bind(_this);
+        _this._domEventMouseOver = _this._onMouseOver.bind(_this);
+        _this._domEventMouseOut = _this._onMouseOut.bind(_this);
+        _this._evtParentDestroy = null;
+        _this._evtParentDisable = null;
+        _this._evtParentEnable = null;
+        _this._dom = dom;
+        if (args.id !== undefined) {
+            _this._dom.id = args.id;
+        }
+        // add ui reference
+        _this._dom.ui = _this;
+        // add event listeners
+        _this._dom.addEventListener('click', _this._domEventClick);
+        _this._dom.addEventListener('mouseover', _this._domEventMouseOver);
+        _this._dom.addEventListener('mouseout', _this._domEventMouseOut);
+        // add element class
+        _this._dom.classList.add('pcui-element');
+        if (args.enabled !== undefined) {
+            _this.enabled = args.enabled;
+        }
+        if (args.hidden !== undefined) {
+            _this.hidden = args.hidden;
+        }
+        if (args.width !== undefined) {
+            _this.width = args.width;
+        }
+        if (args.height !== undefined) {
+            _this.height = args.height;
+        }
+        // copy CSS properties from args
+        for (var key in args) {
+            if (args[key] === undefined)
+                continue;
+            if (_this.SIMPLE_CSS_PROPERTIES[key] !== null) {
+                _this.style.setProperty(_this.SIMPLE_CSS_PROPERTIES[key], args[key]);
+            }
+        }
+        return _this;
+    }
+    Object.defineProperty(TopElement.prototype, "enabled", {
+        // private domContent: Nullable<HTMLElement> = null;
+        get: function () {
+            return this._enabled && (!this._parent || this._parent.enabled);
+        },
+        set: function (value) {
+            if (this._enabled === value)
+                return;
+            // remember if enabled in hierarchy
+            var enabled = this.enabled;
+            this._enabled = value;
+            // only fire event if hierarchy state changed
+            if (enabled !== value) {
+                this._onEnabledChange(value);
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TopElement.prototype, "dom", {
+        get: function () {
+            return this._dom;
+        },
+        set: function (value) {
+            this._dom = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TopElement.prototype, "parent", {
+        get: function () {
+            return this._parent;
+        },
+        set: function (value) {
+            if (value === this._parent)
+                return;
+            var oldEnabled = this.enabled;
+            if (this._parent) {
+                this._evtParentDestroy.unbind();
+                this._evtParentDisable.unbind();
+                this._evtParentEnable.unbind();
+            }
+            this._parent = value;
+            if (this._parent) {
+                this._evtParentDestroy = this._parent.once('destroy', this._onParentDestroy.bind(this));
+                this._evtParentDisable = this._parent.on('disable', this._onParentDisable.bind(this));
+                this._evtParentEnable = this._parent.on('enable', this._onParentEnable.bind(this));
+            }
+            this.emit('parent', this._parent);
+            var newEnabled = this.enabled;
+            if (newEnabled !== oldEnabled) {
+                this._onEnabledChange(newEnabled);
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TopElement.prototype, "hidden", {
+        get: function () {
+            return this._hidden;
+        },
+        set: function (value) {
+            if (value === this._hidden)
+                return;
+            this._hidden = value;
+            if (value) {
+                this.class.add('pcui-hidden');
+            }
+            else {
+                this.class.remove('pcui-hidden');
+            }
+            this.emit(value ? 'hide' : 'show');
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TopElement.prototype, "style", {
+        get: function () {
+            return this._dom.style;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TopElement.prototype, "class", {
+        get: function () {
+            return this._dom.classList;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TopElement.prototype, "width", {
+        get: function () {
+            return this._dom.clientWidth;
+        },
+        set: function (value) {
+            if (typeof value === 'number') {
+                value = value.toString() + 'px';
+            }
+            this.style.width = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TopElement.prototype, "height", {
+        get: function () {
+            return this._dom.clientHeight;
+        },
+        set: function (value) {
+            if (typeof value === 'number') {
+                value = value.toString() + 'px';
+            }
+            this.style.height = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TopElement.prototype, "disabled", {
+        get: function () {
+            return !this.enabled;
+        },
+        set: function (value) {
+            this.enabled = !value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TopElement.prototype, "element", {
+        get: function () {
+            return this.dom;
+        },
+        set: function (value) {
+            this.dom = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    TopElement.prototype.exposeCssProperty = function (name) {
+        Object.defineProperty(TopElement.prototype, name, {
+            get: function () {
+                return this.style[name];
+            },
+            set: function (value) {
+                this.style[name] = value;
+            }
+        });
+    };
+    TopElement.prototype.link = function (observer, path) {
+        throw new Error('Not implemented');
+    };
+    ;
+    TopElement.prototype.unlink = function () {
+        throw new Error('Not implemented');
+    };
+    ;
+    TopElement.prototype.flash = function () {
+        var self = this;
+        this.class.add('flash');
+        setTimeout(function () {
+            self.class.remove('flash');
+        }.bind(self), 200);
+    };
+    ;
+    TopElement.prototype._onClick = function (evt) {
+        if (this.enabled) {
+            this.emit('click', evt);
+        }
+    };
+    ;
+    TopElement.prototype._onMouseOver = function (evt) {
+        this.emit('hover', evt);
+    };
+    ;
+    TopElement.prototype._onMouseOut = function (evt) {
+        this.emit('hoverend', evt);
+    };
+    ;
+    TopElement.prototype._onEnabledChange = function (enabled) {
+        if (enabled) {
+            this.class.remove('pcui-disabled');
+        }
+        else {
+            this.class.add('pcui-disabled');
+        }
+        this.emit(enabled ? 'enable' : 'disable');
+    };
+    ;
+    TopElement.prototype._onParentDestroy = function () {
+        this.destroy();
+    };
+    ;
+    TopElement.prototype._onParentDisable = function () {
+        if (this._enabled) {
+            this._onEnabledChange(false);
+        }
+    };
+    ;
+    TopElement.prototype._onParentEnable = function () {
+        if (this._enabled) {
+            this._onEnabledChange(true);
+        }
+    };
+    ;
+    TopElement.prototype.destroy = function () {
+        if (this._destroyed)
+            return;
+        this._destroyed = true;
+        if (this.parent && this.parent.element) {
+            if (this.element && this.element.parentNode) {
+                this.element.parentNode.removeChild(this.parent.element);
+            }
+        }
+        if (this._dom) {
+            // remove event listeners
+            this._dom.removeEventListener('click', this._domEventClick);
+            this._dom.removeEventListener('mouseover', this._domEventMouseOver);
+            this._dom.removeEventListener('mouseout', this._domEventMouseOut);
+            // remove ui reference
+            delete this._dom.ui;
+            this._dom = null;
+        }
+        this._domEventClick = null;
+        this._domEventMouseOver = null;
+        this._domEventMouseOut = null;
+    };
+    ;
+    return TopElement;
+}(lib_1.Events));
+exports.TopElement = TopElement;
+},{"../../lib":81}],116:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -11299,6 +16587,7 @@ var TreeItem = /** @class */ (function (_super) {
         _this.tree = null;
         _this.element = document.createElement('div');
         _this.element.classList.add('ui-tree-item');
+        _this.element.ui = _this;
         if (args.classList) {
             args.classList.forEach(function (className) {
                 self.element.classList.add(className);
@@ -11644,7 +16933,7 @@ var TreeItem = /** @class */ (function (_super) {
             selectedItem.selected = true;
         }
     };
-    // TODO,关联En
+    // TODO:link to the observer 
     TreeItem.prototype._onRename = function (select) {
         if (select) {
             this.tree.clear();
@@ -11802,7 +17091,7 @@ var TreeItem = /** @class */ (function (_super) {
     return TreeItem;
 }(element_1.Element));
 exports.TreeItem = TreeItem;
-},{"./element":64,"./text-field":81,"./tree":85}],85:[function(require,module,exports){
+},{"./element":92,"./text-field":109,"./tree":117}],117:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -11830,6 +17119,7 @@ var Tree = /** @class */ (function (_super) {
         _this.allowRenaming = true;
         _this.element = document.createElement('div');
         _this.element.classList.add('ui-tree');
+        _this.innerElement = _this.element;
         _this.elementDrag = document.createElement('div');
         _this.elementDrag.classList.add('drag-handle');
         _this.element.appendChild(_this.elementDrag);
@@ -12337,6 +17627,7 @@ var Tree = /** @class */ (function (_super) {
         }
     };
     Tree.prototype._onAppend = function (item) {
+        // console.error('_onAppend');
         item.tree = this;
         var self = this;
         item.on('dragstart', function () {
@@ -12370,6 +17661,6 @@ var Tree = /** @class */ (function (_super) {
     return Tree;
 }(container_element_1.ContainerElement));
 exports.Tree = Tree;
-},{"../editor":22,"./container-element":63,"./tree-item":84}]},{},[56])
+},{"../editor":36,"./container-element":91,"./tree-item":116}]},{},[84])
 
 //# sourceMappingURL=vreditor.js.map

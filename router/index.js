@@ -17,6 +17,8 @@ router.get("/api/assets", mock.assets);
 router.get("/api/scenes", mock.scenes);
 router.post("/api/getScene", mock.getScene);
 
+router.get("/api/jiawu", mock.jiawu);
+
 // router.get('/', async ctx => {
 // 	return send(ctx, './public/index.html');
 // });

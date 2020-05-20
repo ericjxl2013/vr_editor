@@ -130,6 +130,13 @@ export class GameObject {
   }
 
 
+  public addMesh(mesh: BABYLON.AbstractMesh): void {
+    // 删除空物体
+    if (this._transform.mesh === null && this._transform.transformNode) {
+      this._transform.transformNode.dispose();
+    }
+    this._transform.mesh = mesh;
+  }
 
   public setActive(value: boolean): void {
 

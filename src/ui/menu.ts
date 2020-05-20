@@ -47,7 +47,7 @@ export class Menu extends ContainerElement {
 
     this.innerElement = document.createElement('div');
     this.innerElement.classList.add('inner');
-    this.elementOverlay.appendChild(this.innerElement);
+    this.element.appendChild(this.innerElement);
 
     // this._index = { };
     // this._hovered = [ ];

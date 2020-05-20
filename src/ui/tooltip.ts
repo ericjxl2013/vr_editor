@@ -1,4 +1,5 @@
 import { ContainerElement } from "./container-element";
+import { TopElementContainer } from "./top";
 
 export class Tooltip extends ContainerElement {
 
@@ -283,7 +284,7 @@ export interface TooltipArgs {
   target?: HTMLElement;
   text?: string;
   align?: string;
-  root?: ContainerElement;
+  root?: TopElementContainer;
   hoverable?: boolean;
   html?: string;
   x?: number;

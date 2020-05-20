@@ -21,6 +21,9 @@ export class Transform {
   public get mesh(): Nullable<BABYLON.AbstractMesh> {
     return this._mesh;
   }
+  public set mesh(val: Nullable<BABYLON.AbstractMesh>) {
+    this._mesh = val;
+  }
 
   public get isMesh(): boolean {
     if (this._mesh) {

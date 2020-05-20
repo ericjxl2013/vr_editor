@@ -28,6 +28,8 @@ export class Tree extends ContainerElement {
     this.element = document.createElement('div');
     this.element.classList.add('ui-tree');
 
+    this.innerElement = this.element;
+
 
     this.elementDrag = document.createElement('div');
     this.elementDrag.classList.add('drag-handle');
@@ -592,6 +594,7 @@ export class Tree extends ContainerElement {
   }
 
   private _onAppend(item: TreeItem): void {
+    // console.error('_onAppend');
     item.tree = this;
 
     let self = this;

@@ -145,7 +145,7 @@ export class TextField extends Element {
     this.elementInput.select();
   }
 
-  public focus(select: boolean): void {
+  public focus(select?: boolean): void {
     this.elementInput.focus();
     if (select) this.elementInput.select();
   }

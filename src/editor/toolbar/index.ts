@@ -1,1 +1,11 @@
 export * from './toolbar-top-control';
+export * from './keeper';
+export * from './toolbar-logo';
+export * from './toolbar-gizmos';
+export * from './toolbar-history';
+export * from './toolbar-help';
+export * from './toolbar-control';
+export * from './toolbar-editor-settings';
+export * from './toolbar-publish';
+
+export * from './toolbar-scene';

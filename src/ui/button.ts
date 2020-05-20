@@ -1,4 +1,5 @@
 import { Element } from "./element";
+import { Tooltip } from "./tooltip";
 
 export class Button extends Element {
 
@@ -12,6 +13,9 @@ export class Button extends Element {
     this._text = val;
     this.element!.innerHTML = this._text;
   }
+
+  public tooltip: Nullable<Tooltip> = null;
+  public op: string = '';
 
 
   public constructor(text?: string) {

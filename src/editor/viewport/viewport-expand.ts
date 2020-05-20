@@ -1,4 +1,4 @@
-import { Panel } from "../../ui";
+import { Panel, TopElementPanel } from "../../ui";
 import { VeryEngine } from "../../engine";
 
 /* 
@@ -7,10 +7,10 @@ import { VeryEngine } from "../../engine";
 export class ViewportExpand {
 
   public constructor() {
-    let panels: Panel[] = [];
-    panels.push(VeryEngine.hierarchyPanel);
-    panels.push(VeryEngine.assetPanel);
-    panels.push(VeryEngine.attributesPanel);
+    let panels: TopElementPanel[] = [];
+    panels.push(VeryEngine.hierarchy);
+    panels.push(VeryEngine.assets);
+    panels.push(VeryEngine.attributes);
 
     let expanded: boolean = false;
 

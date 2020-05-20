@@ -18,8 +18,14 @@ export class Entities {
     // 4.串联Assets结构与UI；
 
     public addRaw(entity_data: any): void {
-        console.log('***entity-data***');
-        console.log(entity_data);
+        // console.log('***entity-data***');
+        // console.log(entity_data);
+
+        // 目标，创建babylon scene资源
+        // Editor模式和Publish模式有何异同？
+        // Editor需要有一个Observer的中间层，需要建立层级关系，需要记录增改删除操作
+        // Publish可以从scene数据直接加载资源即可；
+
         let gameObject = this.createGameObject(entity_data);
 
 
@@ -29,9 +35,52 @@ export class Entities {
 
         // parent
 
-
-
         this.container.addGameObject(gameObject);
+    }
+
+    public addEntity(entity: Observer): void {
+
+    }
+
+
+    private create(entity: Observer): GameObject {
+        
+        let type: string = entity.get('type');
+        type = type.toLowerCase();
+        if(type === 'root') {
+            // 不需要生成
+
+        } else if(type === 'mesh') {
+            // 模型
+
+            // 首先加载数据，生成babylon mesh数据结构
+            // 提取地址，http或者其他方式加载
+            // Http下载，加入回调函数处理，查看babylon默认的处理方式；
+            // scenes数据如何从Assets数据中拿数据，到babylon中间件中寻找缓存
+
+        } else if(type === 'empty') {
+            // 空物体
+
+        } else if(type === 'camera') {
+            // node作为父物体
+
+        } else if(type === 'light') {
+            // node作为父物体
+
+        } else if(type === 'particle') {
+            // 貌似没有相对应的结构
+
+        } else if(type === 'sprite') {
+            // 貌似没有相对应的结构
+
+
+        }
+
+
+        // 根据要求生成GameObject
+        let instance = new GameObject(entity.get('name'));
+
+        return instance;
     }
 
     private createGameObject(entity: any): GameObject {
@@ -40,7 +89,7 @@ export class Entities {
         let instance = new GameObject(entity.name);
         // 设置guid
         instance.guid = entity.resource_id;
-        
+
         // 设置位置
         // 设置角度
         // 设置比例值

@@ -1,11 +1,11 @@
-import { Tooltip, Panel, Element } from "../../ui";
+import { Tooltip, Panel, Element, TopElementContainer, TopElementPanel } from "../../ui";
 import { VeryEngine } from "../../engine";
 
 // 属性参考说明Tooltip
 export class AttributesReference {
 
-  public root: Panel;
-  public attributesPanel: Panel;
+  public root: TopElementContainer;
+  public attributesPanel: TopElementPanel;
 
   public index: { [key: string]: Tooltip } = {};
   public missing: { [key: string]: boolean } = {};
@@ -13,8 +13,8 @@ export class AttributesReference {
 
   public constructor() {
 
-    this.root = VeryEngine.rootPanel;
-    this.attributesPanel = VeryEngine.attributesPanel;
+    this.root = VeryEngine.root;
+    this.attributesPanel = VeryEngine.attributes;
 
     this.init();
   }

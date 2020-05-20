@@ -94,3 +94,21 @@ exports.getScene = async (ctx, next) => {
         return ctx.sendError("0002", "Empty");
     }
 };
+
+
+exports.jiawu = async (ctx, next) => {
+    // 把settings json文件发过去
+    var data;
+    try {
+        data = await readFile("dist/12345/甲午.json");
+    } catch {
+        return ctx.sendError("0002", "No Such File");
+    }
+    if (data) {
+        // console.log('data: ' + data);
+        return ctx.send(JSON.parse(data));
+    } else {
+        console.log("scenes文件为空");
+        return ctx.sendError("0002", "Empty");
+    }
+};

@@ -11,7 +11,7 @@ export class ToolbarTopControl {
     // panel
     var panel = new Panel();
     panel.class!.add('top-controls');
-    VeryEngine.viewPanel.append(panel);
+    VeryEngine.viewportPanel.append(panel);
 
     editor.method('layout.toolbar.launch', function () {
       return panel;
@@ -42,7 +42,7 @@ export class ToolbarTopControl {
       target: buttonExpand.element!,
       text: '最大化',
       align: 'top',
-      root: VeryEngine.rootPanel
+      root: VeryEngine.root
     });
 
 

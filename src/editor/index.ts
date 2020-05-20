@@ -10,3 +10,7 @@ export * from './utility';
 export * from './entity';
 export * from './middleware';
 export * from './initialize-after';
+export * from './localstorage';
+export * from './search';
+export * from './drop';
+export * from './global';

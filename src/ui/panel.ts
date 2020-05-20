@@ -3,8 +3,8 @@ import { Element } from './element';
 
 export class Panel extends ContainerElement {
 
-  private headerElement: Nullable<HTMLElement> = null;
-  private headerElementTitle: Nullable<HTMLElement> = null;
+  public headerElement: Nullable<HTMLElement> = null;
+  public headerElementTitle: Nullable<HTMLElement> = null;
   private _handleElement: Nullable<HTMLElement> = null;
 
   private _resizeEvtMove: any;
