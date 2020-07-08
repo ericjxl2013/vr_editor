@@ -22,7 +22,7 @@ const paths = {
 // );
 
 gulp.task("copy-html", function() {
-  return gulp.src(paths.pages).pipe(gulp.dest("dist/editor/project"));
+  return gulp.src(paths.pages).pipe(gulp.dest("dist/editor"));
 });
 
 // function bundle() {
@@ -51,7 +51,7 @@ gulp.task("default", gulp.parallel("copy-html", () => {
     .pipe(sourcemaps.init({ loadMaps: true }))
     // .pipe(uglify())
     .pipe(sourcemaps.write("./"))
-    .pipe(gulp.dest("dist/editor/project"));
+    .pipe(gulp.dest("dist/editor"));
 }));
 // watchedBrowserify.on("update", bundle);
 // watchedBrowserify.on("log", gutil.log);

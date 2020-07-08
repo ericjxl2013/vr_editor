@@ -4,25 +4,25 @@ export class Scenes {
 
 
         // Create a scene and pass result to callback
-        editor.method('scenes:new', function (name: string, callback: Function) {
-            var data = {
-                projectId: config.project.id,
-                branchId: config.self.branch.id
-            };
+        // editor.method('scenes:new', function (name: string, callback: Function) {
+        //     var data = {
+        //         projectId: config.project.id,
+        //         branchId: config.self.branch.id
+        //     };
 
-            if (name) data.name = name;
+        //     if (name) data.name = name;
 
-            Ajax({
-                url: '{{url.api}}/scenes',
-                auth: true,
-                method: 'POST',
-                data: data
-            })
-                .on('load', function (status: boolean, data: any) {
-                    if (callback)
-                        callback(data);
-                });
-        });
+        //     Ajax({
+        //         url: '{{url.api}}/scenes',
+        //         auth: true,
+        //         method: 'POST',
+        //         data: data
+        //     })
+        //         .on('load', function (status: boolean, data: any) {
+        //             if (callback)
+        //                 callback(data);
+        //         });
+        // });
 
 
     }

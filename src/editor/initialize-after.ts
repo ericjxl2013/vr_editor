@@ -1,5 +1,6 @@
 import { AttributesPanel, AttributesEntity, AttributesReference, AttributesKeeper } from "./attributes";
 import { ToolbarKeeper } from "./toolbar";
+import { ViewportKeeper } from "./viewport/keeper";
 
 
 export class InitializeAfter {
@@ -12,6 +13,9 @@ export class InitializeAfter {
 
     // toolbar
     let toolbar = new ToolbarKeeper();
+
+    // viewport
+    new ViewportKeeper();
 
   }
 

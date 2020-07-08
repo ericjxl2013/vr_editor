@@ -14,3 +14,4 @@ export * from './localstorage';
 export * from './search';
 export * from './drop';
 export * from './global';
+export * from './Initialize-data';

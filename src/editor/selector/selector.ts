@@ -74,8 +74,8 @@ export class Selector {
         var evtChange = false;
         var evtChangeFn = function () {
             evtChange = false;
-            console.log(self.selector.type);
-            console.log(self.selector.array());
+            // console.log(self.selector.type);
+            // console.log(self.selector.array());
             editor.emit('selector:change', self.selector.type, self.selector.array());
         };
 

@@ -39,7 +39,7 @@ export class AssetsContextMenu {
 
         // new asset
         var menuItemNew = new MenuItem({
-            text: 'New Asset',
+            text: '添加资源',
             icon: '&#57632;',
             value: 'new'
         });
@@ -49,7 +49,7 @@ export class AssetsContextMenu {
             'texture': 1,
             'textureatlas': 1,
             'html': 1,
-            'css': 1,
+            'table': 1,
             'shader': 1,
             'scene': 1,
             'json': 1,
@@ -60,7 +60,7 @@ export class AssetsContextMenu {
         var icons: any = {
             'upload': '&#57909;',
             'folder': '&#57657;',
-            'css': '&#57864;',
+            'table': '&#57864;',
             'cubemap': '&#57879;',
             'html': '&#57864;',
             'json': '&#57864;',
@@ -91,17 +91,24 @@ export class AssetsContextMenu {
             SCENE_SETTINGS: '&#57652;'
         };
 
+        // var assets: any = {
+        //     'upload': '上传',
+        //     'folder': '新建文件夹',
+        //     'css': '表格',
+        //     'cubemap': 'CubeMap',
+        //     'html': 'HTML',
+        //     'json': 'JSON',
+        //     'material': '材质',
+        //     'script': 'Script',
+        //     'shader': 'Shader',
+        //     'text': 'Text'
+        // };
+
         var assets: any = {
-            'upload': 'Upload',
-            'folder': 'Folder',
-            'css': 'CSS',
-            'cubemap': 'CubeMap',
-            'html': 'HTML',
-            'json': 'JSON',
-            'material': 'Material',
-            'script': 'Script',
-            'shader': 'Shader',
-            'text': 'Text'
+            'upload': '上传',
+            'folder': '新建文件夹',
+            'table': '表格',
+            'material': '材质'
         };
 
         // if (editor.call('users:hasFlag', 'hasBundles')) {
@@ -225,58 +232,61 @@ export class AssetsContextMenu {
             text: true
         };
         var menuItemReplace = new MenuItem({
-            text: 'Replace',
+            text: '加载',
             icon: ICONS.REPLACE,
             value: 'replace'
         });
         menuItemReplace.on('select', function () {
-            var id = parseInt(currentAsset.get('id'), 10);
+            // console.log(currentAsset)
+            // console.log(currentAsset.origin)
+            editor.call("loadTempModel", currentAsset);
+            // var id = parseInt(currentAsset.get('id'), 10);
+            // console.log(currentAsset.get("name"));
+            // editor.call('picker:asset', {
+            //     type: currentAsset.get('type'),
+            //     currentAsset: currentAsset
+            // });
 
-            editor.call('picker:asset', {
-                type: currentAsset.get('type'),
-                currentAsset: currentAsset
-            });
+            // var evtPick: Nullable<EventHandle> = editor.once('picker:asset', function (asset: Observer) {
+            //     editor.call('assets:replace', currentAsset, asset);
+            //     evtPick = null;
+            // });
 
-            var evtPick: Nullable<EventHandle> = editor.once('picker:asset', function (asset: Observer) {
-                editor.call('assets:replace', currentAsset, asset);
-                evtPick = null;
-            });
-
-            editor.once('picker:asset:close', function () {
-                if (evtPick) {
-                    evtPick.unbind();
-                    evtPick = null;
-                }
-            });
+            // editor.once('picker:asset:close', function () {
+            //     if (evtPick) {
+            //         evtPick.unbind();
+            //         evtPick = null;
+            //     }
+            // });
         });
         menu.append(menuItemReplace);
 
-        var menuItemReplaceTextureToSprite = new MenuItem({
-            text: 'Convert Texture To Sprite',
-            icon: ICONS.SPRITE_ASSET,
-            value: 'replaceTextureToSprite'
-        });
-        menuItemReplaceTextureToSprite.on('select', function () {
-            var id = parseInt(currentAsset.get('id'), 10);
+        // var menuItemReplaceTextureToSprite = new MenuItem({
+        //     text: 'Convert Texture To Sprite',
+        //     icon: ICONS.SPRITE_ASSET,
+        //     value: 'replaceTextureToSprite'
+        // });
+        // menuItemReplaceTextureToSprite.on('select', function () {
+        //     var id = parseInt(currentAsset.get('id'), 10);
 
-            editor.call('picker:asset', {
-                type: 'sprite',
-                currentAsset: currentAsset
-            });
+        //     editor.call('picker:asset', {
+        //         type: 'sprite',
+        //         currentAsset: currentAsset
+        //     });
 
-            var evtPick: Nullable<EventHandle> = editor.once('picker:asset', function (asset: Observer) {
-                editor.call('assets:replaceTextureToSprite', currentAsset, asset);
-                evtPick = null;
-            });
+        //     var evtPick: Nullable<EventHandle> = editor.once('picker:asset', function (asset: Observer) {
+        //         editor.call('assets:replaceTextureToSprite', currentAsset, asset);
+        //         evtPick = null;
+        //     });
 
-            editor.once('picker:asset:close', function () {
-                if (evtPick) {
-                    evtPick.unbind();
-                    evtPick = null;
-                }
-            });
-        });
-        menu.append(menuItemReplaceTextureToSprite);
+        //     editor.once('picker:asset:close', function () {
+        //         if (evtPick) {
+        //             evtPick.unbind();
+        //             evtPick = null;
+        //         }
+        //     });
+        // });
+        // menu.append(menuItemReplaceTextureToSprite);
 
         // extract. Used for source assets.
         var menuItemExtract = new MenuItem({
@@ -310,7 +320,7 @@ export class AssetsContextMenu {
 
         // download
         var menuItemDownload = new MenuItem({
-            text: 'Download',
+            text: '下载',
             icon: ICONS.DOWNLOAD,
             value: 'download'
         });
@@ -321,18 +331,22 @@ export class AssetsContextMenu {
 
         // edit
         var menuItemEdit = new MenuItem({
-            text: 'Edit',
+            text: '编辑',
             icon: ICONS.EDIT,
             value: 'edit'
         });
         menuItemEdit.on('select', function () {
-            editor.call('assets:edit', currentAsset);
+            // editor.call('assets:edit', currentAsset);
+            console.log("编辑表格");
+            editor.call("assets:open-table", currentAsset.get("name"));
+
+            
         });
         menu.append(menuItemEdit);
 
         // duplicate
         var menuItemDuplicate = new MenuItem({
-            text: 'Duplicate',
+            text: '复制',
             icon: ICONS.DUPLICATE,
             value: 'duplicate'
         });
@@ -343,7 +357,7 @@ export class AssetsContextMenu {
 
         // delete
         var menuItemDelete = new MenuItem({
-            text: 'Delete',
+            text: '删除',
             icon: ICONS.DELETE,
             value: 'delete'
         });
@@ -419,7 +433,7 @@ export class AssetsContextMenu {
 
                 // edit
                 if (!currentAsset.get('source') &&
-                    ['html', 'css', 'json', 'text', 'script', 'shader'].indexOf(currentAsset.get('type')) !== -1) {
+                    ['html', 'table', 'json', 'text', 'script', 'shader'].indexOf(currentAsset.get('type')) !== -1) {
                     if (editor.call('selector:type') === 'asset') {
                         var items = editor.call('selector:items');
                         menuItemEdit.hidden =
@@ -486,111 +500,111 @@ export class AssetsContextMenu {
                     }
 
                     // references
-                    var ref = editor.call('assets:used:index')[
-                        currentAsset.get('id')
-                    ];
-                    if (ref && ref.count && ref.ref) {
-                        menuItemReferences.hidden = false;
-                        menuItemReplace.hidden = replaceAvailable[
-                            currentAsset.get('type')
-                        ]
-                            ? false
-                            : true;
-                        menuItemReplaceTextureToSprite.hidden =
-                            !editor.call('users:hasFlag', 'hasTextureToSprite') ||
-                            currentAsset.get('type') !== 'texture';
+                    // var ref = editor.call('assets:used:index')[
+                    //     currentAsset.get('id')
+                    // ];
+                    // if (ref && ref.count && ref.ref) {
+                    //     menuItemReferences.hidden = false;
+                    //     menuItemReplace.hidden = replaceAvailable[
+                    //         currentAsset.get('type')
+                    //     ]
+                    //         ? false
+                    //         : true;
+                    //     menuItemReplaceTextureToSprite.hidden =
+                    //         !editor.call('users:hasFlag', 'hasTextureToSprite') ||
+                    //         currentAsset.get('type') !== 'texture';
 
-                        while (menuItemReferences.innerElement!.firstChild)
-                            (<HTMLElement>menuItemReferences.innerElement!.firstChild).ui.destroy();
+                    //     while (menuItemReferences.innerElement!.firstChild)
+                    //         (<HTMLElement>menuItemReferences.innerElement!.firstChild).ui.destroy();
 
-                        var menuItems: any = [];
+                    //     var menuItems: any = [];
 
-                        var addReferenceItem = function (type: string, id: string) {
-                            var menuItem = new MenuItem();
-                            var item: any = null;
+                    //     var addReferenceItem = function (type: string, id: string) {
+                    //         var menuItem = new MenuItem();
+                    //         var item: any = null;
 
-                            if (type === 'editorSettings') {
-                                menuItem.text = 'Scene Settings';
-                                menuItem.icon = ICONS.SCENE_SETTINGS;
-                                item = editor.call('settings:projectUser');
-                                if (!item) return;
-                            } else {
-                                if (type === 'entity') {
-                                    item = editor.call('entities:get', id);
-                                    menuItem.icon = '&#57734;';
-                                } else if (type === 'asset') {
-                                    item = editor.call('assets:get', id);
-                                    menuItem.icon = icons[item.get('type')] || '';
-                                }
-                                if (!item) return;
-                                menuItem.text = item.get('name');
-                            }
+                    //         if (type === 'editorSettings') {
+                    //             menuItem.text = 'Scene Settings';
+                    //             menuItem.icon = ICONS.SCENE_SETTINGS;
+                    //             item = editor.call('settings:projectUser');
+                    //             if (!item) return;
+                    //         } else {
+                    //             if (type === 'entity') {
+                    //                 item = editor.call('entities:get', id);
+                    //                 menuItem.icon = '&#57734;';
+                    //             } else if (type === 'asset') {
+                    //                 item = editor.call('assets:get', id);
+                    //                 menuItem.icon = icons[item.get('type')] || '';
+                    //             }
+                    //             if (!item) return;
+                    //             menuItem.text = item.get('name');
+                    //         }
 
-                            menuItems.push({
-                                name: menuItem.text,
-                                type: type,
-                                element: menuItem
-                            });
+                    //         menuItems.push({
+                    //             name: menuItem.text,
+                    //             type: type,
+                    //             element: menuItem
+                    //         });
 
-                            menuItem.on('select', function () {
-                                editor.call('selector:set', type, [item]);
+                    //         menuItem.on('select', function () {
+                    //             editor.call('selector:set', type, [item]);
 
-                                var folder = null;
-                                var path = item.get('path') || [];
-                                if (path.length)
-                                    folder = editor.call(
-                                        'assets:get',
-                                        path[path.length - 1]
-                                    );
+                    //             var folder = null;
+                    //             var path = item.get('path') || [];
+                    //             if (path.length)
+                    //                 folder = editor.call(
+                    //                     'assets:get',
+                    //                     path[path.length - 1]
+                    //                 );
 
-                                editor.call('assets:panel:currentFolder', folder);
+                    //             editor.call('assets:panel:currentFolder', folder);
 
-                                // unfold rendering tab
-                                if (type === 'editorSettings') {
-                                    setTimeout(function () {
-                                        editor.call(
-                                            'editorSettings:panel:unfold',
-                                            'rendering'
-                                        );
-                                    }, 0);
-                                }
-                            });
-                        };
+                    //             // unfold rendering tab
+                    //             if (type === 'editorSettings') {
+                    //                 setTimeout(function () {
+                    //                     editor.call(
+                    //                         'editorSettings:panel:unfold',
+                    //                         'rendering'
+                    //                     );
+                    //                 }, 0);
+                    //             }
+                    //         });
+                    //     };
 
-                        for (var key in ref.ref)
-                            addReferenceItem(ref.ref[key].type, key);
+                    //     for (var key in ref.ref)
+                    //         addReferenceItem(ref.ref[key].type, key);
 
-                        var typeSort: any = {
-                            editorSettings: 1,
-                            asset: 2,
-                            entity: 3
-                        };
+                    //     var typeSort: any = {
+                    //         editorSettings: 1,
+                    //         asset: 2,
+                    //         entity: 3
+                    //     };
 
-                        menuItems.sort(function (a: any, b: any) {
-                            if (a.type !== b.type) {
-                                return typeSort[a.type] - typeSort[b.type];
-                            } else {
-                                if (a.name > b.name) {
-                                    return 1;
-                                } else if (a.name < b.name) {
-                                    return -1;
-                                } else {
-                                    return 0;
-                                }
-                            }
-                        });
+                    //     menuItems.sort(function (a: any, b: any) {
+                    //         if (a.type !== b.type) {
+                    //             return typeSort[a.type] - typeSort[b.type];
+                    //         } else {
+                    //             if (a.name > b.name) {
+                    //                 return 1;
+                    //             } else if (a.name < b.name) {
+                    //                 return -1;
+                    //             } else {
+                    //                 return 0;
+                    //             }
+                    //         }
+                    //     });
 
-                        for (var i = 0; i < menuItems.length; i++)
-                            menuItemReferences.append(menuItems[i].element);
-                    } else {
-                        menuItemReferences.hidden = true;
-                        menuItemReplace.hidden = true;
-                        menuItemReplaceTextureToSprite.hidden = true;
-                    }
+                    //     for (var i = 0; i < menuItems.length; i++)
+                    //         menuItemReferences.append(menuItems[i].element);
+                    // } else {
+                    //     menuItemReferences.hidden = true;
+                    //     menuItemReplace.hidden = true;
+                    //     menuItemReplaceTextureToSprite.hidden = true;
+                    // }
                 } else {
                     menuItemReferences.hidden = true;
                     menuItemReplace.hidden = true;
-                    menuItemReplaceTextureToSprite.hidden = true;
+                    // menuItemReplaceTextureToSprite.hidden = true;
                     menuItemReImport.hidden = true;
                     menuItemExtract.hidden =
                         ['scene', 'texture', 'textureatlas'].indexOf(
@@ -607,7 +621,7 @@ export class AssetsContextMenu {
                 menuItemDelete.hidden = true;
                 menuItemReferences.hidden = true;
                 menuItemReplace.hidden = true;
-                menuItemReplaceTextureToSprite.hidden = true;
+                // menuItemReplaceTextureToSprite.hidden = true;
                 menuItemTextureToAtlas.hidden = true;
                 menuItemCreateSprite.hidden = true;
                 menuItemCreateSlicedSprite.hidden = true;

@@ -1,4 +1,4 @@
-import { Editor, Layout, Viewport, HierarchyKeeper, AssetsPanel, InitializeBefore, InitializeAfter, Debug, Tools, AssetsKeeper, Search, Drop } from './editor';
+import { Editor, Layout, Viewport, HierarchyKeeper, AssetsPanel, InitializeBefore, InitializeAfter, Debug, Tools, AssetsKeeper, Search, Drop, InitializeData } from './editor';
 import { Element, Canvas } from './ui';
 import { VeryEngine } from './engine';
 import { Database } from './editor/middleware/offline/database';
@@ -40,7 +40,11 @@ let initializeAfter: InitializeAfter = new InitializeAfter();
 let viewport = new Viewport();
 VeryEngine.viewport = viewport;
 
-Tools.loadBabylon();
+// 初始数据
+let initializeData: InitializeData = new InitializeData();
+
+// TODO
+// Tools.loadBabylon();
 // 加载资源
 
 // 关联资源

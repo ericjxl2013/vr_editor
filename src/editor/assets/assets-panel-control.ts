@@ -12,46 +12,65 @@ export class AssetsPanelControl {
         var menu = new Menu();
         root.append(menu);
 
+        // var assets: any = {
+        //     'upload': {
+        //         title: '上传',
+        //         icon: '&#57909;'
+        //     },
+        //     'folder': {
+        //         title: '新建文件夹',
+        //         icon: '&#57657;'
+        //     },
+        //     'css': {
+        //         title: '表格',
+        //         icon: '&#57864;'
+        //     },
+        //     'cubemap': {
+        //         title: 'CubeMap',
+        //         icon: '&#57879;'
+        //     },
+        //     'html': {
+        //         title: 'HTML',
+        //         icon: '&#57864;'
+        //     },
+        //     'json': {
+        //         title: 'JSON',
+        //         icon: '&#57864;'
+        //     },
+        //     'material': {
+        //         title: '材质',
+        //         icon: '&#57749;'
+        //     },
+        //     'script': {
+        //         title: 'Script',
+        //         icon: '&#57864;'
+        //     },
+        //     'shader': {
+        //         title: 'Shader',
+        //         icon: '&#57864;'
+        //     },
+        //     'text': {
+        //         title: 'Text',
+        //         icon: '&#57864;'
+        //     }
+        // };
+
         var assets: any = {
             'upload': {
-                title: 'Upload',
+                title: '上传',
                 icon: '&#57909;'
             },
             'folder': {
-                title: 'Folder',
+                title: '新建文件夹',
                 icon: '&#57657;'
             },
-            'css': {
-                title: 'CSS',
-                icon: '&#57864;'
-            },
-            'cubemap': {
-                title: 'CubeMap',
-                icon: '&#57879;'
-            },
-            'html': {
-                title: 'HTML',
-                icon: '&#57864;'
-            },
-            'json': {
-                title: 'JSON',
+            'table': {
+                title: '表格',
                 icon: '&#57864;'
             },
             'material': {
-                title: 'Material',
+                title: '材质',
                 icon: '&#57749;'
-            },
-            'script': {
-                title: 'Script',
-                icon: '&#57864;'
-            },
-            'shader': {
-                title: 'Shader',
-                icon: '&#57864;'
-            },
-            'text': {
-                title: 'Text',
-                icon: '&#57864;'
             }
         };
 
@@ -88,6 +107,8 @@ export class AssetsPanelControl {
                         });
                     }
                 } else {
+                    // console.log('assets:create:' + key);
+                    // console.log(args);
                     editor.call('assets:create:' + key, args)
                 }
             });
@@ -163,7 +184,7 @@ export class AssetsPanelControl {
 
         var tooltipDelete = Tooltip.attach({
             target: btnDelete.element!,
-            text: 'Delete Asset',
+            text: '删除资源',
             align: 'bottom',
             root: root
         });
@@ -214,7 +235,7 @@ export class AssetsPanelControl {
 
         var tooltipUp = Tooltip.attach({
             target: btnUp.element!,
-            text: 'Folder Up',
+            text: '上一层',
             align: 'bottom',
             root: root
         });
@@ -230,11 +251,11 @@ export class AssetsPanelControl {
         btnThumbSize.on('click', function () {
             if (assetsGrid.class!.contains('small')) {
                 assetsGrid.class!.remove('small');
-                tooltipThumbSize.html = '<span style="color:#fff">Large</span> / Small';
+                tooltipThumbSize.html = '<span style="color:#fff">大图标</span> / 小图标';
                 editor.call('localStorage:set', 'editor:assets:thumbnail:size', 'large');
             } else {
                 assetsGrid.class!.add('small');
-                tooltipThumbSize.html = 'Large / <span style="color:#fff">Small</span>';
+                tooltipThumbSize.html = '大图标 / <span style="color:#fff">小图标</span>';
                 editor.call('localStorage:set', 'editor:assets:thumbnail:size', 'small');
             }
         });
@@ -250,10 +271,10 @@ export class AssetsPanelControl {
 
         if (size === 'small') {
             assetsGrid.class!.add('small');
-            tooltipThumbSize.html = 'Large / <span style="color:#fff">Small</span>';
+            tooltipThumbSize.html = '大图标 / <span style="color:#fff">小图标</span>';
         } else {
             assetsGrid.class!.remove('small');
-            tooltipThumbSize.html = '<span style="color:#fff">Large</span> / Small';
+            tooltipThumbSize.html = '<span style="color:#fff">大图标</span> / 小图标';
         }
         tooltipThumbSize.class!.add('innactive');
 

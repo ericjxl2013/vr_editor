@@ -31,7 +31,7 @@ export class InitializeBefore {
     let selector = new Selector();
 
     // Websocket
-    let io = new Realtime();
+    // let io = new Realtime();
 
   }
 

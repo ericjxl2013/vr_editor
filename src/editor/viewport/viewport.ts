@@ -99,8 +99,8 @@ export class Viewport {
           // });
     
         });
-    
         */
+        
 
         this._engine.runRenderLoop(() => {
             if (this._canvas.width !== this._canvas.clientWidth) {

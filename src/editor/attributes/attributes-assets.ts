@@ -12,7 +12,7 @@ export class AttributesAssets {
 
         var editableTypes = {
             'script': 1,
-            'css': 1,
+            'table': 1,
             'html': 1,
             'shader': 1,
             'text': 1,

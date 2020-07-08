@@ -144,6 +144,8 @@ export class HierarchyPanel {
     hierarchy.element!.appendChild(rootElement.element!);
     hierarchy.emit('append', rootElement);
 
+
+    /*
     for (let i: number = 0; i < 10; i++) {
       let element1 = new TreeItem({
         text: '物体名' + (i + 1),
@@ -174,7 +176,7 @@ export class HierarchyPanel {
         }
       }
     }
-
+    */
     // element.append();
 
   }

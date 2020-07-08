@@ -144,7 +144,7 @@ export class Tools {
             for (let index = 0, cache = data.skeletons.length; index < cache; index++) {
                 var parsedSkeleton = data.skeletons[index];
                 var skeleton = BABYLON.Skeleton.Parse(parsedSkeleton, VeryEngine.viewScene);
-                skeleton.beginAnimation("bone55Animation", true);
+                skeleton.beginAnimation("Skeleton0", true);
                 // container.skeletons.push(skeleton);
                 // log += (index === 0 ? "\n\tSkeletons:" : "");
                 // log += "\n\t\t" + skeleton.toString(fullDetails);

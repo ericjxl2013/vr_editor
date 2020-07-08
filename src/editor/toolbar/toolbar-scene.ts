@@ -27,6 +27,10 @@ export class ToolbarScene {
             // window.open('/project/' + config.project.id, '_blank');
         });
 
+        editor.method("toolbar.project.set", (name: string) => {
+            projectName.text = name;
+        });
+
         Tooltip.attach({
             target: projectName.element!,
             text: 'Project',
@@ -40,6 +44,10 @@ export class ToolbarScene {
         sceneName.class!.add('scene-name');
         sceneName.renderChanges = false;
         panel.append(sceneName);
+
+        editor.method("toolbar.scene.set", (name: string) => {
+            sceneName.text = name;
+        });
 
         Tooltip.attach({
             target: sceneName.element!,

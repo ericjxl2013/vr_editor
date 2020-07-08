@@ -190,8 +190,8 @@ export class AssetsPanel {
                 evt.stopPropagation();
                 evt.preventDefault();
 
-                if (!editor.call('permissions:write'))
-                    return;
+                // if (!editor.call('permissions:write'))
+                //     return;
 
                 menu.position(evt.clientX + 1, evt.clientY);
                 menu.open = true;
@@ -566,14 +566,14 @@ export class AssetsPanel {
 
         grid.on('deselect', function (item: GridItem) {
 
-            console.error('grid deselect');
+            // console.error('grid deselect');
 
             if (assetsChanged)
                 return;
 
             if (item.asset) {
-                console.error(item);
-                console.error(item.asset);
+                // console.error(item);
+                // console.error(item.asset);
                 editor.call('selector:remove', item.asset);
             }
             // } else if (item.script) {
@@ -1099,8 +1099,8 @@ export class AssetsPanel {
                 evt.preventDefault();
                 evt.stopPropagation();
 
-                if (!editor.call('permissions:write'))
-                    return;
+                // if (!editor.call('permissions:write'))
+                //     return;
 
                 var type = 'asset.' + asset.get('type');
                 var data = {
@@ -1169,12 +1169,12 @@ export class AssetsPanel {
             if (asset.get('source'))
                 item.class!.add('source');
 
-            // TODO
+            // TODO：assets过滤器功能
             // console.log(editor.call('assets:panel:filter:default'));
-            if (!editor.call('assets:panel:filter:default')('asset', asset)) {
-                // console.log('assets:panel:filter:default');
-                item.hidden = true;
-            }
+            // if (!editor.call('assets:panel:filter:default')('asset', asset)) {
+            //     // console.log('assets:panel:filter:default');
+            //     item.hidden = true;
+            // }
 
 
             var fileSize = asset.get('file.size');

@@ -5,7 +5,7 @@ export class AssetsEdit {
     public constructor() {
 
         var types: any = {
-            'css': 1,
+            'table': 1,
             'html': 1,
             'json': 1,
             'script': 1,
