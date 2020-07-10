@@ -28,7 +28,7 @@ export class AssetsCreateTable {
 
         editor.method("assets:open-table", (table_name: string) => {
             console.log(table_name);
-            window.open(window.location.protocol + "//" + window.location.host + "/table?name=" + table_name);
+            window.open(window.location.protocol + "//" + window.location.host + "/table/" + Config.projectID + "?name=" + table_name);
         });
 
     }

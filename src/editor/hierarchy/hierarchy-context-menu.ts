@@ -1,5 +1,6 @@
 import { Panel, MenuItem, Menu, MenuItemArgs, TreeItem } from "../../ui";
 import { Entity } from "../entity";
+import { Observer } from "../../lib";
 
 export class HierarchyContextMenu {
 
@@ -248,13 +249,13 @@ export class HierarchyContextMenu {
     });
 
     // for each entity added
-    editor.on('entities:add', function (item: TreeItem) {
+    editor.on('entities:add', function (item: Observer) {
       // get tree item
-      // var treeItem = editor.call('entities:panel:get', item.get('resource_id'));
-      // if (!treeItem) return;
-      // attach contextmenu event
+      var treeItem = editor.call('entities:panel:get', item.get('resource_id'));
+        if (! treeItem) return;
 
-      item.element!.addEventListener('contextmenu', function (evt: MouseEvent) {
+      // attach contextmenu event
+      treeItem.element!.addEventListener('contextmenu', function (evt: MouseEvent) {
         // console.log("context click: " + item.element!.innerText);
         let openned = editor.call('entities:contextmenu:open', item, evt.clientX, evt.clientY);
 

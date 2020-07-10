@@ -62,8 +62,11 @@ export class InitializeData {
             .then(response => {
                 var data = response.data;
                 if (data.code === "0000") {
-                    console.log(data.data);
-                    Config.scenesData = data.data.scenes;
+                    let lastScene: number = data.data.last;
+                    Config.scenesData = data.data.scenes[lastScene];
+                    console.log(Config.scenesData);
+                    editor.emit('scene:raw', Config.scenesData);
+                    editor.call("toolbar.scene.set", Config.scenesData.name);
                 } else {
                     console.error(data.message);
                 }

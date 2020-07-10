@@ -1,4 +1,5 @@
 import { Button, Tooltip } from "../../ui";
+import { GizmosManager } from "./gizmo-manager";
 
 export class ToolbarGizmos {
 
@@ -13,15 +14,15 @@ export class ToolbarGizmos {
         // create gizmo type buttons
         [{
             icon: '&#57617;',
-            tooltip: 'Translate',
+            tooltip: '移动',
             op: 'translate'
         }, {
             icon: '&#57619;',
-            tooltip: 'Rotate',
+            tooltip: '旋转',
             op: 'rotate'
         }, {
             icon: '&#57618;',
-            tooltip: 'Scale',
+            tooltip: '缩放',
             op: 'scale'
         }, {
             icon: '&#57666;',
@@ -46,6 +47,14 @@ export class ToolbarGizmos {
                 activeGizmo!.tooltip!.class!.remove('innactive');
 
                 editor.call('gizmo:type', button.op);
+
+                if (button.op === 'translate') {
+                    GizmosManager.setMode(0);
+                } else if (button.op === 'rotate') {
+                    GizmosManager.setMode(1);
+                } else {
+                    GizmosManager.setMode(2);
+                }
             });
 
             toolbar.append(button);

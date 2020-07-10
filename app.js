@@ -51,7 +51,7 @@ const existsFile = (url) => {
 
 // 路由前处理，静态服务器功能
 app.use(async (ctx, next) => {
-    // console.log(ctx.path);
+    console.log(ctx.path);
     // if ("/editor/project/12345" === ctx.path) {
     //   return send(ctx, "./dist/editor/index.html");
     // } else
@@ -88,6 +88,27 @@ app.use(async (ctx, next) => {
     } else if (ctx.path.startsWith("/table")) {
         // 404.html
         return send(ctx, "./dist/editor/table.html");
+    } else if (ctx.path.startsWith("/publish")) {
+        // 静态资源
+        if (ctx.path.indexOf(".") > -1) {
+            // 其他静态资源
+            await send(ctx, "/dist" + ctx.path);
+        } else {
+            // 权限和资源判断
+            var projectID = ctx.path.substring(9);
+            global.projectID = projectID;
+            var exists = await existsFile("dist/database/projects.json");
+            if (exists) {
+                var dataFile = await readFile("dist/database/projects.json");
+                dataFile = JSON.parse(dataFile);
+                if (dataFile[projectID] !== undefined) {
+                    // index.html
+                    return send(ctx, "./dist/publish/index.html");
+                }
+            }
+            // 404.html
+            return send(ctx, "./dist/editor/404.html");
+        }
     } else {
         await send(ctx, "/dist" + ctx.path);
     }

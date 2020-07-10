@@ -39,6 +39,8 @@ export class Observer extends Events {
   public history!: History;
   private sync!: History;
 
+  public node: any;
+
   // entity, assets, components: script, 一般components, selector, history
   public constructor(data: any, options?: any) {
     super();

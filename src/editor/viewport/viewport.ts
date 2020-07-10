@@ -1,6 +1,6 @@
 import { Canvas } from '../../ui';
 import { VeryEngine } from '../../engine';
-import { ToolbarTopControl } from '../toolbar';
+import { ToolbarTopControl, GizmosManager } from '../toolbar';
 import { ViewportExpand } from './viewport-expand';
 
 export class Viewport {
@@ -22,19 +22,19 @@ export class Viewport {
 
 
         // TODO: 设定相机
-        var camera = new BABYLON.ArcRotateCamera("MainCamera", 0, 0, 10, new BABYLON.Vector3(0, 0, 0), this._scene);
+        var camera = new BABYLON.ArcRotateCamera("Default", 0, 0, 10, new BABYLON.Vector3(0, 0, 0), this._scene);
         camera.setPosition(new BABYLON.Vector3(20, 200, 400));
         camera.attachControl(this._canvas, true);
         camera.lowerBetaLimit = 0.1;
         camera.upperBetaLimit = (Math.PI / 2) * 0.99;
         camera.lowerRadiusLimit = 150;
-    
+
 
         // 加载过度动画开
         // engine.loadingScreen.hideLoadingUI();
         // engine.displayLoadingUI();
 
-        let inputMap: { [key: string]: boolean } = {};
+        // let inputMap: { [key: string]: boolean } = {};
 
         // TODO: 加载scene.babylon场景文件，当前为默认
         // 默认Editor场景，加载保存的某一个场景资源
@@ -100,7 +100,7 @@ export class Viewport {
     
         });
         */
-        
+
 
         this._engine.runRenderLoop(() => {
             if (this._canvas.width !== this._canvas.clientWidth) {
@@ -108,7 +108,9 @@ export class Viewport {
             }
 
             if (this._scene) {
-                this._scene.render();
+                if (this._scene.activeCamera) {
+                    this._scene.render();
+                }
             }
 
             // if (this._showFps) {
@@ -160,7 +162,7 @@ export class Viewport {
         this._scene = new BABYLON.Scene(this._engine);
         VeryEngine.viewScene = this._scene;
         this._scene.clearColor = new BABYLON.Color4(0, 0, 0, 1);
-
+        GizmosManager.init(this._scene);
     }
 
 

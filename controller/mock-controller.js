@@ -217,7 +217,13 @@ exports.createProject = async (ctx, next) => {
         "dist/projects/" + projectID + "/scenes.json",
         JSON.stringify(sceneData)
     );
-
+    // 创建table数据
+    var tableData = await readFile("dist/standard/tableTest.json");
+    await writeFile(
+        "dist/projects/" + projectID + "/tableTest.json",
+        tableData
+    );
+    
     return ctx.send(
         dataFile[global.mockUserName]["projects"][
             dataFile[global.mockUserName]["projects"].length - 1
@@ -317,14 +323,17 @@ exports.jiawu = async (ctx, next) => {
     }
 };
 
-
 exports.getProject = async (ctx, next) => {
     var data = ctx.request.body;
     // console.log("getProject: " + data);
     var projectID = data.projectID;
-    var exists = await existsFile("dist/projects/" + projectID + "/project.json");
-    if(exists) {
-        var fileData = await readFile("dist/projects/" + projectID + "/project.json");
+    var exists = await existsFile(
+        "dist/projects/" + projectID + "/project.json"
+    );
+    if (exists) {
+        var fileData = await readFile(
+            "dist/projects/" + projectID + "/project.json"
+        );
         return ctx.send(JSON.parse(fileData));
     } else {
         return ctx.sendError("0002", projectID + "/project.json文件无法找到！");
@@ -334,9 +343,13 @@ exports.getProject = async (ctx, next) => {
 exports.getAssets = async (ctx, next) => {
     var data = ctx.request.body;
     var projectID = data.projectID;
-    var exists = await existsFile("dist/projects/" + projectID + "/assets.json");
-    if(exists) {
-        var fileData = await readFile("dist/projects/" + projectID + "/assets.json");
+    var exists = await existsFile(
+        "dist/projects/" + projectID + "/assets.json"
+    );
+    if (exists) {
+        var fileData = await readFile(
+            "dist/projects/" + projectID + "/assets.json"
+        );
         return ctx.send(JSON.parse(fileData));
     } else {
         return ctx.sendError("0002", projectID + "/assets.json文件无法找到！");
@@ -346,12 +359,15 @@ exports.getAssets = async (ctx, next) => {
 exports.getScenes = async (ctx, next) => {
     var data = ctx.request.body;
     var projectID = data.projectID;
-    var exists = await existsFile("dist/projects/" + projectID + "/scenes.json");
-    if(exists) {
-        var fileData = await readFile("dist/projects/" + projectID + "/scenes.json");
+    var exists = await existsFile(
+        "dist/projects/" + projectID + "/scenes.json"
+    );
+    if (exists) {
+        var fileData = await readFile(
+            "dist/projects/" + projectID + "/scenes.json"
+        );
         return ctx.send(JSON.parse(fileData));
     } else {
         return ctx.sendError("0002", projectID + "/scenes.json文件无法找到！");
     }
 };
-

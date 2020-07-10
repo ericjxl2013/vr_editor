@@ -25,6 +25,7 @@ export class TreeItem extends Element {
     public entity!: Observer;
 
     public asset: any;
+    public users: any;
 
     public get selected(): boolean {
         return this.class!.contains('selected');

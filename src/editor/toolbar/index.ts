@@ -9,3 +9,5 @@ export * from './toolbar-editor-settings';
 export * from './toolbar-publish';
 
 export * from './toolbar-scene';
+
+export * from './gizmo-manager';

@@ -28,14 +28,13 @@ router.post("/api/getProject", mock.getProject);
 router.post("/api/getAssets", mock.getAssets);
 router.post("/api/getScenes", mock.getScenes);
 
-
 // upload
 router.post("/api/upload", mockUpload.upload);
 
+router.post("/api/addScene", mockUpload.addScene);
+
 // table
 router.get("/api/table/acquire", mockTable.acquire);
-router.post('/api/table/commit', mockTable.commit);
-
-
+router.post("/api/table/commit", mockTable.commit);
 
 module.exports = router;

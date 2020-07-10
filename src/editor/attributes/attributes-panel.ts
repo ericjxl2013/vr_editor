@@ -1,6 +1,7 @@
 import { Panel, Label, Progress, Element, TextField, Button, TextAreaField, Slider, NumberField, Checkbox, ColorField, ImageField, Code, SelectField, TopElementPanel } from "../../ui";
 import { VeryEngine } from "../../engine";
 import { Observer, EventHandle } from "../../lib";
+import { GizmosManager } from "../toolbar";
 
 export class AttributesPanel {
 
@@ -726,6 +727,7 @@ export class AttributesPanel {
             for (let i = 0; i < items.length; i++) {
                 // TODO：当前item为空
                 console.error(items[i]);
+                GizmosManager.attach(items[i].node);
                 inspectedItems.push(items[i].once('destroy', function () {
                     editor.call('attributes:clear');
                 }));

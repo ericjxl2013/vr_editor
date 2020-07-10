@@ -159,11 +159,12 @@ exports.upload = async (ctx, next) => {
                     projectID: projectID,
                     hash: file.hash,
                 },
-                path: []
+                path: [],
             };
 
-            if(assetFields.type === "texture") {
-                assetData["thumbnails"] = "/projects/" + projectID + "/assets/" + file.name;
+            if (assetFields.type === "texture") {
+                assetData["thumbnails"] =
+                    "/projects/" + projectID + "/assets/" + file.name;
             }
 
             // TODO: 异步读写文件，文件信息出错
@@ -174,8 +175,10 @@ exports.upload = async (ctx, next) => {
             if (assetFile[assetID] === undefined) {
                 assetFile[assetID] = assetData;
             }
-            fs.writeFileSync("dist/projects/" + projectID + "/assets.json", JSON.stringify(assetFile));
-            
+            fs.writeFileSync(
+                "dist/projects/" + projectID + "/assets.json",
+                JSON.stringify(assetFile)
+            );
         } else {
             for (var i = 0; i < file.length; i++) {
                 var newpath =
@@ -193,4 +196,21 @@ exports.upload = async (ctx, next) => {
 
     // await next();
     return ctx.send(assetData);
+};
+
+exports.addScene = async (ctx, next) => {
+    var data = ctx.request.body;
+    var projectID = data.projectID;
+    var newData = data.entities;
+    var oldData = await readFile("dist/projects/" + projectID + "/scenes.json");
+    oldData = JSON.parse(oldData);
+    for (var key in newData) {
+        oldData.scenes[0].entities[key] = newData[key];
+    }
+    if(data.path1 && data.path2) {
+        oldData.scenes[0].path1 = data.path1;
+        oldData.scenes[0].path2 = data.path2;
+    }
+    await writeFile("dist/projects/" + projectID + "/scenes.json", JSON.stringify(oldData));
+    return ctx.send(oldData);
 };

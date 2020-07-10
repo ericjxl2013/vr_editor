@@ -319,8 +319,11 @@ var InitializeData = /** @class */ (function () {
             .then(function (response) {
             var data = response.data;
             if (data.code === "0000") {
-                console.log(data.data);
-                global_1.Config.scenesData = data.data.scenes;
+                var lastScene = data.data.last;
+                global_1.Config.scenesData = data.data.scenes[lastScene];
+                console.log(global_1.Config.scenesData);
+                editor.emit('scene:raw', global_1.Config.scenesData);
+                editor.call("toolbar.scene.set", global_1.Config.scenesData.name);
             }
             else {
                 console.error(data.message);
@@ -334,7 +337,7 @@ var InitializeData = /** @class */ (function () {
     return InitializeData;
 }());
 exports.InitializeData = InitializeData;
-},{"./global":33}],4:[function(require,module,exports){
+},{"./global":37}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsContextMenu = void 0;
@@ -930,7 +933,7 @@ var AssetsContextMenu = /** @class */ (function () {
     return AssetsContextMenu;
 }());
 exports.AssetsContextMenu = AssetsContextMenu;
-},{"../../engine":84,"../../ui":103}],5:[function(require,module,exports){
+},{"../../engine":89,"../../ui":108}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsCreateFolder = void 0;
@@ -961,7 +964,7 @@ var AssetsCreateFolder = /** @class */ (function () {
     return AssetsCreateFolder;
 }());
 exports.AssetsCreateFolder = AssetsCreateFolder;
-},{"../global":33}],6:[function(require,module,exports){
+},{"../global":37}],6:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsCreateTable = void 0;
@@ -989,13 +992,13 @@ var AssetsCreateTable = /** @class */ (function () {
         });
         editor.method("assets:open-table", function (table_name) {
             console.log(table_name);
-            window.open(window.location.protocol + "//" + window.location.host + "/table?name=" + table_name);
+            window.open(window.location.protocol + "//" + window.location.host + "/table/" + global_1.Config.projectID + "?name=" + table_name);
         });
     }
     return AssetsCreateTable;
 }());
 exports.AssetsCreateTable = AssetsCreateTable;
-},{"../global":33}],7:[function(require,module,exports){
+},{"../global":37}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsDrop = void 0;
@@ -1400,7 +1403,7 @@ var AssetsFilter = /** @class */ (function () {
     return AssetsFilter;
 }());
 exports.AssetsFilter = AssetsFilter;
-},{"../../engine":84,"../../ui":103}],9:[function(require,module,exports){
+},{"../../engine":89,"../../ui":108}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsPanelControl = void 0;
@@ -1681,7 +1684,7 @@ var AssetsPanelControl = /** @class */ (function () {
     return AssetsPanelControl;
 }());
 exports.AssetsPanelControl = AssetsPanelControl;
-},{"../../engine":84,"../../ui":103}],10:[function(require,module,exports){
+},{"../../engine":89,"../../ui":108}],10:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsPanel = void 0;
@@ -2967,7 +2970,7 @@ var AssetsPanel = /** @class */ (function () {
     return AssetsPanel;
 }());
 exports.AssetsPanel = AssetsPanel;
-},{"../../engine":84,"../../ui":103,"../utility":73}],11:[function(require,module,exports){
+},{"../../engine":89,"../../ui":108,"../utility":78}],11:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsPreview = void 0;
@@ -2996,13 +2999,13 @@ var AssetsStore = /** @class */ (function () {
         btnStore.class.add('store');
         assetsPanel.header.append(btnStore);
         btnStore.on('click', function () {
-            window.open('https://store.playcanvas.com/', '_blank');
+            window.open('http://www.veryengine.cn/', '_blank');
         });
     }
     return AssetsStore;
 }());
 exports.AssetsStore = AssetsStore;
-},{"../../engine":84,"../../ui":103}],13:[function(require,module,exports){
+},{"../../engine":89,"../../ui":108}],13:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsSync = void 0;
@@ -3098,7 +3101,7 @@ var AssetsSync = /** @class */ (function () {
     return AssetsSync;
 }());
 exports.AssetsSync = AssetsSync;
-},{"../../lib":88}],14:[function(require,module,exports){
+},{"../../lib":93}],14:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsUpload = void 0;
@@ -3449,7 +3452,7 @@ var AssetsUpload = /** @class */ (function () {
     return AssetsUpload;
 }());
 exports.AssetsUpload = AssetsUpload;
-},{"../../engine":84,"../../lib":88,"../global":33,"../utility":73}],15:[function(require,module,exports){
+},{"../../engine":89,"../../lib":93,"../global":37,"../utility":78}],15:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Assets = void 0;
@@ -3576,7 +3579,7 @@ var Assets = /** @class */ (function () {
     return Assets;
 }());
 exports.Assets = Assets;
-},{"../../lib":88}],16:[function(require,module,exports){
+},{"../../lib":93}],16:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -3892,7 +3895,7 @@ var AttributeAssetsTexture = /** @class */ (function () {
     return AttributeAssetsTexture;
 }());
 exports.AttributeAssetsTexture = AttributeAssetsTexture;
-},{"../../../ui":103}],19:[function(require,module,exports){
+},{"../../../ui":108}],19:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AttributesAssets = void 0;
@@ -4150,7 +4153,7 @@ var AttributesAssets = /** @class */ (function () {
     return AttributesAssets;
 }());
 exports.AttributesAssets = AttributesAssets;
-},{"../../ui":103}],20:[function(require,module,exports){
+},{"../../ui":108}],20:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AttributesFieldArgs = exports.AttributesEntity = void 0;
@@ -4314,6 +4317,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AttributesPanel = void 0;
 var ui_1 = require("../../ui");
 var engine_1 = require("../../engine");
+var toolbar_1 = require("../toolbar");
 var AttributesPanel = /** @class */ (function () {
     function AttributesPanel() {
         // private inspectedItems: EventHandle[] = [];
@@ -4926,6 +4930,7 @@ var AttributesPanel = /** @class */ (function () {
             for (var i = 0; i < items.length; i++) {
                 // TODO：当前item为空
                 console.error(items[i]);
+                toolbar_1.GizmosManager.attach(items[i].node);
                 inspectedItems.push(items[i].once('destroy', function () {
                     editor.call('attributes:clear');
                 }));
@@ -4947,7 +4952,7 @@ var AttributesPanel = /** @class */ (function () {
     return AttributesPanel;
 }());
 exports.AttributesPanel = AttributesPanel;
-},{"../../engine":84,"../../ui":103}],23:[function(require,module,exports){
+},{"../../engine":89,"../../ui":108,"../toolbar":61}],23:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AttributesReference = void 0;
@@ -5084,7 +5089,7 @@ var AttributesReference = /** @class */ (function () {
     return AttributesReference;
 }());
 exports.AttributesReference = AttributesReference;
-},{"../../engine":84,"../../ui":103}],24:[function(require,module,exports){
+},{"../../engine":89,"../../ui":108}],24:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -5524,16 +5529,58 @@ var Editor = /** @class */ (function (_super) {
     return Editor;
 }(lib_1.Events));
 exports.Editor = Editor;
-},{"../lib":88}],28:[function(require,module,exports){
+},{"../lib":93}],28:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Entities = void 0;
 var middleware_1 = require("../middleware");
+var lib_1 = require("../../lib");
 var Entities = /** @class */ (function () {
     function Entities() {
         this.lists = [];
         this._indexed = {};
         this.container = new middleware_1.MiddleContainer();
+        var entities = new lib_1.ObserverList({
+            index: 'resource_id',
+            id: 'resource_id'
+        });
+        var entityRoot = null;
+        // on adding
+        entities.on('add', function (entity) {
+            editor.emit('entities:add', entity, entity === entityRoot);
+        });
+        // on removing
+        entities.on('remove', function (entity) {
+            editor.emit('entities:remove', entity);
+            entity.destroy();
+            // entity.entity = null;
+        });
+        // allow adding entity
+        editor.method('entities:add', function (entity) {
+            if (entity.get('root'))
+                entityRoot = entity;
+            entities.add(entity);
+        });
+        // allow remove entity
+        editor.method('entities:remove', function (entity) {
+            entities.remove(entity);
+        });
+        // remove all entities
+        editor.method('entities:clear', function () {
+            entities.clear();
+        });
+        // get entity
+        editor.method('entities:get', function (resourceId) {
+            return entities.get(resourceId);
+        });
+        // list entities
+        editor.method('entities:list', function () {
+            return entities.array();
+        });
+        // get root entity
+        editor.method('entities:root', function () {
+            return entityRoot;
+        });
     }
     // 1.建立基本的数据格式；
     // 2.串联hierarchy，包括基本的菜单；
@@ -5615,49 +5662,257 @@ var Entities = /** @class */ (function () {
     return Entities;
 }());
 exports.Entities = Entities;
-},{"../middleware":49}],29:[function(require,module,exports){
+},{"../../lib":93,"../middleware":53}],29:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.EntityCreate = void 0;
+var lib_1 = require("../../lib");
+var utility_1 = require("../utility");
+var EntityCreate = /** @class */ (function () {
+    function EntityCreate() {
+        var createNewEntityData = function (defaultData, parentResourceId) {
+            var entityData = {
+                name: defaultData.name || "空物体",
+                tags: [],
+                enabled: true,
+                resource_id: defaultData.resource_id || utility_1.GUID.create(),
+                parent: parentResourceId,
+                children: Array(),
+                position: defaultData.position || [0, 0, 0],
+                rotation: defaultData.rotation || [0, 0, 0],
+                scale: defaultData.scale || [1, 1, 1],
+                // components: defaultData.components || {},
+                // __postCreationCallback: defaultData.postCreationCallback,
+                root: false,
+                type: defaultData.type,
+                asset: defaultData.asset || ""
+            };
+            // if (defaultData.children) {
+            //     for (var i = 0; i < defaultData.children.length; i++) {
+            //         var childEntityData = createNewEntityData(defaultData.children[i], entityData.resource_id);
+            //         entityData.children.push(childEntityData);
+            //     }
+            // }
+            return entityData;
+        };
+        editor.method("entity:new:babylon", function (defaultData) {
+            defaultData = defaultData || {};
+            // var parent = defaultData.parent;
+            // var parent = editor.call("entities:root");
+            // if (parent === "" || parent === undefined) {
+            //     parent = editor.call("entities:root").get("resource_id");
+            // }
+            // console.log(editor.call("entities:root"));
+            // console.log(defaultData.parent);
+            // console.log(defaultData);
+            // var data = createNewEntityData(defaultData, parent.get("resource_id"));
+            // create new Entity data
+            var entity = new lib_1.Observer(defaultData);
+            editor.call('entities:add', entity);
+            // editor.call("entities:addEntity", entity, parent, !defaultData.noSelect);
+            return entity;
+        });
+        editor.method('entities:new', function (defaultData) {
+            // get root if parent is null
+            defaultData = defaultData || {};
+            var parent = defaultData.parent || editor.call('entities:root');
+            var data = createNewEntityData(defaultData, parent.get('resource_id'));
+            var selectorType, selectorItems;
+            if (!defaultData.noHistory) {
+                selectorType = editor.call('selector:type');
+                selectorItems = editor.call('selector:items');
+                if (selectorType === 'entity') {
+                    for (var i = 0; i < selectorItems.length; i++)
+                        selectorItems[i] = selectorItems[i].get('resource_id');
+                }
+            }
+            // create new Entity data
+            var entity = new lib_1.Observer(data);
+            editor.call('entities:addEntity', entity, parent, !defaultData.noSelect);
+            // history
+            if (!defaultData.noHistory) {
+                var resourceId = entity.get('resource_id');
+                var parentId = parent.get('resource_id');
+                editor.call('history:add', {
+                    name: 'new entity ' + resourceId,
+                    undo: function () {
+                        var entity = editor.call('entities:get', resourceId);
+                        if (!entity)
+                            return;
+                        editor.call('entities:removeEntity', entity);
+                        if (selectorType === 'entity' && selectorItems.length) {
+                            var items = [];
+                            for (var i = 0; i < selectorItems.length; i++) {
+                                var item = editor.call('entities:get', selectorItems[i]);
+                                if (item)
+                                    items.push(item);
+                            }
+                            if (items.length) {
+                                editor.call('selector:history', false);
+                                editor.call('selector:set', selectorType, items);
+                                editor.once('selector:change', function () {
+                                    editor.call('selector:history', true);
+                                });
+                            }
+                        }
+                    },
+                    redo: function () {
+                        var parent = editor.call('entities:get', parentId);
+                        if (!parent)
+                            return;
+                        var entity = new lib_1.Observer(data);
+                        editor.call('entities:addEntity', entity, parent, true);
+                    }
+                });
+            }
+            return entity;
+        });
+    }
+    return EntityCreate;
+}());
+exports.EntityCreate = EntityCreate;
+},{"../../lib":93,"../utility":78}],30:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.EntityEdit = void 0;
+var EntityEdit = /** @class */ (function () {
+    function EntityEdit() {
+        var childToParent = {};
+        var addEntity = function (entity, parent, select, ind, entityReferencesMap) {
+            entityReferencesMap = entityReferencesMap || {};
+            ind = ind || 0;
+            childToParent[entity.get('resource_id')] = parent.get('resource_id');
+            var children = entity.get('children');
+            if (children.length)
+                entity.set('children', []);
+            // call add event
+            editor.call('entities:add', entity);
+            console.error(entity);
+            // shareDb
+            // editor.call('realtime:scene:op', {
+            //     p: ['entities', entity.get('resource_id')],
+            //     oi: entity.origin
+            // });
+            // this is necessary for the entity to be added to the tree view
+            // parent.history.enabled = false;
+            // parent.insert('children', entity.get('resource_id'), ind);
+            // parent.history.enabled = true;
+            // if (select) {
+            //     setTimeout(function () {
+            //         editor.call('selector:history', false);
+            //         editor.call('selector:set', 'entity', [entity]);
+            //         editor.once('selector:change', function () {
+            //             editor.call('selector:history', true);
+            //         });
+            //     }, 0);
+            // }
+            // add children too
+            // children.forEach(function (childIdOrData) {
+            //     var data;
+            //     // If we've been provided an id, we're re-creating children from the deletedCache
+            //     if (typeof childIdOrData === 'string') {
+            //         data = deletedCache[childIdOrData];
+            //         if (!data) {
+            //             return;
+            //         }
+            //         // If we've been provided an object, we're creating children for a new entity
+            //     } else if (typeof childIdOrData === 'object') {
+            //         data = childIdOrData;
+            //     } else {
+            //         throw new Error('Unhandled childIdOrData format');
+            //     }
+            //     var child = new Observer(data);
+            //     addEntity(child, entity, undefined, undefined, entityReferencesMap);
+            // });
+            // Hook up any entity references which need to be pointed to this newly created entity
+            // (happens when addEntity() is being called during the undoing of a deletion). In order
+            // to force components to respond to the setter call even when they are running in other
+            // tabs or in the Launch window, we unfortunately have to use a setTimeout() hack :(
+            var guid = entity.get('resource_id');
+            // First set all entity reference fields targeting this guid to null
+            // updateEntityReferenceFields(entityReferencesMap, guid, null);
+            // setTimeout(function () {
+            //     // Then update the same fields to target the guid again
+            //     updateEntityReferenceFields(entityReferencesMap, guid, guid);
+            // }, 0);
+            // if (entity.get('__postCreationCallback')) {
+            //     entity.get('__postCreationCallback')(entity);
+            // }
+        };
+        editor.method('entities:addEntity', addEntity);
+    }
+    return EntityEdit;
+}());
+exports.EntityEdit = EntityEdit;
+},{}],31:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EntityLoad = void 0;
-var entities_1 = require("./entities");
 var lib_1 = require("../../lib");
+var ui_1 = require("../../ui");
 var EntityLoad = /** @class */ (function () {
+    // private _entities: Entities = new Entities();
     function EntityLoad() {
         this.loadedEntities = false;
-        this._entities = new entities_1.Entities();
+        var hierarchyOverlay = new ui_1.TopElementContainer({
+            flex: true
+        });
+        hierarchyOverlay.class.add('progress-overlay');
+        editor.call('layout.hierarchy').append(hierarchyOverlay);
+        var p = new ui_1.Progress();
+        p.on('progress:100', function () {
+            hierarchyOverlay.hidden = true;
+        });
+        hierarchyOverlay.append(p);
+        p.hidden = true;
+        var loadedEntities = false;
+        editor.method('entities:loaded', function () {
+            return loadedEntities;
+        });
+        editor.on('scene:raw', function (data) {
+            // editor.call('selector:clear');
+            // editor.call('entities:clear');
+            // editor.call('attributes:clear');
+            // console.log(data);
+            var total = Object.keys(data.entities).length;
+            var i = 0;
+            // list
+            for (var key in data.entities) {
+                editor.call('entities:add', new lib_1.Observer(data.entities[key]));
+                p.progress = (++i / total) * 0.8 + 0.1;
+                if (!data.entities[key].root && data.entities[key].asset === "") {
+                    editor.call("load:blue", data.entities[key].type, data.entities[key].property);
+                }
+            }
+            p.progress = 1;
+            loadedEntities = true;
+            editor.emit('entities:load');
+        });
+        editor.call('attributes:clear');
+        editor.on('scene:unload', function () {
+            editor.call('entities:clear');
+            editor.call('attributes:clear');
+        });
+        editor.on('scene:beforeload', function () {
+            hierarchyOverlay.hidden = false;
+            p.hidden = false;
+            p.progress = 0.1;
+        });
     }
-    EntityLoad.prototype.scene_raw = function (row_data) {
-        // 解析entity
-        // 清空
-        // editor.call('selector:clear');
-        // editor.call('entities:clear');
-        // editor.call('attributes:clear');
-        // Loader.append(row_data);
-        // 加载进度条计算
-        var total = Object.keys(row_data.entities).length;
-        var i = 0;
-        // list 挨个解析
-        for (var key in row_data.entities) {
-            // 是否需要加入一个中间结构
-            this._entities.addRaw(row_data.entities[key]);
-            var entity = new lib_1.Observer(row_data.entities[key]);
-            // debug.warn(entity.get('name'));
-            // debug.warn(entity.get('resource_id'));
-            // if (entity.has('components.rigidbody')) {
-            //     debug.warn(entity.get('components.rigidbody.type'));
-            // }
-            // editor.call('entities:add', new Observer(data.entities[key]));
-            // p.progress = (++i / total) * 0.8 + 0.1;
-        }
-        // p.progress = 1;
-        this.loadedEntities = true;
-        // 解析完成，其他面板设置
-        editor.emit('entities:load');
-    };
     return EntityLoad;
 }());
 exports.EntityLoad = EntityLoad;
-},{"../../lib":88,"./entities":28}],30:[function(require,module,exports){
+},{"../../lib":93,"../../ui":108}],32:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.EntitySync = void 0;
+var EntitySync = /** @class */ (function () {
+    function EntitySync() {
+    }
+    return EntitySync;
+}());
+exports.EntitySync = EntitySync;
+},{}],33:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Entity = void 0;
@@ -5669,7 +5924,7 @@ var Entity = /** @class */ (function () {
     return Entity;
 }());
 exports.Entity = Entity;
-},{}],31:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -5685,7 +5940,31 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./entity"), exports);
 __exportStar(require("./entities"), exports);
 __exportStar(require("./entity-load"), exports);
-},{"./entities":28,"./entity":30,"./entity-load":29}],32:[function(require,module,exports){
+__exportStar(require("./entity-create"), exports);
+__exportStar(require("./entity-sync"), exports);
+__exportStar(require("./entity-edit"), exports);
+__exportStar(require("./keeper"), exports);
+},{"./entities":28,"./entity":33,"./entity-create":29,"./entity-edit":30,"./entity-load":31,"./entity-sync":32,"./keeper":35}],35:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.EntityKeeper = void 0;
+var entity_load_1 = require("./entity-load");
+var entities_1 = require("./entities");
+var entity_create_1 = require("./entity-create");
+var entity_sync_1 = require("./entity-sync");
+var entity_edit_1 = require("./entity-edit");
+var EntityKeeper = /** @class */ (function () {
+    function EntityKeeper() {
+        new entities_1.Entities();
+        new entity_edit_1.EntityEdit();
+        new entity_create_1.EntityCreate();
+        new entity_load_1.EntityLoad();
+        new entity_sync_1.EntitySync();
+    }
+    return EntityKeeper;
+}());
+exports.EntityKeeper = EntityKeeper;
+},{"./entities":28,"./entity-create":29,"./entity-edit":30,"./entity-load":31,"./entity-sync":32}],36:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Config = void 0;
@@ -5697,7 +5976,7 @@ var Config = /** @class */ (function () {
     return Config;
 }());
 exports.Config = Config;
-},{}],33:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -5711,7 +5990,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./config"), exports);
-},{"./config":32}],34:[function(require,module,exports){
+},{"./config":36}],38:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HierarchyContextMenu = void 0;
@@ -5855,10 +6134,11 @@ var HierarchyContextMenu = /** @class */ (function () {
         // for each entity added
         editor.on('entities:add', function (item) {
             // get tree item
-            // var treeItem = editor.call('entities:panel:get', item.get('resource_id'));
-            // if (!treeItem) return;
+            var treeItem = editor.call('entities:panel:get', item.get('resource_id'));
+            if (!treeItem)
+                return;
             // attach contextmenu event
-            item.element.addEventListener('contextmenu', function (evt) {
+            treeItem.element.addEventListener('contextmenu', function (evt) {
                 // console.log("context click: " + item.element!.innerText);
                 var openned = editor.call('entities:contextmenu:open', item, evt.clientX, evt.clientY);
                 if (openned) {
@@ -5871,7 +6151,7 @@ var HierarchyContextMenu = /** @class */ (function () {
     return HierarchyContextMenu;
 }());
 exports.HierarchyContextMenu = HierarchyContextMenu;
-},{"../../ui":103}],35:[function(require,module,exports){
+},{"../../ui":108}],39:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HierarchyControl = void 0;
@@ -5974,7 +6254,7 @@ var HierarchyControl = /** @class */ (function () {
     return HierarchyControl;
 }());
 exports.HierarchyControl = HierarchyControl;
-},{"../../engine":84,"../../ui":103}],36:[function(require,module,exports){
+},{"../../engine":89,"../../ui":108}],40:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HierarchyMenu = void 0;
@@ -5985,24 +6265,29 @@ var HierarchyMenu = /** @class */ (function () {
     return HierarchyMenu;
 }());
 exports.HierarchyMenu = HierarchyMenu;
-},{}],37:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HierarchyPanel = void 0;
 var ui_1 = require("../../ui");
 var engine_1 = require("../../engine");
+var global_1 = require("../global");
 var HierarchyPanel = /** @class */ (function () {
     function HierarchyPanel() {
+        // hierarchy index
+        this.uiItemIndex = {};
         this.init();
     }
     HierarchyPanel.prototype.init = function () {
+        var self = this;
         // left control
         // hierarchy index
-        var uiItemIndex = {};
+        // let uiItemIndex: any = {};
         var awaitingParent = {};
         var panel = engine_1.VeryEngine.hierarchy;
         var hierarchy = new ui_1.Tree();
         engine_1.VeryEngine.hierarchyTree = hierarchy;
+        var rootParent;
         // TODO: hierarchy权限管理，有些人可看不可编辑；
         // hierarchy.allowRenaming = editor.call('permissions:write');
         hierarchy.draggable = hierarchy.allowRenaming;
@@ -6104,13 +6389,13 @@ var HierarchyPanel = /** @class */ (function () {
         // if (isRoot) {
         //   classList.push('tree-item-root');
         // }
-        var rootElement = new ui_1.TreeItem({
-            text: 'Scene',
-            classList: classList
-        });
-        rootElement.class.remove('c-model');
-        hierarchy.element.appendChild(rootElement.element);
-        hierarchy.emit('append', rootElement);
+        // let rootElement = new TreeItem({
+        //     text: 'Scene',
+        //     classList: classList
+        // });
+        // rootElement.class!.remove('c-model');
+        // hierarchy.element!.appendChild(rootElement.element!);
+        // hierarchy.emit('append', rootElement);
         /*
         for (let i: number = 0; i < 10; i++) {
           let element1 = new TreeItem({
@@ -6143,12 +6428,210 @@ var HierarchyPanel = /** @class */ (function () {
           }
         }
         */
+        // selector add
+        editor.on('selector:add', function (entity, type) {
+            if (type !== 'entity')
+                return;
+            self.uiItemIndex[entity.get('resource_id')].selected = true;
+        });
+        // selector remove
+        editor.on('selector:remove', function (entity, type) {
+            if (type !== 'entity')
+                return;
+            self.uiItemIndex[entity.get('resource_id')].selected = false;
+        });
+        // selector change
+        editor.on('selector:change', function (type, items) {
+            if (type !== 'entity') {
+                hierarchy.clear();
+            }
+            else {
+                var selected = hierarchy.selected;
+                var ids = {};
+                // build index of selected items
+                for (var i = 0; i < items.length; i++) {
+                    ids[items[i].get('resource_id')] = true;
+                }
+                ;
+                // deselect unselected items
+                for (var i = 0; i < selected.length; i++) {
+                    if (!ids[selected[i].entity.get('resource_id')])
+                        selected[i].selected = false;
+                }
+            }
+        });
+        // entity removed
+        editor.on('entities:remove', function (entity) {
+            self.uiItemIndex[entity.get('resource_id')].destroy();
+            resizeQueue();
+        });
         // element.append();
+        var componentList;
+        // entity added
+        editor.on('entities:add', function (entity, isRoot) {
+            if (entity.get("type") === "TransformNode" || entity.get("type") === "Mesh") {
+                entity.node = engine_1.VeryEngine.viewScene.getNodeByID(entity.get("resource_id"));
+            }
+            var classList = ['tree-item-entity', 'entity-id-' + entity.get('resource_id')];
+            if (isRoot) {
+                classList.push('tree-item-root');
+            }
+            var element = new ui_1.TreeItem({
+                text: entity.get('name'),
+                classList: classList
+            });
+            element.entity = entity;
+            element.enabled = entity.get('enabled');
+            if (!componentList)
+                componentList = editor.call('components:list');
+            // entity.reparenting = false;
+            // index
+            self.uiItemIndex[entity.get('resource_id')] = element;
+            // name change
+            entity.on('name:set', function (value) {
+                element.text = value;
+                resizeQueue();
+            });
+            entity.on('enabled:set', function (value) {
+                element.enabled = value;
+            });
+            // entity.on('children:move', function (value, ind, indOld) {
+            //     var item = uiItemIndex[value];
+            //     if (!item || item.entity.reparenting)
+            //         return;
+            //     element.remove(item);
+            //     var next = uiItemIndex[entity.get('children.' + (ind + 1))];
+            //     var after = null;
+            //     if (next === item) {
+            //         next = null;
+            //         if (ind > 0)
+            //             after = uiItemIndex[entity.get('children.' + ind)]
+            //     }
+            //     if (item.parent)
+            //         item.parent.remove(item);
+            //     if (next) {
+            //         element.appendBefore(item, next);
+            //     } else if (after) {
+            //         element.appendAfter(item, after);
+            //     } else {
+            //         element.append(item);
+            //     }
+            // });
+            // remove children
+            // entity.on('children:remove', function (value) {
+            //     var item = uiItemIndex[value];
+            //     if (!item || item.entity.reparenting)
+            //         return;
+            //     element.remove(item);
+            // });
+            // add children
+            // entity.on('children:insert', function (value, ind) {
+            //     var item = uiItemIndex[value];
+            //     if (!item || item.entity.reparenting)
+            //         return;
+            //     if (item.parent)
+            //         item.parent.remove(item);
+            //     var next = uiItemIndex[entity.get('children.' + (ind + 1))];
+            //     if (next) {
+            //         element.appendBefore(item, next);
+            //     } else {
+            //         element.append(item);
+            //     }
+            // });
+            // collaborators
+            var users = element.users = document.createElement('span');
+            users.classList.add('users');
+            element.elementTitle.appendChild(users);
+            // if (entity.get('root')) {
+            //     // root
+            //     hierarchy.append(element);
+            //     element.open = true;
+            // } else {
+            //     if(entity.get('parent') === editor.call("entities:root").get("resource_id")) {
+            //         rootParent.append(element);
+            //     }
+            // }
+            // var children = entity.get('children');
+            // if (children.length) {
+            //     for (var c = 0; c < children.length; c++) {
+            //         var child = self.uiItemIndex[children[c]];
+            //         if (!child) {
+            //             var err = 'Cannot find child entity ' + children[c];
+            //             editor.call('status:error', err);
+            //             console.error(err);
+            //             continue;
+            //         }
+            //         element.append(child);
+            //     }
+            // }
+            resizeQueue();
+        });
+        // append all treeItems according to child order
+        editor.on('entities:load', function (upload) {
+            var entities = editor.call('entities:list');
+            var datas = {};
+            var path1 = "";
+            var path2 = "";
+            for (var i = 0; i < entities.length; i++) {
+                var entity = entities[i];
+                if (upload) {
+                    datas[entity.get('resource_id')] = entity.origin;
+                }
+                // console.warn(entity.get('resource_id'));
+                if (entity.get("asset") && entity.get("asset2")) {
+                    path1 = entity.get("asset");
+                    path2 = entity.get("asset2");
+                }
+                var element = self.uiItemIndex[entity.get('resource_id')];
+                if (entity.get('root')) {
+                    // root
+                    hierarchy.append(element);
+                    element.open = true;
+                    rootParent = element;
+                }
+                else {
+                    if (entity.get('parent') === "") {
+                        rootParent.append(element);
+                    }
+                }
+                var children = entity.get('children');
+                if (children.length) {
+                    for (var c = 0; c < children.length; c++) {
+                        var child = self.uiItemIndex[children[c]];
+                        if (!child) {
+                            var err = 'Cannot find child entity ' + children[c];
+                            editor.call('status:error', err);
+                            console.error(err);
+                            continue;
+                        }
+                        element.append(child);
+                    }
+                }
+            }
+            if (upload) {
+                axios.post('/api/addScene', { projectID: global_1.Config.projectID, entities: datas, path1: path1, path2: path2 })
+                    .then(function (response) {
+                    var data = response.data;
+                    if (data.code === "0000") {
+                        console.log(data.data);
+                    }
+                    else {
+                        console.error(data.message);
+                    }
+                })
+                    .catch(function (error) {
+                    console.error(error);
+                });
+            }
+            if (path1 && path2 && !upload) {
+                editor.call("loadTempModel2", path1, path2);
+            }
+        });
     };
     return HierarchyPanel;
 }());
 exports.HierarchyPanel = HierarchyPanel;
-},{"../../engine":84,"../../ui":103}],38:[function(require,module,exports){
+},{"../../engine":89,"../../ui":108,"../global":37}],42:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HierarchySearch = void 0;
@@ -6471,7 +6954,7 @@ var HierarchySearch = /** @class */ (function () {
     return HierarchySearch;
 }());
 exports.HierarchySearch = HierarchySearch;
-},{"../../engine":84,"../../ui":103}],39:[function(require,module,exports){
+},{"../../engine":89,"../../ui":108}],43:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -6490,7 +6973,7 @@ __exportStar(require("./hierarchy-menu"), exports);
 __exportStar(require("./hierarchy-control"), exports);
 __exportStar(require("./hierarchy-search"), exports);
 __exportStar(require("./hierarchy-context-menu"), exports);
-},{"./hierarchy-context-menu":34,"./hierarchy-control":35,"./hierarchy-menu":36,"./hierarchy-panel":37,"./hierarchy-search":38,"./keeper":40}],40:[function(require,module,exports){
+},{"./hierarchy-context-menu":38,"./hierarchy-control":39,"./hierarchy-menu":40,"./hierarchy-panel":41,"./hierarchy-search":42,"./keeper":44}],44:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HierarchyKeeper = void 0;
@@ -6573,7 +7056,7 @@ var HierarchyKeeper = /** @class */ (function () {
     return HierarchyKeeper;
 }());
 exports.HierarchyKeeper = HierarchyKeeper;
-},{"./hierarchy-context-menu":34,"./hierarchy-control":35,"./hierarchy-menu":36,"./hierarchy-panel":37,"./hierarchy-search":38}],41:[function(require,module,exports){
+},{"./hierarchy-context-menu":38,"./hierarchy-control":39,"./hierarchy-menu":40,"./hierarchy-panel":41,"./hierarchy-search":42}],45:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Hotkeys = void 0;
@@ -7084,7 +7567,7 @@ var Hotkeys = /** @class */ (function () {
     return Hotkeys;
 }());
 exports.Hotkeys = Hotkeys;
-},{}],42:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -7114,15 +7597,18 @@ __exportStar(require("./search"), exports);
 __exportStar(require("./drop"), exports);
 __exportStar(require("./global"), exports);
 __exportStar(require("./Initialize-data"), exports);
-},{"./Initialize-data":3,"./assets":16,"./drop":26,"./editor":27,"./entity":31,"./global":33,"./hierarchy":39,"./hotkeys":41,"./initialize-after":43,"./initialize-before":44,"./layout":45,"./localstorage":46,"./middleware":49,"./search":52,"./toolbar":56,"./utility":73,"./viewport":75}],43:[function(require,module,exports){
+},{"./Initialize-data":3,"./assets":16,"./drop":26,"./editor":27,"./entity":34,"./global":37,"./hierarchy":43,"./hotkeys":45,"./initialize-after":47,"./initialize-before":48,"./layout":49,"./localstorage":50,"./middleware":53,"./search":56,"./toolbar":61,"./utility":78,"./viewport":80}],47:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.InitializeAfter = void 0;
 var attributes_1 = require("./attributes");
 var toolbar_1 = require("./toolbar");
 var keeper_1 = require("./viewport/keeper");
+var entity_1 = require("./entity");
 var InitializeAfter = /** @class */ (function () {
     function InitializeAfter() {
+        // entity
+        var entity = new entity_1.EntityKeeper();
         // attributes
         var attributes = new attributes_1.AttributesKeeper();
         // toolbar
@@ -7133,7 +7619,7 @@ var InitializeAfter = /** @class */ (function () {
     return InitializeAfter;
 }());
 exports.InitializeAfter = InitializeAfter;
-},{"./attributes":24,"./toolbar":56,"./viewport/keeper":76}],44:[function(require,module,exports){
+},{"./attributes":24,"./entity":34,"./toolbar":61,"./viewport/keeper":81}],48:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.InitializeBefore = void 0;
@@ -7164,7 +7650,7 @@ var InitializeBefore = /** @class */ (function () {
     return InitializeBefore;
 }());
 exports.InitializeBefore = InitializeBefore;
-},{"./hotkeys":41,"./localstorage":46,"./selector":53,"./utility":73}],45:[function(require,module,exports){
+},{"./hotkeys":45,"./localstorage":50,"./selector":57,"./utility":78}],49:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Layout = void 0;
@@ -7346,7 +7832,7 @@ var Layout = /** @class */ (function () {
     return Layout;
 }());
 exports.Layout = Layout;
-},{"../engine":84,"../ui":103}],46:[function(require,module,exports){
+},{"../engine":89,"../ui":108}],50:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LocalStorage = void 0;
@@ -7377,7 +7863,7 @@ var LocalStorage = /** @class */ (function () {
     return LocalStorage;
 }());
 exports.LocalStorage = LocalStorage;
-},{}],47:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Component = void 0;
@@ -7438,7 +7924,7 @@ var Component = /** @class */ (function () {
     return Component;
 }());
 exports.Component = Component;
-},{"./gameobject":48,"./transform":51}],48:[function(require,module,exports){
+},{"./gameobject":52,"./transform":55}],52:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GameObject = void 0;
@@ -7605,7 +8091,7 @@ var GameObject = /** @class */ (function () {
     return GameObject;
 }());
 exports.GameObject = GameObject;
-},{"../../engine":84,"./transform":51}],49:[function(require,module,exports){
+},{"../../engine":89,"./transform":55}],53:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -7622,7 +8108,7 @@ __exportStar(require("./transform"), exports);
 __exportStar(require("./gameobject"), exports);
 __exportStar(require("./component"), exports);
 __exportStar(require("./middle-container"), exports);
-},{"./component":47,"./gameobject":48,"./middle-container":50,"./transform":51}],50:[function(require,module,exports){
+},{"./component":51,"./gameobject":52,"./middle-container":54,"./transform":55}],54:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MiddleContainer = void 0;
@@ -7636,7 +8122,7 @@ var MiddleContainer = /** @class */ (function () {
     return MiddleContainer;
 }());
 exports.MiddleContainer = MiddleContainer;
-},{}],51:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Transform = void 0;
@@ -8084,7 +8570,7 @@ var Transform = /** @class */ (function () {
     return Transform;
 }());
 exports.Transform = Transform;
-},{}],52:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Search = void 0;
@@ -8278,7 +8764,7 @@ var Search = /** @class */ (function () {
     return Search;
 }());
 exports.Search = Search;
-},{}],53:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -8293,7 +8779,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./selector"), exports);
 __exportStar(require("./selector-history"), exports);
-},{"./selector":55,"./selector-history":54}],54:[function(require,module,exports){
+},{"./selector":59,"./selector-history":58}],58:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SelectorHistory = void 0;
@@ -8303,7 +8789,7 @@ var SelectorHistory = /** @class */ (function () {
     return SelectorHistory;
 }());
 exports.SelectorHistory = SelectorHistory;
-},{}],55:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Selector = void 0;
@@ -8368,6 +8854,7 @@ var Selector = /** @class */ (function () {
         self.selector.on('add', function (item) {
             // add index
             setIndex(self.type, item);
+            console.error("adddddddd: " + self.type);
             editor.emit('selector:add', item, self.type);
             if (!evtChange) {
                 evtChange = true;
@@ -8377,6 +8864,7 @@ var Selector = /** @class */ (function () {
         // removing
         self.selector.on('remove', function (item) {
             editor.emit('selector:remove', item, self.type);
+            console.error("removeeeeeee: " + self.type);
             // remove index
             removeIndex(self.type, item);
             if (self.length === 0)
@@ -8394,6 +8882,7 @@ var Selector = /** @class */ (function () {
                 self.selector.clear();
             }
             self.selector.type = type;
+            self.type = type;
             if (self.selector.has(item)) {
                 self.selector.remove(item);
             }
@@ -8423,6 +8912,7 @@ var Selector = /** @class */ (function () {
                 return;
             // type
             self.selector.type = type;
+            self.type = type;
             // remove
             // TODO: 删除不重合的部分
             // self.selector.find(function (item: Observer) {
@@ -8442,9 +8932,11 @@ var Selector = /** @class */ (function () {
                 return;
             console.warn('selector add入口');
             console.warn(item);
-            if (self.selector.length > 0 && self.selector.type !== type)
+            if (self.selector.length > 0 && self.selector.type !== type) {
                 self.selector.clear();
+            }
             self.selector.type = type;
+            self.type = type;
             self.selector.add(item);
         });
         // deselecting item
@@ -8488,7 +8980,46 @@ var Selector = /** @class */ (function () {
     return Selector;
 }());
 exports.Selector = Selector;
-},{"../../lib":88}],56:[function(require,module,exports){
+},{"../../lib":93}],60:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.GizmosManager = void 0;
+var GizmosManager = /** @class */ (function () {
+    function GizmosManager() {
+    }
+    GizmosManager.init = function (scene) {
+        this.gizmoManager = new BABYLON.GizmoManager(scene);
+    };
+    GizmosManager.setMode = function (m) {
+        this.mode = m;
+        if (this.mode == 0) {
+            this.gizmoManager.positionGizmoEnabled = true;
+            this.gizmoManager.rotationGizmoEnabled = false;
+            this.gizmoManager.scaleGizmoEnabled = false;
+        }
+        else if (this.mode === 1) {
+            this.gizmoManager.positionGizmoEnabled = false;
+            this.gizmoManager.rotationGizmoEnabled = true;
+            this.gizmoManager.scaleGizmoEnabled = false;
+        }
+        else {
+            this.gizmoManager.positionGizmoEnabled = false;
+            this.gizmoManager.rotationGizmoEnabled = false;
+            this.gizmoManager.scaleGizmoEnabled = true;
+        }
+    };
+    GizmosManager.attach = function (mesh) {
+        this.gizmoManager.attachToMesh(mesh);
+        this.setMode(this.mode);
+    };
+    GizmosManager.clear = function () {
+        this.gizmoManager.attachToMesh(null);
+    };
+    GizmosManager.mode = 0;
+    return GizmosManager;
+}());
+exports.GizmosManager = GizmosManager;
+},{}],61:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -8511,7 +9042,8 @@ __exportStar(require("./toolbar-control"), exports);
 __exportStar(require("./toolbar-editor-settings"), exports);
 __exportStar(require("./toolbar-publish"), exports);
 __exportStar(require("./toolbar-scene"), exports);
-},{"./keeper":57,"./toolbar-control":58,"./toolbar-editor-settings":59,"./toolbar-gizmos":60,"./toolbar-help":61,"./toolbar-history":62,"./toolbar-logo":63,"./toolbar-publish":64,"./toolbar-scene":65,"./toolbar-top-control":66}],57:[function(require,module,exports){
+__exportStar(require("./gizmo-manager"), exports);
+},{"./gizmo-manager":60,"./keeper":62,"./toolbar-control":63,"./toolbar-editor-settings":64,"./toolbar-gizmos":65,"./toolbar-help":66,"./toolbar-history":67,"./toolbar-logo":68,"./toolbar-publish":69,"./toolbar-scene":70,"./toolbar-top-control":71}],62:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarKeeper = void 0;
@@ -8537,7 +9069,7 @@ var ToolbarKeeper = /** @class */ (function () {
     return ToolbarKeeper;
 }());
 exports.ToolbarKeeper = ToolbarKeeper;
-},{"./toolbar-control":58,"./toolbar-editor-settings":59,"./toolbar-gizmos":60,"./toolbar-help":61,"./toolbar-history":62,"./toolbar-logo":63,"./toolbar-publish":64,"./toolbar-scene":65}],58:[function(require,module,exports){
+},{"./toolbar-control":63,"./toolbar-editor-settings":64,"./toolbar-gizmos":65,"./toolbar-help":66,"./toolbar-history":67,"./toolbar-logo":68,"./toolbar-publish":69,"./toolbar-scene":70}],63:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarControl = void 0;
@@ -8568,7 +9100,7 @@ var ToolbarControl = /** @class */ (function () {
     return ToolbarControl;
 }());
 exports.ToolbarControl = ToolbarControl;
-},{"../../engine":84,"../../ui":103}],59:[function(require,module,exports){
+},{"../../engine":89,"../../ui":108}],64:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarEditorSettings = void 0;
@@ -8604,11 +9136,12 @@ var ToolbarEditorSettings = /** @class */ (function () {
     return ToolbarEditorSettings;
 }());
 exports.ToolbarEditorSettings = ToolbarEditorSettings;
-},{"../../engine":84,"../../ui":103}],60:[function(require,module,exports){
+},{"../../engine":89,"../../ui":108}],65:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarGizmos = void 0;
 var ui_1 = require("../../ui");
+var gizmo_manager_1 = require("./gizmo-manager");
 var ToolbarGizmos = /** @class */ (function () {
     function ToolbarGizmos() {
         var root = editor.call('layout.root');
@@ -8618,15 +9151,15 @@ var ToolbarGizmos = /** @class */ (function () {
         // create gizmo type buttons
         [{
                 icon: '&#57617;',
-                tooltip: 'Translate',
+                tooltip: '移动',
                 op: 'translate'
             }, {
                 icon: '&#57619;',
-                tooltip: 'Rotate',
+                tooltip: '旋转',
                 op: 'rotate'
             }, {
                 icon: '&#57618;',
-                tooltip: 'Scale',
+                tooltip: '缩放',
                 op: 'scale'
             }, {
                 icon: '&#57666;',
@@ -8647,6 +9180,15 @@ var ToolbarGizmos = /** @class */ (function () {
                 activeGizmo.class.add('active');
                 activeGizmo.tooltip.class.remove('innactive');
                 editor.call('gizmo:type', button.op);
+                if (button.op === 'translate') {
+                    gizmo_manager_1.GizmosManager.setMode(0);
+                }
+                else if (button.op === 'rotate') {
+                    gizmo_manager_1.GizmosManager.setMode(1);
+                }
+                else {
+                    gizmo_manager_1.GizmosManager.setMode(2);
+                }
             });
             toolbar.append(button);
             button.tooltip = ui_1.Tooltip.attach({
@@ -8748,7 +9290,7 @@ var ToolbarGizmos = /** @class */ (function () {
     return ToolbarGizmos;
 }());
 exports.ToolbarGizmos = ToolbarGizmos;
-},{"../../ui":103}],61:[function(require,module,exports){
+},{"../../ui":108,"./gizmo-manager":60}],66:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarHelp = void 0;
@@ -8779,7 +9321,7 @@ var ToolbarHelp = /** @class */ (function () {
     return ToolbarHelp;
 }());
 exports.ToolbarHelp = ToolbarHelp;
-},{"../../engine":84,"../../ui":103}],62:[function(require,module,exports){
+},{"../../engine":89,"../../ui":108}],67:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarHistory = void 0;
@@ -8848,7 +9390,7 @@ var ToolbarHistory = /** @class */ (function () {
     return ToolbarHistory;
 }());
 exports.ToolbarHistory = ToolbarHistory;
-},{"../../engine":84,"../../ui":103}],63:[function(require,module,exports){
+},{"../../engine":89,"../../ui":108}],68:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarLogo = void 0;
@@ -8868,7 +9410,7 @@ var ToolbarLogo = /** @class */ (function () {
     return ToolbarLogo;
 }());
 exports.ToolbarLogo = ToolbarLogo;
-},{"../../ui":103}],64:[function(require,module,exports){
+},{"../../ui":108}],69:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarPublish = void 0;
@@ -8899,7 +9441,7 @@ var ToolbarPublish = /** @class */ (function () {
     return ToolbarPublish;
 }());
 exports.ToolbarPublish = ToolbarPublish;
-},{"../../engine":84,"../../ui":103}],65:[function(require,module,exports){
+},{"../../engine":89,"../../ui":108}],70:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarScene = void 0;
@@ -9012,12 +9554,13 @@ var ToolbarScene = /** @class */ (function () {
     return ToolbarScene;
 }());
 exports.ToolbarScene = ToolbarScene;
-},{"../../engine":84,"../../ui":103}],66:[function(require,module,exports){
+},{"../../engine":89,"../../ui":108}],71:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarTopControl = void 0;
 var ui_1 = require("../../ui");
 var engine_1 = require("../../engine");
+var global_1 = require("../global");
 var ToolbarTopControl = /** @class */ (function () {
     function ToolbarTopControl() {
         // panel
@@ -9051,11 +9594,23 @@ var ToolbarTopControl = /** @class */ (function () {
             align: 'top',
             root: engine_1.VeryEngine.root
         });
+        var buttonLaunch = new ui_1.Button('&#57649;');
+        buttonLaunch.class.add('icon');
+        panel.append(buttonLaunch);
+        buttonLaunch.on('click', function () {
+            window.open(window.location.protocol + "//" + window.location.host + "/publish/" + global_1.Config.projectID);
+        });
+        var tooltipLaunch = ui_1.Tooltip.attach({
+            target: buttonLaunch.element,
+            text: '发布',
+            align: 'top',
+            root: engine_1.VeryEngine.root
+        });
     }
     return ToolbarTopControl;
 }());
 exports.ToolbarTopControl = ToolbarTopControl;
-},{"../../engine":84,"../../ui":103}],67:[function(require,module,exports){
+},{"../../engine":89,"../../ui":108,"../global":37}],72:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -9234,7 +9789,7 @@ var AjaxRequest = /** @class */ (function (_super) {
     return AjaxRequest;
 }(lib_1.Events));
 exports.AjaxRequest = AjaxRequest;
-},{"../../lib":88}],68:[function(require,module,exports){
+},{"../../lib":93}],73:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ComponentsLogos = void 0;
@@ -9277,7 +9832,7 @@ var ComponentsLogos = /** @class */ (function () {
     return ComponentsLogos;
 }());
 exports.ComponentsLogos = ComponentsLogos;
-},{}],69:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ContextMenu = void 0;
@@ -9291,7 +9846,7 @@ var ContextMenu = /** @class */ (function () {
     return ContextMenu;
 }());
 exports.ContextMenu = ContextMenu;
-},{}],70:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Debug = void 0;
@@ -9330,7 +9885,7 @@ var Debug = /** @class */ (function () {
     return Debug;
 }());
 exports.Debug = Debug;
-},{}],71:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 (function (process,setImmediate){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -9819,7 +10374,7 @@ var EventProxy = /** @class */ (function () {
 exports.EventProxy = EventProxy;
 }).call(this,require('_process'),require("timers").setImmediate)
 
-},{"_process":1,"timers":2}],72:[function(require,module,exports){
+},{"_process":1,"timers":2}],77:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GUID = void 0;
@@ -9838,7 +10393,7 @@ var GUID = /** @class */ (function () {
     return GUID;
 }());
 exports.GUID = GUID;
-},{}],73:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -9858,7 +10413,7 @@ __exportStar(require("./eventproxy"), exports);
 __exportStar(require("./debug"), exports);
 __exportStar(require("./tools"), exports);
 __exportStar(require("./ajax"), exports);
-},{"./ajax":67,"./components-logos":68,"./context-menu":69,"./debug":70,"./eventproxy":71,"./guid":72,"./tools":74}],74:[function(require,module,exports){
+},{"./ajax":72,"./components-logos":73,"./context-menu":74,"./debug":75,"./eventproxy":76,"./guid":77,"./tools":79}],79:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Tools = void 0;
@@ -10075,7 +10630,7 @@ var Tools = /** @class */ (function () {
     return Tools;
 }());
 exports.Tools = Tools;
-},{"../../engine":84}],75:[function(require,module,exports){
+},{"../../engine":89}],80:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -10093,7 +10648,7 @@ __exportStar(require("./viewport-expand"), exports);
 __exportStar(require("./viewport-application"), exports);
 __exportStar(require("./viewport-instance-create"), exports);
 __exportStar(require("./viewport-drop-model"), exports);
-},{"./viewport":81,"./viewport-application":77,"./viewport-drop-model":78,"./viewport-expand":79,"./viewport-instance-create":80}],76:[function(require,module,exports){
+},{"./viewport":86,"./viewport-application":82,"./viewport-drop-model":83,"./viewport-expand":84,"./viewport-instance-create":85}],81:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ViewportKeeper = void 0;
@@ -10109,21 +10664,37 @@ var ViewportKeeper = /** @class */ (function () {
     return ViewportKeeper;
 }());
 exports.ViewportKeeper = ViewportKeeper;
-},{"./viewport-application":77,"./viewport-drop-model":78,"./viewport-instance-create":80}],77:[function(require,module,exports){
+},{"./viewport-application":82,"./viewport-drop-model":83,"./viewport-instance-create":85}],82:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ViewportApplication = void 0;
+var engine_1 = require("../../engine");
 var ViewportApplication = /** @class */ (function () {
     function ViewportApplication() {
+        editor.method("load:blue", function (type, data) {
+            console.log(type);
+            console.log(data);
+            if (type === "Light") {
+                // Lights
+                var light = BABYLON.Light.Parse(data, engine_1.VeryEngine.viewScene);
+            }
+            else if (type === 'Camera') {
+                // Cameras
+                var camera = BABYLON.Camera.Parse(data, engine_1.VeryEngine.viewScene);
+                // VeryEngine.viewScene.activeCamera = camera;
+                console.log(camera);
+            }
+        });
     }
     return ViewportApplication;
 }());
 exports.ViewportApplication = ViewportApplication;
-},{}],78:[function(require,module,exports){
+},{"../../engine":89}],83:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ViewportDropModel = void 0;
 var engine_1 = require("../../engine");
+var toolbar_1 = require("../toolbar");
 var ViewportDropModel = /** @class */ (function () {
     function ViewportDropModel() {
         editor.method("loadTempModel", function (babylon_data) {
@@ -10132,13 +10703,205 @@ var ViewportDropModel = /** @class */ (function () {
             var rootUrl = babylon_data.get("file.url");
             var modelName = babylon_data.get("file.filename");
             rootUrl = rootUrl.substring(0, rootUrl.length - modelName.length);
-            BABYLON.SceneLoader.Append(rootUrl, modelName, engine_1.VeryEngine.viewScene, function (scene) { });
+            BABYLON.SceneLoader.Append(rootUrl, modelName, engine_1.VeryEngine.viewScene, function (scene) {
+                // console.log("************mesh个数：" + scene.meshes.length);
+                for (var i = 0; i < scene.meshes.length; i++) {
+                    var mesh = scene.meshes[i];
+                    mesh.checkCollisions = true;
+                    mesh.isPickable = true;
+                    var parentID = "";
+                    if (mesh.parent !== null) {
+                        parentID = mesh.parent.id;
+                    }
+                    var childs = mesh.getChildren();
+                    var myChildren = [];
+                    for (var k = 0; k < childs.length; k++) {
+                        myChildren.push(childs[k].id);
+                    }
+                    var data = {
+                        name: mesh.name,
+                        resource_id: mesh.id,
+                        parent: parentID,
+                        position: [mesh.position.x, mesh.position.y, mesh.position.z],
+                        rotation: [mesh.rotation.x, mesh.rotation.y, mesh.rotation.z],
+                        scale: [mesh.scaling.x, mesh.scaling.y, mesh.scaling.z],
+                        children: myChildren,
+                        enabled: mesh.isEnabled(),
+                        tags: [],
+                        root: false,
+                        type: "Mesh",
+                        asset: rootUrl,
+                        asset2: modelName
+                    };
+                    // console.log(scene.meshes[i].id + " : " + scene.meshes[i].name);
+                    // console.error(data);
+                    editor.call("entity:new:babylon", data);
+                }
+                for (var i = 0; i < scene.transformNodes.length; i++) {
+                    var node = scene.transformNodes[i];
+                    var parentID = "";
+                    if (node.parent !== null) {
+                        parentID = node.parent.id;
+                    }
+                    var data = {
+                        name: node.name,
+                        resource_id: node.id,
+                        parent: parentID,
+                        position: [node.position.x, node.position.y, node.position.z],
+                        rotation: [node.rotation.x, node.rotation.y, node.rotation.z],
+                        scale: [node.scaling.x, node.scaling.y, node.scaling.z],
+                        children: myChildren,
+                        enabled: node.isEnabled(),
+                        tags: [],
+                        root: false,
+                        type: "TransformNode",
+                        asset: rootUrl,
+                        asset2: modelName
+                    };
+                    // console.log(scene.meshes[i].id + " : " + scene.meshes[i].name);
+                    editor.call("entity:new:babylon", data);
+                }
+                // console.error("加载");
+                editor.emit('entities:load', true);
+                // console.log("************node个数：" + scene.transformNodes.length);
+                // for(let i = 0; i < scene.transformNodes.length; i++) {
+                //     console.log(scene.transformNodes[i].id + " : " + scene.transformNodes[i].name);
+                // }
+                // console.log("************root个数：" + scene.rootNodes.length);
+                // for(let i = 0; i < scene.rootNodes.length; i++) {
+                //     console.log(scene.rootNodes[i].id + " : " + scene.rootNodes[i].name);
+                // }
+                scene.onPointerObservable.add(function (pointerInfo) {
+                    switch (pointerInfo.type) {
+                        case BABYLON.PointerEventTypes.POINTERDOWN:
+                            // console.log("down");
+                            if (pointerInfo.pickInfo.pickedMesh != null) {
+                                editor.call("pick", pointerInfo.pickInfo.pickedMesh);
+                            }
+                            else {
+                                editor.call("pick", null);
+                            }
+                            // console.log(pointerInfo!.pickInfo!.pickedMesh);
+                            break;
+                    }
+                });
+            });
+            // 默认加载
+            // editor.method("entity:new:mesh", )
+        });
+        editor.method("pick", function (mesh) {
+            if (mesh === null) {
+                toolbar_1.GizmosManager.clear();
+            }
+            else {
+                toolbar_1.GizmosManager.attach(mesh);
+                var entity = editor.call('entities:get', mesh.id);
+                if (entity) {
+                    editor.call('selector:set', 'entity', [entity]);
+                }
+                else {
+                    console.error("失败");
+                }
+            }
+        });
+        editor.method("loadTempModel2", function (rootUrl, modelName) {
+            BABYLON.SceneLoader.Append(rootUrl, modelName, engine_1.VeryEngine.viewScene, function (scene) {
+                // console.error("加载2");
+                // console.log("************mesh个数：" + scene.meshes.length);
+                for (var i = 0; i < scene.meshes.length; i++) {
+                    var mesh = scene.meshes[i];
+                    mesh.checkCollisions = true;
+                    mesh.isPickable = true;
+                    var entity = editor.call('entities:get', mesh.id);
+                    if (entity) {
+                        entity.node = mesh;
+                    }
+                    // let parentID: string = "";
+                    // if (mesh.parent !== null) {
+                    //     parentID = mesh.parent!.id;
+                    // }
+                    // var childs = mesh.getChildren();
+                    // var myChildren = [];
+                    // for (let k = 0; k < childs.length; k++) {
+                    //     myChildren.push(childs[k].id);
+                    // }
+                    // let data = {
+                    //     name: mesh.name,
+                    //     resource_id: mesh.id,
+                    //     parent: parentID,
+                    //     position: [mesh.position.x, mesh.position.y, mesh.position.z],
+                    //     rotation: [mesh.rotation.x, mesh.rotation.y, mesh.rotation.z],
+                    //     scale: [mesh.scaling.x, mesh.scaling.y, mesh.scaling.z],
+                    //     children: myChildren,
+                    //     enabled: mesh.isEnabled(),
+                    //     tags: [],
+                    //     root: false,
+                    //     type: "Mesh",
+                    //     asset: rootUrl,
+                    //     asset2: modelName
+                    // }
+                    // // console.log(scene.meshes[i].id + " : " + scene.meshes[i].name);
+                    // // console.error(data);
+                    // editor.call("entity:new:babylon", data);
+                }
+                for (var i = 0; i < scene.transformNodes.length; i++) {
+                    var node = scene.transformNodes[i];
+                    var parentID = "";
+                    if (node.parent !== null) {
+                        parentID = node.parent.id;
+                    }
+                    var entity = editor.call('entities:get', node.id);
+                    if (entity) {
+                        entity.node = node;
+                    }
+                    // let data = {
+                    //     name: node.name,
+                    //     resource_id: node.id,
+                    //     parent: parentID,
+                    //     position: [node.position.x, node.position.y, node.position.z],
+                    //     rotation: [node.rotation.x, node.rotation.y, node.rotation.z],
+                    //     scale: [node.scaling.x, node.scaling.y, node.scaling.z],
+                    //     children: myChildren,
+                    //     enabled: node.isEnabled(),
+                    //     tags: [],
+                    //     root: false,
+                    //     type: "TransformNode",
+                    //     asset: rootUrl,
+                    //     asset2: modelName
+                    // }
+                    // // console.log(scene.meshes[i].id + " : " + scene.meshes[i].name);
+                    // editor.call("entity:new:babylon", data);
+                }
+                // editor.emit('entities:load', true);
+                // console.log("************node个数：" + scene.transformNodes.length);
+                // for(let i = 0; i < scene.transformNodes.length; i++) {
+                //     console.log(scene.transformNodes[i].id + " : " + scene.transformNodes[i].name);
+                // }
+                // console.log("************root个数：" + scene.rootNodes.length);
+                // for(let i = 0; i < scene.rootNodes.length; i++) {
+                //     console.log(scene.rootNodes[i].id + " : " + scene.rootNodes[i].name);
+                // }
+                scene.onPointerObservable.add(function (pointerInfo) {
+                    switch (pointerInfo.type) {
+                        case BABYLON.PointerEventTypes.POINTERDOWN:
+                            // console.log("down");
+                            if (pointerInfo.pickInfo.pickedMesh != null) {
+                                editor.call("pick", pointerInfo.pickInfo.pickedMesh);
+                            }
+                            else {
+                                editor.call("pick", null);
+                            }
+                            // console.log(pointerInfo!.pickInfo!.pickedMesh);
+                            break;
+                    }
+                });
+            });
         });
     }
     return ViewportDropModel;
 }());
 exports.ViewportDropModel = ViewportDropModel;
-},{"../../engine":84}],79:[function(require,module,exports){
+},{"../../engine":89,"../toolbar":61}],84:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ViewportExpand = void 0;
@@ -10177,7 +10940,7 @@ var ViewportExpand = /** @class */ (function () {
     return ViewportExpand;
 }());
 exports.ViewportExpand = ViewportExpand;
-},{"../../engine":84}],80:[function(require,module,exports){
+},{"../../engine":89}],85:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ViewportInstanceCreate = void 0;
@@ -10190,7 +10953,7 @@ var ViewportInstanceCreate = /** @class */ (function () {
     return ViewportInstanceCreate;
 }());
 exports.ViewportInstanceCreate = ViewportInstanceCreate;
-},{}],81:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Viewport = void 0;
@@ -10205,7 +10968,7 @@ var Viewport = /** @class */ (function () {
         var self = this;
         var engine = this._engine;
         // TODO: 设定相机
-        var camera = new BABYLON.ArcRotateCamera("MainCamera", 0, 0, 10, new BABYLON.Vector3(0, 0, 0), this._scene);
+        var camera = new BABYLON.ArcRotateCamera("Default", 0, 0, 10, new BABYLON.Vector3(0, 0, 0), this._scene);
         camera.setPosition(new BABYLON.Vector3(20, 200, 400));
         camera.attachControl(this._canvas, true);
         camera.lowerBetaLimit = 0.1;
@@ -10214,7 +10977,7 @@ var Viewport = /** @class */ (function () {
         // 加载过度动画开
         // engine.loadingScreen.hideLoadingUI();
         // engine.displayLoadingUI();
-        var inputMap = {};
+        // let inputMap: { [key: string]: boolean } = {};
         // TODO: 加载scene.babylon场景文件，当前为默认
         // 默认Editor场景，加载保存的某一个场景资源
         // 资源的父子关系以及模型
@@ -10284,7 +11047,9 @@ var Viewport = /** @class */ (function () {
                 _this._engine.resize();
             }
             if (_this._scene) {
-                _this._scene.render();
+                if (_this._scene.activeCamera) {
+                    _this._scene.render();
+                }
             }
             // if (this._showFps) {
             // 	this.updateFpsPos();
@@ -10321,6 +11086,7 @@ var Viewport = /** @class */ (function () {
         this._scene = new BABYLON.Scene(this._engine);
         engine_1.VeryEngine.viewScene = this._scene;
         this._scene.clearColor = new BABYLON.Color4(0, 0, 0, 1);
+        toolbar_1.GizmosManager.init(this._scene);
     };
     Viewport.prototype.expandControl = function () {
         var control = new toolbar_1.ToolbarTopControl();
@@ -10329,7 +11095,7 @@ var Viewport = /** @class */ (function () {
     return Viewport;
 }());
 exports.Viewport = Viewport;
-},{"../../engine":84,"../../ui":103,"../toolbar":56,"./viewport-expand":79}],82:[function(require,module,exports){
+},{"../../engine":89,"../../ui":108,"../toolbar":61,"./viewport-expand":84}],87:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Application = void 0;
@@ -10339,7 +11105,7 @@ var Application = /** @class */ (function () {
     return Application;
 }());
 exports.Application = Application;
-},{}],83:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BabylonEngine = void 0;
@@ -10349,7 +11115,7 @@ var BabylonEngine = /** @class */ (function () {
     return BabylonEngine;
 }());
 exports.BabylonEngine = BabylonEngine;
-},{}],84:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -10365,7 +11131,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./babylon-engine"), exports);
 __exportStar(require("./very-engine"), exports);
 __exportStar(require("./application"), exports);
-},{"./application":82,"./babylon-engine":83,"./very-engine":85}],85:[function(require,module,exports){
+},{"./application":87,"./babylon-engine":88,"./very-engine":90}],90:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VeryEngine = void 0;
@@ -10377,7 +11143,7 @@ var VeryEngine = /** @class */ (function () {
 }());
 exports.VeryEngine = VeryEngine;
 // export veryconfig
-},{}],86:[function(require,module,exports){
+},{}],91:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -10394,7 +11160,7 @@ __exportStar(require("./lib"), exports);
 __exportStar(require("./editor"), exports);
 __exportStar(require("./ui"), exports);
 __exportStar(require("./engine"), exports);
-},{"./editor":42,"./engine":84,"./lib":88,"./ui":103}],87:[function(require,module,exports){
+},{"./editor":46,"./engine":89,"./lib":93,"./ui":108}],92:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventHandle = exports.Events = void 0;
@@ -10538,7 +11304,7 @@ var EventHandle = /** @class */ (function () {
     return EventHandle;
 }());
 exports.EventHandle = EventHandle;
-},{}],88:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -10554,7 +11320,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./events"), exports);
 __exportStar(require("./observer"), exports);
 __exportStar(require("./observer-list"), exports);
-},{"./events":87,"./observer":90,"./observer-list":89}],89:[function(require,module,exports){
+},{"./events":92,"./observer":95,"./observer-list":94}],94:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -10825,7 +11591,7 @@ var ObserverList = /** @class */ (function (_super) {
     return ObserverList;
 }(events_1.Events));
 exports.ObserverList = ObserverList;
-},{"./events":87}],90:[function(require,module,exports){
+},{"./events":92}],95:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -11267,7 +12033,7 @@ var Observer = /** @class */ (function (_super) {
     return Observer;
 }(events_1.Events));
 exports.Observer = Observer;
-},{"./events":87}],91:[function(require,module,exports){
+},{"./events":92}],96:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -11371,7 +12137,7 @@ editor.call('method', 123);
 // for(let i: number = 0; i < parent.childNodes.length; i++) {
 //   console.log(parent.childNodes[i] instanceof HTMLElement);
 // }
-},{"./editor":42,"./engine":84,"./index":86}],92:[function(require,module,exports){
+},{"./editor":46,"./engine":89,"./index":91}],97:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -11434,7 +12200,7 @@ var Bubble = /** @class */ (function (_super) {
     return Bubble;
 }(element_1.Element));
 exports.Bubble = Bubble;
-},{"./element":99}],93:[function(require,module,exports){
+},{"./element":104}],98:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -11506,7 +12272,7 @@ var Button = /** @class */ (function (_super) {
     return Button;
 }(element_1.Element));
 exports.Button = Button;
-},{"./element":99}],94:[function(require,module,exports){
+},{"./element":104}],99:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -11580,7 +12346,7 @@ var Canvas = /** @class */ (function (_super) {
     return Canvas;
 }(element_1.Element));
 exports.Canvas = Canvas;
-},{"./element":99}],95:[function(require,module,exports){
+},{"./element":104}],100:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -11669,7 +12435,7 @@ var Checkbox = /** @class */ (function (_super) {
     return Checkbox;
 }(element_1.Element));
 exports.Checkbox = Checkbox;
-},{"./element":99}],96:[function(require,module,exports){
+},{"./element":104}],101:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -11708,7 +12474,7 @@ var Code = /** @class */ (function (_super) {
     return Code;
 }(container_element_1.ContainerElement));
 exports.Code = Code;
-},{"./container-element":98}],97:[function(require,module,exports){
+},{"./container-element":103}],102:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -11936,7 +12702,7 @@ var ColorField = /** @class */ (function (_super) {
     return ColorField;
 }(element_1.Element));
 exports.ColorField = ColorField;
-},{"./element":99}],98:[function(require,module,exports){
+},{"./element":104}],103:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -12191,7 +12957,7 @@ var ContainerElement = /** @class */ (function (_super) {
     return ContainerElement;
 }(element_1.Element));
 exports.ContainerElement = ContainerElement;
-},{"./element":99}],99:[function(require,module,exports){
+},{"./element":104}],104:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -12533,7 +13299,7 @@ var Element = /** @class */ (function (_super) {
     return Element;
 }(lib_1.Events));
 exports.Element = Element;
-},{"../lib":88}],100:[function(require,module,exports){
+},{"../lib":93}],105:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -12641,7 +13407,7 @@ var GridItemArgs = /** @class */ (function () {
     return GridItemArgs;
 }());
 exports.GridItemArgs = GridItemArgs;
-},{"./element":99}],101:[function(require,module,exports){
+},{"./element":104}],106:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -12808,7 +13574,7 @@ var Grid = /** @class */ (function (_super) {
     return Grid;
 }(container_element_1.ContainerElement));
 exports.Grid = Grid;
-},{"../editor":42,"./container-element":98}],102:[function(require,module,exports){
+},{"../editor":46,"./container-element":103}],107:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -12938,7 +13704,7 @@ var ImageField = /** @class */ (function (_super) {
     return ImageField;
 }(element_1.Element));
 exports.ImageField = ImageField;
-},{"./element":99}],103:[function(require,module,exports){
+},{"./element":104}],108:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -12980,7 +13746,7 @@ __exportStar(require("./image-field"), exports);
 __exportStar(require("./number-field"), exports);
 __exportStar(require("./slider"), exports);
 __exportStar(require("./select-field"), exports);
-},{"./bubble":92,"./button":93,"./canvas":94,"./checkbox":95,"./code":96,"./color-field":97,"./container-element":98,"./element":99,"./grid":101,"./grid-item":100,"./image-field":102,"./label":104,"./link":105,"./list":107,"./list-item":106,"./menu":109,"./menu-item":108,"./number-field":110,"./overlay":111,"./panel":112,"./progress":113,"./select-field":114,"./slider":115,"./text-field":116,"./textarea-field":117,"./tooltip":118,"./top/index":119,"./tree":124,"./tree-item":123}],104:[function(require,module,exports){
+},{"./bubble":97,"./button":98,"./canvas":99,"./checkbox":100,"./code":101,"./color-field":102,"./container-element":103,"./element":104,"./grid":106,"./grid-item":105,"./image-field":107,"./label":109,"./link":110,"./list":112,"./list-item":111,"./menu":114,"./menu-item":113,"./number-field":115,"./overlay":116,"./panel":117,"./progress":118,"./select-field":119,"./slider":120,"./text-field":121,"./textarea-field":122,"./tooltip":123,"./top/index":124,"./tree":129,"./tree-item":128}],109:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -13088,7 +13854,7 @@ var Label = /** @class */ (function (_super) {
     return Label;
 }(element_1.Element));
 exports.Label = Label;
-},{"./element":99}],105:[function(require,module,exports){
+},{"./element":104}],110:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LinkSchema = exports.Link = void 0;
@@ -13124,7 +13890,7 @@ var LinkSchema = /** @class */ (function () {
     return LinkSchema;
 }());
 exports.LinkSchema = LinkSchema;
-},{}],106:[function(require,module,exports){
+},{}],111:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -13204,7 +13970,7 @@ var ListItem = /** @class */ (function (_super) {
     return ListItem;
 }(element_1.Element));
 exports.ListItem = ListItem;
-},{"./element":99}],107:[function(require,module,exports){
+},{"./element":104}],112:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -13342,7 +14108,7 @@ var List = /** @class */ (function (_super) {
     return List;
 }(container_element_1.ContainerElement));
 exports.List = List;
-},{"../editor":42,"./container-element":98}],108:[function(require,module,exports){
+},{"../editor":46,"./container-element":103}],113:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -13521,7 +14287,7 @@ var MenuItem = /** @class */ (function (_super) {
     return MenuItem;
 }(container_element_1.ContainerElement));
 exports.MenuItem = MenuItem;
-},{"./container-element":98}],109:[function(require,module,exports){
+},{"./container-element":103}],114:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -13745,7 +14511,7 @@ var Menu = /** @class */ (function (_super) {
     return Menu;
 }(container_element_1.ContainerElement));
 exports.Menu = Menu;
-},{"./container-element":98,"./menu-item":108}],110:[function(require,module,exports){
+},{"./container-element":103,"./menu-item":113}],115:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -13963,7 +14729,7 @@ var NumberField = /** @class */ (function (_super) {
     return NumberField;
 }(element_1.Element));
 exports.NumberField = NumberField;
-},{"./element":99}],111:[function(require,module,exports){
+},{"./element":104}],116:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -14075,7 +14841,7 @@ var Overlay = /** @class */ (function (_super) {
     return Overlay;
 }(container_element_1.ContainerElement));
 exports.Overlay = Overlay;
-},{"./container-element":98}],112:[function(require,module,exports){
+},{"./container-element":103}],117:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -14443,7 +15209,7 @@ var Panel = /** @class */ (function (_super) {
     return Panel;
 }(container_element_1.ContainerElement));
 exports.Panel = Panel;
-},{"./container-element":98}],113:[function(require,module,exports){
+},{"./container-element":103}],118:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -14580,7 +15346,7 @@ var Progress = /** @class */ (function (_super) {
     return Progress;
 }(element_1.Element));
 exports.Progress = Progress;
-},{"./element":99}],114:[function(require,module,exports){
+},{"./element":104}],119:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -14986,7 +15752,7 @@ var SelectField = /** @class */ (function (_super) {
     return SelectField;
 }(element_1.Element));
 exports.SelectField = SelectField;
-},{"./element":99}],115:[function(require,module,exports){
+},{"./element":104}],120:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -15239,7 +16005,7 @@ var Slider = /** @class */ (function (_super) {
     return Slider;
 }(element_1.Element));
 exports.Slider = Slider;
-},{"./element":99}],116:[function(require,module,exports){
+},{"./element":104}],121:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -15420,7 +16186,7 @@ var TextField = /** @class */ (function (_super) {
     return TextField;
 }(element_1.Element));
 exports.TextField = TextField;
-},{"./element":99}],117:[function(require,module,exports){
+},{"./element":104}],122:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -15603,7 +16369,7 @@ var TextAreaField = /** @class */ (function (_super) {
     return TextAreaField;
 }(element_1.Element));
 exports.TextAreaField = TextAreaField;
-},{"./element":99}],118:[function(require,module,exports){
+},{"./element":104}],123:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -15866,7 +16632,7 @@ var Tooltip = /** @class */ (function (_super) {
     return Tooltip;
 }(container_element_1.ContainerElement));
 exports.Tooltip = Tooltip;
-},{"./container-element":98}],119:[function(require,module,exports){
+},{"./container-element":103}],124:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -15882,7 +16648,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./top-element"), exports);
 __exportStar(require("./top-element-container"), exports);
 __exportStar(require("./top-element-panel"), exports);
-},{"./top-element":122,"./top-element-container":120,"./top-element-panel":121}],120:[function(require,module,exports){
+},{"./top-element":127,"./top-element-container":125,"./top-element-panel":126}],125:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -16326,7 +17092,7 @@ var TopElementContainer = /** @class */ (function (_super) {
     return TopElementContainer;
 }(top_element_1.TopElement));
 exports.TopElementContainer = TopElementContainer;
-},{"./top-element":122}],121:[function(require,module,exports){
+},{"./top-element":127}],126:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -16625,7 +17391,7 @@ var TopElementPanel = /** @class */ (function (_super) {
     return TopElementPanel;
 }(top_element_container_1.TopElementContainer));
 exports.TopElementPanel = TopElementPanel;
-},{"./top-element-container":120}],122:[function(require,module,exports){
+},{"./top-element-container":125}],127:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -16943,7 +17709,7 @@ var TopElement = /** @class */ (function (_super) {
     return TopElement;
 }(lib_1.Events));
 exports.TopElement = TopElement;
-},{"../../lib":88}],123:[function(require,module,exports){
+},{"../../lib":93}],128:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -17503,7 +18269,7 @@ var TreeItem = /** @class */ (function (_super) {
     return TreeItem;
 }(element_1.Element));
 exports.TreeItem = TreeItem;
-},{"./element":99,"./text-field":116,"./tree":124}],124:[function(require,module,exports){
+},{"./element":104,"./text-field":121,"./tree":129}],129:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -18074,6 +18840,6 @@ var Tree = /** @class */ (function (_super) {
     return Tree;
 }(container_element_1.ContainerElement));
 exports.Tree = Tree;
-},{"../editor":42,"./container-element":98,"./tree-item":123}]},{},[91])
+},{"../editor":46,"./container-element":103,"./tree-item":128}]},{},[96])
 
 //# sourceMappingURL=vreditor.js.map

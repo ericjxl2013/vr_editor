@@ -1,18 +1,80 @@
 import { Entities } from "./entities";
 import { Observer } from "../../lib";
 import { Loader } from "../middleware/loader";
+import { TopElementContainer, Progress } from "../../ui";
 
 export class EntityLoad {
 
     public loadedEntities: boolean = false;
 
-    private _entities: Entities = new Entities();
+    // private _entities: Entities = new Entities();
 
     public constructor() {
+
+        var hierarchyOverlay = new TopElementContainer({
+            flex: true
+        });
+        hierarchyOverlay.class!.add('progress-overlay');
+        editor.call('layout.hierarchy').append(hierarchyOverlay);
+
+        var p = new Progress();
+        p.on('progress:100', function () {
+            hierarchyOverlay.hidden = true;
+        });
+        hierarchyOverlay.append(p);
+        p.hidden = true;
+
+        var loadedEntities = false;
+
+        editor.method('entities:loaded', function () {
+            return loadedEntities;
+        });
+
+
+        editor.on('scene:raw', function (data: any) {
+            // editor.call('selector:clear');
+            // editor.call('entities:clear');
+            // editor.call('attributes:clear');
+
+            // console.log(data);
+
+            var total = Object.keys(data.entities).length;
+            var i = 0;
+
+            // list
+            for (var key in data.entities) {
+                editor.call('entities:add', new Observer(data.entities[key]));
+                p.progress = (++i / total) * 0.8 + 0.1;
+                if (!data.entities[key].root && data.entities[key].asset === "") {
+                    editor.call("load:blue", data.entities[key].type, data.entities[key].property);
+                }
+            }
+
+            p.progress = 1;
+
+            loadedEntities = true;
+            editor.emit('entities:load');
+        });
+
+        editor.call('attributes:clear');
+
+        editor.on('scene:unload', function () {
+            editor.call('entities:clear');
+            editor.call('attributes:clear');
+        });
+
+        editor.on('scene:beforeload', function () {
+            hierarchyOverlay.hidden = false;
+            p.hidden = false;
+            p.progress = 0.1;
+        });
 
     }
 
 
+
+
+    /*
     public scene_raw(row_data: any): void {
         // 解析entity
 
@@ -49,6 +111,6 @@ export class EntityLoad {
         // 解析完成，其他面板设置
         editor.emit('entities:load');
     }
-
+    */
 
 }

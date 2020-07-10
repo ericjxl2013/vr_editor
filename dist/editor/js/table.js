@@ -111,10 +111,11 @@ const loadData = () => {
     var path = window.location.href;
     var paramsArray = path.split("?")[1].split("&");
     var paramsData = {};
-    for(var i = 0; i < paramsArray.length; i++) {
+    for (var i = 0; i < paramsArray.length; i++) {
         var arrayData = paramsArray[i].split("=");
         paramsData[arrayData[0]] = arrayData[1];
     }
+    paramsData["projectID"] = window.location.pathname.substring(7);
     axios
         .get("/api/table/acquire", {
             params: paramsData,
@@ -194,8 +195,19 @@ const saveImmediate = () => {
     // 将字符串中的转义字符及html相关格式文本进行转化
     table = html2Escape(table);
 
+    var path = window.location.href;
+    var paramsArray = path.split("?")[1].split("&");
+    var paramsData = {};
+    for (var i = 0; i < paramsArray.length; i++) {
+        var arrayData = paramsArray[i].split("=");
+        paramsData[arrayData[0]] = arrayData[1];
+    }
+    paramsData["projectID"] = window.location.pathname.substring(7);
+
     axios
-        .post("/api/table/commit", JSON.parse(table))
+        .post("/api/table/commit", JSON.parse(table), {
+            params: paramsData,
+        })
         .then(function (response) {
             let data = response.data;
             if (data.code === "0000") {

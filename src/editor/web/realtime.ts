@@ -131,7 +131,7 @@ export class Realtime {
                 // 如何关联到其他脚本
                 debug.log('加载场景成功，场景数据：');
                 debug.log(response.data.data);
-                self.load.scene_raw(response.data.data);
+                // self.load.scene_raw(response.data.data);
 
 
                 // for (var key in response.data.data) {

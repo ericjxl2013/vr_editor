@@ -12,7 +12,7 @@ export class AssetsStore {
         assetsPanel.header.append(btnStore);
 
         btnStore.on('click', function () {
-            window.open('https://store.playcanvas.com/', '_blank');
+            window.open('http://www.veryengine.cn/', '_blank');
         });
     }
 }
