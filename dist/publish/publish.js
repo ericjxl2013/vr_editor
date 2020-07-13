@@ -322,6 +322,7 @@ function loadData() {
     var path = window.location.href;
     var paramsData = {};
     paramsData["name"] = "新表格.table";
+    paramsData["projectID"] = window.location.pathname.substring(9);
     axios
         .get("/api/table/acquire", {
         params: paramsData,
