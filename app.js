@@ -51,7 +51,7 @@ const existsFile = (url) => {
 
 // 路由前处理，静态服务器功能
 app.use(async (ctx, next) => {
-    console.log(ctx.path);
+    // console.log(ctx.path);
     // if ("/editor/project/12345" === ctx.path) {
     //   return send(ctx, "./dist/editor/index.html");
     // } else

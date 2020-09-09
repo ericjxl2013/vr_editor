@@ -27,6 +27,7 @@ export class VeryEngine {
     public static viewport: Viewport;
 
     public static viewCanvas: Canvas;
+    public static viewCanvasElement: HTMLCanvasElement;
     public static viewEngine: BABYLON.Engine;
     public static viewScene: BABYLON.Scene;
 

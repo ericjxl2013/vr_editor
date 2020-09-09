@@ -8,7 +8,7 @@ export class Assets {
 
         // assets资源排序：folder资源排列在最前面，按文件夹名字排列；其他资源按name进行后续排序;
         var assets = new ObserverList({
-            index: 'id',
+            id: 'id',
             sorted: function (a: Observer, b: Observer): number {
                 let a1: boolean = a.get('type') === 'folder';
                 let b1: boolean = b.get('type') === 'folder';

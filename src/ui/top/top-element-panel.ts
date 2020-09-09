@@ -174,6 +174,7 @@ export class TopElementPanel extends TopElementContainer {
             scrollable: args.scrollable
         });
         this._containerContent.class!.add('pcui-panel-content');
+        this._containerContent.style.height = '100%';
 
         this.appendAfter(this._containerContent, this._containerHeader);
 

@@ -1,5 +1,5 @@
-import { WebRequest } from "./webrequest";
-import { VeryEngine } from "../../../engine";
+import { WebRequest } from './webrequest';
+import { VeryEngine } from '../../../engine';
 
 export class BlobData {
 
@@ -9,10 +9,10 @@ export class BlobData {
         var xhr = new WebRequest(),
             blob: Blob;
 
-        xhr.open("GET", url);
-        xhr.responseType = "blob";
+        xhr.open('GET', url);
+        xhr.responseType = 'blob';
 
-        xhr.addEventListener("load", () => {
+        xhr.addEventListener('load', () => {
             if (xhr.status === 200) {
                 // Blob as response (XHR2)
                 blob = xhr.response;
@@ -29,8 +29,8 @@ export class BlobData {
             }
         }, false);
 
-        xhr.addEventListener("error", () => {
-            // Logger.Error("Error in XHR request in BABYLON.Database.");
+        xhr.addEventListener('error', () => {
+            // Logger.Error('Error in XHR request in BABYLON.Database.');
             // image.src = url;
             console.error('error');
         }, false);

@@ -132,10 +132,12 @@ export class ObserverList extends Events {
     public add(item: Observer): number {
         if (this.has(item)) return -1;
 
-        var index = this.data.length;
+        // var index = this.data.length;
         if (this.id) {
-            index = item.get(this.id);
+            var index = item.get(this.id);
             this._indexed[index] = item;
+        } else {
+            this._indexed[this.data.length] = item;
         }
 
         var pos = 0;

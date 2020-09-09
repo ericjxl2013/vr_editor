@@ -357,14 +357,16 @@
 
 #layout-toolbar>.ui-button.logo {
     background-image: url("../../static/editor_logo.png");
-    background-size: 92px 46px;
+    background-size: 32px 32px;
     background-repeat: no-repeat;
-    background-position: -1px -1px
+    background-position-x: center;
+    background-position-y: center;
+    /* background-position: -1px -1px */
 }
 
-#layout-toolbar>.ui-button.logo:hover {
+/* #layout-toolbar>.ui-button.logo:hover {
     background-position: -47px -1px
-}
+} */
 
 #layout-toolbar>.ui-button.icon,
 #layout-toolbar>.ui-button.pc-icon {

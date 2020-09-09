@@ -1,10 +1,13 @@
 import { Element } from "./element";
+import { Label } from "./label";
 
 export class ImageField extends Element {
 
   private _value: any;
 
   public elementImage: HTMLImageElement | HTMLCanvasElement;
+
+  public _lable: Nullable<Label> = null;
 
 
   public get image(): string {

@@ -4,6 +4,7 @@ export class AssetsDuplicate {
 
     public constructor() {
 
+        // TODO: 什么类型的可以被复制
         editor.method('assets:duplicate', function (asset: Observer) {
             if (asset.get('type') !== 'material' && asset.get('type') !== 'sprite') return;
 

@@ -1,4 +1,4 @@
-import { BlobData } from "./blobdata";
+import { BlobData } from './blobdata';
 
 export class Database {
 
@@ -37,14 +37,14 @@ export class Database {
         // 打开数据库成功后，自动调用onsuccess事件回调。
         IDBOpenDBRequest.onsuccess = function (e) {
             self.db = (<IDBOpenDBRequest>e.target).result;
-            console.warn(dbName + " 打开成功");
+            console.warn(dbName + ' 打开成功');
             // console.warn(e.target);
             // console.warn(db.objectStoreNames);
             // add();
             // ask();
             // readAll();
 
-            getData("settings");
+            getData('settings');
         };
 
         // 打开数据库失败
@@ -80,21 +80,21 @@ export class Database {
 
         // let add = function () {
         //     // 创建事务对象
-        //     var tx = db.transaction("goods", "readwrite");
+        //     var tx = db.transaction('goods', 'readwrite');
         //     // 从数据库中获得存储对象，表
-        //     var goods = tx.objectStore("goods");
+        //     var goods = tx.objectStore('goods');
         //     // javascript中的对象数组
-        //     var items = [{ "id": 3, "name": "xxxxx", "price": 19999.5 }, { "id": 4, "name": "eeee", "price": 1997.3 }];
+        //     var items = [{ 'id': 3, 'name': 'xxxxx', 'price': 19999.5 }, { 'id': 4, 'name': 'eeee', 'price': 1997.3 }];
         //     for (var i = 0; i < items.length; i++) {
         //         goods.add(items[i]);
         //     }
 
 
-        //     console.log("添加数据成功！");
+        //     console.log('添加数据成功！');
         // }
 
         function add() {
-            var request = self.db.transaction("goods", 'readwrite')
+            var request = self.db.transaction('goods', 'readwrite')
                 .objectStore('goods')
                 .add({ id: 5, name: '张三', age: 24, email: 'zhangsan@example.com' });
 
@@ -109,7 +109,7 @@ export class Database {
 
 
         let addData = function (data: any) {
-            var request = self.db.transaction("goods", 'readwrite')
+            var request = self.db.transaction('goods', 'readwrite')
                 .objectStore('goods')
                 .add(data);
 
@@ -130,7 +130,7 @@ export class Database {
                     // ep.emit('scenes', response.data);
                     // self.getScene(response.data.data.scenes[0].id);
                     console.warn('add data');
-                    addData({ v: 2, data: response.data.data, ssn: "settings" });
+                    addData({ v: 2, data: response.data.data, ssn: 'settings' });
                 })
                 .catch(error => {
                     console.error(error);
@@ -219,13 +219,13 @@ export class Database {
         // 打开数据库成功后，自动调用onsuccess事件回调。
         openRequest.onsuccess = function (e) {
             self.db = (<IDBOpenDBRequest>e.target).result;
-            console.warn("数据库打开成功! database = " + dbname);
+            console.warn('数据库打开成功! database = ' + dbname);
             // console.warn(e.target);
             // console.warn(db.objectStoreNames);
             // add();
             // ask();
             // readAll();
-            // getData("settings2");
+            // getData('settings2');
         };
 
         // 打开数据库失败
@@ -311,7 +311,7 @@ export class Database {
         // 打开数据库成功后，自动调用onsuccess事件回调。
         openRequest.onsuccess = function (e) {
             self.db = (<IDBOpenDBRequest>e.target).result;
-            console.warn("数据库打开成功! database = " + dbname);
+            console.warn('数据库打开成功! database = ' + dbname);
 
             // callback('success', dbname);
             // console.warn(e.target);
@@ -319,7 +319,7 @@ export class Database {
             // add();
             // ask();
             // readAll();
-            // getData("settings2");
+            // getData('settings2');
         };
 
         // 打开数据库失败

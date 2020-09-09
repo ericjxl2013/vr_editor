@@ -150,6 +150,12 @@ export class TopElementContainer extends TopElement {
         }
     }
 
+    public get innerElement(): Nullable<HTMLElement> {
+        return this.domContent;
+    }
+    public set innerElement(value: Nullable<HTMLElement>) {
+        this.domContent = value;
+    }
 
 
     public constructor(args: any) {

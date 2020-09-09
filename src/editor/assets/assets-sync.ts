@@ -1,11 +1,12 @@
-import { Observer } from "../../lib";
+import { Observer } from '../../lib';
 
 export class AssetsSync {
 
     public constructor() {
 
-        editor.method("initAssets", (assets_data: any) => {
-            onLoad(assets_data);
+        editor.method('initAssets', (assets_data: any) => {
+            if(assets_data.assets)
+                onLoad(assets_data.assets);
         });
 
         // Asseting, uniqueId为assets索引id
@@ -26,7 +27,7 @@ export class AssetsSync {
 
             var asset = new Observer(assetData);
             editor.call('assets:add', asset);
-            // console.log("load: " + asset.get("name"));
+            // console.log('load: ' + asset.get('name'));
 
             if (callback)
                 callback(asset);

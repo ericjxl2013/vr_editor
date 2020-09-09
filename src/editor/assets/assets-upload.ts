@@ -1,7 +1,7 @@
-import { VeryEngine } from "../../engine";
-import { Observer } from "../../lib";
-import { Ajax, AjaxRequest } from "../utility";
-import { Config } from "../global";
+import { VeryEngine } from '../../engine';
+import { Observer } from '../../lib';
+import { Ajax, AjaxRequest } from '../utility';
+import { Config } from '../global';
 
 export class AssetsUpload {
 
@@ -37,8 +37,8 @@ export class AssetsUpload {
         };
 
         var typeToExt: { [key: string]: string[] } = {
-            'scene': ['fbx', 'dae', 'obj', '3ds', 'babylon'],
-            'text': ['txt', 'xml', 'atlas', 'table'],
+            'model': ['fbx', 'dae', 'obj', '3ds', 'babylon'],
+            'data': ['txt', 'xml', 'atlas', 'table'],
             'html': ['html'],
             'json': ['json'],
             'texture': ['tif', 'tga', 'png', 'jpg', 'jpeg', 'gif', 'bmp', 'dds', 'hdr', 'exr'],
@@ -77,7 +77,7 @@ export class AssetsUpload {
             // to make it parsed on back-end first
 
             // branch id
-            // form.append('branchId', "config.self.branch.id");
+            // form.append('branchId', 'config.self.branch.id');
 
             //
 
@@ -136,7 +136,7 @@ export class AssetsUpload {
 
             // type
             if (!args.type) {
-                console.error('\"type\" required for upload request');
+                console.error('\'type\' required for upload request');
             }
             form.append('type', args.type);
 
@@ -183,16 +183,23 @@ export class AssetsUpload {
             var method = 'POST';
             var url = '/api/upload';
             var form = null;
-            if (args.asset) {
+            let replaceMode: boolean = false;
+            if (args.asset && args.type && args.type !== 'model') {
                 var assetId = args.asset.get('id');
                 method = 'PUT';
-                url = '/api/upload/' + assetId;
+                url = '/api/upload/assets/' + assetId;
                 form = update(assetId, args);
+                replaceMode = true;
+                form.append('replaceAsset', assetId);
+                if(args.type) {
+                    form.append('type', args.type);
+                }
             } else {
                 form = create(args);
             }
 
-            form.append("projectID", Config.projectID);
+            form.append('projectID', Config.projectID);
+            form.append('path', args.path);
 
             var job = ++uploadJobs;
             editor.call('status:job', 'asset-upload:' + job, 0);
@@ -203,20 +210,51 @@ export class AssetsUpload {
                 // auth: true,
                 data: form,
                 ignoreContentType: true,
-                // headers: {
-                //     Accept: 'application/json'
-                // }
+                headers: {
+                    Accept: 'application/json'
+                }
             };
 
-            (<AjaxRequest>new Ajax(data))
-                .on("load", (status: any, data: any) => {
-                    console.log("status: " + status);
+            // 上传新资源
+            if (!replaceMode) {
+                (<AjaxRequest>new Ajax(data))
+                    .on('load', (status: any, data: any) => {
+                        // console.log('status: ' + status);
+                        console.log(data);
+                        if (data.code === '0000') {
+                            for (let i = 0, len = data.data.length; i < len; i++) {
+                                var asset = new Observer(data.data[i]);
+                                editor.call('assets:add', asset);
+                            }
+                        }
+                    });
+            } else {
+                // 老资源重名覆盖为新上传资源
+                (<AjaxRequest>new Ajax(data))
+                .on('load', (status: any, data: any) => {
+                    // console.log('status: ' + status);
                     console.log(data);
-                    if (data.code === "0000") {
-                        var asset = new Observer(data.data);
-                        editor.call('assets:add', asset);
+                    if (data.code === '0000') {
+                        // TODO: 简易处理
+                        let asset: Observer = editor.call('assets:get', data.data.id);
+                        if(asset && asset.get('type') === 'texture') {
+                            asset.set('modifiedAt', data.data.modifiedAt);
+                            asset.set('file.size', data.data.file.size);
+                            asset.set('file.hash', data.data.file.hash);
+                            asset.emit('thumbnails.m:set', data.data.name + '?' + data.data.file.hash);
+                            console.log('更新图片');
+                        }
+
+                        
+
+                        // for (let i = 0, len = data.data.length; i < len; i++) {
+                        //     var asset = new Observer(data.data[i]);
+                        //     editor.call('assets:add', asset);
+                        // }
                     }
                 });
+            }
+
             // Ajax.post(url, form);
 
             // 上传数据，具体入口
@@ -232,7 +270,7 @@ export class AssetsUpload {
             //     })
             //     .on('error', function (status, data) {
             //         if (/Disk allowance/.test(data)) {
-            //             data += '. <a href="/upgrade" target="_blank">UPGRADE</a> to get more disk space.';
+            //             data += '. <a href='/upgrade' target='_blank'>UPGRADE</a> to get more disk space.';
             //         }
 
             //         editor.call('status:error', data);
@@ -245,7 +283,7 @@ export class AssetsUpload {
 
         editor.method('assets:upload:files', function (files: FileList) {
             if (!editor.call('assets:canUploadFiles', files)) {
-                // var msg = 'Disk allowance exceeded. <a href="/upgrade" target="_blank">UPGRADE</a> to get more disk space.';
+                // var msg = 'Disk allowance exceeded. <a href='/upgrade' target='_blank'>UPGRADE</a> to get more disk space.';
                 // editor.call('status:error', msg);
                 return;
             }
@@ -257,9 +295,15 @@ export class AssetsUpload {
                 var path: string[] = [];
 
                 if (currentFolder && currentFolder.get)
-                    path = currentFolder.get('path').concat(parseInt(currentFolder.get('id'), 10));
+                    path = currentFolder.get('path').concat(currentFolder.get('id'));
+
+                // console.log(currentFolder);
+                // console.log(currentFolder.get('path'));
+                // console.log(currentFolder.get('id'));
 
                 console.error(path);
+
+                console.warn(files[i]);
 
                 var source = false;
                 var ext1: string[] = files[i].name.split('.');
@@ -277,32 +321,38 @@ export class AssetsUpload {
                 //     type = 'textureatlas';
                 // }
 
-                // can we overwrite another asset?
+                // 同一文件夹重名文件覆盖
                 var sourceAsset = null;
-                // var candidates = editor.call('assets:find', function (item: Observer) {
-                //     // check files in current folder only
-                //     if (!item.get('path').equals(path))
-                //         return false;
+                var candidates = editor.call('assets:find', function (item: Observer) {
+                    // check files in current folder only
+                    if (item.get('path').join(',') !== path.join(','))
+                        return false;
 
-                //     // try locate source when dropping on its targets
-                //     if (source && !item.get('source') && item.get('source_asset_id')) {
-                //         var itemSource = editor.call('assets:get', item.get('source_asset_id'));
-                //         if (itemSource && itemSource.get('type') === type && itemSource.get('name').toLowerCase() === files[i].name.toLowerCase()) {
-                //             sourceAsset = itemSource;
-                //             return false;
-                //         }
-                //     }
+                    if (files[i].name === item.get('name')) {
+                        return true;
+                    }
+
+                    //     // try locate source when dropping on its targets
+                    //     if (source && !item.get('source') && item.get('source_asset_id')) {
+                    //         var itemSource = editor.call('assets:get', item.get('source_asset_id'));
+                    //         if (itemSource && itemSource.get('type') === type && itemSource.get('name').toLowerCase() === files[i].name.toLowerCase()) {
+                    //             sourceAsset = itemSource;
+                    //             return false;
+                    //         }
+                    //     }
 
 
-                //     if (item.get('source') === source && item.get('name').toLowerCase() === files[i].name.toLowerCase()) {
-                //         // we want the same type or try to replace a texture atlas with the same name if one exists
-                //         if (item.get('type') === type || (type === 'texture' && item.get('type') === 'textureatlas')) {
-                //             return true;
-                //         }
-                //     }
+                    //     if (item.get('source') === source && item.get('name').toLowerCase() === files[i].name.toLowerCase()) {
+                    //         // we want the same type or try to replace a texture atlas with the same name if one exists
+                    //         if (item.get('type') === type || (type === 'texture' && item.get('type') === 'textureatlas')) {
+                    //             return true;
+                    //         }
+                    //     }
 
-                //     return false;
-                // });
+                    return false;
+                });
+
+                console.warn(candidates);
 
                 // candidates contains [index, asset] entries. Each entry
                 // represents an asset that could be overwritten by the uploaded asset.
@@ -328,13 +378,14 @@ export class AssetsUpload {
                     };
                 }
 
-                console.log("upload");
+                console.log('upload');
 
                 editor.call('assets:uploadFile', {
-                    // asset: asset ? asset[1] : sourceAsset,
-                    asset: null,
+                    asset: (candidates && candidates.length > 0) ? candidates[0][1] : null,
+                    // asset: null,
                     file: files[i],
                     type: type,
+                    path: path.join(','),
                     name: files[i].name,
                     parent: editor.call('assets:panel:currentFolder'),
                     pipeline: true,
@@ -374,7 +425,7 @@ export class AssetsUpload {
             var fileInput = document.createElement('input');
             fileInput.type = 'file';
             // 服务器需要识别此name
-            fileInput.name = "file";
+            fileInput.name = 'file';
             // fileInput.accept = '';
             fileInput.multiple = true;
             fileInput.style.display = 'none';

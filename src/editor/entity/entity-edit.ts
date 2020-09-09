@@ -1,16 +1,48 @@
 import { Observer } from "../../lib";
+import { BabylonLoader } from "../middleware/loader/babylonLoader";
 
 export class EntityEdit {
 
 
     public constructor() {
 
-        var childToParent: any = {};
+        let childToParent: { [key: string]: string } = {};
+        // 为回退作准备
+        let deletedCache: { [key: string]: string } = {};
 
-        var addEntity = function (entity: Observer, parent: Observer, select: boolean, ind: number, entityReferencesMap: any) {
+        editor.on('entities:add', function (entity: Observer) {
+            var children = entity.get('children');
+            for (var i = 0; i < children.length; i++)
+                childToParent[children[i]] = entity.get('resource_id');
+
+            entity.on('children:insert', function (value: string) {
+                console.warn('children:insert in entity-edit');
+                childToParent[value] = entity.get('resource_id');
+            });
+            entity.on('children:remove', function (value: string) {
+                delete childToParent[value];
+            });
+        });
+
+        var updateEntityReferenceFields = function (entityReferencesMap: any, oldValue: string, newValue: any) {
+            var referencesToThisEntity = entityReferencesMap[oldValue];
+            if (!referencesToThisEntity) return;
+
+            referencesToThisEntity.forEach(function (reference: any) {
+                var sourceEntity = editor.call('entities:get', reference.sourceEntityGuid);
+                if (!sourceEntity) return;
+
+                var prevHistory = sourceEntity.history.enabled;
+                sourceEntity.history.enabled = false;
+                sourceEntity.set('components.' + reference.componentName + '.' + reference.fieldName, newValue);
+                sourceEntity.history.enabled = prevHistory;
+            });
+        };
+
+
+        var addEntity = function (entity: Observer, parent: Observer, select: boolean, ind: number | undefined, entityReferencesMap: any) {
             entityReferencesMap = entityReferencesMap || {};
-
-            ind = ind || 0;
+            // ind = ind || 0;
 
             childToParent[entity.get('resource_id')] = parent.get('resource_id');
 
@@ -23,7 +55,10 @@ export class EntityEdit {
 
             console.error(entity);
 
-            // shareDb
+            BabylonLoader.addSceneData(entity.get('resource_id'), entity.origin);
+
+            // TODO: 上传到服务器
+            // shareDb 
             // editor.call('realtime:scene:op', {
             //     p: ['entities', entity.get('resource_id')],
             //     oi: entity.origin
@@ -31,7 +66,8 @@ export class EntityEdit {
 
             // this is necessary for the entity to be added to the tree view
             // parent.history.enabled = false;
-            // parent.insert('children', entity.get('resource_id'), ind);
+            // 添加tree item 菜单入口
+            parent.insert('children', entity.get('resource_id'), ind);
             // parent.history.enabled = true;
 
             // if (select) {
@@ -45,7 +81,7 @@ export class EntityEdit {
             // }
 
             // add children too
-            // children.forEach(function (childIdOrData) {
+            // children.forEach(function (childIdOrData: any) {
             //     var data;
 
             //     // If we've been provided an id, we're re-creating children from the deletedCache
@@ -62,16 +98,18 @@ export class EntityEdit {
             //     }
 
             //     var child = new Observer(data);
-            //     addEntity(child, entity, undefined, undefined, entityReferencesMap);
+            //     // TODO
+            //     addEntity(child, entity, false, 0, entityReferencesMap);
             // });
 
             // Hook up any entity references which need to be pointed to this newly created entity
             // (happens when addEntity() is being called during the undoing of a deletion). In order
             // to force components to respond to the setter call even when they are running in other
             // tabs or in the Launch window, we unfortunately have to use a setTimeout() hack :(
-            var guid = entity.get('resource_id');
+            // var guid = entity.get('resource_id');
 
             // First set all entity reference fields targeting this guid to null
+            // TODO: 待定，更新属性菜单
             // updateEntityReferenceFields(entityReferencesMap, guid, null);
             // setTimeout(function () {
             //     // Then update the same fields to target the guid again
@@ -83,8 +121,73 @@ export class EntityEdit {
             // }
         };
 
+        var removeEntity = function (entity: Observer, entityReferencesMap: any) {
+            entityReferencesMap = entityReferencesMap || {};
+            // deletedCache[entity.get('resource_id')] = entity.json();
+            deletedCache[entity.get('resource_id')] = entity.origin;
+
+            // Nullify any entity references which currently point to this guid
+            updateEntityReferenceFields(entityReferencesMap, entity.get('resource_id'), null);
+
+            // remove children
+            entity.get('children').forEach(function (child: string) {
+                var entity = editor.call('entities:get', child);
+                if (!entity)
+                    return;
+
+                removeEntity(entity, entityReferencesMap);
+            });
+
+            if (editor.call('selector:type') === 'entity' && editor.call('selector:items').indexOf(entity) !== -1) {
+                editor.call('selector:history', false);
+                editor.call('selector:remove', entity);
+                editor.once('selector:change', function () {
+                    editor.call('selector:history', true);
+                });
+            }
+
+            // remove from parent
+            var parentId = childToParent[entity.get('resource_id')];
+            if (parentId) {
+                var parent = editor.call('entities:get', parentId);
+                if (parent) {
+                    parent.history.enabled = false;
+                    parent.removeValue('children', entity.get('resource_id'));
+                    parent.history.enabled = true;
+                }
+            }
+
+            // call remove method
+            editor.call('entities:remove', entity);
+
+            // sharedb
+            editor.call('realtime:scene:op', {
+                p: ['entities', entity.get('resource_id')],
+                od: {}
+            });
+        };
+
 
         editor.method('entities:addEntity', addEntity);
+        editor.method('entities:removeEntity', removeEntity);
+
+        editor.method('entities:getParentResourceId', function (childResourceId: string) {
+            return childToParent[childResourceId];
+        });
+
+        editor.method('entities:updateChildToParentIndex', function (childResourceId: string, parentResourceId: string) {
+            childToParent[childResourceId] = parentResourceId;
+        });
+
+        editor.method('entities:getFromDeletedCache', function (resourceId: string) {
+            return deletedCache[resourceId];
+        });
+
+
+        editor.method('save:scene', () => {
+            BabylonLoader.saveScene();
+        });
+
 
     }
 }

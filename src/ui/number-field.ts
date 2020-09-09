@@ -46,7 +46,6 @@ export class NumberField extends Element {
         val = -1;
 
       let different = this._lastValue !== val;
-
       this._lastValue = val;
       this.elementInput.value = val.toString();
 

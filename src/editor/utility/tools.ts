@@ -1,9 +1,9 @@
-import { WebRequest } from "../middleware/offline/webrequest";
-import { VeryEngine } from "../../engine";
+import { WebRequest } from '../middleware/offline/webrequest';
+import { VeryEngine } from '../../engine';
 
 export class Tools {
 
-    public static BaseUrl = "";
+    public static BaseUrl = '';
 
 
 
@@ -14,7 +14,7 @@ export class Tools {
 
 
     public static GetFilename(path: string): string {
-        var index = path.lastIndexOf("/");
+        var index = path.lastIndexOf('/');
         if (index < 0) {
             return path;
         }
@@ -23,12 +23,12 @@ export class Tools {
     }
 
     public static GetFolderPath(uri: string, returnUnchangedIfNoSlash = false): string {
-        var index = uri.lastIndexOf("/");
+        var index = uri.lastIndexOf('/');
         if (index < 0) {
             if (returnUnchangedIfNoSlash) {
                 return uri;
             }
-            return "";
+            return '';
         }
         return uri.substring(0, index + 1);
     }
@@ -40,7 +40,7 @@ export class Tools {
     }
 
     public static CleanUrl(url: string): string {
-        url = url.replace(/#/mg, "%23");
+        url = url.replace(/#/mg, '%23');
         return url;
     }
 
@@ -97,8 +97,8 @@ export class Tools {
                 var light = BABYLON.Light.Parse(parsedLight, VeryEngine.viewScene);
                 if (light) {
                     // container.lights.push(light);
-                    // log += (index === 0 ? "\n\tLights:" : "");
-                    // log += "\n\t\t" + light.toString(fullDetails);
+                    // log += (index === 0 ? '\n\tLights:' : '');
+                    // log += '\n\t\t' + light.toString(fullDetails);
                 }
             }
         }
@@ -107,13 +107,13 @@ export class Tools {
         if (data.animations !== undefined && data.animations !== null) {
             for (let index = 0, cache = data.animations.length; index < cache; index++) {
                 var parsedAnimation = data.animations[index];
-                const internalClass = BABYLON._TypeStore.GetClass("BABYLON.Animation");
+                const internalClass = BABYLON._TypeStore.GetClass('BABYLON.Animation');
                 if (internalClass) {
                     let animation = internalClass.Parse(parsedAnimation);
                     VeryEngine.viewScene.animations.push(animation);
                     // container.animations.push(animation);
-                    // log += (index === 0 ? "\n\tAnimations:" : "");
-                    // log += "\n\t\t" + animation.toString(fullDetails);
+                    // log += (index === 0 ? '\n\tAnimations:' : '');
+                    // log += '\n\t\t' + animation.toString(fullDetails);
                 }
             }
         }
@@ -124,8 +124,8 @@ export class Tools {
                 var parsedMaterial = data.materials[index];
                 var mat = BABYLON.Material.Parse(parsedMaterial, VeryEngine.viewScene, rootUrl);
                 // container.materials.push(mat);
-                // log += (index === 0 ? "\n\tMaterials:" : "");
-                // log += "\n\t\t" + mat.toString(fullDetails);
+                // log += (index === 0 ? '\n\tMaterials:' : '');
+                // log += '\n\t\t' + mat.toString(fullDetails);
             }
         }
 
@@ -134,8 +134,8 @@ export class Tools {
                 var parsedMultiMaterial = data.multiMaterials[index];
                 var mmat = BABYLON.MultiMaterial.ParseMultiMaterial(parsedMultiMaterial, VeryEngine.viewScene);
                 // container.multiMaterials.push(mmat);
-                // log += (index === 0 ? "\n\tMultiMaterials:" : "");
-                // log += "\n\t\t" + mmat.toString(fullDetails);
+                // log += (index === 0 ? '\n\tMultiMaterials:' : '');
+                // log += '\n\t\t' + mmat.toString(fullDetails);
             }
         }
 
@@ -144,10 +144,10 @@ export class Tools {
             for (let index = 0, cache = data.skeletons.length; index < cache; index++) {
                 var parsedSkeleton = data.skeletons[index];
                 var skeleton = BABYLON.Skeleton.Parse(parsedSkeleton, VeryEngine.viewScene);
-                skeleton.beginAnimation("Skeleton0", true);
+                skeleton.beginAnimation('Skeleton0', true);
                 // container.skeletons.push(skeleton);
-                // log += (index === 0 ? "\n\tSkeletons:" : "");
-                // log += "\n\t\t" + skeleton.toString(fullDetails);
+                // log += (index === 0 ? '\n\tSkeletons:' : '');
+                // log += '\n\t\t' + skeleton.toString(fullDetails);
             }
         }
 
@@ -178,8 +178,8 @@ export class Tools {
                 var parsedMesh = data.meshes[index];
                 var mesh = <BABYLON.AbstractMesh>BABYLON.Mesh.Parse(parsedMesh, VeryEngine.viewScene, rootUrl);
                 // container.meshes.push(mesh);
-                // log += (index === 0 ? "\n\tMeshes:" : "");
-                // log += "\n\t\t" + mesh.toString(fullDetails);
+                // log += (index === 0 ? '\n\tMeshes:' : '');
+                // log += '\n\t\t' + mesh.toString(fullDetails);
             }
         }
 
@@ -203,7 +203,7 @@ export class Tools {
     //     url = Tools.PreprocessUrl(url);
 
     //     // 在本地缓存中存在此文件， TODO: 还有本地上传的情况处理
-    //     if (url.indexOf("file:") !== -1) {
+    //     if (url.indexOf('file:') !== -1) {
     //         // const fileName = decodeURIComponent(url.substring(5).toLowerCase());
     //         // if (FilesInputStore.FilesToLoad[fileName]) {
     //         //     // 缓存文件
@@ -229,13 +229,13 @@ export class Tools {
 
 
     /**
-     * name字符串合法性检查，不允许出现 “\/*<>?|"':” 等字符串，若存在，则返回false；
+     * name字符串合法性检查，不允许出现 “\/*<>?|'':” 等字符串，若存在，则返回false；
      * @param name 待检查的name字符串；
      */
     public static isLegalName(name: string): boolean {
         // var re = /[^\u4e00-\u9fa5]/; // 中文正则
-        // var pattern = new RegExp("[`\\-~!@#$^&*()=|{}':;',\\[\\].<>《》/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？12345678990]"); // 特殊符号
-        const illegalPattern = /[\\\/*<>?|"':]/;
+        // var pattern = new RegExp('[`\\-~!@#$^&*()=|{}':;',\\[\\].<>《》/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？12345678990]'); // 特殊符号
+        const illegalPattern = /[\\\/*<>?|'':]/;
         if (illegalPattern.test(name)) {
             return false;
         } else {

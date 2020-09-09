@@ -10,6 +10,9 @@ import { AssetsCreateFolder } from "./assets-create-folder";
 import { AssetsSync } from "./assets-sync";
 import { AssetsDrop } from "./assets-drop";
 import { AssetsCreateTable } from "./assets-create-table";
+import { AssetsRename } from "./assets-rename";
+import { AssetsFs } from "./assets-fs";
+import { AssetsPreview } from "./assets-preview";
 
 export class  AssetsKeeper {
 
@@ -18,6 +21,8 @@ export class  AssetsKeeper {
         let assets = new Assets();
 
         let syncAssets = new AssetsSync();
+        new AssetsFs();
+        new AssetsPreview();
         let assetPanel = new AssetsPanel();
         let panelControl = new AssetsPanelControl();
         let filter = new AssetsFilter();
@@ -32,6 +37,8 @@ export class  AssetsKeeper {
         let drop = new AssetsDrop();
 
         let library = new AssetsStore();
+
+        new AssetsRename();
 
 
 

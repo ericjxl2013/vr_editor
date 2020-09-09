@@ -1,5 +1,5 @@
-import { Observer } from "../../lib";
-import { GUID } from "../utility";
+import { Observer } from '../../lib';
+import { GUID } from '../utility';
 
 export class EntityCreate {
 
@@ -8,7 +8,7 @@ export class EntityCreate {
 
         var createNewEntityData = function (defaultData: any, parentResourceId: string) {
             var entityData = {
-                name: defaultData.name || "空物体",
+                name: defaultData.name || '空物体',
                 tags: [],
                 enabled: true,
                 resource_id: defaultData.resource_id || GUID.create(),
@@ -21,7 +21,7 @@ export class EntityCreate {
                 // __postCreationCallback: defaultData.postCreationCallback,
                 root: false,
                 type: defaultData.type,
-                asset: defaultData.asset || ""
+                asset: defaultData.asset || ''
             };
 
             // if (defaultData.children) {
@@ -35,26 +35,26 @@ export class EntityCreate {
         };
 
 
-        editor.method("entity:new:babylon", (defaultData: any) => {
+        editor.method('entity:new:babylon', (defaultData: any) => {
             defaultData = defaultData || {};
             // var parent = defaultData.parent;
-            // var parent = editor.call("entities:root");
+            // var parent = editor.call('entities:root');
 
-            // if (parent === "" || parent === undefined) {
-            //     parent = editor.call("entities:root").get("resource_id");
+            // if (parent === '' || parent === undefined) {
+            //     parent = editor.call('entities:root').get('resource_id');
             // }
 
-            // console.log(editor.call("entities:root"));
+            // console.log(editor.call('entities:root'));
             // console.log(defaultData.parent);
             // console.log(defaultData);
 
-            // var data = createNewEntityData(defaultData, parent.get("resource_id"));
+            // var data = createNewEntityData(defaultData, parent.get('resource_id'));
 
             // create new Entity data
             var entity = new Observer(defaultData);
 
             editor.call('entities:add', entity);
-            // editor.call("entities:addEntity", entity, parent, !defaultData.noSelect);
+            // editor.call('entities:addEntity', entity, parent, !defaultData.noSelect);
 
             return entity;
         });
@@ -62,9 +62,12 @@ export class EntityCreate {
         editor.method('entities:new', function (defaultData: any) {
             // get root if parent is null
             defaultData = defaultData || {};
-            var parent = defaultData.parent || editor.call('entities:root');
+            // var parent = defaultData.parent || editor.call('entities:root');
 
-            var data = createNewEntityData(defaultData, parent.get('resource_id'));
+            // TODO: 一堆mesh过来，有的创建了，有的没创建怎么办
+            var parent = editor.call('entities:get', defaultData.parent) || editor.call('entities:root');
+
+            // var data = createNewEntityData(defaultData, parent.get('resource_id'));
 
             var selectorType: string, selectorItems: Observer[];
 
@@ -78,7 +81,7 @@ export class EntityCreate {
             }
 
             // create new Entity data
-            var entity = new Observer(data);
+            var entity = new Observer(defaultData);
             editor.call('entities:addEntity', entity, parent, !defaultData.noSelect);
 
             // history
@@ -117,7 +120,8 @@ export class EntityCreate {
                         if (!parent)
                             return;
 
-                        var entity = new Observer(data);
+                        // var entity = new Observer(data);
+                        var entity = new Observer(defaultData);
                         editor.call('entities:addEntity', entity, parent, true);
                     }
                 });

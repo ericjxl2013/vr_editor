@@ -1,6 +1,6 @@
-import { Panel, Button, Tooltip } from "../../ui";
-import { VeryEngine } from "../../engine";
-import { Config } from "../global";
+import { Panel, Button, Tooltip } from '../../ui';
+import { VeryEngine } from '../../engine';
+import { Config } from '../global';
 
 export class ToolbarTopControl {
 
@@ -51,7 +51,7 @@ export class ToolbarTopControl {
         panel.append(buttonLaunch);
 
         buttonLaunch.on('click', function () {
-            window.open(window.location.protocol + "//" + window.location.host + "/publish/" + Config.projectID);
+            window.open(window.location.protocol + '//' + window.location.host + '/publish/' + Config.projectID);
         });
 
         var tooltipLaunch = Tooltip.attach({

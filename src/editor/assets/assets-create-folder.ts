@@ -11,6 +11,12 @@ export class AssetsCreateFolder {
 
             args = args || {};
 
+            var path: string[] = [];
+            var currentFolder = editor.call('assets:panel:currentFolder');
+
+            if (currentFolder && currentFolder.get)
+                path = currentFolder.get('path').concat(currentFolder.get('id'));
+
             var asset = {
                 name: '新建文件夹',
                 type: 'folder',
@@ -21,7 +27,8 @@ export class AssetsCreateFolder {
                 scope: {
                     type: 'project',
                     id: Config.projectID
-                }
+                },
+                path: path.join(',')
             };
 
             console.log(asset);

@@ -1,20 +1,19 @@
 import { Entity } from "./entity";
-import { GameObject, MiddleContainer } from "../middleware";
+import { GameObject, ResourceContainer } from "../middleware";
 import { Observer, ObserverList } from "../../lib";
 
 export class Entities {
     public lists: Entity[] = [];
     private _indexed: { [key: string]: Entity } = {};
 
-    private container: MiddleContainer;
+    private container: ResourceContainer;
 
     public constructor() {
-        this.container = new MiddleContainer();
+        this.container = new ResourceContainer();
 
 
 
         var entities = new ObserverList({
-            index: 'resource_id',
             id: 'resource_id'
         });
 

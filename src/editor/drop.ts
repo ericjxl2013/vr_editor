@@ -73,6 +73,8 @@ export class Drop {
         window.addEventListener('dragenter', function (evt) {
             evt.preventDefault();
 
+            // console.log('dragenter');
+
             if (!editor.call('permissions:write'))
                 return;
 
@@ -90,6 +92,8 @@ export class Drop {
         window.addEventListener('dragover', function (evt: DragEvent) {
             evt.preventDefault();
 
+            // console.log('dragover');
+
             if (!editor.call('permissions:write'))
                 return;
 
@@ -103,6 +107,8 @@ export class Drop {
 
         window.addEventListener('dragleave', function (evt) {
             evt.preventDefault();
+
+            // console.log('dragleave');
 
             if (evt.clientX !== 0 || evt.clientY !== 0)
                 return;
@@ -122,7 +128,11 @@ export class Drop {
         }, false);
 
         window.addEventListener('drop', function (evt) {
+
             evt.preventDefault();
+
+            // console.log('drop');
+
             activate(false);
         }, false);
 
@@ -190,6 +200,8 @@ export class Drop {
         };
 
         editor.method('drop:target', function (obj: IDrop) {
+            // console.log('drop:target');
+
             items.push(obj);
             obj.element = document.createElement('div');
             obj.element._ref = obj;
@@ -205,6 +217,8 @@ export class Drop {
             obj.evtDrop = function (e: DragEvent | MouseEvent) {
                 e.preventDefault();
 
+                console.log('obj.evtDrop');
+
                 if (!currentType)
                     return;
 
@@ -218,6 +232,8 @@ export class Drop {
                 if (currentType == 'files' && (<DragEvent>e).dataTransfer)
                     data = (<DragEvent>e).dataTransfer!.files;
 
+                console.log(currentType);
+                console.log(data);
                 if (obj.drop)
                     obj.drop(currentType, data);
             };
@@ -267,6 +283,8 @@ export class Drop {
         editor.method('drop:item', function (args: any) {
             args.element.draggable = true;
 
+            // console.log('drop:item');
+
             args.element.addEventListener('mousedown', function (evt: MouseEvent) {
                 evt.stopPropagation();
             }, false);
@@ -291,12 +309,16 @@ export class Drop {
             currentType = type || '',
                 currentData = data || {};
 
+            // console.log('drop:set');
+
             editor.emit('drop:set', currentType, currentData);
         });
 
 
         editor.on('drop:active', function (state: boolean) {
             areas.style.pointerEvents = '';
+
+            // console.log('drop:active +' + state);
 
             if (state) {
                 var bottom = 0;
@@ -307,6 +329,10 @@ export class Drop {
                 for (var i = 0; i < items.length; i++) {
                     var visible = !items[i].disabled;
 
+                    // console.log('visible: ' + visible);
+                    // console.log('currentType: ' + currentType);
+                    // console.log(currentData);
+
                     if (visible) {
                         if (items[i].filter) {
                             visible = items[i].filter(currentType, currentData);
@@ -314,6 +340,7 @@ export class Drop {
                             visible = false;
                         }
                     }
+                    // console.log('visible: ' + visible);
 
                     if (visible) {
                         var rect = items[i].ref.getBoundingClientRect();

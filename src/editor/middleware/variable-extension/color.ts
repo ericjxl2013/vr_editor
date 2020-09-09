@@ -1,4 +1,4 @@
-import { BabylonEngine } from "src/engine";
+import { BabylonEngine } from 'src/engine';
 
 export class Color {
 
@@ -16,11 +16,11 @@ export class Color {
   }
 
   public toString(): string {
-    return "{R: " + this.r + " G:" + this.g + " B:" + this.b + " A:" + this.a + "}";
+    return '{R: ' + this.r + ' G:' + this.g + ' B:' + this.b + ' A:' + this.a + '}';
   }
 
   public getClassName(): string {
-    return "Color";
+    return 'Color';
   }
 
   public toColor3(): BABYLON.Color3 {
@@ -79,7 +79,7 @@ export class Color {
     var intR = (this.r * 255) | 0;
     var intG = (this.g * 255) | 0;
     var intB = (this.b * 255) | 0;
-    return "#" + BABYLON.Scalar.ToHex(intR) + BABYLON.Scalar.ToHex(intG) + BABYLON.Scalar.ToHex(intB);
+    return '#' + BABYLON.Scalar.ToHex(intR) + BABYLON.Scalar.ToHex(intG) + BABYLON.Scalar.ToHex(intB);
   }
 
 

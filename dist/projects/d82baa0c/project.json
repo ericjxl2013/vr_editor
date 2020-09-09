@@ -1,1 +1,10 @@
-{"owner":{"id":"user123abc","username":"ZhangSan"},"project":{"id":"d82baa0c","name":"第2个"}}
+{
+    "owner": {
+        "id": "user123abc",
+        "username": "ZhangSan"
+    },
+    "project": {
+        "id": "d82baa0c",
+        "name": "第2个"
+    }
+}

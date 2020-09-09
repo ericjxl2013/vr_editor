@@ -1,1 +1,338 @@
-{"357f71fe08bae3d1d8da7bbe07c7969cea030a56":{"id":"357f71fe08bae3d1d8da7bbe07c7969cea030a56","type":"texture","createdAt":"2020-07-09 05:10","modifiedAt":"2020-07-09 05:10","name":"low_07 - Default_AlbedoTransparency.png","preload":"true","parent":null,"scope":{"type":"project","id":"d82baa0c"},"file":{"filename":"low_07 - Default_AlbedoTransparency.png","size":3413107,"url":"/projects/d82baa0c/assets/low_07 - Default_AlbedoTransparency.png","projectID":"d82baa0c","hash":"357f71fe08bae3d1d8da7bbe07c7969cea030a56"},"path":[],"thumbnails":"/projects/d82baa0c/assets/low_07 - Default_AlbedoTransparency.png"},"f95ab10873485ababd14f4edddd4650428dcc021":{"id":"f95ab10873485ababd14f4edddd4650428dcc021","type":"scene","createdAt":"2020-07-09 05:10","modifiedAt":"2020-07-09 05:10","name":"wurenji.babylon","preload":"true","parent":null,"scope":{"type":"project","id":"d82baa0c"},"file":{"filename":"wurenji.babylon","size":5889527,"url":"/projects/d82baa0c/assets/wurenji.babylon","projectID":"d82baa0c","hash":"f95ab10873485ababd14f4edddd4650428dcc021"},"path":[]},"4448e1dbcb7f6e8f55f2f5b257a1169d8c4db209":{"id":"4448e1dbcb7f6e8f55f2f5b257a1169d8c4db209","type":"text","createdAt":"2020-07-09 06:00","modifiedAt":"2020-07-09 06:00","name":"新表格.table","preload":"true","parent":null,"scope":{"type":"project","id":"d82baa0c"},"file":{"filename":"新表格.json","size":3,"url":"/projects/d82baa0c/assets/新表格.json","projectID":"d82baa0c","hash":"4448e1dbcb7f6e8f55f2f5b257a1169d8c4db209"},"path":[]},"b0de286b3ee900561f360ef2a0c90e3d3ab0ad6d":{"id":"b0de286b3ee900561f360ef2a0c90e3d3ab0ad6d","type":"texture","createdAt":"2020-07-09 10:07","modifiedAt":"2020-07-09 10:07","name":"0.jpg","preload":"true","parent":null,"scope":{"type":"project","id":"d82baa0c"},"file":{"filename":"0.jpg","size":186315,"url":"/projects/d82baa0c/assets/0.jpg","projectID":"d82baa0c","hash":"b0de286b3ee900561f360ef2a0c90e3d3ab0ad6d"},"path":[],"thumbnails":"/projects/d82baa0c/assets/0.jpg"},"b1a206e190e9cdcf23e7b41793b934eec87f554b":{"id":"b1a206e190e9cdcf23e7b41793b934eec87f554b","type":"texture","createdAt":"2020-07-09 10:07","modifiedAt":"2020-07-09 10:07","name":"3.jpg","preload":"true","parent":null,"scope":{"type":"project","id":"d82baa0c"},"file":{"filename":"3.jpg","size":190278,"url":"/projects/d82baa0c/assets/3.jpg","projectID":"d82baa0c","hash":"b1a206e190e9cdcf23e7b41793b934eec87f554b"},"path":[],"thumbnails":"/projects/d82baa0c/assets/3.jpg"},"fe2f7f54a67447edc3ca5ac6f449352fff6e9af2":{"id":"fe2f7f54a67447edc3ca5ac6f449352fff6e9af2","type":"texture","createdAt":"2020-07-09 10:07","modifiedAt":"2020-07-09 10:07","name":"2.jpg","preload":"true","parent":null,"scope":{"type":"project","id":"d82baa0c"},"file":{"filename":"2.jpg","size":242819,"url":"/projects/d82baa0c/assets/2.jpg","projectID":"d82baa0c","hash":"fe2f7f54a67447edc3ca5ac6f449352fff6e9af2"},"path":[],"thumbnails":"/projects/d82baa0c/assets/2.jpg"},"772803ac35d51956fb7edbf424b2ede58253ae15":{"id":"772803ac35d51956fb7edbf424b2ede58253ae15","type":"texture","createdAt":"2020-07-09 10:07","modifiedAt":"2020-07-09 10:07","name":"1.jpg","preload":"true","parent":null,"scope":{"type":"project","id":"d82baa0c"},"file":{"filename":"1.jpg","size":249336,"url":"/projects/d82baa0c/assets/1.jpg","projectID":"d82baa0c","hash":"772803ac35d51956fb7edbf424b2ede58253ae15"},"path":[],"thumbnails":"/projects/d82baa0c/assets/1.jpg"},"373b341f78ded8dcd2911aa789cf121809a478b4":{"id":"373b341f78ded8dcd2911aa789cf121809a478b4","type":"scene","createdAt":"2020-07-09 10:07","modifiedAt":"2020-07-09 10:07","name":"dude.babylon","preload":"true","parent":null,"scope":{"type":"project","id":"d82baa0c"},"file":{"filename":"dude.babylon","size":10497455,"url":"/projects/d82baa0c/assets/dude.babylon","projectID":"d82baa0c","hash":"373b341f78ded8dcd2911aa789cf121809a478b4"},"path":[]}}
+{
+    "357f71fe08bae3d1d8da7bbe07c7969cea030a56": {
+        "id": "357f71fe08bae3d1d8da7bbe07c7969cea030a56",
+        "type": "texture",
+        "createdAt": "2020-07-09 05:10",
+        "modifiedAt": "2020-07-09 05:10",
+        "name": "low_07 - Default_AlbedoTransparency.png",
+        "preload": "true",
+        "parent": null,
+        "scope": {
+            "type": "project",
+            "id": "d82baa0c"
+        },
+        "file": {
+            "filename": "low_07 - Default_AlbedoTransparency.png",
+            "size": 3413107,
+            "url": "/projects/d82baa0c/assets/low_07 - Default_AlbedoTransparency.png",
+            "projectID": "d82baa0c",
+            "hash": "357f71fe08bae3d1d8da7bbe07c7969cea030a56"
+        },
+        "path": [],
+        "thumbnails": "/projects/d82baa0c/assets/low_07 - Default_AlbedoTransparency.png"
+    },
+    "f95ab10873485ababd14f4edddd4650428dcc021": {
+        "id": "f95ab10873485ababd14f4edddd4650428dcc021",
+        "type": "scene",
+        "createdAt": "2020-07-09 05:10",
+        "modifiedAt": "2020-07-09 05:10",
+        "name": "wurenji.babylon",
+        "preload": "true",
+        "parent": null,
+        "scope": {
+            "type": "project",
+            "id": "d82baa0c"
+        },
+        "file": {
+            "filename": "wurenji.babylon",
+            "size": 5889527,
+            "url": "/projects/d82baa0c/assets/wurenji.babylon",
+            "projectID": "d82baa0c",
+            "hash": "f95ab10873485ababd14f4edddd4650428dcc021"
+        },
+        "path": []
+    },
+    "4448e1dbcb7f6e8f55f2f5b257a1169d8c4db209": {
+        "id": "4448e1dbcb7f6e8f55f2f5b257a1169d8c4db209",
+        "type": "text",
+        "createdAt": "2020-07-09 06:00",
+        "modifiedAt": "2020-07-09 06:00",
+        "name": "新表格.table",
+        "preload": "true",
+        "parent": null,
+        "scope": {
+            "type": "project",
+            "id": "d82baa0c"
+        },
+        "file": {
+            "filename": "新表格.json",
+            "size": 3,
+            "url": "/projects/d82baa0c/assets/新表格.json",
+            "projectID": "d82baa0c",
+            "hash": "4448e1dbcb7f6e8f55f2f5b257a1169d8c4db209"
+        },
+        "path": []
+    },
+    "b0de286b3ee900561f360ef2a0c90e3d3ab0ad6d": {
+        "id": "b0de286b3ee900561f360ef2a0c90e3d3ab0ad6d",
+        "type": "texture",
+        "createdAt": "2020-07-09 10:07",
+        "modifiedAt": "2020-08-27 11:04",
+        "name": "0.jpg",
+        "preload": "true",
+        "parent": null,
+        "scope": {
+            "type": "project",
+            "id": "d82baa0c"
+        },
+        "file": {
+            "filename": "0.jpg",
+            "size": 186315,
+            "url": "/projects/d82baa0c/assets/0.jpg",
+            "projectID": "d82baa0c",
+            "hash": "b0de286b3ee900561f360ef2a0c90e3d3ab0ad6d"
+        },
+        "path": [],
+        "thumbnails": "/projects/d82baa0c/assets/0.jpg"
+    },
+    "b1a206e190e9cdcf23e7b41793b934eec87f554b": {
+        "id": "b1a206e190e9cdcf23e7b41793b934eec87f554b",
+        "type": "texture",
+        "createdAt": "2020-07-09 10:07",
+        "modifiedAt": "2020-07-09 10:07",
+        "name": "3.jpg",
+        "preload": "true",
+        "parent": null,
+        "scope": {
+            "type": "project",
+            "id": "d82baa0c"
+        },
+        "file": {
+            "filename": "3.jpg",
+            "size": 190278,
+            "url": "/projects/d82baa0c/assets/3.jpg",
+            "projectID": "d82baa0c",
+            "hash": "b1a206e190e9cdcf23e7b41793b934eec87f554b"
+        },
+        "path": [],
+        "thumbnails": "/projects/d82baa0c/assets/3.jpg"
+    },
+    "fe2f7f54a67447edc3ca5ac6f449352fff6e9af2": {
+        "id": "fe2f7f54a67447edc3ca5ac6f449352fff6e9af2",
+        "type": "texture",
+        "createdAt": "2020-07-09 10:07",
+        "modifiedAt": "2020-07-09 10:07",
+        "name": "2.jpg",
+        "preload": "true",
+        "parent": null,
+        "scope": {
+            "type": "project",
+            "id": "d82baa0c"
+        },
+        "file": {
+            "filename": "2.jpg",
+            "size": 242819,
+            "url": "/projects/d82baa0c/assets/2.jpg",
+            "projectID": "d82baa0c",
+            "hash": "fe2f7f54a67447edc3ca5ac6f449352fff6e9af2"
+        },
+        "path": [],
+        "thumbnails": "/projects/d82baa0c/assets/2.jpg"
+    },
+    "772803ac35d51956fb7edbf424b2ede58253ae15": {
+        "id": "772803ac35d51956fb7edbf424b2ede58253ae15",
+        "type": "texture",
+        "createdAt": "2020-07-09 10:07",
+        "modifiedAt": "2020-07-09 10:07",
+        "name": "1.jpg",
+        "preload": "true",
+        "parent": null,
+        "scope": {
+            "type": "project",
+            "id": "d82baa0c"
+        },
+        "file": {
+            "filename": "1.jpg",
+            "size": 249336,
+            "url": "/projects/d82baa0c/assets/1.jpg",
+            "projectID": "d82baa0c",
+            "hash": "772803ac35d51956fb7edbf424b2ede58253ae15"
+        },
+        "path": [],
+        "thumbnails": "/projects/d82baa0c/assets/1.jpg"
+    },
+    "373b341f78ded8dcd2911aa789cf121809a478b4": {
+        "id": "373b341f78ded8dcd2911aa789cf121809a478b4",
+        "type": "scene",
+        "createdAt": "2020-07-09 10:07",
+        "modifiedAt": "2020-07-09 10:07",
+        "name": "dude.babylon",
+        "preload": "true",
+        "parent": null,
+        "scope": {
+            "type": "project",
+            "id": "d82baa0c"
+        },
+        "file": {
+            "filename": "dude.babylon",
+            "size": 10497455,
+            "url": "/projects/d82baa0c/assets/dude.babylon",
+            "projectID": "d82baa0c",
+            "hash": "373b341f78ded8dcd2911aa789cf121809a478b4"
+        },
+        "path": []
+    },
+    "1598422574801-5de0a60f": {
+        "id": "1598422574801-5de0a60f",
+        "type": "folder",
+        "createdAt": "2020-08-26 14:16",
+        "modifiedAt": "2020-08-27 11:04",
+        "name": "1新建文件夹",
+        "preload": "false",
+        "parent": null,
+        "scope": {
+            "type": "project",
+            "id": "d82baa0c"
+        },
+        "file": null,
+        "path": [
+            "1598422590970-cb48bcf8"
+        ]
+    },
+    "1598422581913-54183eb0": {
+        "id": "1598422581913-54183eb0",
+        "type": "folder",
+        "createdAt": "2020-08-26 14:16",
+        "modifiedAt": "2020-08-27 10:55",
+        "name": "2新建文件夹",
+        "preload": "false",
+        "parent": null,
+        "scope": {
+            "type": "project",
+            "id": "d82baa0c"
+        },
+        "file": null,
+        "path": []
+    },
+    "1598422590970-cb48bcf8": {
+        "id": "1598422590970-cb48bcf8",
+        "type": "folder",
+        "createdAt": "2020-08-26 14:16",
+        "modifiedAt": "2020-08-27 10:48",
+        "name": "3新建文件夹",
+        "preload": "false",
+        "parent": null,
+        "scope": {
+            "type": "project",
+            "id": "d82baa0c"
+        },
+        "file": null,
+        "path": []
+    },
+    "1598422603378-b9b34fc8": {
+        "id": "1598422603378-b9b34fc8",
+        "type": "folder",
+        "createdAt": "2020-08-26 14:16",
+        "modifiedAt": "2020-08-27 10:55",
+        "name": "4新建文件夹",
+        "preload": "false",
+        "parent": null,
+        "scope": {
+            "type": "project",
+            "id": "d82baa0c"
+        },
+        "file": null,
+        "path": [
+            "1598422590970-cb48bcf8"
+        ]
+    },
+    "1598944555137-a120af3e": {
+        "id": "1598944555137-a120af3e",
+        "type": "texture",
+        "createdAt": "2020-09-01 15:15",
+        "modifiedAt": "2020-09-01 15:15",
+        "name": "DSC02707.JPG",
+        "preload": "true",
+        "parent": null,
+        "scope": {
+            "type": "project",
+            "id": "d82baa0c"
+        },
+        "file": {
+            "filename": "DSC02707.JPG",
+            "size": 4718592,
+            "url": "/projects/d82baa0c/assets/DSC02707.JPG",
+            "projectID": "d82baa0c",
+            "hash": "72e003901410134520e0fc6f031f5637e19adf98"
+        },
+        "path": [
+            "1598422590970-cb48bcf8",
+            "1598422574801-5de0a60f"
+        ],
+        "thumbnails": "/projects/d82baa0c/assets/DSC02707.JPG"
+    },
+    "1598944555177-822a6563": {
+        "id": "1598944555177-822a6563",
+        "type": "texture",
+        "createdAt": "2020-09-01 15:15",
+        "modifiedAt": "2020-09-01 15:19",
+        "name": "DSC02679.JPG",
+        "preload": "true",
+        "parent": null,
+        "scope": {
+            "type": "project",
+            "id": "d82baa0c"
+        },
+        "file": {
+            "filename": "DSC02679.JPG",
+            "size": 6324224,
+            "url": "/projects/d82baa0c/assets/DSC02679.JPG",
+            "projectID": "d82baa0c",
+            "hash": "0fefa4bcf92dbd18a732b9df8a96db98fc0a3221"
+        },
+        "path": [
+            "1598422581913-54183eb0"
+        ],
+        "thumbnails": "/projects/d82baa0c/assets/DSC02679.JPG"
+    },
+    "1598944555197-729e9c99": {
+        "id": "1598944555197-729e9c99",
+        "type": "texture",
+        "createdAt": "2020-09-01 15:15",
+        "modifiedAt": "2020-09-01 15:19",
+        "name": "DSC02736.JPG",
+        "preload": "true",
+        "parent": null,
+        "scope": {
+            "type": "project",
+            "id": "d82baa0c"
+        },
+        "file": {
+            "filename": "DSC02736.JPG",
+            "size": 5734400,
+            "url": "/projects/d82baa0c/assets/DSC02736.JPG",
+            "projectID": "d82baa0c",
+            "hash": "87b1541b2bf83b9bddd86fea630fdf5bea973666"
+        },
+        "path": [
+            "1598422590970-cb48bcf8",
+            "1598422603378-b9b34fc8"
+        ],
+        "thumbnails": "/projects/d82baa0c/assets/DSC02736.JPG"
+    },
+    "1598944555216-0ef5da9c": {
+        "id": "1598944555216-0ef5da9c",
+        "type": "texture",
+        "createdAt": "2020-09-01 15:15",
+        "modifiedAt": "2020-09-01 15:15",
+        "name": "DSC02742.JPG",
+        "preload": "true",
+        "parent": null,
+        "scope": {
+            "type": "project",
+            "id": "d82baa0c"
+        },
+        "file": {
+            "filename": "DSC02742.JPG",
+            "size": 6356992,
+            "url": "/projects/d82baa0c/assets/DSC02742.JPG",
+            "projectID": "d82baa0c",
+            "hash": "ef7b636bfe807bc10fd9aa146650d1c294ef0b5e"
+        },
+        "path": [
+            "1598422590970-cb48bcf8",
+            "1598422574801-5de0a60f"
+        ],
+        "thumbnails": "/projects/d82baa0c/assets/DSC02742.JPG"
+    }
+}

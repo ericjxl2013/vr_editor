@@ -6,33 +6,38 @@ import { LocalStorage } from "./localstorage";
 
 export class InitializeBefore {
 
-  public constructor() {
-    this.init();
-  }
+    public constructor() {
 
-  private init(): void {
+        editor.method('permissions:write', () => {
+            return true;
+        });
 
-    // axois默认请求头设置，全局通过json方式传送和接收数据
-    // axios.defaults.headers.post["Content-Type"] = "application/json";
+        this.init();
+    }
 
-    // 全局快捷键注册
-    let hotkeys = new Hotkeys();
+    private init(): void {
 
-    // localstorage
-    let localstorage = new LocalStorage();
+        // axois默认请求头设置，全局通过json方式传送和接收数据
+        // axios.defaults.headers.post["Content-Type"] = "application/json";
 
-    // components-logos
-    let logos = new ComponentsLogos();
+        // 全局快捷键注册
+        let hotkeys = new Hotkeys();
 
-    // 屏蔽浏览器默认右键菜单
-    let systemContextMenu = new ContextMenu();
+        // localstorage
+        let localstorage = new LocalStorage();
 
-    // selector 
-    let selector = new Selector();
+        // components-logos
+        let logos = new ComponentsLogos();
 
-    // Websocket
-    // let io = new Realtime();
+        // 屏蔽浏览器默认右键菜单
+        let systemContextMenu = new ContextMenu();
 
-  }
+        // selector 
+        let selector = new Selector();
+
+        // Websocket
+        // let io = new Realtime();
+
+    }
 
 }

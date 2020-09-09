@@ -293,7 +293,7 @@ export class Element extends Events {
 
         this.unbind();
 
-        console.error('destroy');
+        // console.error('destroy');
     };
 
     private _parentDestroy(): void {

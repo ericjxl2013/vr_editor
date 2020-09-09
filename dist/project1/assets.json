@@ -1,1 +1,157 @@
-{}
+{
+    "assets": {
+        "1598165282357-194cae6f": {
+            "id": "1598165282357-194cae6f",
+            "type": "source scene",
+            "createdAt": "2020-07-07 21:42",
+            "modifiedAt": "2020-08-28 09:46",
+            "name": "dude.babylon",
+            "preload": false,
+            "source": true,
+            "source_asset_id": null,
+            "parent": null,
+            "scope": {
+                "type": "project",
+                "id": "2af1e58b"
+            },
+            "file": {
+                "filename": "dude.babylon",
+                "size": 10497455,
+                "hash": "1598165282357-194cae6f"
+            },
+            "path": []
+        },
+        "1598165282358-194cae6a": {
+            "id": "1598165282358-194cae6a",
+            "type": "material",
+            "createdAt": "2020-07-07 21:42",
+            "modifiedAt": "2020-08-28 09:46",
+            "name": "#dude head",
+            "preload": true,
+            "source": false,
+            "source_asset_id": "1598165282357-194cae6f",
+            "parent": null,
+            "scope": {
+                "type": "project",
+                "id": "2af1e58b"
+            },
+            "path": [],
+            "data": {
+                "alpha": 1,
+                "ambient": [
+                    1,
+                    1,
+                    1
+                ],
+                "ambientTexture": null,
+                "backFaceCulling": true,
+                "bumpTexture": null,
+                "diffuse": [
+                    1,
+                    1,
+                    1
+                ],
+                "diffuseTexture": {
+                    "animations": null,
+                    "coordinatesIndex": 0,
+                    "coordinatesMode": 0,
+                    "hasAlpha": false,
+                    "isCube": false,
+                    "isRenderTarget": false,
+                    "level": 1,
+                    "mirrorPlane": null,
+                    "name": "0.jpg",
+                    "texture_id": "1598165282358-194cae6b",
+                    "renderList": null,
+                    "renderTargetSize": 0,
+                    "uAng": 0,
+                    "uOffset": 0,
+                    "uScale": 1,
+                    "vAng": 0,
+                    "vOffset": 0,
+                    "vScale": 1,
+                    "wAng": 0,
+                    "wrapU": 1,
+                    "wrapV": 1
+                },
+                "emissive": [
+                    0,
+                    0,
+                    0
+                ],
+                "emissiveTexture": null,
+                "id": "937221a0-303c-431f-9f47-ffa3735eaaba",
+                "name": "38839134",
+                "opacityTexture": null,
+                "reflectionTexture": null,
+                "specular": [
+                    0.5,
+                    0.5,
+                    0.5
+                ],
+                "specularPower": 1.24573088,
+                "specularTexture": null
+            }
+        },
+        "1598165282358-194cae6b": {
+            "id": "1598165282358-194cae6b",
+            "type": "texture",
+            "createdAt": "2020-07-07 21:42",
+            "modifiedAt": "2020-07-07 21:42",
+            "name": "3.jpg",
+            "preload": "true",
+            "parent": null,
+            "scope": {
+                "type": "project",
+                "id": "2af1e58b"
+            },
+            "file": {
+                "filename": "3.jpg",
+                "size": 190278,
+                "hash": "b1a206e190e9cdcf23e7b41793b934eec87f554b"
+            },
+            "path": [],
+            "has_thumbnails": true
+        }
+    },
+    "geometry": {
+        "a00a0a5c-c7f1-4706-ada8-8f9c0a6a4a46": {
+            "material": "1598165282358-194cae6a"
+        }
+    },
+    "babylon": {
+        "path": {
+            "root": {
+                "1598165282357-194cae6f": true
+            }
+        },
+        "1598165282357-194cae6f": {
+            "materials": {
+                "937221a0-303c-431f-9f47-ffa3735eaaba": {
+                    "asset_id": "1598165282358-194cae6a",
+                    "diffuseTexture": "0.jpg"
+                },
+                "937221a0-303c-431f-9f47-ffa3735eaab1": {
+                    "asset_id": "1598165282358-194cae6a",
+                    "diffuseTexture": "1.jpg"
+                },
+                "937221a0-303c-431f-9f47-ffa3735eaab2": {
+                    "asset_id": "1598165282358-194cae6a",
+                    "diffuseTexture": "2.jpg"
+                },
+                "937221a0-303c-431f-9f47-ffa3735eaab3": {
+                    "asset_id": "1598165282358-194cae6a",
+                    "diffuseTexture": "3.jpg",
+                    "specularTexture": "4.jpg"
+                }
+            }
+        }
+    },
+    "babylon_resource": {
+        "root": {},
+        "1598165282357-194cae6x": {
+            "1598165282357-194cae6y": true,
+            "1598165282357-194cae6z": true
+        }
+    }
+}

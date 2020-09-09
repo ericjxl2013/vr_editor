@@ -1,5 +1,6 @@
 import { Panel, Button } from "../../ui";
 import { Observer } from "../../lib";
+import { BabylonLoader } from "../middleware/loader/babylonLoader";
 
 export class AttributesAssets {
     public constructor() {
@@ -110,7 +111,7 @@ export class AttributesAssets {
                     // name
                     var fieldName = editor.call('attributes:addField', {
                         parent: panel,
-                        name: 'Name',
+                        name: '名字',
                         type: 'string',
                         value: assets[0].get('name')
                     });
@@ -118,6 +119,8 @@ export class AttributesAssets {
                         fieldName.value = newName;
                     }));
                     events.push(fieldName.on('change', function (newName: string) {
+                        // console.log('newName: ' + newName);
+                        // console.log('name: ' + assets[0].get('name'));
                         if (newName !== assets[0].get('name')) {
                             editor.call('assets:rename', assets[0], newName);
                         }
@@ -259,7 +262,7 @@ export class AttributesAssets {
                         btnDownload.hidden = !editor.call('permissions:read');
                     });
 
-                    btnDownload.text = 'Download';
+                    btnDownload.text = '下载';
                     btnDownload.class!.add('download-asset', 'large-with-icon');
                     btnDownload.element!.addEventListener('click', function (evt) {
                         // if (btnDownload.prevent)
@@ -267,7 +270,7 @@ export class AttributesAssets {
 
                         // 下载
                         if (assets[0].get('source') || assets[0].get('type') === 'texture' || assets[0].get('type') === 'audio') {
-                            window.open(assets[0].get('file.url'));
+                            window.open(BabylonLoader.prefix + assets[0].get('id') + '/' + assets[0].get('name'));
                         } else {
                             window.open('/api/assets/' + assets[0].get('id') + '/download?branchId=' + 'id');
                         }

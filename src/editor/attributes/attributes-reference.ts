@@ -35,7 +35,7 @@ export class AttributesReference {
       if (!tooltip) {
         if (!self.missing[name]) {
           self.missing[name] = true;
-          console.log('reference', name, 'is not defined');
+        //   console.log('reference', name, 'is not defined');
         }
         return;
       }

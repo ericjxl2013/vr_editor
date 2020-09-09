@@ -1,7 +1,8 @@
-import { Panel, Progress, Tree, TreeItem, Grid, Label, Tooltip, GridItem, Menu, MenuItem, TopElementContainer, TopElementPanel } from "../../ui";
-import { VeryEngine } from "../../engine";
-import { Observer, ObserverList } from "../../lib";
-import { Tools } from "../utility";
+import { Panel, Progress, Tree, TreeItem, Grid, Label, Tooltip, GridItem, Menu, MenuItem, TopElementContainer, TopElementPanel } from '../../ui';
+import { VeryEngine } from '../../engine';
+import { Observer, ObserverList } from '../../lib';
+import { Tools } from '../utility';
+import { BabylonLoader } from '../middleware/loader/babylonLoader';
 
 export class AssetsPanel {
 
@@ -67,7 +68,7 @@ export class AssetsPanel {
         // folder
         var files = new Panel();
         files.class!.add('files');
-        files.flexGrow = "1";
+        files.flexGrow = '1';
         files.foldable = false;
         files.horizontal = true;
         files.scroll = true;
@@ -268,6 +269,8 @@ export class AssetsPanel {
         });
 
         editor.on('drop:active', function (state: boolean, type: string, data: any) {
+            console.log('drop:active: ' + state + ' - ' + type + ' - ' + data);
+
             dragging = state;
 
             if (!dragging) {
@@ -279,9 +282,11 @@ export class AssetsPanel {
 
         editor.on('drop:set', function (type: string, data: any) {
             draggingData = data;
+            console.warn('drop:set');
+            console.warn(draggingData);
         });
 
-        
+
 
         // IDrop
         var dropRef = editor.call('drop:target', {
@@ -292,6 +297,8 @@ export class AssetsPanel {
                 return type.startsWith('asset');
             },
             drop: function (type: string, data: any) {
+                console.warn('drop: ' + type);
+                // console.warn(data);
                 if (!type || grid.dragOver === undefined || !type.startsWith('asset'))
                     return;
 
@@ -308,7 +315,7 @@ export class AssetsPanel {
                     assets.push(asset);
                 };
 
-                if (data.ids) {
+                if (data.ids && data.ids.length > 0) {
                     for (var i = 0; i < data.ids.length; i++)
                         addAsset(data.ids[i]);
                 } else {
@@ -321,7 +328,7 @@ export class AssetsPanel {
 
         var treeAppendQueue: { [key: string]: GridItem[] } = {};
 
-        
+
 
         treeRoot.elementTitle.addEventListener('mouseover', function () {
             if (!dragging || grid.dragOver === null || (!draggingData.id && !draggingData.ids))
@@ -354,10 +361,10 @@ export class AssetsPanel {
             grid.dragOver = undefined;
         }, false);
 
-        
 
 
-        
+
+
 
         var dropRef2 = editor.call('drop:target', {
             ref: files.element,
@@ -367,14 +374,22 @@ export class AssetsPanel {
                 return type.startsWith('asset');
             },
             drop: function (type: string, data: any) {
+
                 if (!type || grid.dragOver === undefined || !type.startsWith('asset'))
                     return;
+
+                console.warn('drop2: ' + type);
+                console.warn(data);
+                console.log(grid.dragOver);
 
                 var assets: any = [];
                 var items = editor.call('selector:items');
 
+                // console.warn(items);
+
                 var addAsset = function (id: string) {
                     var asset = editor.call('assets:get', id);
+                    // console.log(asset);
 
                     // deselect moved asset
                     if (items.indexOf(asset) !== -1)
@@ -383,7 +398,7 @@ export class AssetsPanel {
                     assets.push(asset);
                 };
 
-                if (data.ids) {
+                if (data.ids && data.ids.length > 0) {
                     for (var i = 0; i < data.ids.length; i++) {
                         addAsset(data.ids[i]);
                     }
@@ -554,6 +569,8 @@ export class AssetsPanel {
 
             if (assetsChanged)
                 return;
+
+            console.log('grid select');
 
             if (item.asset) {
                 editor.call('selector:add', 'asset', item.asset);
@@ -757,8 +774,8 @@ export class AssetsPanel {
             var l = Array.prototype.slice.call(parent.element!.childNodes, 1);
             // if (item === treeRoot && legacyScripts)
             //   l = l.slice(1);
-            if (parent === treeRoot)
-                l = l.slice(1);
+            // if (parent === treeRoot)
+            //     l = l.slice(1);
 
             var min = 0;
             var max = l.length - 1;
@@ -770,9 +787,9 @@ export class AssetsPanel {
             if (l.length === 0)  // 当前没有item，直接在末尾插入item
                 return -1;
 
-            // TODO: text是什么？名字？根据名字排列顺序？
-            // if (((a === current) ? nameOld.toLowerCase() : l[0].ui.text.toLowerCase()) === bN)
-            //   return 0;
+            // TODO: a没有赋值啊
+            if (((a === current) ? nameOld.toLowerCase() : l[0].ui.text.toLowerCase()) === bN)
+                return 0;
 
             while (min <= max) {
                 cur = Math.floor((min + max) / 2); // 二分法
@@ -864,7 +881,7 @@ export class AssetsPanel {
         };
 
         var renderQueueRemove = function (asset: Observer) {
-            var id = parseInt(asset.get('id'), 10);
+            var id = asset.get('id');
             if (!renderQueueIndex[id])
                 return;
 
@@ -915,8 +932,8 @@ export class AssetsPanel {
 
             var path: string[] = asset.get('path');
             var parent;
-            // console.warn(path);
-            if (path.length) {
+
+            if (path.length && path.length > 0) {
                 var parentFolderId: string = path[path.length - 1];
                 if (assetsIndex[parentFolderId]) {
                     parent = assetsIndex[parentFolderId].tree;
@@ -928,6 +945,7 @@ export class AssetsPanel {
                 }
             } else {
                 parent = treeRoot;
+                console.warn(path);
             }
 
             // console.warn(item.text);
@@ -947,29 +965,35 @@ export class AssetsPanel {
                 if (!dragging || grid.dragOver === asset)
                     return;
 
+                // console.log('onMouseOver1');
+                // console.log(draggingData);
+                // console.log(grid.dragOver);
+
                 // don't allow to drag on it self
-                if (draggingData.ids) {
+                if (draggingData.ids && draggingData.ids.length > 0) {
                     // multi-drag
-                    if (draggingData.ids.indexOf(parseInt(asset.get('id'), 10)) !== -1)
+                    if (draggingData.ids.indexOf(asset.get('id') !== -1))
                         return;
                 } else if (draggingData.id) {
                     // single-drag
-                    if (parseInt(asset.get('id'), 10) === parseInt(draggingData.id, 10))
+                    // console.warn(asset.get('id'));
+                    if (asset.get('id') === draggingData.id)
                         return;
                 } else {
                     // script file drag
                     return;
                 }
 
+                // console.log('onMouseOver2');
 
                 // already in that folder
                 var dragAsset = editor.call('assets:get', draggingData.id || draggingData.ids[0]);
                 var path = dragAsset.get('path');
-                if (path.length && path[path.length - 1] === parseInt(asset.get('id'), 10))
+                if (path.length && path[path.length - 1] === asset.get('id'))
                     return;
 
                 // don't allow dragging into own child
-                if (draggingData.ids) {
+                if (draggingData.ids && draggingData.ids.length > 0) {
                     // multi-drag
                     var assetPath = asset.get('path');
                     for (var i = 0; i < draggingData.ids.length; i++) {
@@ -978,9 +1002,11 @@ export class AssetsPanel {
                     }
                 } else {
                     // single-drag
-                    if (asset.get('path').indexOf(parseInt(dragAsset.get('id'), 10)) !== -1)
+                    if (asset.get('path').indexOf(dragAsset.get('id')) !== -1)
                         return;
                 }
+
+                // console.log('onMouseOver3');
 
                 showGridDropHighlight(item);
                 showTreeDropHighlight(item);
@@ -1033,10 +1059,10 @@ export class AssetsPanel {
                     return;
                 }
 
-                var assetIds = draggingData.ids ? draggingData.ids.slice() : [draggingData.id];
+                var assetIds = (draggingData.ids && draggingData.ids.length > 0) ? draggingData.ids.slice() : [draggingData.id];
 
                 // don't allow to drag on it self
-                if (assetIds.indexOf(parseInt(asset.get('id'), 10)) !== -1) {
+                if (assetIds.indexOf(asset.get('id')) !== -1) {
                     return;
                 }
 
@@ -1092,6 +1118,7 @@ export class AssetsPanel {
             asset.once('destroy', onAssetItemRemove.bind(asset));
 
             var onMouseDown = function (evt: MouseEvent) {
+
                 evt.stopPropagation();
             };
 
@@ -1121,7 +1148,7 @@ export class AssetsPanel {
                             if (path.length !== selectorItems[i].get('path').length || path[path.length - 1] !== selectorItems[i].get('path')[path.length - 1])
                                 return;
 
-                            ids.push(parseInt(selectorItems[i].get('id'), 10));
+                            ids.push(selectorItems[i].get('id'));
                         }
 
                         type = 'assets';
@@ -1131,6 +1158,11 @@ export class AssetsPanel {
                         };
                     }
                 }
+
+                // console.log(type);
+                // console.log(data);
+                // console.log(selectorType);
+                // console.log(selectorItems);
 
                 editor.call('drop:set', type, data);
                 editor.call('drop:activate', true);
@@ -1171,10 +1203,10 @@ export class AssetsPanel {
 
             // TODO：assets过滤器功能
             // console.log(editor.call('assets:panel:filter:default'));
-            // if (!editor.call('assets:panel:filter:default')('asset', asset)) {
-            //     // console.log('assets:panel:filter:default');
-            //     item.hidden = true;
-            // }
+            if (!editor.call('assets:panel:filter:default')('asset', asset)) {
+                // console.log('assets:panel:filter:default');
+                item.hidden = true;
+            }
 
 
             var fileSize = asset.get('file.size');
@@ -1182,12 +1214,15 @@ export class AssetsPanel {
             if (!asset.get('source')) {
                 // update thumbnails change
                 asset.on('thumbnails.m:set', function (value: string) {
-                    if (value.startsWith('/api')) {
-                        // value = value.appendQuery('t=' + asset.get('file.hash'));
-                        value = Tools.appendQuery(value, 't=' + asset.get('file.hash'));
-                    }
+                    // if (value.startsWith('/api')) {
+                    //     // value = value.appendQuery('t=' + asset.get('file.hash'));
+                    //     value = Tools.appendQuery(value, 't=' + asset.get('file.hash'));
+                    // }
 
-                    thumbnail.style.backgroundImage = 'url(' + value + ')';
+                    console.log('url("' + BabylonLoader.prefix + asset.get('id') + '/' + asset.get('name') + '")');
+
+                    thumbnail.style.backgroundImage = 'url("' + BabylonLoader.prefix + asset.get('id') + '/' + asset.get('name') + '?' + asset.get('file.hash') + '")';
+                    // thumbnail.style.backgroundImage = 'url(' + value + ')';
                     thumbnail.classList.remove('placeholder');
                 });
 
@@ -1224,7 +1259,7 @@ export class AssetsPanel {
             var evtSceneSettings: any;
             var evtAssetChanged: any;
 
-            if (asset.get('type') === 'material' || asset.get('type') === 'model' || asset.get('type') === 'sprite' || (asset.get('type') === 'font') && !asset.get('source')) {
+            if (asset.get('type') === 'material' || asset.get('type') === 'models' || asset.get('type') === 'sprite' || (asset.get('type') === 'font') && !asset.get('source')) {
                 var queuedRender = false;
 
                 thumbnail = document.createElement('img');
@@ -1236,43 +1271,47 @@ export class AssetsPanel {
                     thumbnail.classList.add('flipY');
                 }
 
+                editor.call('material:preview', thumbnail, asset);
 
-                let htmlCanvas = document.createElement('canvas');
-                htmlCanvas.width = 64;
-                htmlCanvas.height = 64;
-                htmlCanvas.style.display = 'none';
-                document.body.append(htmlCanvas);
+                // let htmlCanvas = document.createElement('canvas');
+                // htmlCanvas.width = 64;
+                // htmlCanvas.height = 64;
+                // htmlCanvas.style.display = 'none';
+                // document.body.append(htmlCanvas);
 
-                let engine = new BABYLON.Engine(htmlCanvas, true);
-                let scene = new BABYLON.Scene(engine);
+                // // TODO: 需要按队列渲染，不然异步流程导致同时开的webgl context太多，会崩溃
+                // let engine = new BABYLON.Engine(htmlCanvas, true);
+                // let scene = new BABYLON.Scene(engine);
 
-                // scene.clearColor = BABYLON.Color4.FromColor3(BABYLON.Color3.Green());
-                scene.clearColor.a = 0;
+                // // scene.clearColor = BABYLON.Color4.FromColor3(BABYLON.Color3.Green());
+                // scene.clearColor.a = 0;
 
-                var light = new BABYLON.DirectionalLight('light', new BABYLON.Vector3(45, 45, 0), scene);
+                // var light = new BABYLON.DirectionalLight('light', new BABYLON.Vector3(45, 45, 0), scene);
 
-                var camera = new BABYLON.ArcRotateCamera("PreviewCamera", 10, 10, 10, new BABYLON.Vector3(0, 0, 0), scene);
-                // camera.setPosition(new BABYLON.Vector3(20, 200, 400));
+                // var camera = new BABYLON.ArcRotateCamera('PreviewCamera', 10, 10, 10, new BABYLON.Vector3(0, 0, 0), scene);
+                // // camera.setPosition(new BABYLON.Vector3(20, 200, 400));
 
-                camera.attachControl(htmlCanvas, true);
-                camera.lowerBetaLimit = 0.1;
-                camera.upperBetaLimit = (Math.PI / 2) * 0.99;
-                camera.lowerRadiusLimit = 150;
+                // camera.attachControl(htmlCanvas, true);
+                // camera.lowerBetaLimit = 0.1;
+                // camera.upperBetaLimit = (Math.PI / 2) * 0.99;
+                // camera.lowerRadiusLimit = 150;
 
-                let box = BABYLON.MeshBuilder.CreateSphere('box', { diameter: 80 }, scene);
+                // let box = BABYLON.MeshBuilder.CreateSphere('__previewSphere', { diameter: 80 }, scene);
 
-                // engine.runRenderLoop(() => {
-                //     if (scene) {
-                //         scene.render();
-                //     }
+                // // engine.runRenderLoop(() => {
+                // //     if (scene) {
+                // //         scene.render();
+                // //     }
+                // // });
+
+                // scene.render();
+                // // TODO: 需要更新
+                // BABYLON.Tools.CreateScreenshotUsingRenderTarget(engine, camera, 64, (data: string) => {
+                //     console.log(data);
+                //     thumbnail.src = data;
                 // });
 
-                scene.render();
-                BABYLON.Tools.CreateScreenshotUsingRenderTarget(engine, camera, 64, (data: string) => {
-                    console.log(data);
-                    thumbnail.src = data;
-                });
-
+                // engine.dispose();
 
 
 
@@ -1287,8 +1326,9 @@ export class AssetsPanel {
             thumbnail.classList.add('thumbnail');
             item.element!.appendChild(thumbnail);
 
-            if (asset.has('thumbnails') && !asset.get('source')) {
-                thumbnail.style.backgroundImage = 'url("' + asset.get('thumbnails') + '")';
+            if (asset.has('has_thumbnail') && asset.get('has_thumbnail') === true && !asset.get('source')) {
+                
+                thumbnail.style.backgroundImage = 'url("' + BabylonLoader.prefix + asset.get('id') + '/' + asset.get('name') + '?' + asset.get('file.hash') + '")';
             } else {
                 thumbnail.classList.add('placeholder');
             }
@@ -1334,6 +1374,9 @@ export class AssetsPanel {
                 // show or hide based on filters
                 item.hidden = !editor.call('assets:panel:filter:default')('asset', asset);
 
+                // console.log(path + ' -- ' + pathOld);
+                // console.log(item.hidden);
+
                 if (item.tree) {
                     if (!pathOld.length || !path.length || path[path.length - 1] !== pathOld[pathOld.length - 1]) {
                         (<TreeItem>item.tree.parent!).remove(item.tree);
@@ -1353,8 +1396,11 @@ export class AssetsPanel {
                         }
                     }
 
-                    if (currentFolder === asset)
+                    if (currentFolder === asset) {
+                        console.error('emit');
                         editor.emit('assets:panel:currentFolder', currentFolder);
+                    }
+
                 }
 
                 keepLegacyScriptsAtTop();
@@ -1462,10 +1508,10 @@ export class AssetsPanel {
 
             // reselect current directory, if selected was removed
             if (currentFolder && typeof (currentFolder) !== 'string') {
-                var id = parseInt(currentFolder.get('id'), 10);
+                var id = currentFolder.get('id');
                 var path = asset.get('path');
                 var ind = path.indexOf(id);
-                if (id === parseInt(asset.get('id'), 10) || ind !== -1) {
+                if (id === asset.get('id') || ind !== -1) {
                     if (ind === -1)
                         ind = path.length - 1;
 
@@ -1546,9 +1592,6 @@ export class AssetsPanel {
 
         editor.on('sourcefiles:add', addSourceFile);
         editor.on('sourcefiles:remove', removeSourceFile);
-
-
-
 
 
     }

@@ -1,5 +1,6 @@
 import { Observer } from "../../../lib";
 import { Button } from "../../../ui";
+import { BabylonLoader } from "../../middleware/loader/babylonLoader";
 
 export class AttributeAssetsTexture {
 
@@ -9,8 +10,8 @@ export class AttributeAssetsTexture {
 
         editor.on('attributes:inspect[asset]', function (assets: Observer[]) {
 
-            console.error('attributes:inspect[asset]');
-            console.error(assets);
+            // console.error('attributes:inspect[asset]');
+            // console.error(assets);
 
             for (var i = 0; i < assets.length; i++) {
                 if (assets[i].get('type') !== 'texture' && assets[i].get('type') !== 'textureatlas' || assets[i].get('source'))
@@ -50,8 +51,12 @@ export class AttributeAssetsTexture {
                 }
                 var msg = '';
                 var comma = '';
+                // if (numTextures) {
+                //     msg += numTextures + ' Texture' + (numTextures > 1 ? 's' : '');
+                //     comma = ', ';
+                // }
                 if (numTextures) {
-                    msg += numTextures + ' Texture' + (numTextures > 1 ? 's' : '');
+                    msg += numTextures + '张贴图';
                     comma = ', ';
                 }
                 if (numTextureAtlases) {
@@ -62,7 +67,7 @@ export class AttributeAssetsTexture {
 
             // properties panel
             var panel = editor.call('attributes:addPanel', {
-                name: 'Texture',
+                name: '贴图',
                 foldable: true,
                 folded: panelState['texture']
             });
@@ -237,9 +242,9 @@ export class AttributeAssetsTexture {
                     //     previewContainer.style.display = 'none';
                     // }
 
-                    if (assets[0].get('file.url')) {
+                    if (assets[0].get('file')) {
 
-                        image.src = assets[0].get('file.url');
+                        image.src = BabylonLoader.prefix + assets[0].get('id') + '/' + assets[0].get('name') + '?' + assets[0].get('file.hash');
                         previewContainer.style.display = '';
                     } else {
                         previewContainer.style.display = 'none';

@@ -16,18 +16,26 @@ export class Viewport {
 
         this.init();
 
+        // console.log(VeryEngine.viewEngine._internalTexturesCache);
+        // let tex = VeryEngine.viewEngine.createTexture('static/editor_logo.png', false, true, VeryEngine.viewScene);
+        // console.log(VeryEngine.viewEngine._internalTexturesCache);
+
         let self = this;
 
         let engine = this._engine;
 
 
         // TODO: 设定相机
-        var camera = new BABYLON.ArcRotateCamera("Default", 0, 0, 10, new BABYLON.Vector3(0, 0, 0), this._scene);
-        camera.setPosition(new BABYLON.Vector3(20, 200, 400));
+        this._scene.clearColor = new BABYLON.Color4(49 / 255, 77 / 255, 121 / 255, 1);
+
+        var camera = new BABYLON.ArcRotateCamera('Default', 100, 50, 50, new BABYLON.Vector3(0, 0, 0), this._scene);
+        camera.setPosition(new BABYLON.Vector3(0, 1, -20));
         camera.attachControl(this._canvas, true);
-        camera.lowerBetaLimit = 0.1;
-        camera.upperBetaLimit = (Math.PI / 2) * 0.99;
-        camera.lowerRadiusLimit = 150;
+        // camera.lowerBetaLimit = 0.1;
+        // camera.upperBetaLimit = (Math.PI / 2) * 0.99;
+        // camera.lowerRadiusLimit = 150;
+
+        // var light1 = new BABYLON.PointLight("omni", new BABYLON.Vector3(0, 50, 0), this._scene);
 
 
         // 加载过度动画开
@@ -40,7 +48,7 @@ export class Viewport {
         // 默认Editor场景，加载保存的某一个场景资源
         // 资源的父子关系以及模型
         /*
-        BABYLON.SceneLoader.Append("./scene/", "scene.babylon", this._scene, function (scene) {
+        BABYLON.SceneLoader.Append('./scene/', 'scene.babylon', this._scene, function (scene) {
           // do something with the scene
           // 加载过度动画关
           // engine.hideLoadingUI();
@@ -50,26 +58,26 @@ export class Viewport {
     
           scene.actionManager = new BABYLON.ActionManager(scene);
           scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger, function (evt) {
-            inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
+            inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == 'keydown';
           }));
           scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyUpTrigger, function (evt) {
-            inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
+            inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == 'keydown';
           }));
     
     
           // // Game/Render loop
           scene.onBeforeRenderObservable.add(() => {
     
-            if (inputMap["w"] || inputMap["ArrowUp"]) {
+            if (inputMap['w'] || inputMap['ArrowUp']) {
               blue.position.z -= 100 * engine.getDeltaTime() / 1000;
             }
-            if (inputMap["a"] || inputMap["ArrowLeft"]) {
+            if (inputMap['a'] || inputMap['ArrowLeft']) {
               blue.position.x += 100 * engine.getDeltaTime() / 1000;
             }
-            if (inputMap["s"] || inputMap["ArrowDown"]) {
+            if (inputMap['s'] || inputMap['ArrowDown']) {
               blue.position.z += 100 * engine.getDeltaTime() / 1000;
             }
-            if (inputMap["d"] || inputMap["ArrowRight"]) {
+            if (inputMap['d'] || inputMap['ArrowRight']) {
               blue.position.x -= 100 * engine.getDeltaTime() / 1000;
             }
           })
@@ -80,11 +88,11 @@ export class Viewport {
     
           sphere.actionManager.registerAction(new BABYLON.SetValueAction(
             { trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger, parameter: blue },
-            sphere, "scaling", new BABYLON.Vector3(2, 2, 2)));
+            sphere, 'scaling', new BABYLON.Vector3(2, 2, 2)));
     
           sphere.actionManager.registerAction(new BABYLON.SetValueAction(
             { trigger: BABYLON.ActionManager.OnIntersectionExitTrigger, parameter: blue }
-            , sphere, "scaling", new BABYLON.Vector3(1, 1, 1)));
+            , sphere, 'scaling', new BABYLON.Vector3(1, 1, 1)));
     
           let i: number = 0;
     
@@ -92,8 +100,8 @@ export class Viewport {
           // scene.onKeyboardObservable.add( kbInfo => {
           //   if(kbInfo.type === BABYLON.KeyboardEventTypes.KEYUP) {
           //     if(kbInfo.event.keyCode === 65) {
-          //       // editor.call('send', '按下次数：' + (i++) + "!");
-          //       editor.call('send', '{"data": {"a": 123, "b": "qwe"}}');
+          //       // editor.call('send', '按下次数：' + (i++) + '!');
+          //       editor.call('send', '{'data': {'a': 123, 'b': 'qwe'}}');
           //     }
           //   }
           // });
@@ -133,6 +141,7 @@ export class Viewport {
         VeryEngine.viewCanvas = this.canvas;
 
         this._canvas = <HTMLCanvasElement>this.canvas.element;
+        VeryEngine.viewCanvasElement = this._canvas;
         // 去掉Babylon的蓝色边框
         this._canvas.style.outline = 'none';
         // add canvas
@@ -155,7 +164,7 @@ export class Viewport {
         VeryEngine.viewEngine = this._engine;
         let engine = this._engine;
 
-        window.addEventListener("resize", function () {
+        window.addEventListener('resize', function () {
             engine.resize();
         });
 

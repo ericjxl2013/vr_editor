@@ -37,6 +37,8 @@ export class TreeItem extends Element {
         if (val) {
             this.class!.add('selected');
 
+            // console.warn('tree selected');
+
             this.emit('select');
             if (this.tree)
                 this.tree.emit('select', this);
@@ -279,7 +281,7 @@ export class TreeItem extends Element {
         evt.stopPropagation();
         evt.preventDefault();
 
-        console.log('drag start');
+        // console.log('drag start');
 
         (<TreeItem>htmlEle.ui).emit('dragstart');
     };
@@ -444,7 +446,7 @@ export class TreeItem extends Element {
 
         var self = this;
         this.class!.add('rename');
-        console.log('rename');
+        console.log('tree item rename');
         // add remaning field
         var field = new TextField();
         field.parent = this;

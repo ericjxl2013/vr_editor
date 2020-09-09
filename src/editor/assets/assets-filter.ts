@@ -410,5 +410,6 @@ export class AssetsFilter {
 
             editor.call('assets:panel:filter', filter);
         });
+
     }
 }

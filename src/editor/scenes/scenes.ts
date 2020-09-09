@@ -1,6 +1,27 @@
+import { Config } from "../global";
+
 export class Scenes {
 
     public constructor() {
+
+
+        editor.method('make:scene:dirty', () => {
+            if (!document.title.startsWith('*')) {
+                document.title = '*' + document.title;
+            }
+            Config.isSceneDirty = true;
+        });
+
+        editor.method('make:scene:clear', () => {
+            Config.isSceneDirty = false;
+            if (document.title.startsWith('*')) {
+                document.title = document.title.substring(1);
+            }
+        });
+
+
+
+
 
 
         // Create a scene and pass result to callback

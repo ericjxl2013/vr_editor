@@ -2,6 +2,7 @@ import { AttributesPanel, AttributesEntity, AttributesReference, AttributesKeepe
 import { ToolbarKeeper } from "./toolbar";
 import { ViewportKeeper } from "./viewport/keeper";
 import { EntityKeeper } from "./entity";
+import { ScenesKeeper } from "./scenes";
 
 
 export class InitializeAfter {
@@ -11,6 +12,9 @@ export class InitializeAfter {
 
     // entity
     let entity = new EntityKeeper();
+
+    // scenes
+    new ScenesKeeper();
 
     // attributes
     let attributes = new AttributesKeeper();

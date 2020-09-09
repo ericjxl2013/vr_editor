@@ -31,6 +31,10 @@ router.post("/api/getScenes", mock.getScenes);
 // upload
 router.post("/api/upload", mockUpload.upload);
 
+// upload change
+router.put("/api/upload/assets/:id", mockUpload.changeAssets)
+
+
 router.post("/api/addScene", mockUpload.addScene);
 
 // table

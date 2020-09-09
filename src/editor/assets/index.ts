@@ -1,5 +1,7 @@
 export * from './assets';
+export * from './assets-fs';
 export * from './assets-sync';
+export * from './assets-preview';
 export * from './assets-panel';
 export * from './assets-preview';
 export * from './assets-panel-control';
@@ -10,4 +12,5 @@ export * from './assets-drop';
 export * from './assets-store';
 export * from './assets-create-folder';
 export * from './assets-create-table';
+export * from './assets-rename';
 export * from './keeper';

@@ -1,7 +1,7 @@
-import { Entities } from "./entities";
-import { Observer } from "../../lib";
-import { Loader } from "../middleware/loader";
-import { TopElementContainer, Progress } from "../../ui";
+import { Entities } from './entities';
+import { Observer } from '../../lib';
+import { Loader } from '../middleware/loader';
+import { TopElementContainer, Progress } from '../../ui';
 
 export class EntityLoad {
 
@@ -43,10 +43,11 @@ export class EntityLoad {
 
             // list
             for (var key in data.entities) {
-                editor.call('entities:add', new Observer(data.entities[key]));
+                let entity = new Observer(data.entities[key]);
+                editor.call('entities:add', entity);
                 p.progress = (++i / total) * 0.8 + 0.1;
-                if (!data.entities[key].root && data.entities[key].asset === "") {
-                    editor.call("load:blue", data.entities[key].type, data.entities[key].property);
+                if (!data.entities[key].root) {
+                    editor.call('create:scene:element', entity);
                 }
             }
 
@@ -68,6 +69,13 @@ export class EntityLoad {
             p.hidden = false;
             p.progress = 0.1;
         });
+
+
+
+
+
+
+        
 
     }
 

@@ -1,1 +1,315 @@
-{"scenes":[{"id":"33a884dd","projectId":"2af1e58b","name":"新建场景","created":"2020-07-04 18:00","modified":"2020-07-04 18:00","entities":{"799f7762-3ef2-4564-a59b-c0ae959a90ce":{"name":"新建场景","root":true,"parent":null,"resource_id":"799f7762-3ef2-4564-a59b-c0ae959a90ce","tags":[],"enabled":true,"components":{},"scale":[1,1,1],"position":[0,0,0],"rotation":[0,0,0],"children":["5e7ecc24-75b7-445a-b381-a66bd7699163","3109cca1-b962-4fd5-a83a-0b28719d2616"],"type":"Root","asset":""},"5e7ecc24-75b7-445a-b381-a66bd7699163":{"name":"MyCamera","root":false,"parent":"799f7762-3ef2-4564-a59b-c0ae959a90ce","resource_id":"5e7ecc24-75b7-445a-b381-a66bd7699163","tags":[],"enabled":true,"property":{"applyGravity":false,"checkCollisions":false,"ellipsoid":null,"fov":0.8,"id":"4e3104bd-30d5-4890-b8ba-dcba00b659ec","inertia":0.9,"maxZ":383.8826,"minZ":0.1,"name":"MyCamera","position":[57.70456,109.7632,18.4708862],"rotation":[0,0,0],"speed":1.919413,"target":[-0.306108475,35.32137,1.04846144]},"scale":[1,1,1],"position":[4,3.5,4],"rotation":[-30,45,0],"children":[],"type":"Camera","asset":""},"3109cca1-b962-4fd5-a83a-0b28719d2616":{"name":"MyLight","root":false,"parent":"799f7762-3ef2-4564-a59b-c0ae959a90ce","resource_id":"3109cca1-b962-4fd5-a83a-0b28719d2616","tags":[],"enabled":true,"property":{"diffuse":[0,0,0],"direction":null,"id":"fa24aca1-3241-480a-bec6-816693df7325","intensity":1,"name":"MyLight","position":[57.70456,109.7632,18.4708862],"specular":[1,1,1],"type":0},"scale":[1,1,1],"position":[2,2,-2],"rotation":[45,135,0],"children":[],"type":"Light","asset":""},"a00a0a5c-c7f1-4706-ada8-8f9c0a6a4a46":{"name":"him","resource_id":"a00a0a5c-c7f1-4706-ada8-8f9c0a6a4a46","parent":"","position":[0,0,0],"rotation":[0,0,0],"scale":[1,1,1],"children":["0ef21059-94ce-4e79-ad67-48d8c05607e0","76931662-ff06-4353-ae35-b62f3c93ed58","92b91666-bf07-4061-9274-e1a3eb3d2f07","50d37370-0ef8-445c-9908-bb7641b27d88","34394963-f5e9-48c7-b8d0-3698f14251ec"],"enabled":true,"tags":[],"root":false,"type":"Mesh","asset":"/projects/2af1e58b/assets/","asset2":"dude.babylon"},"0ef21059-94ce-4e79-ad67-48d8c05607e0":{"name":" / 0","resource_id":"0ef21059-94ce-4e79-ad67-48d8c05607e0","parent":"a00a0a5c-c7f1-4706-ada8-8f9c0a6a4a46","position":[0,0,0],"rotation":[0,0,0],"scale":[1,1,1],"children":[],"enabled":true,"tags":[],"root":false,"type":"Mesh","asset":"/projects/2af1e58b/assets/","asset2":"dude.babylon"},"76931662-ff06-4353-ae35-b62f3c93ed58":{"name":" / 1","resource_id":"76931662-ff06-4353-ae35-b62f3c93ed58","parent":"a00a0a5c-c7f1-4706-ada8-8f9c0a6a4a46","position":[0,0,0],"rotation":[0,0,0],"scale":[1,1,1],"children":[],"enabled":true,"tags":[],"root":false,"type":"Mesh","asset":"/projects/2af1e58b/assets/","asset2":"dude.babylon"},"92b91666-bf07-4061-9274-e1a3eb3d2f07":{"name":" / 2","resource_id":"92b91666-bf07-4061-9274-e1a3eb3d2f07","parent":"a00a0a5c-c7f1-4706-ada8-8f9c0a6a4a46","position":[0,0,0],"rotation":[0,0,0],"scale":[1,1,1],"children":[],"enabled":true,"tags":[],"root":false,"type":"Mesh","asset":"/projects/2af1e58b/assets/","asset2":"dude.babylon"},"50d37370-0ef8-445c-9908-bb7641b27d88":{"name":" / 3","resource_id":"50d37370-0ef8-445c-9908-bb7641b27d88","parent":"a00a0a5c-c7f1-4706-ada8-8f9c0a6a4a46","position":[0,0,0],"rotation":[0,0,0],"scale":[1,1,1],"children":[],"enabled":true,"tags":[],"root":false,"type":"Mesh","asset":"/projects/2af1e58b/assets/","asset2":"dude.babylon"},"34394963-f5e9-48c7-b8d0-3698f14251ec":{"name":" / 4","resource_id":"34394963-f5e9-48c7-b8d0-3698f14251ec","parent":"a00a0a5c-c7f1-4706-ada8-8f9c0a6a4a46","position":[0,0,0],"rotation":[0,0,0],"scale":[1,1,1],"children":[],"enabled":true,"tags":[],"root":false,"type":"Mesh","asset":"/projects/2af1e58b/assets/","asset2":"dude.babylon"}},"path1":"/projects/2af1e58b/assets/","path2":"dude.babylon"}],"last":0}
+{
+    "scenes": [
+        {
+            "id": "33a884dd",
+            "projectId": "2af1e58b",
+            "name": "新建场景",
+            "created": "2020-07-04 18:00",
+            "modified": "2020-07-04 18:00",
+            "entities": {
+                "799f7762-3ef2-4564-a59b-c0ae959a90ce": {
+                    "name": "新建场景",
+                    "root": true,
+                    "parent": null,
+                    "resource_id": "799f7762-3ef2-4564-a59b-c0ae959a90ce",
+                    "tags": [],
+                    "enabled": true,
+                    "components": {},
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "position": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "children": [
+                        "5e7ecc24-75b7-445a-b381-a66bd7699163",
+                        "3109cca1-b962-4fd5-a83a-0b28719d2616"
+                    ],
+                    "type": "Root",
+                    "asset": ""
+                },
+                "5e7ecc24-75b7-445a-b381-a66bd7699163": {
+                    "name": "MyCamera",
+                    "root": false,
+                    "parent": "799f7762-3ef2-4564-a59b-c0ae959a90ce",
+                    "resource_id": "5e7ecc24-75b7-445a-b381-a66bd7699163",
+                    "tags": [],
+                    "enabled": true,
+                    "property": {
+                        "applyGravity": false,
+                        "checkCollisions": false,
+                        "ellipsoid": null,
+                        "fov": 0.8,
+                        "id": "4e3104bd-30d5-4890-b8ba-dcba00b659ec",
+                        "inertia": 0.9,
+                        "maxZ": 383.8826,
+                        "minZ": 0.1,
+                        "name": "MyCamera",
+                        "position": [
+                            57.70456,
+                            109.7632,
+                            18.4708862
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "speed": 1.919413,
+                        "target": [
+                            -0.306108475,
+                            35.32137,
+                            1.04846144
+                        ]
+                    },
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "position": [
+                        4,
+                        3.5,
+                        4
+                    ],
+                    "rotation": [
+                        -30,
+                        45,
+                        0
+                    ],
+                    "children": [],
+                    "type": "Camera",
+                    "asset": ""
+                },
+                "3109cca1-b962-4fd5-a83a-0b28719d2616": {
+                    "name": "MyLight",
+                    "root": false,
+                    "parent": "799f7762-3ef2-4564-a59b-c0ae959a90ce",
+                    "resource_id": "3109cca1-b962-4fd5-a83a-0b28719d2616",
+                    "tags": [],
+                    "enabled": true,
+                    "property": {
+                        "diffuse": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "direction": null,
+                        "id": "fa24aca1-3241-480a-bec6-816693df7325",
+                        "intensity": 1,
+                        "name": "MyLight",
+                        "position": [
+                            57.70456,
+                            109.7632,
+                            18.4708862
+                        ],
+                        "specular": [
+                            1,
+                            1,
+                            1
+                        ],
+                        "type": 0
+                    },
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "position": [
+                        2,
+                        2,
+                        -2
+                    ],
+                    "rotation": [
+                        45,
+                        135,
+                        0
+                    ],
+                    "children": [],
+                    "type": "Light",
+                    "asset": ""
+                },
+                "a00a0a5c-c7f1-4706-ada8-8f9c0a6a4a46": {
+                    "name": "him",
+                    "resource_id": "a00a0a5c-c7f1-4706-ada8-8f9c0a6a4a46",
+                    "parent": "",
+                    "position": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [
+                        "0ef21059-94ce-4e79-ad67-48d8c05607e0",
+                        "76931662-ff06-4353-ae35-b62f3c93ed58",
+                        "92b91666-bf07-4061-9274-e1a3eb3d2f07",
+                        "50d37370-0ef8-445c-9908-bb7641b27d88",
+                        "34394963-f5e9-48c7-b8d0-3698f14251ec"
+                    ],
+                    "enabled": true,
+                    "tags": [],
+                    "root": false,
+                    "type": "Mesh",
+                    "asset": "/projects/2af1e58b/assets/",
+                    "asset2": "dude.babylon"
+                },
+                "0ef21059-94ce-4e79-ad67-48d8c05607e0": {
+                    "name": " / 0",
+                    "resource_id": "0ef21059-94ce-4e79-ad67-48d8c05607e0",
+                    "parent": "a00a0a5c-c7f1-4706-ada8-8f9c0a6a4a46",
+                    "position": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "tags": [],
+                    "root": false,
+                    "type": "Mesh",
+                    "asset": "/projects/2af1e58b/assets/",
+                    "asset2": "dude.babylon"
+                },
+                "76931662-ff06-4353-ae35-b62f3c93ed58": {
+                    "name": " / 1",
+                    "resource_id": "76931662-ff06-4353-ae35-b62f3c93ed58",
+                    "parent": "a00a0a5c-c7f1-4706-ada8-8f9c0a6a4a46",
+                    "position": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "tags": [],
+                    "root": false,
+                    "type": "Mesh",
+                    "asset": "/projects/2af1e58b/assets/",
+                    "asset2": "dude.babylon"
+                },
+                "92b91666-bf07-4061-9274-e1a3eb3d2f07": {
+                    "name": " / 2",
+                    "resource_id": "92b91666-bf07-4061-9274-e1a3eb3d2f07",
+                    "parent": "a00a0a5c-c7f1-4706-ada8-8f9c0a6a4a46",
+                    "position": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "tags": [],
+                    "root": false,
+                    "type": "Mesh",
+                    "asset": "/projects/2af1e58b/assets/",
+                    "asset2": "dude.babylon"
+                },
+                "50d37370-0ef8-445c-9908-bb7641b27d88": {
+                    "name": " / 3",
+                    "resource_id": "50d37370-0ef8-445c-9908-bb7641b27d88",
+                    "parent": "a00a0a5c-c7f1-4706-ada8-8f9c0a6a4a46",
+                    "position": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "tags": [],
+                    "root": false,
+                    "type": "Mesh",
+                    "asset": "/projects/2af1e58b/assets/",
+                    "asset2": "dude.babylon"
+                },
+                "34394963-f5e9-48c7-b8d0-3698f14251ec": {
+                    "name": " / 4",
+                    "resource_id": "34394963-f5e9-48c7-b8d0-3698f14251ec",
+                    "parent": "a00a0a5c-c7f1-4706-ada8-8f9c0a6a4a46",
+                    "position": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "tags": [],
+                    "root": false,
+                    "type": "Mesh",
+                    "asset": "/projects/2af1e58b/assets/",
+                    "asset2": "dude.babylon"
+                }
+            },
+            "path1": "/projects/2af1e58b/assets/",
+            "path2": "dude.babylon"
+        }
+    ],
+    "last": 0
+}

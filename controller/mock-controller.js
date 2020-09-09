@@ -106,7 +106,7 @@ exports.createProject = async (ctx, next) => {
     // 判断根目录是否存在
     exists = await existsFile("dist/projects");
     if (!exists) {
-        var mkdirResult = await mkDir("dist/projects");
+        await mkDir("dist/projects");
     } else {
         // console.log("目录存在：" + "dist/projects");
     }

@@ -50,7 +50,7 @@ export class Label extends Element {
   }
 
 
-  public tooltip!: Tooltip;
+  public tooltip: Nullable<Tooltip> = null;
 
 
   public constructor(text?: string, placeholder?: string, unsafe?: boolean) {

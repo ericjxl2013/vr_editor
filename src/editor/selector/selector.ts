@@ -83,7 +83,7 @@ export class Selector {
         self.selector.on('add', function (item: Observer) {
             // add index
             setIndex(self.type, item);
-            console.error("adddddddd: " + self.type);
+            // console.error("adddddddd: " + self.type);
             editor.emit('selector:add', item, self.type);
 
             if (!evtChange) {
@@ -95,7 +95,7 @@ export class Selector {
         // removing
         self.selector.on('remove', function (item: Observer) {
             editor.emit('selector:remove', item, self.type);
-            console.error("removeeeeeee: " + self.type);
+            // console.error("removeeeeeee: " + self.type);
             // remove index
             removeIndex(self.type, item);
 
@@ -177,8 +177,8 @@ export class Selector {
             if (self.selector.has(item))
                 return;
 
-            console.warn('selector add入口');
-            console.warn(item);
+            // console.warn('selector add入口, type: ' + type);
+            // console.warn(item.get('id'));
 
             if (self.selector.length > 0 && self.selector.type !== type) {
                 self.selector.clear();

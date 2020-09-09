@@ -296,6 +296,8 @@ export class AssetsPanelControl {
             // btnDuplicate.enabled = type === 'asset.material';
         });
 
+        
+
     }
 
 }

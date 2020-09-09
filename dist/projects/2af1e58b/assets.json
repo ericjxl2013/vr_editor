@@ -91,7 +91,7 @@
         "id": "373b341f78ded8dcd2911aa789cf121809a478b4",
         "type": "scene",
         "createdAt": "2020-07-07 21:42",
-        "modifiedAt": "2020-07-07 21:42",
+        "modifiedAt": "2020-08-28 09:46",
         "name": "dude.babylon",
         "preload": "true",
         "parent": null,
@@ -112,7 +112,126 @@
         "id": "4448e1dbcb7f6e8f55f2f5b257a1169d8c4db209",
         "type": "text",
         "createdAt": "2020-07-07 21:42",
-        "modifiedAt": "2020-07-07 21:42",
+        "modifiedAt": "2020-08-28 09:46",
+        "name": "新表格1.table",
+        "preload": "true",
+        "parent": null,
+        "scope": {
+            "type": "project",
+            "id": "2af1e58b"
+        },
+        "file": {
+            "filename": "新表格1.table.json",
+            "size": 3,
+            "url": "/projects/2af1e58b/assets/新表格1.table.json",
+            "projectID": "2af1e58b",
+            "hash": "4448e1dbcb7f6e8f55f2f5b257a1169d8c4db209"
+        },
+        "path": [
+            "1598165245625-c10efd29"
+        ]
+    },
+    "1598165245625-c10efd29": {
+        "id": "1598165245625-c10efd29",
+        "type": "folder",
+        "createdAt": "2020-08-23 14:47",
+        "modifiedAt": "2020-08-23 14:47",
+        "name": "k新建文件夹",
+        "preload": "false",
+        "parent": null,
+        "scope": {
+            "type": "project",
+            "id": "2af1e58b"
+        },
+        "file": null,
+        "path": []
+    },
+    "1598165282357-194cde6f": {
+        "id": "1598165282357-194cde6f",
+        "type": "folder",
+        "createdAt": "2020-08-23 14:48",
+        "modifiedAt": "2020-08-23 14:48",
+        "name": "b新建文件夹",
+        "preload": "false",
+        "parent": null,
+        "scope": {
+            "type": "project",
+            "id": "2af1e58b"
+        },
+        "file": null,
+        "path": [
+            "1598166044263-d42ceeda"
+        ]
+    },
+    "1598166044263-d42ceeda": {
+        "id": "1598166044263-d42ceeda",
+        "type": "folder",
+        "createdAt": "2020-08-23 15:00",
+        "modifiedAt": "2020-08-23 15:00",
+        "name": "f新建文件夹",
+        "preload": "false",
+        "parent": null,
+        "scope": {
+            "type": "project",
+            "id": "2af1e58b"
+        },
+        "file": null,
+        "path": []
+    },
+    "1598166054335-433877e5": {
+        "id": "1598166054335-433877e5",
+        "type": "folder",
+        "createdAt": "2020-08-23 15:00",
+        "modifiedAt": "2020-08-23 15:00",
+        "name": "h新建文件夹2",
+        "preload": "false",
+        "parent": null,
+        "scope": {
+            "type": "project",
+            "id": "2af1e58b"
+        },
+        "file": null,
+        "path": [
+            "1598166044263-d42ceeda"
+        ]
+    },
+    "1598167242806-2b6d32bf": {
+        "id": "1598167242806-2b6d32bf",
+        "type": "folder",
+        "createdAt": "2020-08-23 15:20",
+        "modifiedAt": "2020-08-23 15:20",
+        "name": "aa新建文件夹",
+        "preload": "false",
+        "parent": null,
+        "scope": {
+            "type": "project",
+            "id": "2af1e58b"
+        },
+        "file": null,
+        "path": []
+    },
+    "1598172095731-c9fddd9a": {
+        "id": "1598172095731-c9fddd9a",
+        "type": "folder",
+        "createdAt": "2020-08-23 16:41",
+        "modifiedAt": "2020-08-23 16:41",
+        "name": "m新建文件夹1",
+        "preload": "false",
+        "parent": null,
+        "scope": {
+            "type": "project",
+            "id": "2af1e58b"
+        },
+        "file": null,
+        "path": [
+            "1598167242806-2b6d32bf"
+        ]
+    },
+    "1598579163043-a792afc6": {
+        "id": "1598579163043-a792afc6",
+        "type": "text",
+        "createdAt": "2020-08-28 09:46",
+        "modifiedAt": "2020-08-28 09:46",
         "name": "新表格.table",
         "preload": "true",
         "parent": null,

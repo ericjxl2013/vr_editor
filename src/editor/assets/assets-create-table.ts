@@ -9,9 +9,15 @@ export class AssetsCreateTable {
             //     return;
             args = args || {};
 
+            var path: string[] = [];
+            var currentFolder = editor.call('assets:panel:currentFolder');
+
+            if (currentFolder && currentFolder.get)
+                path = currentFolder.get('path').concat(currentFolder.get('id'));
+
             var asset = {
                 name: '新表格.table',
-                type: 'text',
+                type: 'data',
                 source: false,
                 preload: true,
                 parent: (args.parent !== undefined) ? args.parent : editor.call('assets:panel:currentFolder'),
@@ -20,7 +26,8 @@ export class AssetsCreateTable {
                 scope: {
                     type: 'project',
                     id: Config.projectID
-                }
+                },
+                path: path.join(',')
             };
 
             editor.call('assets:create', asset);

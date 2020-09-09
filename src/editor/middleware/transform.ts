@@ -221,6 +221,10 @@ export class Transform {
 
   // TO be contioued
 
+  public get children(): BABYLON.Node[] {
+      return this.transformNode!.getChildren();
+  }
+
   public get childCount(): number {
     return 0;
   }

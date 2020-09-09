@@ -1,5 +1,6 @@
 import { ContainerElement } from './container-element';
 import { Element } from './element';
+import { Label } from './label';
 
 export class Panel extends ContainerElement {
 
@@ -22,6 +23,8 @@ export class Panel extends ContainerElement {
   private _resizeTouchId: number = -100;
 
   public title: string = '';
+
+  public _lable: Nullable<Label> = null;
 
   public get folded(): boolean {
     return this.class ? this.class.contains('foldable') && this.class.contains('folded') : false;
