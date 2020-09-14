@@ -14,7 +14,8 @@ export class ToolbarEditorSettings {
         toolbar.append(button);
 
         button.on('click', function () {
-            editor.call('selector:set', 'editorSettings', [editor.call('settings:projectUser')]);
+            // TODO:设置按钮按下
+            // editor.call('selector:set', 'editorSettings', [editor.call('settings:projectUser')]);
         });
 
         editor.on('attributes:clear', function () {
@@ -33,7 +34,7 @@ export class ToolbarEditorSettings {
 
         Tooltip.attach({
             target: button.element!,
-            text: 'Settings',
+            text: '设置',
             align: 'left',
             root: editor.call('layout.root')
         });

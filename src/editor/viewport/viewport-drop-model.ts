@@ -1,12 +1,36 @@
 import { Observer } from '../../lib';
 import { VeryEngine } from '../../engine';
-import { GizmosManager } from '../toolbar';
 import { BabylonLoader } from '../middleware/loader/babylonLoader';
+import { GizmosCenter } from '../gizmos';
 
 export class ViewportDropModel {
 
 
     public constructor() {
+
+
+        editor.method('load:from:asset', (babylon_data: Observer) => {
+            BabylonLoader.loadBabylon(babylon_data);
+            // console.log('assets加载模型');
+            // console.log(babylon_data);
+        });
+
+        editor.method('pick', (mesh: Nullable<BABYLON.AbstractMesh>) => {
+            if (mesh === null) {
+                GizmosCenter.clear();
+                console.log('clear gizmos');
+            } else {
+                console.log('pick mesh');
+                // GizmosCenter.attach(mesh);
+                var entity = editor.call('entities:get', mesh.id);
+                console.error(entity);
+                if (entity) {
+                    editor.call('selector:set', 'entity', [entity]);
+                } else {
+                    console.error('失败');
+                }
+            }
+        });
 
 
 
@@ -123,23 +147,6 @@ export class ViewportDropModel {
         });
 
 
-        editor.method('pick', (mesh: Nullable<BABYLON.AbstractMesh>) => {
-            if (mesh === null) {
-                GizmosManager.clear();
-            } else {
-                GizmosManager.attach(mesh);
-                var entity = editor.call('entities:get', mesh.id);
-                if (entity) {
-                    editor.call('selector:set', 'entity', [entity]);
-                } else {
-                    console.error('失败');
-                }
-
-            }
-
-        });
-
-
         editor.method('loadTempModel2', (rootUrl: string, modelName: string) => {
 
             BABYLON.SceneLoader.Append(rootUrl, modelName, VeryEngine.viewScene, function (scene) {
@@ -242,8 +249,6 @@ export class ViewportDropModel {
                             // console.log(pointerInfo!.pickInfo!.pickedMesh);
                             break;
                     }
-
-
                 });
             });
 

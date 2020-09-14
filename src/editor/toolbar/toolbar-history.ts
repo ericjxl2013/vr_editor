@@ -28,7 +28,7 @@ export class ToolbarHistory {
 
         var tooltipUndo = Tooltip.attach({
             target: buttonUndo.element!,
-            text: 'Undo',
+            text: '撤销',
             align: 'left',
             root: root
         });
@@ -57,7 +57,7 @@ export class ToolbarHistory {
 
         var tooltipRedo = Tooltip.attach({
             target: buttonRedo.element!,
-            text: 'Redo',
+            text: '重做',
             align: 'left',
             root: root
         });

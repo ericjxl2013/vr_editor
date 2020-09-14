@@ -14,6 +14,9 @@ export class Config{
 
     public static isSceneDirty: boolean = false;
 
+    // TODO: 暂时只允许加载一个表格
+    public static tableAssetsID: string = '';
+
 
     public constructor () {
 

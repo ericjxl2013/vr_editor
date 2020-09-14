@@ -2,25 +2,27 @@ import { Config } from "../global";
 
 export class Scenes {
 
+    private _prefix: string = '（未保存）';
+
     public constructor() {
+
+        let self = this;
 
 
         editor.method('make:scene:dirty', () => {
-            if (!document.title.startsWith('*')) {
-                document.title = '*' + document.title;
+            if (!document.title.startsWith(self._prefix)) {
+                document.title = self._prefix + document.title;
             }
             Config.isSceneDirty = true;
+            // console.error('make:scene:dirty');
         });
 
         editor.method('make:scene:clear', () => {
             Config.isSceneDirty = false;
-            if (document.title.startsWith('*')) {
-                document.title = document.title.substring(1);
+            if (document.title.startsWith(self._prefix)) {
+                document.title = document.title.substring(self._prefix.length);
             }
         });
-
-
-
 
 
 

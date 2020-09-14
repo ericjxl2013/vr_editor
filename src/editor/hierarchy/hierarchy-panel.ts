@@ -5,6 +5,7 @@ import { HierarchyMenu } from './hierarchy-menu';
 import { HierarchyContextMenu } from './hierarchy-context-menu';
 import { Observer } from '../../lib';
 import { Config } from '../global';
+import { BabylonLoader } from '../middleware/loader/babylonLoader';
 
 export class HierarchyPanel {
 
@@ -73,7 +74,7 @@ export class HierarchyPanel {
             item.elementTitle.focus();
             // add selection
             // TODO
-            console.log('hierarchy 面板选中entity');
+            // console.log('hierarchy 面板选中entity');
             // console.log(item.entity);
 
             // TODO: 当前entity为undefined
@@ -130,7 +131,7 @@ export class HierarchyPanel {
         });
 
         hierarchy.on('dragend', function () {
-            console.log('hierarchy panel drag end');
+            // console.log('hierarchy panel drag end');
             editor.call('drop:activate', false);
             editor.call('drop:set');
         });
@@ -214,12 +215,23 @@ export class HierarchyPanel {
 
                 if (preserveTransform && record.entity) {
                     record.position = record.entity.node.position.clone();
-                    record.rotation = record.entity.entity.getRotation().clone();
+                    record.rotation = record.entity.node.rotation.clone();
                 }
 
                 // relative entity
                 record.indOld = record.parentOld.get('children').indexOf(record.resourceId);
-                record.indNew = Array.prototype.indexOf.call(record.item.parent.innerElement.childNodes, record.item.element) - 1;
+
+                // console.error(record.parent);
+                // console.error(record.entity);
+                // console.error(record.parentOld);
+                // console.warn(record.item);
+                // console.warn(record.item.parent);
+                // console.warn(record.item.parent.element);
+                // console.warn(record.item.parent.element.childNodes);
+
+                record.indNew = Array.prototype.indexOf.call(record.item.parent.element.childNodes, record.item.element) - 1;
+
+                // console.warn(record.indNew);
 
                 records.push(record);
             }
@@ -229,9 +241,9 @@ export class HierarchyPanel {
 
                 record.entity.reparenting = true;
 
-                record.parent.history.enabled = false;
-                record.parentOld.history.enabled = false;
-                record.entity.history.enabled = false;
+                // record.parent.history.enabled = false;
+                // record.parentOld.history.enabled = false;
+                // record.entity.history.enabled = false;
 
                 if (record.parent === record.parentOld) {
                     // move
@@ -256,21 +268,28 @@ export class HierarchyPanel {
                     record.entity.set('parent', record.parentId);
                 }
 
-                if (preserveTransform && record.position) {
-                    record.entity.entity.setPosition(record.position);
-                    record.entity.entity.setRotation(record.rotation);
+                BabylonLoader.updateSceneData(record.parentOld.get('resource_id'), record.parentOld._data2); 
+                BabylonLoader.updateSceneData(record.parent.get('resource_id'), record.parent._data2);
+                BabylonLoader.updateSceneData(record.entity.get('resource_id'), record.entity._data2);
+                editor.call('make:scene:dirty');
 
-                    var localPosition = record.entity.entity.getLocalPosition();
-                    var localRotation = record.entity.entity.getLocalEulerAngles();
-                    record.entity.set('position', [localPosition.x, localPosition.y, localPosition.z]);
-                    record.entity.set('rotation', [localRotation.x, localRotation.y, localRotation.z]);
+                if (preserveTransform && record.position) {
+                    // record.entity.node.position = record.position;
+                    // record.entity.node.rotation = record.rotation;
+
+                    // var localPosition = record.entity.node.position;
+                    // var localRotation = record.entity.node.rotation;
+                    // record.entity.set('position', [localPosition.x, localPosition.y, localPosition.z]);
+                    // record.entity.set('rotation', [localRotation.x, localRotation.y, localRotation.z]);
                 }
 
-                record.parent.history.enabled = true;
-                record.parentOld.history.enabled = true;
-                record.entity.history.enabled = true;
+                // record.parent.history.enabled = true;
+                // record.parentOld.history.enabled = true;
+                // record.entity.history.enabled = true;
                 record.entity.reparenting = false;
             }
+
+            // TODO: history
 
             resizeQueue();
             // editor.call('viewport:render');
@@ -327,30 +346,30 @@ export class HierarchyPanel {
         // entity added
         editor.on('entities:add', function (entity: Observer, isRoot: boolean) {
 
-            console.log('add hierarchy entity: ' + entity.get('name'));
-            if (entity.get('type') === 'TransformNode' || entity.get('type') === 'Mesh') {
+            // console.log('add hierarchy entity: ' + entity.get('name'));
+            if (entity.get('type') === 'transformnode' || entity.get('type') === 'mesh') {
                 entity.node = VeryEngine.viewScene.getNodeByID(entity.get('resource_id'));
             }
             var classList = ['tree-item-entity', 'entity-id-' + entity.get('resource_id')];
             if (isRoot) {
                 classList.push('tree-item-root');
-            } 
+            }
 
             var element = new TreeItem({
                 text: entity.get('name'),
                 classList: classList
             });
 
-            if(!isRoot) {
-                if(entity.get('type') === 'camera') {
+            if (!isRoot) {
+                if (entity.get('type') === 'camera') {
                     element.class?.add('c-camera');
-                } else if(entity.get('type') === 'light') {
+                } else if (entity.get('type') === 'light') {
                     element.class?.add('c-light');
                 } else {
                     element.class?.add('c-model');
                 }
             }
-                
+
 
             element.entity = entity;
             element.enabled = entity.get('enabled');
@@ -416,7 +435,7 @@ export class HierarchyPanel {
             // add children
             entity.on('children:insert', function (value: string, ind: number) {
 
-                console.warn('children:insert in hierarchy-panel');
+                // console.warn('children:insert in hierarchy-panel');
                 var item = self.uiItemIndex[value];
 
                 if (!item || item.entity.reparenting)
@@ -508,7 +527,7 @@ export class HierarchyPanel {
                     for (var c = 0; c < children.length; c++) {
                         var child = self.uiItemIndex[children[c]];
                         if (!child) {
-                            var err = 'Cannot find child entity ' + children[c];
+                            var err = '父物体： ' + entity.get('name') + '，hierarchy菜单无法关联到子物体，子物体ID：' + children[c];
                             editor.call('status:error', err);
                             console.error(err);
                             continue;

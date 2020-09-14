@@ -239,7 +239,7 @@ export class AssetsContextMenu {
         menuItemReplace.on('select', function () {
             // console.log(currentAsset)
             // console.log(currentAsset.origin)
-            editor.call('loadTempModel', currentAsset);
+            editor.call('load:from:asset', currentAsset);
             // var id = parseInt(currentAsset.get('id'), 10);
             // console.log(currentAsset.get('name'));
             // editor.call('picker:asset', {
@@ -338,8 +338,8 @@ export class AssetsContextMenu {
         menuItemEdit.on('select', function () {
             // editor.call('assets:edit', currentAsset);
             console.log('编辑表格');
+            console.warn(currentAsset);
             editor.call('assets:open-table', currentAsset.get('name'));
-
             
         });
         menu.append(menuItemEdit);

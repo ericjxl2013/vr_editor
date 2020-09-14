@@ -4654,6 +4654,12 @@ body {
 .ui-grid.assets > .ui-grid-item.type-text > .icon {
   display: none;
 }
+.ui-grid.assets > .ui-grid-item.type-table > .thumbnail.placeholder:after {
+    content: "\E209";
+}
+.ui-grid.assets > .ui-grid-item.type-table > .icon {
+    display: none;
+}
 .ui-grid.assets > .ui-grid-item.type-html > .thumbnail.placeholder:after {
   content: "\E205";
 }

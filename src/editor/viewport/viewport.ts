@@ -1,7 +1,8 @@
 import { Canvas } from '../../ui';
 import { VeryEngine } from '../../engine';
-import { ToolbarTopControl, GizmosManager } from '../toolbar';
+import { ToolbarTopControl} from '../toolbar';
 import { ViewportExpand } from './viewport-expand';
+import { GizmosCenter } from '../gizmos';
 
 export class Viewport {
 
@@ -26,7 +27,8 @@ export class Viewport {
 
 
         // TODO: 设定相机
-        this._scene.clearColor = new BABYLON.Color4(49 / 255, 77 / 255, 121 / 255, 1);
+        // this._scene.clearColor = new BABYLON.Color4(49 / 255, 77 / 255, 121 / 255, 1); 
+        this._scene.clearColor = new BABYLON.Color4(116 / 255, 116 / 255, 116 / 255, 1);
 
         var camera = new BABYLON.ArcRotateCamera('Default', 100, 50, 50, new BABYLON.Vector3(0, 0, 0), this._scene);
         camera.setPosition(new BABYLON.Vector3(0, 1, -20));
@@ -171,7 +173,7 @@ export class Viewport {
         this._scene = new BABYLON.Scene(this._engine);
         VeryEngine.viewScene = this._scene;
         this._scene.clearColor = new BABYLON.Color4(0, 0, 0, 1);
-        GizmosManager.init(this._scene);
+        GizmosCenter.init(this._scene);
     }
 
 

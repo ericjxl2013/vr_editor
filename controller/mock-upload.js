@@ -1,7 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const formidable = require("formidable");
-var locker = require("./lock");
+// var locker = require("./lock");
 
 const renameFile = function (oldpath, newpath) {
     return new Promise((resovle, reject) => {
@@ -443,8 +443,56 @@ exports.upload = async (ctx, next) => {
                 "dist/projects/" + projectID + "/assets.json",
                 JSON.stringify(assetFile)
             );
+        } else if (assetFields.type === "table") {
+            var assetID = createAssetID();
+            var createdAt = createdAtTime();
+            await mkDir("dist/assets/" + assetID);
+            var newpath = "dist/assets/" + assetID + "/" + assetFields.name;
+            // 读写标准文件
+            var tableData = await readFile("dist/standard/tableTest.json");
+            await writeFile(newpath, tableData);
+            fs.fi 
+
+            var createdAt = createdAtTime();
+            assetData = {
+                id: assetID,
+                type: assetFields.type,
+                createdAt: createdAt,
+                modifiedAt: createdAt,
+                name: assetFields.name,
+                preload: assetFields.preload !== undefined ? assetFields.preload : false,
+                has_thumbnail: false,
+                scope: {
+                    type: "project",
+                    id: projectID,
+                },
+                file: {
+                    filename: assetFields.name,
+                    size: 0,
+                    hash: createUuid(),
+                },
+                data: null,
+                path:
+                    assetFields.path === "" ? [] : assetFields.path.split(","),
+            };
+            // TODO: 同时上传多个文件，异步读写文件，文件信息出错
+            var assetFile = fs.readFileSync(
+                "dist/projects/" + projectID + "/assets.json"
+            );
+            assetFile = JSON.parse(assetFile);
+            if (!assetFile.assets) {
+                assetFile["assets"] = {};
+            }
+            if (assetFile.assets[assetID] === undefined) {
+                assetFile.assets[assetID] = assetData;
+            }
+            backData.push(assetData);
+            fs.writeFileSync(
+                "dist/projects/" + projectID + "/assets.json",
+                JSON.stringify(assetFile)
+            );
         }
-    }
+    } 
 
     // await next();
     return ctx.send(backData);

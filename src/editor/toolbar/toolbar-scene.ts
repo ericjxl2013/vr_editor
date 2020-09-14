@@ -33,7 +33,7 @@ export class ToolbarScene {
 
         Tooltip.attach({
             target: projectName.element!,
-            text: 'Project',
+            text: '项目名',
             align: 'top',
             root: root
         });
@@ -51,7 +51,7 @@ export class ToolbarScene {
 
         Tooltip.attach({
             target: sceneName.element!,
-            text: 'Settings',
+            text: '场景名',
             align: 'top',
             root: root
         });
@@ -61,7 +61,7 @@ export class ToolbarScene {
         });
 
         sceneName.on('click', function () {
-            editor.call('selector:set', 'editorSettings', [editor.call('settings:projectUser')]);
+            // editor.call('selector:set', 'editorSettings', [editor.call('settings:projectUser')]);
         });
 
         editor.on('attributes:clear', function () {
@@ -113,13 +113,13 @@ export class ToolbarScene {
 
         Tooltip.attach({
             target: sceneList.element!,
-            text: 'Manage Scenes',
+            text: '场景设置',
             align: 'top',
             root: root
         });
 
         sceneList.on('click', function () {
-            editor.call('picker:scene');
+            // editor.call('picker:scene');
         });
 
         editor.on('picker:scene:open', function () {

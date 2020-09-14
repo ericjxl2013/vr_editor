@@ -41,7 +41,6 @@
                 "5e7ecc24-75b7-445a-b381-a66bd7699163": {
                     "name": "主相机",
                     "type": "camera",
-                    "root": false,
                     "parent": "799f7762-3ef2-4564-a59b-c0ae959a90ce",
                     "resource_id": "5e7ecc24-75b7-445a-b381-a66bd7699163",
                     "tags": [],
@@ -107,13 +106,11 @@
                         0,
                         0
                     ],
-                    "children": [],
-                    "asset": ""
+                    "children": []
                 },
                 "3109cca1-b962-4fd5-a83a-0b28719d2616": {
                     "name": "平行光",
                     "type": "light",
-                    "root": false,
                     "parent": "799f7762-3ef2-4564-a59b-c0ae959a90ce",
                     "resource_id": "3109cca1-b962-4fd5-a83a-0b28719d2616",
                     "tags": [],
@@ -177,8 +174,7 @@
                         -30,
                         0
                     ],
-                    "children": [],
-                    "asset": ""
+                    "children": []
                 },
                 "3e8d0d21-726a-427d-bf34-7baaebdff54c": {
                     "name": "立方体",
@@ -205,7 +201,7 @@
                     "children": [],
                     "enabled": true,
                     "checkCollisions": false,
-                    "isPickable": false,
+                    "pickable": true,
                     "isVisible": true,
                     "tags": [],
                     "material_id": ""

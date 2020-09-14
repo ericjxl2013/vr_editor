@@ -24,7 +24,7 @@ export class ToolbarPublish {
 
         Tooltip.attach({
             target: button.element!,
-            text: 'Publish / Download',
+            text: '发布',
             align: 'left',
             root: editor.call('layout.root')
         });

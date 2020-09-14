@@ -68,11 +68,11 @@ export class BabylonLoader {
             console.log(dataBabylon.materials);
             console.log(dataBabylon.lights);
 
-            if (dataBabylon.lights) {
-                dataBabylon.lights.forEach((element: any) => {
-                    BabylonLoader.loadLight(element, VeryEngine.viewScene);
-                });
-            }
+            // if (dataBabylon.lights) {
+            //     dataBabylon.lights.forEach((element: any) => {
+            //         BabylonLoader.loadLight(element, VeryEngine.viewScene);
+            //     });
+            // }
 
             // material assemble
             if (BabylonLoader.assetsData.babylon[assetID]) {
@@ -84,7 +84,7 @@ export class BabylonLoader {
                         // 检测texture
                         if (newMat.diffuseTexture && newMat.diffuseTexture.texture_id) {
                             newMat.diffuseTexture.name = BabylonLoader.prefix + newMat.diffuseTexture.texture_id + '/' + BabylonLoader.assetsData.assets[newMat.diffuseTexture.texture_id].name;
-                            console.warn(newMat.diffuseTexture.name);
+                            // console.warn(newMat.diffuseTexture.name);
                         }
                         if (newMat.specularTexture && newMat.specularTexture.texture_id) {
                             newMat.specularTexture.name = BabylonLoader.prefix + newMat.specularTexture.texture_id + '/' + BabylonLoader.assetsData.assets[newMat.specularTexture.texture_id].name;
@@ -242,19 +242,19 @@ export class BabylonLoader {
 
 
             // TODO
-            VeryEngine.viewScene.onPointerObservable.add(pointerInfo => {
-                switch (pointerInfo.type) {
-                    case BABYLON.PointerEventTypes.POINTERDOWN:
-                        // console.log('down');
-                        if (pointerInfo!.pickInfo!.pickedMesh != null) {
-                            editor.call('pick', pointerInfo!.pickInfo!.pickedMesh);
-                        } else {
-                            editor.call('pick', null);
-                        }
-                        // console.log(pointerInfo!.pickInfo!.pickedMesh);
-                        break;
-                }
-            });
+            // VeryEngine.viewScene.onPointerObservable.add(pointerInfo => {
+            //     switch (pointerInfo.type) {
+            //         case BABYLON.PointerEventTypes.POINTERDOWN:
+            //             // console.log('down');
+            //             if (pointerInfo!.pickInfo!.pickedMesh != null) {
+            //                 editor.call('pick', pointerInfo!.pickInfo!.pickedMesh);
+            //             } else {
+            //                 editor.call('pick', null);
+            //             }
+            //             // console.log(pointerInfo!.pickInfo!.pickedMesh);
+            //             break;
+            //     }
+            // });
             // });
         }
     }
@@ -326,15 +326,20 @@ export class BabylonLoader {
             if (mesh.parent !== null) {
                 parentID = mesh.parent!.id;
             } else {
-                parentID = editor.call('entities:root').get('resource_id');
+                let root = editor.call('entities:root');
+                parentID = root.get('resource_id');
+                // root.insert('children', mesh.id);
+                // BabylonLoader.updateSceneData(parentID, root._data2);
+                // editor.call('make:scene:dirty');
             }
 
             var childs = mesh.getChildren();
             var myChildren = [];
-
             for (let k = 0; k < childs.length; k++) {
                 myChildren.push(childs[k].id);
             }
+
+            let eulerAngle = Tools.radianToEulerAngle(mesh.rotation);
 
             let entityData = {
                 name: mesh.name,
@@ -343,12 +348,12 @@ export class BabylonLoader {
                 asset_id: assetID,  // 对应babylon资源id
                 parent: parentID,
                 position: [mesh.position.x, mesh.position.y, mesh.position.z],
-                rotation: [mesh.rotation.x, mesh.rotation.y, mesh.rotation.z],
+                rotation: [eulerAngle.x, eulerAngle.y, eulerAngle.z],
                 scale: [mesh.scaling.x, mesh.scaling.y, mesh.scaling.z],
                 children: myChildren,
                 enabled: mesh.isEnabled(),
                 checkCollisions: mesh.checkCollisions,
-                isPickable: mesh.isPickable,
+                pickable: mesh.isPickable,
                 isVisible: mesh.isVisible,
                 tags: [],
                 type: 'mesh'
@@ -367,6 +372,30 @@ export class BabylonLoader {
 
     public static addSceneData(resource_id: string, data: any): void {
         BabylonLoader.scenesData.entities[resource_id] = data;
+        BabylonLoader.scenesData['modified'] = BabylonLoader.createdAtTime();
+    }
+
+    public static updateSceneData(resource_id: string, data: any): void {
+        BabylonLoader.scenesData.entities[resource_id] = data;
+        BabylonLoader.scenesData['modified'] = BabylonLoader.createdAtTime();
+    }
+
+    public static createdAtTime(): string {
+        var now = new Date();
+        var Y = now.getFullYear();
+        var m = BabylonLoader.getRealTime(now.getMonth() + 1);
+        var d = BabylonLoader.getRealTime(now.getDate());
+        var H = BabylonLoader.getRealTime(now.getHours());
+        var i = BabylonLoader.getRealTime(now.getMinutes());
+        // var s = getRealTime(now.getSeconds());
+        return Y + "-" + m + "-" + d + " " + H + ":" + i;
+    }
+
+    private static getRealTime(str: number): string {
+        if (str < 10) {
+            return "0" + str;
+        }
+        return str.toString();
     }
 
     public static saveScene(): void {

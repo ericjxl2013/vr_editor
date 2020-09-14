@@ -2,14 +2,7 @@ import { Events } from './events';
 import { GameObject } from '../editor';
 import { ObserverSync } from './observer-sync';
 
-/**
- * json数据解析工具；
- * 要求：
- *  1.保存原始json数据；
- *  2.存储信息，根据路径快速索引到对应数据，包括数组，包括嵌套的对象，保持原始数据类型不变；
- *  3.插入、删除、clone数据；
- * 
- */
+//  TODO： 当前暂不考虑赋值会超出现有类型的情况，比如原来是个number，赋值为了array；
 export class Observer extends Events {
 
     public get className(): string {
@@ -31,6 +24,10 @@ export class Observer extends Events {
 
 
     public _data: { [key: string]: any }; // 采用此对象，完整记录所有值；
+    public _data2: { [key: string]: any }; // 采用此对象，完整记录所有值；
+    public _dataType: { [key: string]: boolean } = {}; // 暂时只判断是否为array分拆而成的类型；
+    public _dataType2: { [key: string]: boolean } = {}; // 暂时只判断是否为array分拆而成的类型；
+
 
 
 
@@ -45,16 +42,17 @@ export class Observer extends Events {
     public sync: Nullable<ObserverSync> = null;
     // private sync!: History;
 
-    public node: any;
+    public node: any = null;
 
     public reparenting: boolean = false;
+    private _pathsWithDuplicates: { [key: string]: boolean } = {};
 
     // entity, assets, components: script, 一般components, selector, history
     public constructor(data: any, options?: any) {
         super();
 
         this.origin = data;
-
+        options = options || {};
 
 
 
@@ -65,16 +63,17 @@ export class Observer extends Events {
         this._keys = [];
         this._data = {};
 
+        this._data2 = {};
+
         // array paths where duplicate entries are allowed - normally
         // we check if an array already has a value before inserting it
         // but if the array path is in here we'll allow it
-        // this._pathsWithDuplicates = null;
-        // if (options.pathsWithDuplicates) {
-        //     this._pathsWithDuplicates = {};
-        //     for (let i = 0; i < options.pathsWithDuplicates.length; i++) {
-        //         this._pathsWithDuplicates[options.pathsWithDuplicates[i]] = true;
-        //     }
-        // }
+        if (options.pathsWithDuplicates) {
+            this._pathsWithDuplicates = {};
+            for (let i = 0; i < options.pathsWithDuplicates.length; i++) {
+                this._pathsWithDuplicates[options.pathsWithDuplicates[i]] = true;
+            }
+        }
 
         this.patchData(data);
 
@@ -109,105 +108,240 @@ export class Observer extends Events {
                 // debug.log('一般属性：' + key);
                 // debug.log(data[key]);
                 this.set(key, data[key]);
+                this._dataType[key] = false;
+                this._dataType2[key] = false;
                 // this.set(key, data[key]);
             }
         }
     }
 
-
+    // TODO: 若设置值为object，需要再parse
     public set(path: string, value: any): void {
-        // console.log(path + ' : ' + value);
+        // console.warn(path + ' : ' + value);
         let oldValue = this._data[path];
-        this._data[path] = value;
+        // console.warn(path);
+        // console.warn(value);
+        let keys = path.split('.');
+        let parentID = '';
+        for (let i = 0; i < keys.length - 1; i++) {
+            if (i === 0) {
+                parentID = keys[i];
+            } else {
+                parentID += this.SEPARATOR + keys[i];
+            }
+        }
+        // 数组处理，其他形式暂不考虑
+        if (keys.length > 1 && this._dataType[path]) {
+            let index = parseInt(keys[keys.length - 1]);
+            this._data[path] = value;
+            // 上一级数组修改
+            this._data[parentID][index] = value;
+        } else {
+            // if (value instanceof Array) {
+            //     value = value.slice(0);
+            // }
+            this._data[path] = value;
+            this.updateChildData(path, value);
+            this._data2[path] = value;
+        }
+        // console.warn(this._data);
+
+        // if (parentID && this._dataType2[parentID] && this.isNumber(keys[keys.length - 1])) {
+        //     this._data2[parentID][parseInt(keys[keys.length - 1])] = value;
+        // }
+
         this.emit(path + ':set', value, oldValue);
         this.emit('*:set', path, value, oldValue);
     }
 
-    // TODO
-    public unset(path: string, value: any): void {
-        // console.log(path + ' : ' + value);
-        // let oldValue = this._data[path];
-        // this._data[path] = value;
-        // this.emit(path + ':set', value, oldValue);
-        // this.emit('*:set', path, value, oldValue);
+    private isNumber(str: string): boolean {
+        var n = Number(str);
+        return !isNaN(n) ? true : false;
     }
 
-    public insert(path: string, value: any, ind: number | undefined): boolean {
-        var keys = path.split(".");
-        var key = keys[keys.length - 1];
-        if (this._data[key] && this._data[key] instanceof Array) {
-            if (ind === undefined) {
-                this._data[key].push(value)
-                ind = this._data[key].length - 1;
-            } else {
-                this._data[key].splice(ind, 0, value);
+    private updateChildData(path: string, value: any): void {
+        if (value instanceof Array) {
+            for (let key in this._data) {
+                if (key.startsWith(path + this.SEPARATOR)) {
+                    delete this._data[key];
+                    delete this._dataType[key];
+                }
             }
-            ;
+            let newPath = '';
+            for (let i = 0; i < value.length; i++) {
+                newPath = path + this.SEPARATOR + i.toString();
+                this._data[newPath] = value[i];
+                this._dataType[newPath] = true;
+            }
         }
+    }
 
+    // TODO
+    public unset(path: string, value: any): boolean {
+        // console.log(path + ' : ' + value);
+        if (!this.has(path)) {
+            return false;
+        }
+        let oldValue = this._data[path];
+        delete this._data[path];
+        delete this._dataType[path];
+
+        delete this._data2[path];
+        delete this._dataType2[path];
+
+        this.emit(path + ':set', value, oldValue);
+        this.emit('*:set', path, value, oldValue);
+
+        return true;
+    }
+
+    // 在数组的某个指定位置增加值
+    public insert(path: string, value: any, ind: number | undefined): boolean {
+        // console.error(path + ':insert-value: ' + value);
+        // console.warn(this._data);
+        if (!this.has(path) || !(this._data[path] instanceof Array)) {
+            return false;
+        }
+        let arr = this._data[path];
+        if (value instanceof Array) {
+            value = value.slice(0);
+        }
+        // if (!this._pathsWithDuplicates || !this._pathsWithDuplicates[path]) {
+        //     if (arr.indexOf(value) !== -1) {
+        //         return false;
+        //     }
+        // }
+        if (ind === undefined) {
+            arr.push(value);
+            ind = arr.length - 1;
+        } else {
+            arr.splice(ind, 0, value);
+        }
+        this.updateChildData(path, arr);
+        // TODO
+        // let arr2 = this._data2[path];
+        // console.error(arr2);
+        // if (arr2) {
+        //     // if (!this._pathsWithDuplicates || !this._pathsWithDuplicates[path]) {
+        //     //     if (arr2.indexOf(value) !== -1) {
+        //     //         return false;
+        //     //     }
+        //     // }
+        //     if (ind === undefined) {
+        //         arr2.push(value);
+        //     } else {
+        //         arr2.splice(ind, 0, value);
+        //     }
+        // }
+        // console.error(arr2);
+        
+        // console.warn(this._data);
         this.emit(path + ':insert', value, ind);
         this.emit('*:insert', path, value, ind);
 
         return true;
     }
 
-    // public set2(path: string, value: any): void {
-    //     // console.log(path + ' : ' + value);
-    //     this._data[path] = value;
+    // 删除数组指定某个序号的值
+    public remove(path: string, ind: number): boolean {
+        if (!this.has(path) || !(this._data[path] instanceof Array)) {
+            return false;
+        }
+        let arr = this._data[path];
+        if (arr.length < ind) return false;
+        let value = arr[ind];
+        arr.splice(ind, 1);
+        this.updateChildData(path, arr);
+
+        // TODO
+        // let arr2 = this._data2[path];
+        // if (arr2 && arr2.length >= ind) {
+        //     arr2.splice(ind, 1);
+        // }
+
+        this.emit(path + ':remove', value, ind);
+        this.emit('*:remove', path, value, ind);
+        return true;
+    }
+
+    // 删除数组中的某个value值
+    public removeValue(path: string, value: any): boolean {
+        if (!this.has(path) || !(this._data[path] instanceof Array)) {
+            return false;
+        }
+        let arr = this._data[path];
+        let ind = arr.indexOf(value);
+        if (ind === -1) {
+            return false;
+        }
+        let oldValue = arr[ind];
+        arr.splice(ind, 1);
+        this.updateChildData(path, arr);
+
+        // TODO
+        // let arr2 = this._data2[path];
+        // if (arr2 && ind >= 0) {
+        //     arr2.splice(ind, 1);
+        // }
+
+        // console.warn('删除');
+        // console.warn(this._data);
+        // console.warn(this._data2);
+
+        this.emit(path + ':remove', oldValue, ind);
+        this.emit('*:remove', path, oldValue, ind);
+
+        return true;
+    }
 
 
-    //     var keys = path.split('.');
-    //     var length = keys.length;
-    //     var key = keys[length - 1];
-    //     var node = this;
-    //     var nodePath = '';
-    //     var obj = this;
-    //     var state;
+    public move(path: string, indOld: number, indNew: number): boolean {
+        if (!this.has(path) || !(this._data[path] instanceof Array)) {
+            return false;
+        }
 
-    //     for (var i = 0; i < length - 1; i++) {
-    //         if (node instanceof Array) {
-    //             node = node[keys[i]];
+        let indNew2 = indNew;
 
-    //             if (node instanceof Observer) {
-    //                 path = keys.slice(i + 1).join('.');
-    //                 obj = node;
-    //             }
-    //         } else {
-    //             if (i < length && typeof node._data[keys[i]] !== 'object') {
-    //                 if (node._data[keys[i]])
-    //                     obj.unset((node.__path ? node.__path + '.' : '') + keys[i]);
+        let arr = this._data[path];
+        if (arr.length < indOld || arr.length < indNew || indOld === indNew) return false;
+        let oldValue = arr[indOld]
+        arr.splice(indOld, 1);
+        if (indNew === -1) indNew = arr.length;
+        arr.splice(indNew, 0, oldValue);
+        this.updateChildData(path, arr);
 
-    //                 node._data[keys[i]] = {
-    //                     _path: path,
-    //                     _keys: [],
-    //                     _data: {}
-    //                 };
-    //                 node._keys.push(keys[i]);
-    //             }
+        // TODO
+        // let arr2 = this._data2[path];
+        // if (arr2) {
+        //     if (arr2.length < indOld || arr2.length < indNew2 || indOld === indNew2) {
 
-    //             if (i === length - 1 && node.__path)
-    //                 nodePath = node.__path + '.' + keys[i];
+        //     } else {
+        //         let oldValue2 = arr2[indOld]
+        //         arr2.splice(indOld, 1);
+        //         if (indNew2 === -1) indNew2 = arr2.length;
+        //         arr2.splice(indNew2, 0, oldValue2);
+        //     }
+        // }
 
-    //             node = node._data[keys[i]];
-    //         }
-    //     }
-
-
-
-    // }
-
+        this.emit(path + ':move', oldValue, indNew, indOld);
+        this.emit('*:move', path, oldValue, indNew, indOld);
+        return true;
+    }
 
     public parserObject(prefix: string, key: string, value: any): void {
         // 先保存一份
         this.set(prefix, value);
+        this._dataType[prefix] = false;
 
         let path: string;
         let type: string = typeof value;
 
         if (type === 'object' && value instanceof Array) {
+            this._dataType2[prefix] = true;
             for (let i = 0; i < value.length; i++) {
                 path = prefix + this.SEPARATOR + i.toString();
                 this.set(path, value[i]);
+                this._dataType[path] = true;
                 // 数组元素还是对象的情况暂时不处理
             }
         } else if (type === 'object' && value instanceof Object) {
@@ -219,6 +353,9 @@ export class Observer extends Events {
                 } else {
                     path = prefix + this.SEPARATOR + key2;
                     this.set(path, value[key2]);
+                    this._dataType[path] = false;
+                    this._dataType2[prefix] = false;
+
                 }
             }
         } else {
@@ -379,159 +516,6 @@ export class Observer extends Events {
         if (state[1] && this.sync !== null && this.sync.enabled !== undefined)
             this.sync!.enabled = true;
     }
-
-    // public has(path: string): boolean {
-    //   let keys = path.split('.');
-    //   let node = this;
-    //   for (let i = 0, len = keys.length; i < len; i++) {
-    //     if (node === undefined) return false;
-    //     if (node._data) {
-    //       node = node._data[keys[i]];
-    //     } else {
-    //       // node = node[keys[i]];
-    //     }
-    //   }
-    //   return node !== undefined;
-    // }
-
-    // public get(path: string, raw?: boolean): Nullable<Observer> {
-    //   let keys = path.split('.');
-    //   let node = this;
-    //   for (let i = 0; i < keys.length; i++) {
-    //     if (node === undefined)
-    //       return null;
-
-    //     if (node._data) {
-    //       node = node._data[keys[i]];
-    //     } else {
-    //       // node = node[keys[i]];
-    //     }
-    //   }
-
-    //   if (raw !== undefined && raw)
-    //     return node;
-
-    //   if (node === null) {
-    //     return null;
-    //   } else {
-    //     return this.json(node);
-    //   }
-    // }
-
-    // public move(path: string, indOld: number, indNew: number, silent: boolean, remote: boolean): void {
-    //   let keys = path.split('.');
-    //   let key = keys[keys.length - 1];
-    //   let node = this;
-    //   let obj = this;
-
-    //   for (let i = 0; i < keys.length - 1; i++) {
-    //     if (node instanceof Array) {
-    //       node = node[parseInt(keys[i], 10)];
-    //       if (node instanceof Observer) {
-    //         path = keys.slice(i + 1).join('.');
-    //         obj = node;
-    //       }
-    //     } else if (node._data && node._data.hasOwnProperty(keys[i])) {
-    //       node = node._data[keys[i]];
-    //     } else {
-    //       return;
-    //     }
-    //   }
-
-    //   if (!node._data || !node._data.hasOwnProperty(key) || !(node._data[key] instanceof Array))
-    //     return;
-
-    //   let arr = node._data[key];
-
-    //   if (arr.length < indOld || arr.length < indNew || indOld === indNew)
-    //     return;
-
-    //   let value = arr[indOld];
-
-    //   arr.splice(indOld, 1);
-
-    //   if (indNew === -1)
-    //     indNew = arr.length;
-
-    //   arr.splice(indNew, 0, value);
-
-    //   if (!(value instanceof Observer))
-    //     value = obj.json(value);
-
-    //   let state: boolean[];
-    //   if (silent)
-    //     state = obj.silence();
-
-    //   obj.emit(path + ':move', value, indNew, indOld, remote);
-    //   obj.emit('*:move', path, value, indNew, indOld, remote);
-
-    //   if (silent)
-    //     obj.silenceRestore(state!);
-
-    //   return;
-    // };
-
-    // 将json对象复制解析出来
-    // public patch(data: any): void {
-    //   if (typeof data !== 'object') {
-    //     debug.warn(this.className + ': 不是正确的json对象，打印：\n' + data);
-    //     return;
-    //   }
-
-    //   for (let key in data) {
-    //     if (typeof data[key] === 'object' && !this._data.hasOwnProperty(key)) {
-    //       // 对象属性
-    //       debug.log('对象属性：' + key);
-    //       debug.log(data[key]);
-    //       // this._prepare(this, key, data[key]);
-    //     } else if (this._data[key] !== data[key]) {
-    //       // 一般属性
-    //       debug.log('一般属性：' + key);
-    //       debug.log(data[key]);
-    //       // this.set(key, data[key]);
-    //     }
-    //   }
-    // }
-
-    // public set2(path: string, value: any, silent?: boolean, remote?: boolean, force?: boolean): void {
-    //   var keys = path.split('.');
-    //   var length = keys.length;
-    //   var key = keys[length - 1];
-    //   var node: any = this;
-    //   var nodePath = '';
-    //   var obj: any = this;
-    //   var state;
-
-    //   for (var i = 0; i < length - 1; i++) {
-    //     if (node instanceof Array) {
-    //       // TODO: 这是啥啊？
-    //       // node = node[keys[i]];
-
-    //       if (node instanceof Observer) {
-    //         path = keys.slice(i + 1).join('.');
-    //         obj = node;
-    //       }
-    //     } else {
-    //       if (i < length && typeof (node._data[keys[i]]) !== 'object') {
-    //         if (node._data[keys[i]])
-    //           obj.unset((node.__path ? node.__path + '.' : '') + keys[i]);
-
-    //         node._data[keys[i]] = {
-    //           _path: path,
-    //           _keys: [],
-    //           _data: {}
-    //         };
-    //         node._keys.push(keys[i]);
-    //       }
-
-    //       if (i === length - 1 && node.__path)
-    //         nodePath = node.__path + '.' + keys[i];
-
-    //       node = node._data[keys[i]];
-    //     }
-    //   }
-
-    // }
 
     // public json(target?: Observer): Observer {
     //   let obj: { [key: string]: any } = {};

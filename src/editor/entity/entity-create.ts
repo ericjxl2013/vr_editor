@@ -63,7 +63,7 @@ export class EntityCreate {
             // get root if parent is null
             defaultData = defaultData || {};
             // var parent = defaultData.parent || editor.call('entities:root');
-
+            
             // TODO: 一堆mesh过来，有的创建了，有的没创建怎么办
             var parent = editor.call('entities:get', defaultData.parent) || editor.call('entities:root');
 
@@ -81,9 +81,11 @@ export class EntityCreate {
             }
 
             // create new Entity data
+            console.error(defaultData);
             var entity = new Observer(defaultData);
+            
             editor.call('entities:addEntity', entity, parent, !defaultData.noSelect);
-
+            console.error(entity);
             // history
             if (!defaultData.noHistory) {
                 var resourceId = entity.get('resource_id');

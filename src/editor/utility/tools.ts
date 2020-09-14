@@ -1,5 +1,6 @@
-import { WebRequest } from '../middleware/offline/webrequest';
+// import { WebRequest } from '../middleware/offline/webrequest';
 import { VeryEngine } from '../../engine';
+import { SHA1 } from './sha1';
 
 export class Tools {
 
@@ -11,7 +12,23 @@ export class Tools {
 
     }
 
+    public static eulerAngleToRadian(val: BABYLON.Vector3): BABYLON.Vector3 {
+        let para: number = Math.PI / 180;
+        return val.multiplyByFloats(para, para, para);
+    }
 
+    public static radianToEulerAngle(val: BABYLON.Vector3): BABYLON.Vector3 {
+        let para: number = 180 / Math.PI;
+        return val.multiplyByFloats(para, para, para);
+    }
+
+    public static vector3ToArray(val: BABYLON.Vector3): number[] {
+        return [val.x, val.y, val.z];
+    }
+
+    public static sha1(val: any): string {
+        return SHA1.SHA1(val);
+    }
 
     public static GetFilename(path: string): string {
         var index = path.lastIndexOf('/');

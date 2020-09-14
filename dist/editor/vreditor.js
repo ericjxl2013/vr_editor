@@ -347,7 +347,7 @@ var InitializeData = /** @class */ (function () {
     return InitializeData;
 }());
 exports.InitializeData = InitializeData;
-},{"./global":39,"./middleware/loader/babylonLoader":56}],4:[function(require,module,exports){
+},{"./global":53,"./middleware/loader/babylonLoader":70}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsContextMenu = void 0;
@@ -569,7 +569,7 @@ var AssetsContextMenu = /** @class */ (function () {
         menuItemReplace.on('select', function () {
             // console.log(currentAsset)
             // console.log(currentAsset.origin)
-            editor.call('loadTempModel', currentAsset);
+            editor.call('load:from:asset', currentAsset);
             // var id = parseInt(currentAsset.get('id'), 10);
             // console.log(currentAsset.get('name'));
             // editor.call('picker:asset', {
@@ -650,6 +650,7 @@ var AssetsContextMenu = /** @class */ (function () {
         menuItemEdit.on('select', function () {
             // editor.call('assets:edit', currentAsset);
             console.log('编辑表格');
+            console.warn(currentAsset);
             editor.call('assets:open-table', currentAsset.get('name'));
         });
         menu.append(menuItemEdit);
@@ -943,7 +944,7 @@ var AssetsContextMenu = /** @class */ (function () {
     return AssetsContextMenu;
 }());
 exports.AssetsContextMenu = AssetsContextMenu;
-},{"../../engine":95,"../../ui":115}],5:[function(require,module,exports){
+},{"../../engine":110,"../../ui":130}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsCreateFolder = void 0;
@@ -979,7 +980,7 @@ var AssetsCreateFolder = /** @class */ (function () {
     return AssetsCreateFolder;
 }());
 exports.AssetsCreateFolder = AssetsCreateFolder;
-},{"../global":39}],6:[function(require,module,exports){
+},{"../global":53}],6:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsCreateTable = void 0;
@@ -987,6 +988,10 @@ var global_1 = require("../global");
 var AssetsCreateTable = /** @class */ (function () {
     function AssetsCreateTable() {
         editor.method('assets:create:table', function (args) {
+            if (global_1.Config.tableAssetsID !== '') {
+                console.warn('抱歉，暂时只允许创建一个表格！');
+                return;
+            }
             // if (!editor.call('permissions:write'))
             //     return;
             args = args || {};
@@ -996,29 +1001,37 @@ var AssetsCreateTable = /** @class */ (function () {
                 path = currentFolder.get('path').concat(currentFolder.get('id'));
             var asset = {
                 name: '新表格.table',
-                type: 'data',
+                type: 'table',
                 source: false,
-                preload: true,
+                preload: false,
                 parent: (args.parent !== undefined) ? args.parent : editor.call('assets:panel:currentFolder'),
-                filename: '新表格.json',
-                file: new Blob(['{ }'], { type: 'application/json' }),
+                filename: '新表格.table',
+                // file: new Blob(['{ }'], { type: 'application/json' }),
                 scope: {
                     type: 'project',
                     id: global_1.Config.projectID
                 },
                 path: path.join(',')
             };
+            // console.warn('创建表格');
             editor.call('assets:create', asset);
         });
-        editor.method("assets:open-table", function (table_name) {
-            console.log(table_name);
-            window.open(window.location.protocol + "//" + window.location.host + "/table/" + global_1.Config.projectID + "?name=" + table_name);
+        // TODO: 简单处理
+        editor.method('assets:open-table', function (table_name) {
+            // console.log(table_name);
+            window.open(window.location.protocol + '//' + window.location.host + '/table/' + global_1.Config.projectID + '?name=' + table_name + '&id=' + global_1.Config.tableAssetsID);
+        });
+        editor.on('assets:add', function (asset) {
+            if (asset.get('type') === 'table') {
+                global_1.Config.tableAssetsID = asset.get('id');
+                console.log('设置表格ID：' + global_1.Config.tableAssetsID);
+            }
         });
     }
     return AssetsCreateTable;
 }());
 exports.AssetsCreateTable = AssetsCreateTable;
-},{"../global":39}],7:[function(require,module,exports){
+},{"../global":53}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsDrop = void 0;
@@ -1423,7 +1436,7 @@ var AssetsFilter = /** @class */ (function () {
     return AssetsFilter;
 }());
 exports.AssetsFilter = AssetsFilter;
-},{"../../engine":95,"../../ui":115}],9:[function(require,module,exports){
+},{"../../engine":110,"../../ui":130}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsFs = void 0;
@@ -1505,7 +1518,7 @@ var AssetsFs = /** @class */ (function () {
     return AssetsFs;
 }());
 exports.AssetsFs = AssetsFs;
-},{"../global":39,"../utility":84}],10:[function(require,module,exports){
+},{"../global":53,"../utility":97}],10:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsPanelControl = void 0;
@@ -1786,7 +1799,7 @@ var AssetsPanelControl = /** @class */ (function () {
     return AssetsPanelControl;
 }());
 exports.AssetsPanelControl = AssetsPanelControl;
-},{"../../engine":95,"../../ui":115}],11:[function(require,module,exports){
+},{"../../engine":110,"../../ui":130}],11:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsPanel = void 0;
@@ -2019,7 +2032,7 @@ var AssetsPanel = /** @class */ (function () {
             }
         });
         editor.on('drop:active', function (state, type, data) {
-            console.log('drop:active: ' + state + ' - ' + type + ' - ' + data);
+            // console.log('drop:active: ' + state + ' - ' + type + ' - ' + data);
             dragging = state;
             if (!dragging) {
                 grid.dragOver = undefined;
@@ -2029,8 +2042,8 @@ var AssetsPanel = /** @class */ (function () {
         });
         editor.on('drop:set', function (type, data) {
             draggingData = data;
-            console.warn('drop:set');
-            console.warn(draggingData);
+            // console.warn('drop:set');
+            // console.warn(draggingData);
         });
         // IDrop
         var dropRef = editor.call('drop:target', {
@@ -2573,7 +2586,7 @@ var AssetsPanel = /** @class */ (function () {
             }
             else {
                 parent = treeRoot;
-                console.warn(path);
+                // console.warn(path);
             }
             // console.warn(item.text);
             if (parent) {
@@ -3103,7 +3116,7 @@ var AssetsPanel = /** @class */ (function () {
     return AssetsPanel;
 }());
 exports.AssetsPanel = AssetsPanel;
-},{"../../engine":95,"../../ui":115,"../middleware/loader/babylonLoader":56}],12:[function(require,module,exports){
+},{"../../engine":110,"../../ui":130,"../middleware/loader/babylonLoader":70}],12:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsPreview = void 0;
@@ -3248,7 +3261,7 @@ var AssetsRename = /** @class */ (function () {
     return AssetsRename;
 }());
 exports.AssetsRename = AssetsRename;
-},{"../global":39,"../utility":84}],14:[function(require,module,exports){
+},{"../global":53,"../utility":97}],14:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsStore = void 0;
@@ -3267,7 +3280,7 @@ var AssetsStore = /** @class */ (function () {
     return AssetsStore;
 }());
 exports.AssetsStore = AssetsStore;
-},{"../../engine":95,"../../ui":115}],15:[function(require,module,exports){
+},{"../../engine":110,"../../ui":130}],15:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsSync = void 0;
@@ -3364,7 +3377,7 @@ var AssetsSync = /** @class */ (function () {
     return AssetsSync;
 }());
 exports.AssetsSync = AssetsSync;
-},{"../../lib":99}],16:[function(require,module,exports){
+},{"../../lib":114}],16:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsUpload = void 0;
@@ -3762,7 +3775,7 @@ var AssetsUpload = /** @class */ (function () {
     return AssetsUpload;
 }());
 exports.AssetsUpload = AssetsUpload;
-},{"../../engine":95,"../../lib":99,"../global":39,"../utility":84}],17:[function(require,module,exports){
+},{"../../engine":110,"../../lib":114,"../global":53,"../utility":97}],17:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Assets = void 0;
@@ -3889,7 +3902,7 @@ var Assets = /** @class */ (function () {
     return Assets;
 }());
 exports.Assets = Assets;
-},{"../../lib":99}],18:[function(require,module,exports){
+},{"../../lib":114}],18:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -4219,7 +4232,7 @@ var AttributeAssetsTexture = /** @class */ (function () {
     return AttributeAssetsTexture;
 }());
 exports.AttributeAssetsTexture = AttributeAssetsTexture;
-},{"../../../ui":115,"../../middleware/loader/babylonLoader":56}],21:[function(require,module,exports){
+},{"../../../ui":130,"../../middleware/loader/babylonLoader":70}],21:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AttributesAssets = void 0;
@@ -4480,7 +4493,7 @@ var AttributesAssets = /** @class */ (function () {
     return AttributesAssets;
 }());
 exports.AttributesAssets = AttributesAssets;
-},{"../../ui":115,"../middleware/loader/babylonLoader":56}],22:[function(require,module,exports){
+},{"../../ui":130,"../middleware/loader/babylonLoader":70}],22:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AttributesEntity = void 0;
@@ -4617,6 +4630,32 @@ var AttributesEntity = /** @class */ (function () {
             // editor.call('attributes:reference:attach', 'entity:scale', items.fieldScale[0].parent.innerElement.firstChild.ui);
             argsList.push(argsScale);
             argsFieldsChanges = argsFieldsChanges.concat(items.fieldScale);
+            // checkCollisions
+            var argsCheckCollisions = {
+                parent: panel,
+                // name: 'Enabled',
+                name: '碰撞检测',
+                type: 'checkbox',
+                path: 'checkCollisions'
+            };
+            items.checkCollisions = editor.call('attributes:addField', argsCheckCollisions);
+            // TODO: 帮助文档链接
+            // editor.call('attributes:reference:attach', 'entity:enabled', items.fieldEnabled.parent.innerElement.firstChild.ui);
+            argsList.push(argsCheckCollisions);
+            argsFieldsChanges.push(items.checkCollisions);
+            // isPickable
+            var argsIsPickable = {
+                parent: panel,
+                // name: 'Enabled',
+                name: '可选中',
+                type: 'checkbox',
+                path: 'pickable'
+            };
+            items.pickable = editor.call('attributes:addField', argsIsPickable);
+            // TODO: 帮助文档链接
+            // editor.call('attributes:reference:attach', 'entity:enabled', items.fieldEnabled.parent.innerElement.firstChild.ui);
+            argsList.push(argsIsPickable);
+            argsFieldsChanges.push(items.pickable);
             // components panel
             panelComponents = items.panelComponents = editor.call('attributes:addPanel');
             // add component
@@ -4637,6 +4676,12 @@ var AttributesEntity = /** @class */ (function () {
         };
         // before clearing inspector, preserve elements
         editor.on('attributes:beforeClear', function () {
+            // console.error('attributes:beforeClear');
+            // unlink fields
+            for (var i = 0; i < argsList.length; i++) {
+                argsList[i].link = null;
+                argsList[i].unlinkField();
+            }
             if (!items || !items.panel.parent)
                 return;
             // remove panel from inspector
@@ -4644,11 +4689,6 @@ var AttributesEntity = /** @class */ (function () {
             // clear components
             items.panelComponents.parent.remove(items.panelComponents);
             items.panelComponents.clear();
-            // unlink fields
-            for (var i = 0; i < argsList.length; i++) {
-                argsList[i].link = null;
-                argsList[i].unlinkField();
-            }
         });
         var inspectEvents = [];
         // link data to fields when inspecting
@@ -4661,6 +4701,7 @@ var AttributesEntity = /** @class */ (function () {
             }
             if (!items)
                 initialize();
+            // console.warn(items);
             var root = editor.call('attributes.rootPanel');
             if (!items.panel.parent)
                 root.append(items.panel);
@@ -4738,7 +4779,7 @@ var AttributesEntity = /** @class */ (function () {
     return AttributesEntity;
 }());
 exports.AttributesEntity = AttributesEntity;
-},{"../../ui":115}],23:[function(require,module,exports){
+},{"../../ui":130}],23:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AttributeHistory = void 0;
@@ -4754,7 +4795,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AttributesPanel = void 0;
 var ui_1 = require("../../ui");
 var engine_1 = require("../../engine");
-var toolbar_1 = require("../toolbar");
 var AttributesPanel = /** @class */ (function () {
     function AttributesPanel() {
         // private inspectedItems: EventHandle[] = [];
@@ -4937,14 +4977,13 @@ var AttributesPanel = /** @class */ (function () {
                 if (args.type === 'checkbox')
                     args.field._onLinkChange(value);
                 args.field._changing = false;
-                if (args.enum) {
-                    var opt = args.field.optionElements[''];
-                    if (opt)
-                        opt.style.display = value !== '' ? 'none' : '';
-                }
-                else {
-                    args.field.proxy = value == null ? '...' : null;
-                }
+                // TODO
+                // if (args.enum) {
+                //     var opt = args.field.optionElements[''];
+                //     if (opt) opt.style.display = value !== '' ? 'none' : '';
+                // } else {
+                //     args.field.proxy = value == null ? '...' : null;
+                // }
             };
             changeField = function (value) {
                 if (args.field._changing)
@@ -5045,7 +5084,7 @@ var AttributesPanel = /** @class */ (function () {
                 }
             };
             changeFieldQueue = function () {
-                console.log('changeFieldQueue');
+                // console.log('changeFieldQueue');
                 if (args.field._changing)
                     return;
                 args.field._changing = true;
@@ -5844,8 +5883,8 @@ var AttributesPanel = /** @class */ (function () {
                     icon.classList.add('icon');
                     icon.addEventListener('click', function (e) {
                         e.stopPropagation();
-                        if (editor.call('permissions:write'))
-                            field.text = '';
+                        // if (editor.call('permissions:write'))
+                        //     field.text = '';
                     });
                     field.on('change', function (value) {
                         if (value) {
@@ -6016,11 +6055,16 @@ var AttributesPanel = /** @class */ (function () {
                 self.root.headerText = self.title;
                 return;
             }
+            // console.warn('选择类型：' + type);
+            // console.warn(items);
             // clear if destroyed
             for (var i = 0; i < items.length; i++) {
                 // TODO：当前item为空
+                // console.error(type);
+                // if (type === 'entity') {
+                //     GizmosCenter.attach(items[i].node);
+                // }
                 // console.error(items[i]);
-                toolbar_1.GizmosManager.attach(items[i].node);
                 inspectedItems.push(items[i].once('destroy', function () {
                     editor.call('attributes:clear');
                 }));
@@ -6042,7 +6086,7 @@ var AttributesPanel = /** @class */ (function () {
     return AttributesPanel;
 }());
 exports.AttributesPanel = AttributesPanel;
-},{"../../engine":95,"../../ui":115,"../toolbar":67}],25:[function(require,module,exports){
+},{"../../engine":110,"../../ui":130}],25:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AttributesReference = void 0;
@@ -6179,7 +6223,7 @@ var AttributesReference = /** @class */ (function () {
     return AttributesReference;
 }());
 exports.AttributesReference = AttributesReference;
-},{"../../engine":95,"../../ui":115}],26:[function(require,module,exports){
+},{"../../engine":110,"../../ui":130}],26:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -6394,7 +6438,7 @@ var Drop = /** @class */ (function () {
             areas.appendChild(obj.element);
             obj.evtDrop = function (e) {
                 e.preventDefault();
-                console.log('obj.evtDrop');
+                // console.log('obj.evtDrop');
                 if (!currentType)
                     return;
                 // leave event
@@ -6406,8 +6450,8 @@ var Drop = /** @class */ (function () {
                 var data = currentData;
                 if (currentType == 'files' && e.dataTransfer)
                     data = e.dataTransfer.files;
-                console.log(currentType);
-                console.log(data);
+                // console.log(currentType);
+                // console.log(data);
                 if (obj.drop)
                     obj.drop(currentType, data);
             };
@@ -6634,7 +6678,7 @@ var Editor = /** @class */ (function (_super) {
     return Editor;
 }(lib_1.Events));
 exports.Editor = Editor;
-},{"../lib":99}],30:[function(require,module,exports){
+},{"../lib":114}],30:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Entities = void 0;
@@ -6766,7 +6810,7 @@ var Entities = /** @class */ (function () {
     return Entities;
 }());
 exports.Entities = Entities;
-},{"../../lib":99,"../middleware":55}],31:[function(require,module,exports){
+},{"../../lib":114,"../middleware":69}],31:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EntityCreate = void 0;
@@ -6833,8 +6877,10 @@ var EntityCreate = /** @class */ (function () {
                 }
             }
             // create new Entity data
+            console.error(defaultData);
             var entity = new lib_1.Observer(defaultData);
             editor.call('entities:addEntity', entity, parent, !defaultData.noSelect);
+            console.error(entity);
             // history
             if (!defaultData.noHistory) {
                 var resourceId = entity.get('resource_id');
@@ -6878,7 +6924,7 @@ var EntityCreate = /** @class */ (function () {
     return EntityCreate;
 }());
 exports.EntityCreate = EntityCreate;
-},{"../../lib":99,"../utility":84}],32:[function(require,module,exports){
+},{"../../lib":114,"../utility":97}],32:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EntityEdit = void 0;
@@ -6889,15 +6935,20 @@ var EntityEdit = /** @class */ (function () {
         // 为回退作准备
         var deletedCache = {};
         editor.on('entities:add', function (entity) {
+            // console.log('entity-edit-children');
             var children = entity.get('children');
             for (var i = 0; i < children.length; i++)
                 childToParent[children[i]] = entity.get('resource_id');
             entity.on('children:insert', function (value) {
-                console.warn('children:insert in entity-edit');
+                // console.warn('children:insert in entity-edit');
                 childToParent[value] = entity.get('resource_id');
+                babylonLoader_1.BabylonLoader.updateSceneData(entity.get('resource_id'), entity._data2);
+                editor.call('make:scene:dirty');
             });
             entity.on('children:remove', function (value) {
                 delete childToParent[value];
+                babylonLoader_1.BabylonLoader.updateSceneData(entity.get('resource_id'), entity._data2);
+                editor.call('make:scene:dirty');
             });
         });
         var updateEntityReferenceFields = function (entityReferencesMap, oldValue, newValue) {
@@ -6923,8 +6974,7 @@ var EntityEdit = /** @class */ (function () {
                 entity.set('children', []);
             // call add event
             editor.call('entities:add', entity);
-            console.error(entity);
-            babylonLoader_1.BabylonLoader.addSceneData(entity.get('resource_id'), entity.origin);
+            // console.error(entity);
             // TODO: 上传到服务器
             // shareDb 
             // editor.call('realtime:scene:op', {
@@ -6935,6 +6985,7 @@ var EntityEdit = /** @class */ (function () {
             // parent.history.enabled = false;
             // 添加tree item 菜单入口
             parent.insert('children', entity.get('resource_id'), ind);
+            // console.warn(parent);
             // parent.history.enabled = true;
             // if (select) {
             //     setTimeout(function () {
@@ -6955,15 +7006,12 @@ var EntityEdit = /** @class */ (function () {
             //             return;
             //         }
             //         // If we've been provided an object, we're creating children for a new entity
-            //     } else if (typeof childIdOrData === 'object') {
-            //         data = childIdOrData;
-            //     } else {
-            //         throw new Error('Unhandled childIdOrData format');
-            //     }
+            //     } 
             //     var child = new Observer(data);
             //     // TODO
             //     addEntity(child, entity, false, 0, entityReferencesMap);
             // });
+            babylonLoader_1.BabylonLoader.addSceneData(entity.get('resource_id'), entity.origin);
             // Hook up any entity references which need to be pointed to this newly created entity
             // (happens when addEntity() is being called during the undoing of a deletion). In order
             // to force components to respond to the setter call even when they are running in other
@@ -7036,7 +7084,7 @@ var EntityEdit = /** @class */ (function () {
     return EntityEdit;
 }());
 exports.EntityEdit = EntityEdit;
-},{"../middleware/loader/babylonLoader":56}],33:[function(require,module,exports){
+},{"../middleware/loader/babylonLoader":70}],33:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EntityLoad = void 0;
@@ -7095,7 +7143,7 @@ var EntityLoad = /** @class */ (function () {
     return EntityLoad;
 }());
 exports.EntityLoad = EntityLoad;
-},{"../../lib":99,"../../ui":115}],34:[function(require,module,exports){
+},{"../../lib":114,"../../ui":130}],34:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EntitySync = void 0;
@@ -7159,6 +7207,3497 @@ var EntityKeeper = /** @class */ (function () {
 exports.EntityKeeper = EntityKeeper;
 },{"./entities":30,"./entity-create":31,"./entity-edit":32,"./entity-load":33,"./entity-sync":34}],38:[function(require,module,exports){
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AxisDragGizmo = void 0;
+// import { Observer, Observable } from "../Misc/observable";
+// import { Nullable } from "../types";
+// import { PointerInfo } from "../Events/pointerEvents";
+// import { Vector3, Matrix } from "../Maths/math.vector";
+// import { TransformNode } from "../Meshes/transformNode";
+// import { Node } from "../node";
+// import { Mesh } from "../Meshes/mesh";
+// import { LinesMesh } from "../Meshes/linesMesh";
+// import { CylinderBuilder } from "../Meshes/Builders/cylinderBuilder";
+// import { PointerDragBehavior } from "../Behaviors/Meshes/pointerDragBehavior";
+var gizmo_1 = require("./gizmo");
+// import { Color3 } from '../Maths/math.color';
+/**
+ * Single axis drag gizmo
+ */
+var AxisDragGizmo = /** @class */ (function (_super) {
+    __extends(AxisDragGizmo, _super);
+    /**
+     * Creates an AxisDragGizmo
+     * @param gizmoLayer The utility layer the gizmo will be added to
+     * @param dragAxis The axis which the gizmo will be able to drag on
+     * @param color The color of the gizmo
+     * @param thickness display gizmo axis thickness
+     */
+    function AxisDragGizmo(dragAxis, color, gizmoLayer, parent, thickness) {
+        if (color === void 0) { color = BABYLON.Color3.Gray(); }
+        if (gizmoLayer === void 0) { gizmoLayer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer; }
+        if (parent === void 0) { parent = null; }
+        if (thickness === void 0) { thickness = 1; }
+        var _this = _super.call(this, gizmoLayer) || this;
+        _this._pointerObserver = null;
+        /**
+         * Drag distance in babylon units that the gizmo will snap to when dragged (Default: 0)
+         */
+        _this.snapDistance = 0;
+        /**
+         * Event that fires each time the gizmo snaps to a new location.
+         * * snapDistance is the the change in distance
+         */
+        _this.onSnapObservable = new BABYLON.Observable();
+        _this._isEnabled = true;
+        _this._parent = null;
+        _this._parent = parent;
+        // Create Material
+        _this._coloredMaterial = new BABYLON.StandardMaterial("", gizmoLayer.utilityLayerScene);
+        _this._coloredMaterial.diffuseColor = color;
+        _this._coloredMaterial.specularColor = color.subtract(new BABYLON.Color3(0.1, 0.1, 0.1));
+        _this._hoverMaterial = new BABYLON.StandardMaterial("", gizmoLayer.utilityLayerScene);
+        _this._hoverMaterial.diffuseColor = color.add(new BABYLON.Color3(0.3, 0.3, 0.3));
+        // Build mesh on root node
+        _this._arrow = AxisDragGizmo._CreateArrow(gizmoLayer.utilityLayerScene, _this._coloredMaterial, thickness);
+        _this._arrow.lookAt(_this._rootMesh.position.add(dragAxis));
+        _this._arrow.scaling.scaleInPlace(1 / 3);
+        _this._arrow.parent = _this._rootMesh;
+        var currentSnapDragDistance = 0;
+        var tmpVector = new BABYLON.Vector3();
+        var tmpSnapEvent = { snapDistance: 0 };
+        // Add drag behavior to handle events when the gizmo is dragged
+        _this.dragBehavior = new BABYLON.PointerDragBehavior({ dragAxis: dragAxis });
+        _this.dragBehavior.moveAttached = false;
+        _this._rootMesh.addBehavior(_this.dragBehavior);
+        var localDelta = new BABYLON.Vector3();
+        var tmpMatrix = new BABYLON.Matrix();
+        _this.dragBehavior.onDragObservable.add(function (event) {
+            if (_this.attachedNode) {
+                // Convert delta to local translation if it has a parent
+                if (_this.attachedNode.parent) {
+                    _this.attachedNode.parent.getWorldMatrix().invertToRef(tmpMatrix);
+                    tmpMatrix.setTranslationFromFloats(0, 0, 0);
+                    BABYLON.Vector3.TransformCoordinatesToRef(event.delta, tmpMatrix, localDelta);
+                }
+                else {
+                    localDelta.copyFrom(event.delta);
+                }
+                // Snapping logic
+                if (_this.snapDistance == 0) {
+                    if (_this.attachedNode.position) { // Required for nodes like lights
+                        _this.attachedNode.position.addInPlaceFromFloats(localDelta.x, localDelta.y, localDelta.z);
+                    }
+                    // use _worldMatrix to not force a matrix update when calling GetWorldMatrix especialy with Cameras
+                    _this.attachedNode._worldMatrix.addTranslationFromFloats(localDelta.x, localDelta.y, localDelta.z);
+                    _this.attachedNode.updateCache();
+                }
+                else {
+                    currentSnapDragDistance += event.dragDistance;
+                    if (Math.abs(currentSnapDragDistance) > _this.snapDistance) {
+                        var dragSteps = Math.floor(Math.abs(currentSnapDragDistance) / _this.snapDistance);
+                        currentSnapDragDistance = currentSnapDragDistance % _this.snapDistance;
+                        localDelta.normalizeToRef(tmpVector);
+                        tmpVector.scaleInPlace(_this.snapDistance * dragSteps);
+                        _this.attachedNode._worldMatrix.addTranslationFromFloats(tmpVector.x, tmpVector.y, tmpVector.z);
+                        _this.attachedNode.updateCache();
+                        tmpSnapEvent.snapDistance = _this.snapDistance * dragSteps;
+                        _this.onSnapObservable.notifyObservers(tmpSnapEvent);
+                    }
+                }
+                _this._operationType = 'translate';
+                _this._matrixChanged();
+            }
+        });
+        _this._pointerObserver = gizmoLayer.utilityLayerScene.onPointerObservable.add(function (pointerInfo) {
+            if (_this._customMeshSet) {
+                return;
+            }
+            var isHovered = pointerInfo.pickInfo && (_this._rootMesh.getChildMeshes().indexOf(pointerInfo.pickInfo.pickedMesh) != -1);
+            var material = isHovered ? _this._hoverMaterial : _this._coloredMaterial;
+            _this._rootMesh.getChildMeshes().forEach(function (m) {
+                m.material = material;
+                if (m.color) {
+                    m.color = material.diffuseColor;
+                }
+            });
+        });
+        var light = gizmoLayer._getSharedGizmoLight();
+        light.includedOnlyMeshes = light.includedOnlyMeshes.concat(_this._rootMesh.getChildMeshes(false));
+        return _this;
+    }
+    /** @hidden */
+    AxisDragGizmo._CreateArrow = function (scene, material, thickness) {
+        if (thickness === void 0) { thickness = 1; }
+        var arrow = new BABYLON.TransformNode("arrow", scene);
+        var cylinder = BABYLON.CylinderBuilder.CreateCylinder("cylinder", { diameterTop: 0, height: 0.075, diameterBottom: 0.0375 * (1 + (thickness - 1) / 4), tessellation: 96 }, scene);
+        var line = BABYLON.CylinderBuilder.CreateCylinder("cylinder", { diameterTop: 0.005 * thickness, height: 0.275, diameterBottom: 0.005 * thickness, tessellation: 96 }, scene);
+        line.material = material;
+        cylinder.parent = arrow;
+        line.parent = arrow;
+        // Position arrow pointing in its drag axis
+        cylinder.material = material;
+        cylinder.rotation.x = Math.PI / 2;
+        cylinder.position.z += 0.3;
+        line.position.z += 0.275 / 2;
+        line.rotation.x = Math.PI / 2;
+        return arrow;
+    };
+    /** @hidden */
+    AxisDragGizmo._CreateArrowInstance = function (scene, arrow) {
+        var instance = new BABYLON.TransformNode("arrow", scene);
+        for (var _i = 0, _a = arrow.getChildMeshes(); _i < _a.length; _i++) {
+            var mesh = _a[_i];
+            var childInstance = mesh.createInstance(mesh.name);
+            childInstance.parent = instance;
+        }
+        return instance;
+    };
+    AxisDragGizmo.prototype._attachedNodeChanged = function (value) {
+        if (this.dragBehavior) {
+            this.dragBehavior.enabled = value ? true : false;
+        }
+    };
+    Object.defineProperty(AxisDragGizmo.prototype, "isEnabled", {
+        get: function () {
+            return this._isEnabled;
+        },
+        /**
+         * If the gizmo is enabled
+         */
+        set: function (value) {
+            this._isEnabled = value;
+            if (!value) {
+                this.attachedMesh = null;
+                this.attachedNode = null;
+            }
+            else {
+                if (this._parent) {
+                    this.attachedMesh = this._parent.attachedMesh;
+                    this.attachedNode = this._parent.attachedNode;
+                }
+            }
+        },
+        enumerable: false,
+        configurable: true
+    });
+    /**
+     * Disposes of the gizmo
+     */
+    AxisDragGizmo.prototype.dispose = function () {
+        this.onSnapObservable.clear();
+        this.gizmoLayer.utilityLayerScene.onPointerObservable.remove(this._pointerObserver);
+        this.dragBehavior.detach();
+        if (this._arrow) {
+            this._arrow.dispose();
+        }
+        [this._coloredMaterial, this._hoverMaterial].forEach(function (matl) {
+            if (matl) {
+                matl.dispose();
+            }
+        });
+        _super.prototype.dispose.call(this);
+    };
+    return AxisDragGizmo;
+}(gizmo_1.Gizmo));
+exports.AxisDragGizmo = AxisDragGizmo;
+},{"./gizmo":43}],39:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AxisScaleGizmo = void 0;
+// import { Observer, Observable } from "../Misc/observable";
+// import { Nullable } from "../types";
+// import { PointerInfo } from "../Events/pointerEvents";
+// import { Vector3, Matrix } from "../Maths/math.vector";
+// import { AbstractMesh } from "../Meshes/abstractMesh";
+// import { Node } from "../node";
+// import { Mesh } from "../Meshes/mesh";
+// import { LinesMesh } from "../Meshes/linesMesh";
+// import { BoxBuilder } from "../Meshes/Builders/boxBuilder";
+// import { CylinderBuilder } from "../Meshes/Builders/cylinderBuilder";
+// import { StandardMaterial } from "../Materials/standardMaterial";
+// import { PointerDragBehavior } from "../Behaviors/Meshes/pointerDragBehavior";
+var gizmo_1 = require("./gizmo");
+// import { Color3 } from '../Maths/math.color';
+/**
+ * Single axis scale gizmo
+ */
+var AxisScaleGizmo = /** @class */ (function (_super) {
+    __extends(AxisScaleGizmo, _super);
+    /**
+     * Creates an AxisScaleGizmo
+     * @param gizmoLayer The utility layer the gizmo will be added to
+     * @param dragAxis The axis which the gizmo will be able to scale on
+     * @param color The color of the gizmo
+     * @param thickness display gizmo axis thickness
+     */
+    function AxisScaleGizmo(dragAxis, color, gizmoLayer, parent, thickness) {
+        if (color === void 0) { color = BABYLON.Color3.Gray(); }
+        if (gizmoLayer === void 0) { gizmoLayer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer; }
+        if (parent === void 0) { parent = null; }
+        if (thickness === void 0) { thickness = 1; }
+        var _this = _super.call(this, gizmoLayer) || this;
+        _this._pointerObserver = null;
+        /**
+         * Scale distance in babylon units that the gizmo will snap to when dragged (Default: 0)
+         */
+        _this.snapDistance = 0;
+        /**
+         * Event that fires each time the gizmo snaps to a new location.
+         * * snapDistance is the the change in distance
+         */
+        _this.onSnapObservable = new BABYLON.Observable();
+        /**
+         * If the scaling operation should be done on all axis (default: false)
+         */
+        _this.uniformScaling = false;
+        /**
+         * Custom sensitivity value for the drag strength
+         */
+        _this.sensitivity = 1;
+        _this._isEnabled = true;
+        _this._parent = null;
+        _this._parent = parent;
+        // Create Material
+        _this._coloredMaterial = new BABYLON.StandardMaterial("", gizmoLayer.utilityLayerScene);
+        _this._coloredMaterial.diffuseColor = color;
+        _this._coloredMaterial.specularColor = color.subtract(new BABYLON.Color3(0.1, 0.1, 0.1));
+        _this._hoverMaterial = new BABYLON.StandardMaterial("", gizmoLayer.utilityLayerScene);
+        _this._hoverMaterial.diffuseColor = color.add(new BABYLON.Color3(0.3, 0.3, 0.3));
+        // Build mesh on root node
+        _this._arrow = new BABYLON.AbstractMesh("", gizmoLayer.utilityLayerScene);
+        var arrowMesh = BABYLON.BoxBuilder.CreateBox("yPosMesh", { size: 0.4 * (1 + (thickness - 1) / 4) }, gizmoLayer.utilityLayerScene);
+        var arrowTail = BABYLON.CylinderBuilder.CreateCylinder("cylinder", { diameterTop: 0.005 * thickness, height: 0.275, diameterBottom: 0.005 * thickness, tessellation: 96 }, gizmoLayer.utilityLayerScene);
+        arrowTail.material = _this._coloredMaterial;
+        _this._arrow.addChild(arrowMesh);
+        _this._arrow.addChild(arrowTail);
+        // Position arrow pointing in its drag axis
+        arrowMesh.scaling.scaleInPlace(0.1);
+        arrowMesh.material = _this._coloredMaterial;
+        arrowMesh.rotation.x = Math.PI / 2;
+        arrowMesh.position.z += 0.3;
+        arrowTail.position.z += 0.275 / 2;
+        arrowTail.rotation.x = Math.PI / 2;
+        _this._arrow.lookAt(_this._rootMesh.position.add(dragAxis));
+        _this._rootMesh.addChild(_this._arrow);
+        _this._arrow.scaling.scaleInPlace(1 / 3);
+        // Add drag behavior to handle events when the gizmo is dragged
+        _this.dragBehavior = new BABYLON.PointerDragBehavior({ dragAxis: dragAxis });
+        _this.dragBehavior.moveAttached = false;
+        _this._rootMesh.addBehavior(_this.dragBehavior);
+        var currentSnapDragDistance = 0;
+        var tmpVector = new BABYLON.Vector3();
+        var tmpSnapEvent = { snapDistance: 0 };
+        _this.dragBehavior.onDragObservable.add(function (event) {
+            if (_this.attachedNode) {
+                // Drag strength is modified by the scale of the gizmo (eg. for small objects like boombox the strength will be increased to match the behavior of larger objects)
+                var dragStrength = _this.sensitivity * event.dragDistance * ((_this.scaleRatio * 3) / _this._rootMesh.scaling.length());
+                // Snapping logic
+                var snapped = false;
+                var dragSteps = 0;
+                if (_this.uniformScaling) {
+                    _this.attachedNode.getWorldMatrix().decompose(tmpVector);
+                    tmpVector.normalize();
+                    if (tmpVector.y < 0) {
+                        tmpVector.scaleInPlace(-1);
+                    }
+                }
+                else {
+                    tmpVector.copyFrom(dragAxis);
+                }
+                if (_this.snapDistance == 0) {
+                    tmpVector.scaleToRef(dragStrength, tmpVector);
+                }
+                else {
+                    currentSnapDragDistance += dragStrength;
+                    if (Math.abs(currentSnapDragDistance) > _this.snapDistance) {
+                        dragSteps = Math.floor(Math.abs(currentSnapDragDistance) / _this.snapDistance);
+                        if (currentSnapDragDistance < 0) {
+                            dragSteps *= -1;
+                        }
+                        currentSnapDragDistance = currentSnapDragDistance % _this.snapDistance;
+                        tmpVector.scaleToRef(_this.snapDistance * dragSteps, tmpVector);
+                        snapped = true;
+                    }
+                    else {
+                        tmpVector.scaleInPlace(0);
+                    }
+                }
+                var scalingMatrix = new BABYLON.Matrix();
+                BABYLON.Matrix.ScalingToRef(1 + tmpVector.x, 1 + tmpVector.y, 1 + tmpVector.z, scalingMatrix);
+                _this.attachedNode.getWorldMatrix().copyFrom(scalingMatrix.multiply(_this.attachedNode.getWorldMatrix()));
+                if (snapped) {
+                    tmpSnapEvent.snapDistance = _this.snapDistance * dragSteps;
+                    _this.onSnapObservable.notifyObservers(tmpSnapEvent);
+                }
+                _this._operationType = 'scale';
+                _this._matrixChanged();
+            }
+        });
+        _this._pointerObserver = gizmoLayer.utilityLayerScene.onPointerObservable.add(function (pointerInfo) {
+            if (_this._customMeshSet) {
+                return;
+            }
+            var isHovered = pointerInfo.pickInfo && (_this._rootMesh.getChildMeshes().indexOf(pointerInfo.pickInfo.pickedMesh) != -1);
+            var material = isHovered ? _this._hoverMaterial : _this._coloredMaterial;
+            _this._rootMesh.getChildMeshes().forEach(function (m) {
+                m.material = material;
+                if (m.color) {
+                    m.color = material.diffuseColor;
+                }
+            });
+        });
+        var light = gizmoLayer._getSharedGizmoLight();
+        light.includedOnlyMeshes = light.includedOnlyMeshes.concat(_this._rootMesh.getChildMeshes());
+        return _this;
+    }
+    AxisScaleGizmo.prototype._attachedNodeChanged = function (value) {
+        if (this.dragBehavior) {
+            this.dragBehavior.enabled = value ? true : false;
+        }
+    };
+    Object.defineProperty(AxisScaleGizmo.prototype, "isEnabled", {
+        get: function () {
+            return this._isEnabled;
+        },
+        /**
+     * If the gizmo is enabled
+     */
+        set: function (value) {
+            this._isEnabled = value;
+            if (!value) {
+                this.attachedMesh = null;
+                this.attachedNode = null;
+            }
+            else {
+                if (this._parent) {
+                    this.attachedMesh = this._parent.attachedMesh;
+                    this.attachedNode = this._parent.attachedNode;
+                }
+            }
+        },
+        enumerable: false,
+        configurable: true
+    });
+    /**
+     * Disposes of the gizmo
+     */
+    AxisScaleGizmo.prototype.dispose = function () {
+        this.onSnapObservable.clear();
+        this.gizmoLayer.utilityLayerScene.onPointerObservable.remove(this._pointerObserver);
+        this.dragBehavior.detach();
+        if (this._arrow) {
+            this._arrow.dispose();
+        }
+        [this._coloredMaterial, this._hoverMaterial].forEach(function (matl) {
+            if (matl) {
+                matl.dispose();
+            }
+        });
+        _super.prototype.dispose.call(this);
+    };
+    /**
+     * Disposes and replaces the current meshes in the gizmo with the specified mesh
+     * @param mesh The mesh to replace the default mesh of the gizmo
+     * @param useGizmoMaterial If the gizmo's default material should be used (default: false)
+     */
+    AxisScaleGizmo.prototype.setCustomMesh = function (mesh, useGizmoMaterial) {
+        var _this = this;
+        if (useGizmoMaterial === void 0) { useGizmoMaterial = false; }
+        _super.prototype.setCustomMesh.call(this, mesh);
+        if (useGizmoMaterial) {
+            this._rootMesh.getChildMeshes().forEach(function (m) {
+                m.material = _this._coloredMaterial;
+                if (m.color) {
+                    m.color = _this._coloredMaterial.diffuseColor;
+                }
+            });
+            this._customMeshSet = false;
+        }
+    };
+    return AxisScaleGizmo;
+}(gizmo_1.Gizmo));
+exports.AxisScaleGizmo = AxisScaleGizmo;
+},{"./gizmo":43}],40:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.BoundingBoxGizmo = void 0;
+// import { Observer, Observable } from "../Misc/observable";
+// import { Logger } from "../Misc/logger";
+// import { Nullable } from "../types";
+// import { PointerInfo } from "../Events/pointerEvents";
+// import { Scene } from "../scene";
+// import { Quaternion, Matrix, Vector3 } from "../Maths/math.vector";
+// import { AbstractMesh } from "../Meshes/abstractMesh";
+// import { Mesh } from "../Meshes/mesh";
+// import { SphereBuilder } from "../Meshes/Builders/sphereBuilder";
+// import { BoxBuilder } from "../Meshes/Builders/boxBuilder";
+// import { LinesBuilder } from "../Meshes/Builders/linesBuilder";
+// import { PointerDragBehavior } from "../Behaviors/Meshes/pointerDragBehavior";
+var gizmo_1 = require("./gizmo");
+// import { UtilityLayerRenderer } from "../Rendering/utilityLayerRenderer";
+// import { StandardMaterial } from "../Materials/standardMaterial";
+// import { PivotTools } from "../Misc/pivotTools";
+// import { Color3 } from '../Maths/math.color';
+// import "../Meshes/Builders/boxBuilder";
+// import { LinesMesh } from '../Meshes/linesMesh';
+// import { Epsilon } from '../Maths/math.constants';
+/**
+ * Bounding box gizmo
+ */
+var BoundingBoxGizmo = /** @class */ (function (_super) {
+    __extends(BoundingBoxGizmo, _super);
+    /**
+     * Creates an BoundingBoxGizmo
+     * @param gizmoLayer The utility layer the gizmo will be added to
+     * @param color The color of the gizmo
+     */
+    function BoundingBoxGizmo(color, gizmoLayer) {
+        if (color === void 0) { color = BABYLON.Color3.Gray(); }
+        if (gizmoLayer === void 0) { gizmoLayer = BABYLON.UtilityLayerRenderer.DefaultKeepDepthUtilityLayer; }
+        var _this = _super.call(this, gizmoLayer) || this;
+        _this._boundingDimensions = new BABYLON.Vector3(1, 1, 1);
+        _this._renderObserver = null;
+        _this._pointerObserver = null;
+        _this._scaleDragSpeed = 0.2;
+        _this._tmpQuaternion = new BABYLON.Quaternion();
+        _this._tmpVector = new BABYLON.Vector3(0, 0, 0);
+        _this._tmpRotationMatrix = new BABYLON.Matrix();
+        /**
+         * If child meshes should be ignored when calculating the boudning box. This should be set to true to avoid perf hits with heavily nested meshes (Default: false)
+         */
+        _this.ignoreChildren = false;
+        /**
+         * Returns true if a descendant should be included when computing the bounding box. When null, all descendants are included. If ignoreChildren is set this will be ignored. (Default: null)
+         */
+        _this.includeChildPredicate = null;
+        /**
+         * The size of the rotation spheres attached to the bounding box (Default: 0.1)
+         */
+        _this.rotationSphereSize = 0.1;
+        /**
+         * The size of the scale boxes attached to the bounding box (Default: 0.1)
+         */
+        _this.scaleBoxSize = 0.1;
+        /**
+         * If set, the rotation spheres and scale boxes will increase in size based on the distance away from the camera to have a consistent screen size (Default: false)
+         */
+        _this.fixedDragMeshScreenSize = false;
+        /**
+         * The distance away from the object which the draggable meshes should appear world sized when fixedDragMeshScreenSize is set to true (default: 10)
+         */
+        _this.fixedDragMeshScreenSizeDistanceFactor = 10;
+        /**
+         * Fired when a rotation sphere or scale box is dragged
+         */
+        _this.onDragStartObservable = new BABYLON.Observable();
+        /**
+         * Fired when a scale box is dragged
+         */
+        _this.onScaleBoxDragObservable = new BABYLON.Observable();
+        /**
+          * Fired when a scale box drag is ended
+         */
+        _this.onScaleBoxDragEndObservable = new BABYLON.Observable();
+        /**
+         * Fired when a rotation sphere is dragged
+         */
+        _this.onRotationSphereDragObservable = new BABYLON.Observable();
+        /**
+         * Fired when a rotation sphere drag is ended
+         */
+        _this.onRotationSphereDragEndObservable = new BABYLON.Observable();
+        /**
+         * Relative bounding box pivot used when scaling the attached node. When null object with scale from the opposite corner. 0.5,0.5,0.5 for center and 0.5,0,0.5 for bottom (Default: null)
+         */
+        _this.scalePivot = null;
+        _this._existingMeshScale = new BABYLON.Vector3();
+        // Dragging
+        _this._dragMesh = null;
+        _this.pointerDragBehavior = new BABYLON.PointerDragBehavior();
+        // Do not update the gizmo's scale so it has a fixed size to the object its attached to
+        _this.updateScale = false;
+        _this._anchorMesh = new BABYLON.AbstractMesh("anchor", gizmoLayer.utilityLayerScene);
+        // Create Materials
+        _this.coloredMaterial = new BABYLON.StandardMaterial("", gizmoLayer.utilityLayerScene);
+        _this.coloredMaterial.disableLighting = true;
+        _this.hoverColoredMaterial = new BABYLON.StandardMaterial("", gizmoLayer.utilityLayerScene);
+        _this.hoverColoredMaterial.disableLighting = true;
+        // Build bounding box out of lines
+        _this._lineBoundingBox = new BABYLON.AbstractMesh("", gizmoLayer.utilityLayerScene);
+        _this._lineBoundingBox.rotationQuaternion = new BABYLON.Quaternion();
+        var lines = [];
+        lines.push(BABYLON.LinesBuilder.CreateLines("lines", { points: [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(_this._boundingDimensions.x, 0, 0)] }, gizmoLayer.utilityLayerScene));
+        lines.push(BABYLON.LinesBuilder.CreateLines("lines", { points: [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0, _this._boundingDimensions.y, 0)] }, gizmoLayer.utilityLayerScene));
+        lines.push(BABYLON.LinesBuilder.CreateLines("lines", { points: [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0, 0, _this._boundingDimensions.z)] }, gizmoLayer.utilityLayerScene));
+        lines.push(BABYLON.LinesBuilder.CreateLines("lines", { points: [new BABYLON.Vector3(_this._boundingDimensions.x, 0, 0), new BABYLON.Vector3(_this._boundingDimensions.x, _this._boundingDimensions.y, 0)] }, gizmoLayer.utilityLayerScene));
+        lines.push(BABYLON.LinesBuilder.CreateLines("lines", { points: [new BABYLON.Vector3(_this._boundingDimensions.x, 0, 0), new BABYLON.Vector3(_this._boundingDimensions.x, 0, _this._boundingDimensions.z)] }, gizmoLayer.utilityLayerScene));
+        lines.push(BABYLON.LinesBuilder.CreateLines("lines", { points: [new BABYLON.Vector3(0, _this._boundingDimensions.y, 0), new BABYLON.Vector3(_this._boundingDimensions.x, _this._boundingDimensions.y, 0)] }, gizmoLayer.utilityLayerScene));
+        lines.push(BABYLON.LinesBuilder.CreateLines("lines", { points: [new BABYLON.Vector3(0, _this._boundingDimensions.y, 0), new BABYLON.Vector3(0, _this._boundingDimensions.y, _this._boundingDimensions.z)] }, gizmoLayer.utilityLayerScene));
+        lines.push(BABYLON.LinesBuilder.CreateLines("lines", { points: [new BABYLON.Vector3(0, 0, _this._boundingDimensions.z), new BABYLON.Vector3(_this._boundingDimensions.x, 0, _this._boundingDimensions.z)] }, gizmoLayer.utilityLayerScene));
+        lines.push(BABYLON.LinesBuilder.CreateLines("lines", { points: [new BABYLON.Vector3(0, 0, _this._boundingDimensions.z), new BABYLON.Vector3(0, _this._boundingDimensions.y, _this._boundingDimensions.z)] }, gizmoLayer.utilityLayerScene));
+        lines.push(BABYLON.LinesBuilder.CreateLines("lines", { points: [new BABYLON.Vector3(_this._boundingDimensions.x, _this._boundingDimensions.y, _this._boundingDimensions.z), new BABYLON.Vector3(0, _this._boundingDimensions.y, _this._boundingDimensions.z)] }, gizmoLayer.utilityLayerScene));
+        lines.push(BABYLON.LinesBuilder.CreateLines("lines", { points: [new BABYLON.Vector3(_this._boundingDimensions.x, _this._boundingDimensions.y, _this._boundingDimensions.z), new BABYLON.Vector3(_this._boundingDimensions.x, 0, _this._boundingDimensions.z)] }, gizmoLayer.utilityLayerScene));
+        lines.push(BABYLON.LinesBuilder.CreateLines("lines", { points: [new BABYLON.Vector3(_this._boundingDimensions.x, _this._boundingDimensions.y, _this._boundingDimensions.z), new BABYLON.Vector3(_this._boundingDimensions.x, _this._boundingDimensions.y, 0)] }, gizmoLayer.utilityLayerScene));
+        lines.forEach(function (l) {
+            l.color = color;
+            l.position.addInPlace(new BABYLON.Vector3(-_this._boundingDimensions.x / 2, -_this._boundingDimensions.y / 2, -_this._boundingDimensions.z / 2));
+            l.isPickable = false;
+            _this._lineBoundingBox.addChild(l);
+        });
+        _this._rootMesh.addChild(_this._lineBoundingBox);
+        _this.setColor(color);
+        // Create rotation spheres
+        _this._rotateSpheresParent = new BABYLON.AbstractMesh("", gizmoLayer.utilityLayerScene);
+        _this._rotateSpheresParent.rotationQuaternion = new BABYLON.Quaternion();
+        var _loop_1 = function (i_1) {
+            var sphere = BABYLON.SphereBuilder.CreateSphere("", { diameter: 1 }, gizmoLayer.utilityLayerScene);
+            sphere.rotationQuaternion = new BABYLON.Quaternion();
+            sphere.material = this_1.coloredMaterial;
+            // Drag behavior
+            _dragBehavior = new BABYLON.PointerDragBehavior({});
+            _dragBehavior.moveAttached = false;
+            _dragBehavior.updateDragPlane = false;
+            sphere.addBehavior(_dragBehavior);
+            var startingTurnDirection = new BABYLON.Vector3(1, 0, 0);
+            var totalTurnAmountOfDrag = 0;
+            _dragBehavior.onDragStartObservable.add(function () {
+                startingTurnDirection.copyFrom(sphere.forward);
+                totalTurnAmountOfDrag = 0;
+            });
+            _dragBehavior.onDragObservable.add(function (event) {
+                _this.onRotationSphereDragObservable.notifyObservers({});
+                if (_this.attachedMesh) {
+                    var originalParent = _this.attachedMesh.parent;
+                    if (originalParent && (originalParent.scaling && originalParent.scaling.isNonUniformWithinEpsilon(0.001))) {
+                        BABYLON.Logger.Warn("BoundingBoxGizmo controls are not supported on child meshes with non-uniform parent scaling");
+                        return;
+                    }
+                    BABYLON.PivotTools._RemoveAndStorePivotPoint(_this.attachedMesh);
+                    var worldDragDirection = startingTurnDirection;
+                    // Project the world right on to the drag plane
+                    var toSub = event.dragPlaneNormal.scale(BABYLON.Vector3.Dot(event.dragPlaneNormal, worldDragDirection));
+                    var dragAxis = worldDragDirection.subtract(toSub).normalizeToNew();
+                    // project drag delta on to the resulting drag axis and rotate based on that
+                    var projectDist = BABYLON.Vector3.Dot(dragAxis, event.delta) < 0 ? Math.abs(event.delta.length()) : -Math.abs(event.delta.length());
+                    // Make rotation relative to size of mesh.
+                    projectDist = (projectDist / _this._boundingDimensions.length()) * _this._anchorMesh.scaling.length();
+                    // Rotate based on axis
+                    if (!_this.attachedMesh.rotationQuaternion) {
+                        _this.attachedMesh.rotationQuaternion = BABYLON.Quaternion.RotationYawPitchRoll(_this.attachedMesh.rotation.y, _this.attachedMesh.rotation.x, _this.attachedMesh.rotation.z);
+                    }
+                    if (!_this._anchorMesh.rotationQuaternion) {
+                        _this._anchorMesh.rotationQuaternion = BABYLON.Quaternion.RotationYawPitchRoll(_this._anchorMesh.rotation.y, _this._anchorMesh.rotation.x, _this._anchorMesh.rotation.z);
+                    }
+                    // Do not allow the object to turn more than a full circle
+                    totalTurnAmountOfDrag += projectDist;
+                    if (Math.abs(totalTurnAmountOfDrag) <= 2 * Math.PI) {
+                        if (i_1 >= 8) {
+                            BABYLON.Quaternion.RotationYawPitchRollToRef(0, 0, projectDist, _this._tmpQuaternion);
+                        }
+                        else if (i_1 >= 4) {
+                            BABYLON.Quaternion.RotationYawPitchRollToRef(projectDist, 0, 0, _this._tmpQuaternion);
+                        }
+                        else {
+                            BABYLON.Quaternion.RotationYawPitchRollToRef(0, projectDist, 0, _this._tmpQuaternion);
+                        }
+                        // Rotate around center of bounding box
+                        _this._anchorMesh.addChild(_this.attachedMesh);
+                        _this._anchorMesh.rotationQuaternion.multiplyToRef(_this._tmpQuaternion, _this._anchorMesh.rotationQuaternion);
+                        _this._anchorMesh.removeChild(_this.attachedMesh);
+                        _this.attachedMesh.setParent(originalParent);
+                    }
+                    _this.updateBoundingBox();
+                    BABYLON.PivotTools._RestorePivotPoint(_this.attachedMesh);
+                }
+                _this._updateDummy();
+            });
+            // Selection/deselection
+            _dragBehavior.onDragStartObservable.add(function () {
+                _this.onDragStartObservable.notifyObservers({});
+                _this._selectNode(sphere);
+            });
+            _dragBehavior.onDragEndObservable.add(function () {
+                _this.onRotationSphereDragEndObservable.notifyObservers({});
+                _this._selectNode(null);
+                _this._updateDummy();
+            });
+            this_1._rotateSpheresParent.addChild(sphere);
+        };
+        var this_1 = this, _dragBehavior;
+        for (var i_1 = 0; i_1 < 12; i_1++) {
+            _loop_1(i_1);
+        }
+        _this._rootMesh.addChild(_this._rotateSpheresParent);
+        // Create scale cubes
+        _this._scaleBoxesParent = new BABYLON.AbstractMesh("", gizmoLayer.utilityLayerScene);
+        _this._scaleBoxesParent.rotationQuaternion = new BABYLON.Quaternion();
+        for (var i = 0; i < 3; i++) {
+            for (var j = 0; j < 3; j++) {
+                var _loop_2 = function () {
+                    // create box for relevant axis
+                    var zeroAxisCount = ((i === 1) ? 1 : 0) + ((j === 1) ? 1 : 0) + ((k === 1) ? 1 : 0);
+                    if (zeroAxisCount === 1 || zeroAxisCount === 3) {
+                        return "continue";
+                    }
+                    var box = BABYLON.BoxBuilder.CreateBox("", { size: 1 }, gizmoLayer.utilityLayerScene);
+                    box.material = this_2.coloredMaterial;
+                    box.metadata = zeroAxisCount === 2; // None homogenous scale handle
+                    // Dragging logic
+                    var dragAxis = new BABYLON.Vector3(i - 1, j - 1, k - 1).normalize();
+                    _dragBehavior = new BABYLON.PointerDragBehavior({ dragAxis: dragAxis });
+                    _dragBehavior.updateDragPlane = false;
+                    _dragBehavior.moveAttached = false;
+                    box.addBehavior(_dragBehavior);
+                    _dragBehavior.onDragObservable.add(function (event) {
+                        _this.onScaleBoxDragObservable.notifyObservers({});
+                        if (_this.attachedMesh) {
+                            var originalParent = _this.attachedMesh.parent;
+                            if (originalParent && (originalParent.scaling && originalParent.scaling.isNonUniformWithinEpsilon(0.001))) {
+                                BABYLON.Logger.Warn("BoundingBoxGizmo controls are not supported on child meshes with non-uniform parent scaling");
+                                return;
+                            }
+                            BABYLON.PivotTools._RemoveAndStorePivotPoint(_this.attachedMesh);
+                            var relativeDragDistance = (event.dragDistance / _this._boundingDimensions.length()) * _this._anchorMesh.scaling.length();
+                            var deltaScale = new BABYLON.Vector3(relativeDragDistance, relativeDragDistance, relativeDragDistance);
+                            if (zeroAxisCount === 2) {
+                                // scale on 1 axis when using the anchor box in the face middle
+                                deltaScale.x *= Math.abs(dragAxis.x);
+                                deltaScale.y *= Math.abs(dragAxis.y);
+                                deltaScale.z *= Math.abs(dragAxis.z);
+                            }
+                            deltaScale.scaleInPlace(_this._scaleDragSpeed);
+                            _this.updateBoundingBox();
+                            if (_this.scalePivot) {
+                                _this.attachedMesh.getWorldMatrix().getRotationMatrixToRef(_this._tmpRotationMatrix);
+                                // Move anchor to desired pivot point (Bottom left corner + dimension/2)
+                                _this._boundingDimensions.scaleToRef(0.5, _this._tmpVector);
+                                BABYLON.Vector3.TransformCoordinatesToRef(_this._tmpVector, _this._tmpRotationMatrix, _this._tmpVector);
+                                _this._anchorMesh.position.subtractInPlace(_this._tmpVector);
+                                _this._boundingDimensions.multiplyToRef(_this.scalePivot, _this._tmpVector);
+                                BABYLON.Vector3.TransformCoordinatesToRef(_this._tmpVector, _this._tmpRotationMatrix, _this._tmpVector);
+                                _this._anchorMesh.position.addInPlace(_this._tmpVector);
+                            }
+                            else {
+                                // Scale from the position of the opposite corner
+                                box.absolutePosition.subtractToRef(_this._anchorMesh.position, _this._tmpVector);
+                                _this._anchorMesh.position.subtractInPlace(_this._tmpVector);
+                            }
+                            _this._anchorMesh.addChild(_this.attachedMesh);
+                            _this._anchorMesh.scaling.addInPlace(deltaScale);
+                            if (_this._anchorMesh.scaling.x < 0 || _this._anchorMesh.scaling.y < 0 || _this._anchorMesh.scaling.z < 0) {
+                                _this._anchorMesh.scaling.subtractInPlace(deltaScale);
+                            }
+                            _this._anchorMesh.removeChild(_this.attachedMesh);
+                            _this.attachedMesh.setParent(originalParent);
+                            BABYLON.PivotTools._RestorePivotPoint(_this.attachedMesh);
+                        }
+                        _this._updateDummy();
+                    });
+                    // Selection/deselection
+                    _dragBehavior.onDragStartObservable.add(function () {
+                        _this.onDragStartObservable.notifyObservers({});
+                        _this._selectNode(box);
+                    });
+                    _dragBehavior.onDragEndObservable.add(function () {
+                        _this.onScaleBoxDragEndObservable.notifyObservers({});
+                        _this._selectNode(null);
+                        _this._updateDummy();
+                    });
+                    this_2._scaleBoxesParent.addChild(box);
+                };
+                var this_2 = this, _dragBehavior;
+                for (var k = 0; k < 3; k++) {
+                    _loop_2();
+                }
+            }
+        }
+        _this._rootMesh.addChild(_this._scaleBoxesParent);
+        // Hover color change
+        var pointerIds = new Array();
+        _this._pointerObserver = gizmoLayer.utilityLayerScene.onPointerObservable.add(function (pointerInfo) {
+            if (!pointerIds[pointerInfo.event.pointerId]) {
+                _this._rotateSpheresParent.getChildMeshes().concat(_this._scaleBoxesParent.getChildMeshes()).forEach(function (mesh) {
+                    if (pointerInfo.pickInfo && pointerInfo.pickInfo.pickedMesh == mesh) {
+                        pointerIds[pointerInfo.event.pointerId] = mesh;
+                        mesh.material = _this.hoverColoredMaterial;
+                    }
+                });
+            }
+            else {
+                if (pointerInfo.pickInfo && pointerInfo.pickInfo.pickedMesh != pointerIds[pointerInfo.event.pointerId]) {
+                    pointerIds[pointerInfo.event.pointerId].material = _this.coloredMaterial;
+                    delete pointerIds[pointerInfo.event.pointerId];
+                }
+            }
+        });
+        // Update bounding box positions
+        _this._renderObserver = _this.gizmoLayer.originalScene.onBeforeRenderObservable.add(function () {
+            // Only update the bouding box if scaling has changed
+            if (_this.attachedMesh && !_this._existingMeshScale.equals(_this.attachedMesh.scaling)) {
+                _this.updateBoundingBox();
+            }
+            else if (_this.fixedDragMeshScreenSize) {
+                _this._updateRotationSpheres();
+                _this._updateScaleBoxes();
+            }
+            // If dragg mesh is enabled and dragging, update the attached mesh pose to match the drag mesh
+            if (_this._dragMesh && _this.attachedMesh && _this.pointerDragBehavior.dragging) {
+                _this._lineBoundingBox.position.rotateByQuaternionToRef(_this._rootMesh.rotationQuaternion, _this._tmpVector);
+                _this.attachedMesh.setAbsolutePosition(_this._dragMesh.position.add(_this._tmpVector.scale(-1)));
+            }
+        });
+        _this.updateBoundingBox();
+        return _this;
+    }
+    /**
+     * Sets the color of the bounding box gizmo
+     * @param color the color to set
+     */
+    BoundingBoxGizmo.prototype.setColor = function (color) {
+        this.coloredMaterial.emissiveColor = color;
+        this.hoverColoredMaterial.emissiveColor = color.clone().add(new BABYLON.Color3(0.3, 0.3, 0.3));
+        this._lineBoundingBox.getChildren().forEach(function (l) {
+            if (l.color) {
+                l.color = color;
+            }
+        });
+    };
+    BoundingBoxGizmo.prototype._attachedNodeChanged = function (value) {
+        var _this = this;
+        if (value) {
+            // Reset anchor mesh to match attached mesh's scale
+            // This is needed to avoid invalid box/sphere position on first drag
+            BABYLON.PivotTools._RemoveAndStorePivotPoint(value);
+            var originalParent = value.parent;
+            this._anchorMesh.addChild(value);
+            this._anchorMesh.removeChild(value);
+            value.setParent(originalParent);
+            BABYLON.PivotTools._RestorePivotPoint(value);
+            this.updateBoundingBox();
+            value.getChildMeshes(false).forEach(function (m) {
+                m.markAsDirty("scaling");
+            });
+            this.gizmoLayer.utilityLayerScene.onAfterRenderObservable.addOnce(function () {
+                _this._updateDummy();
+            });
+        }
+    };
+    BoundingBoxGizmo.prototype._selectNode = function (selectedMesh) {
+        this._rotateSpheresParent.getChildMeshes()
+            .concat(this._scaleBoxesParent.getChildMeshes()).forEach(function (m) {
+            m.isVisible = (!selectedMesh || m == selectedMesh);
+        });
+    };
+    /**
+     * Updates the bounding box information for the Gizmo
+     */
+    BoundingBoxGizmo.prototype.updateBoundingBox = function () {
+        if (this.attachedMesh) {
+            BABYLON.PivotTools._RemoveAndStorePivotPoint(this.attachedMesh);
+            // Store original parent
+            var originalParent = this.attachedMesh.parent;
+            this.attachedMesh.setParent(null);
+            // Store original skelton override mesh
+            var originalSkeletonOverrideMesh = null;
+            if (this.attachedMesh.skeleton) {
+                originalSkeletonOverrideMesh = this.attachedMesh.skeleton.overrideMesh;
+                this.attachedMesh.skeleton.overrideMesh = null;
+            }
+            this._update();
+            // Rotate based on axis
+            if (!this.attachedMesh.rotationQuaternion) {
+                this.attachedMesh.rotationQuaternion = BABYLON.Quaternion.RotationYawPitchRoll(this.attachedMesh.rotation.y, this.attachedMesh.rotation.x, this.attachedMesh.rotation.z);
+            }
+            if (!this._anchorMesh.rotationQuaternion) {
+                this._anchorMesh.rotationQuaternion = BABYLON.Quaternion.RotationYawPitchRoll(this._anchorMesh.rotation.y, this._anchorMesh.rotation.x, this._anchorMesh.rotation.z);
+            }
+            this._anchorMesh.rotationQuaternion.copyFrom(this.attachedMesh.rotationQuaternion);
+            // Store original position and reset mesh to origin before computing the bounding box
+            this._tmpQuaternion.copyFrom(this.attachedMesh.rotationQuaternion);
+            this._tmpVector.copyFrom(this.attachedMesh.position);
+            this.attachedMesh.rotationQuaternion.set(0, 0, 0, 1);
+            this.attachedMesh.position.set(0, 0, 0);
+            // Update bounding dimensions/positions
+            var boundingMinMax = this.attachedMesh.getHierarchyBoundingVectors(!this.ignoreChildren, this.includeChildPredicate);
+            boundingMinMax.max.subtractToRef(boundingMinMax.min, this._boundingDimensions);
+            // Update gizmo to match bounding box scaling and rotation
+            // The position set here is the offset from the origin for the boundingbox when the attached mesh is at the origin
+            // The position of the gizmo is then set to the attachedMesh in gizmo._update
+            this._lineBoundingBox.scaling.copyFrom(this._boundingDimensions);
+            this._lineBoundingBox.position.set((boundingMinMax.max.x + boundingMinMax.min.x) / 2, (boundingMinMax.max.y + boundingMinMax.min.y) / 2, (boundingMinMax.max.z + boundingMinMax.min.z) / 2);
+            this._rotateSpheresParent.position.copyFrom(this._lineBoundingBox.position);
+            this._scaleBoxesParent.position.copyFrom(this._lineBoundingBox.position);
+            this._lineBoundingBox.computeWorldMatrix();
+            this._anchorMesh.position.copyFrom(this._lineBoundingBox.absolutePosition);
+            // Restore position/rotation values
+            this.attachedMesh.rotationQuaternion.copyFrom(this._tmpQuaternion);
+            this.attachedMesh.position.copyFrom(this._tmpVector);
+            // Restore original parent
+            this.attachedMesh.setParent(originalParent);
+            // Restore original skeleton override mesh
+            if (this.attachedMesh.skeleton) {
+                this.attachedMesh.skeleton.overrideMesh = originalSkeletonOverrideMesh;
+            }
+        }
+        this._updateRotationSpheres();
+        this._updateScaleBoxes();
+        if (this.attachedMesh) {
+            this._existingMeshScale.copyFrom(this.attachedMesh.scaling);
+            BABYLON.PivotTools._RestorePivotPoint(this.attachedMesh);
+        }
+    };
+    BoundingBoxGizmo.prototype._updateRotationSpheres = function () {
+        var rotateSpheres = this._rotateSpheresParent.getChildMeshes();
+        for (var i = 0; i < 3; i++) {
+            for (var j = 0; j < 2; j++) {
+                for (var k = 0; k < 2; k++) {
+                    var index = ((i * 4) + (j * 2)) + k;
+                    if (i == 0) {
+                        rotateSpheres[index].position.set(this._boundingDimensions.x / 2, this._boundingDimensions.y * j, this._boundingDimensions.z * k);
+                        rotateSpheres[index].position.addInPlace(new BABYLON.Vector3(-this._boundingDimensions.x / 2, -this._boundingDimensions.y / 2, -this._boundingDimensions.z / 2));
+                        rotateSpheres[index].lookAt(BABYLON.Vector3.Cross(rotateSpheres[index].position.normalizeToNew(), BABYLON.Vector3.Right()).normalizeToNew().add(rotateSpheres[index].position));
+                    }
+                    if (i == 1) {
+                        rotateSpheres[index].position.set(this._boundingDimensions.x * j, this._boundingDimensions.y / 2, this._boundingDimensions.z * k);
+                        rotateSpheres[index].position.addInPlace(new BABYLON.Vector3(-this._boundingDimensions.x / 2, -this._boundingDimensions.y / 2, -this._boundingDimensions.z / 2));
+                        rotateSpheres[index].lookAt(BABYLON.Vector3.Cross(rotateSpheres[index].position.normalizeToNew(), BABYLON.Vector3.Up()).normalizeToNew().add(rotateSpheres[index].position));
+                    }
+                    if (i == 2) {
+                        rotateSpheres[index].position.set(this._boundingDimensions.x * j, this._boundingDimensions.y * k, this._boundingDimensions.z / 2);
+                        rotateSpheres[index].position.addInPlace(new BABYLON.Vector3(-this._boundingDimensions.x / 2, -this._boundingDimensions.y / 2, -this._boundingDimensions.z / 2));
+                        rotateSpheres[index].lookAt(BABYLON.Vector3.Cross(rotateSpheres[index].position.normalizeToNew(), BABYLON.Vector3.Forward()).normalizeToNew().add(rotateSpheres[index].position));
+                    }
+                    if (this.fixedDragMeshScreenSize && this.gizmoLayer.utilityLayerScene.activeCamera) {
+                        rotateSpheres[index].absolutePosition.subtractToRef(this.gizmoLayer.utilityLayerScene.activeCamera.position, this._tmpVector);
+                        var distanceFromCamera = this.rotationSphereSize * this._tmpVector.length() / this.fixedDragMeshScreenSizeDistanceFactor;
+                        rotateSpheres[index].scaling.set(distanceFromCamera, distanceFromCamera, distanceFromCamera);
+                    }
+                    else {
+                        rotateSpheres[index].scaling.set(this.rotationSphereSize, this.rotationSphereSize, this.rotationSphereSize);
+                    }
+                }
+            }
+        }
+    };
+    BoundingBoxGizmo.prototype._updateScaleBoxes = function () {
+        var scaleBoxes = this._scaleBoxesParent.getChildMeshes();
+        var index = 0;
+        for (var i = 0; i < 3; i++) {
+            for (var j = 0; j < 3; j++) {
+                for (var k = 0; k < 3; k++) {
+                    var zeroAxisCount = ((i === 1) ? 1 : 0) + ((j === 1) ? 1 : 0) + ((k === 1) ? 1 : 0);
+                    if (zeroAxisCount === 1 || zeroAxisCount === 3) {
+                        continue;
+                    }
+                    if (scaleBoxes[index]) {
+                        scaleBoxes[index].position.set(this._boundingDimensions.x * (i / 2), this._boundingDimensions.y * (j / 2), this._boundingDimensions.z * (k / 2));
+                        scaleBoxes[index].position.addInPlace(new BABYLON.Vector3(-this._boundingDimensions.x / 2, -this._boundingDimensions.y / 2, -this._boundingDimensions.z / 2));
+                        if (this.fixedDragMeshScreenSize && this.gizmoLayer.utilityLayerScene.activeCamera) {
+                            scaleBoxes[index].absolutePosition.subtractToRef(this.gizmoLayer.utilityLayerScene.activeCamera.position, this._tmpVector);
+                            var distanceFromCamera = this.scaleBoxSize * this._tmpVector.length() / this.fixedDragMeshScreenSizeDistanceFactor;
+                            scaleBoxes[index].scaling.set(distanceFromCamera, distanceFromCamera, distanceFromCamera);
+                        }
+                        else {
+                            scaleBoxes[index].scaling.set(this.scaleBoxSize, this.scaleBoxSize, this.scaleBoxSize);
+                        }
+                    }
+                    index++;
+                }
+            }
+        }
+    };
+    /**
+     * Enables rotation on the specified axis and disables rotation on the others
+     * @param axis The list of axis that should be enabled (eg. "xy" or "xyz")
+     */
+    BoundingBoxGizmo.prototype.setEnabledRotationAxis = function (axis) {
+        this._rotateSpheresParent.getChildMeshes().forEach(function (m, i) {
+            if (i < 4) {
+                m.setEnabled(axis.indexOf("x") != -1);
+            }
+            else if (i < 8) {
+                m.setEnabled(axis.indexOf("y") != -1);
+            }
+            else {
+                m.setEnabled(axis.indexOf("z") != -1);
+            }
+        });
+    };
+    /**
+     * Enables/disables scaling
+     * @param enable if scaling should be enabled
+     * @param homogeneousScaling defines if scaling should only be homogeneous
+     */
+    BoundingBoxGizmo.prototype.setEnabledScaling = function (enable, homogeneousScaling) {
+        if (homogeneousScaling === void 0) { homogeneousScaling = false; }
+        this._scaleBoxesParent.getChildMeshes().forEach(function (m, i) {
+            var enableMesh = enable;
+            // Disable heterogenous scale handles if requested.
+            if (homogeneousScaling && m.metadata === true) {
+                enableMesh = false;
+            }
+            m.setEnabled(enableMesh);
+        });
+    };
+    BoundingBoxGizmo.prototype._updateDummy = function () {
+        if (this._dragMesh) {
+            this._dragMesh.position.copyFrom(this._lineBoundingBox.getAbsolutePosition());
+            this._dragMesh.scaling.copyFrom(this._lineBoundingBox.scaling);
+            this._dragMesh.rotationQuaternion.copyFrom(this._rootMesh.rotationQuaternion);
+        }
+    };
+    /**
+     * Enables a pointer drag behavior on the bounding box of the gizmo
+     */
+    BoundingBoxGizmo.prototype.enableDragBehavior = function () {
+        this._dragMesh = BABYLON.Mesh.CreateBox("dummy", 1, this.gizmoLayer.utilityLayerScene);
+        this._dragMesh.visibility = 0;
+        this._dragMesh.rotationQuaternion = new BABYLON.Quaternion();
+        this.pointerDragBehavior.useObjectOrienationForDragging = false;
+        this._dragMesh.addBehavior(this.pointerDragBehavior);
+    };
+    /**
+     * Disposes of the gizmo
+     */
+    BoundingBoxGizmo.prototype.dispose = function () {
+        this.gizmoLayer.utilityLayerScene.onPointerObservable.remove(this._pointerObserver);
+        this.gizmoLayer.originalScene.onBeforeRenderObservable.remove(this._renderObserver);
+        this._lineBoundingBox.dispose();
+        this._rotateSpheresParent.dispose();
+        this._scaleBoxesParent.dispose();
+        if (this._dragMesh) {
+            this._dragMesh.dispose();
+        }
+        _super.prototype.dispose.call(this);
+    };
+    /**
+     * Makes a mesh not pickable and wraps the mesh inside of a bounding box mesh that is pickable. (This is useful to avoid picking within complex geometry)
+     * @param mesh the mesh to wrap in the bounding box mesh and make not pickable
+     * @returns the bounding box mesh with the passed in mesh as a child
+     */
+    BoundingBoxGizmo.MakeNotPickableAndWrapInBoundingBox = function (mesh) {
+        var makeNotPickable = function (root) {
+            root.isPickable = false;
+            root.getChildMeshes().forEach(function (c) {
+                makeNotPickable(c);
+            });
+        };
+        makeNotPickable(mesh);
+        // Reset position to get boudning box from origin with no rotation
+        if (!mesh.rotationQuaternion) {
+            mesh.rotationQuaternion = BABYLON.Quaternion.RotationYawPitchRoll(mesh.rotation.y, mesh.rotation.x, mesh.rotation.z);
+        }
+        var oldPos = mesh.position.clone();
+        var oldRot = mesh.rotationQuaternion.clone();
+        mesh.rotationQuaternion.set(0, 0, 0, 1);
+        mesh.position.set(0, 0, 0);
+        // Update bounding dimensions/positions
+        var box = BABYLON.BoxBuilder.CreateBox("box", { size: 1 }, mesh.getScene());
+        var boundingMinMax = mesh.getHierarchyBoundingVectors();
+        boundingMinMax.max.subtractToRef(boundingMinMax.min, box.scaling);
+        // Adjust scale to avoid undefined behavior when adding child
+        if (box.scaling.y === 0) {
+            box.scaling.y = BABYLON.Epsilon;
+        }
+        if (box.scaling.x === 0) {
+            box.scaling.x = BABYLON.Epsilon;
+        }
+        if (box.scaling.z === 0) {
+            box.scaling.z = BABYLON.Epsilon;
+        }
+        box.position.set((boundingMinMax.max.x + boundingMinMax.min.x) / 2, (boundingMinMax.max.y + boundingMinMax.min.y) / 2, (boundingMinMax.max.z + boundingMinMax.min.z) / 2);
+        // Restore original positions
+        mesh.addChild(box);
+        mesh.rotationQuaternion.copyFrom(oldRot);
+        mesh.position.copyFrom(oldPos);
+        // Reverse parenting
+        mesh.removeChild(box);
+        box.addChild(mesh);
+        box.visibility = 0;
+        return box;
+    };
+    /**
+     * CustomMeshes are not supported by this gizmo
+     * @param mesh The mesh to replace the default mesh of the gizmo
+     */
+    BoundingBoxGizmo.prototype.setCustomMesh = function (mesh) {
+        BABYLON.Logger.Error("Custom meshes are not supported on this gizmo");
+    };
+    return BoundingBoxGizmo;
+}(gizmo_1.Gizmo));
+exports.BoundingBoxGizmo = BoundingBoxGizmo;
+},{"./gizmo":43}],41:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CameraGizmo = void 0;
+// import { Nullable } from "../types";
+// import { Vector3 } from "../Maths/math.vector";
+// import { Color3 } from '../Maths/math.color';
+// import { Mesh } from "../Meshes/mesh";
+var gizmo_1 = require("./gizmo");
+// import { UtilityLayerRenderer } from "../Rendering/utilityLayerRenderer";
+// import { StandardMaterial } from '../Materials/standardMaterial';
+// import { Scene } from '../scene';
+// import { Camera } from '../Cameras/camera';
+// import { BoxBuilder } from "../Meshes/Builders/boxBuilder";
+// import { CylinderBuilder } from '../Meshes/Builders/cylinderBuilder';
+// import { Matrix } from '../Maths/math';
+// import { LinesBuilder } from "../Meshes/Builders/linesBuilder";
+// import { PointerEventTypes, PointerInfo } from '../Events/pointerEvents';
+// import { Observer, Observable } from "../Misc/observable";
+/**
+ * Gizmo that enables viewing a camera
+ */
+var CameraGizmo = /** @class */ (function (_super) {
+    __extends(CameraGizmo, _super);
+    /**
+     * Creates a CameraGizmo
+     * @param gizmoLayer The utility layer the gizmo will be added to
+     */
+    function CameraGizmo(gizmoLayer) {
+        if (gizmoLayer === void 0) { gizmoLayer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer; }
+        var _this = _super.call(this, gizmoLayer) || this;
+        _this._pointerObserver = null;
+        /**
+         * Event that fires each time the gizmo is clicked
+         */
+        _this.onClickedObservable = new BABYLON.Observable();
+        _this._camera = null;
+        _this._invProjection = new BABYLON.Matrix();
+        _this._material = new BABYLON.StandardMaterial("cameraGizmoMaterial", _this.gizmoLayer.utilityLayerScene);
+        _this._material.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+        _this._material.specularColor = new BABYLON.Color3(0.1, 0.1, 0.1);
+        _this._pointerObserver = gizmoLayer.utilityLayerScene.onPointerObservable.add(function (pointerInfo) {
+            if (!_this._camera) {
+                return;
+            }
+            var isHovered = pointerInfo.pickInfo && (_this._rootMesh.getChildMeshes().indexOf(pointerInfo.pickInfo.pickedMesh) != -1);
+            if (isHovered && pointerInfo.event.button === 0) {
+                _this.onClickedObservable.notifyObservers(_this._camera);
+            }
+        }, BABYLON.PointerEventTypes.POINTERDOWN);
+        return _this;
+    }
+    Object.defineProperty(CameraGizmo.prototype, "displayFrustum", {
+        /** Gets or sets a boolean indicating if frustum lines must be rendered (true by default)) */
+        get: function () {
+            return this._cameraLinesMesh.isEnabled();
+        },
+        set: function (value) {
+            this._cameraLinesMesh.setEnabled(value);
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(CameraGizmo.prototype, "camera", {
+        get: function () {
+            return this._camera;
+        },
+        /**
+         * The camera that the gizmo is attached to
+         */
+        set: function (camera) {
+            var _this = this;
+            this._camera = camera;
+            this.attachedNode = camera;
+            if (camera) {
+                // Create the mesh for the given camera
+                if (this._cameraMesh) {
+                    this._cameraMesh.dispose();
+                }
+                if (this._cameraLinesMesh) {
+                    this._cameraLinesMesh.dispose();
+                }
+                this._cameraMesh = CameraGizmo._CreateCameraMesh(this.gizmoLayer.utilityLayerScene);
+                this._cameraLinesMesh = CameraGizmo._CreateCameraFrustum(this.gizmoLayer.utilityLayerScene);
+                this._cameraMesh.getChildMeshes(false).forEach(function (m) {
+                    m.material = _this._material;
+                });
+                this._cameraMesh.parent = this._rootMesh;
+                this._cameraLinesMesh.parent = this._rootMesh;
+                if (this.gizmoLayer.utilityLayerScene.activeCamera && this.gizmoLayer.utilityLayerScene.activeCamera.maxZ < camera.maxZ * 1.5) {
+                    this.gizmoLayer.utilityLayerScene.activeCamera.maxZ = camera.maxZ * 1.5;
+                }
+                if (!this.attachedNode.reservedDataStore) {
+                    this.attachedNode.reservedDataStore = {};
+                }
+                this.attachedNode.reservedDataStore.cameraGizmo = this;
+                // Add lighting to the camera gizmo
+                var gizmoLight = this.gizmoLayer._getSharedGizmoLight();
+                gizmoLight.includedOnlyMeshes = gizmoLight.includedOnlyMeshes.concat(this._cameraMesh.getChildMeshes(false));
+                this._update();
+            }
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(CameraGizmo.prototype, "material", {
+        /**
+         * Gets the material used to render the camera gizmo
+         */
+        get: function () {
+            return this._material;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    /**
+     * @hidden
+     * Updates the gizmo to match the attached mesh's position/rotation
+     */
+    CameraGizmo.prototype._update = function () {
+        _super.prototype._update.call(this);
+        if (!this._camera) {
+            return;
+        }
+        // frustum matrix
+        this._camera.getProjectionMatrix().invertToRef(this._invProjection);
+        this._cameraLinesMesh.setPivotMatrix(this._invProjection, false);
+        this._cameraLinesMesh.scaling.x = 1 / this._rootMesh.scaling.x;
+        this._cameraLinesMesh.scaling.y = 1 / this._rootMesh.scaling.y;
+        this._cameraLinesMesh.scaling.z = 1 / this._rootMesh.scaling.z;
+        // take care of coordinate system in camera scene to properly display the mesh with the good Y axis orientation in this scene
+        this._cameraMesh.parent = null;
+        this._cameraMesh.rotation.y = Math.PI * 0.5 * (this._camera.getScene().useRightHandedSystem ? 1 : -1);
+        this._cameraMesh.parent = this._rootMesh;
+    };
+    /**
+     * Disposes of the camera gizmo
+     */
+    CameraGizmo.prototype.dispose = function () {
+        this.onClickedObservable.clear();
+        this.gizmoLayer.utilityLayerScene.onPointerObservable.remove(this._pointerObserver);
+        if (this._cameraMesh) {
+            this._cameraMesh.dispose();
+        }
+        if (this._cameraLinesMesh) {
+            this._cameraLinesMesh.dispose();
+        }
+        this._material.dispose();
+        _super.prototype.dispose.call(this);
+    };
+    CameraGizmo._CreateCameraMesh = function (scene) {
+        var root = new BABYLON.Mesh("rootCameraGizmo", scene);
+        var mesh = new BABYLON.Mesh(root.name, scene);
+        mesh.parent = root;
+        var box = BABYLON.BoxBuilder.CreateBox(root.name, { width: 1.0, height: 0.8, depth: 0.5 }, scene);
+        box.parent = mesh;
+        var cyl1 = BABYLON.CylinderBuilder.CreateCylinder(root.name, { height: 0.5, diameterTop: 0.8, diameterBottom: 0.8 }, scene);
+        cyl1.parent = mesh;
+        cyl1.position.y = 0.3;
+        cyl1.position.x = -0.6;
+        cyl1.rotation.x = Math.PI * 0.5;
+        var cyl2 = BABYLON.CylinderBuilder.CreateCylinder(root.name, { height: 0.5, diameterTop: 0.6, diameterBottom: 0.6 }, scene);
+        cyl2.parent = mesh;
+        cyl2.position.y = 0.5;
+        cyl2.position.x = 0.4;
+        cyl2.rotation.x = Math.PI * 0.5;
+        var cyl3 = BABYLON.CylinderBuilder.CreateCylinder(root.name, { height: 0.5, diameterTop: 0.5, diameterBottom: 0.5 }, scene);
+        cyl3.parent = mesh;
+        cyl3.position.y = 0.0;
+        cyl3.position.x = 0.6;
+        cyl3.rotation.z = Math.PI * 0.5;
+        root.scaling.scaleInPlace(CameraGizmo._Scale);
+        mesh.position.x = -0.9;
+        return root;
+    };
+    CameraGizmo._CreateCameraFrustum = function (scene) {
+        var root = new BABYLON.Mesh("rootCameraGizmo", scene);
+        var mesh = new BABYLON.Mesh(root.name, scene);
+        mesh.parent = root;
+        for (var y = 0; y < 4; y += 2) {
+            for (var x = 0; x < 4; x += 2) {
+                var line = BABYLON.LinesBuilder.CreateLines("lines", { points: [new BABYLON.Vector3(-1 + x, -1 + y, -1), new BABYLON.Vector3(-1 + x, -1 + y, 1)] }, scene);
+                line.parent = mesh;
+                line.alwaysSelectAsActiveMesh = true;
+                line.isPickable = false;
+                var line = BABYLON.LinesBuilder.CreateLines("lines", { points: [new BABYLON.Vector3(-1, -1 + x, -1 + y), new BABYLON.Vector3(1, -1 + x, -1 + y)] }, scene);
+                line.parent = mesh;
+                line.alwaysSelectAsActiveMesh = true;
+                line.isPickable = false;
+                var line = BABYLON.LinesBuilder.CreateLines("lines", { points: [new BABYLON.Vector3(-1 + x, -1, -1 + y), new BABYLON.Vector3(-1 + x, 1, -1 + y)] }, scene);
+                line.parent = mesh;
+                line.alwaysSelectAsActiveMesh = true;
+                line.isPickable = false;
+            }
+        }
+        return root;
+    };
+    // Static helper methods
+    CameraGizmo._Scale = 0.05;
+    return CameraGizmo;
+}(gizmo_1.Gizmo));
+exports.CameraGizmo = CameraGizmo;
+},{"./gizmo":43}],42:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.GizmosCenter = void 0;
+var _1 = require(".");
+var utility_1 = require("../utility");
+var GizmosCenter = /** @class */ (function () {
+    function GizmosCenter() {
+    }
+    GizmosCenter.init = function (scene) {
+        var _this = this;
+        GizmosCenter.gizmoManager = new _1.GizmoManager(scene);
+        GizmosCenter.gizmoManager.positionGizmoEnabled = true;
+        GizmosCenter.gizmoManager.rotationGizmoEnabled = true;
+        GizmosCenter.gizmoManager.scaleGizmoEnabled = true;
+        GizmosCenter.gizmoManager.gizmos.positionGizmo.scaleRatio = 2;
+        GizmosCenter.gizmoManager.gizmos.rotationGizmo.scaleRatio = 2;
+        GizmosCenter.gizmoManager.gizmos.scaleGizmo.scaleRatio = 2;
+        GizmosCenter.gizmoManager.positionGizmoEnabled = false;
+        GizmosCenter.gizmoManager.rotationGizmoEnabled = false;
+        GizmosCenter.gizmoManager.scaleGizmoEnabled = false;
+        editor.on('selector:change', function (type, items) {
+            GizmosCenter.clear();
+            if (type === 'entity') {
+                if (items.length === 1) {
+                    GizmosCenter.attach(items[0].node);
+                }
+                else {
+                    // TODO
+                    // 创建一个空物体作为所有物体的父物体；
+                    // 记录原始父物体；
+                    GizmosCenter.attach(items[items.length - 1].node);
+                }
+                _this.currentItems = items;
+                for (var i = 0; i < _this.currentItems.length; i++) {
+                    _this.currentEvents.push(_this.currentItems[i].on('position:set', function (val) { }));
+                    _this.currentEvents.push(_this.currentItems[i].on('position.0:set', function (val) { }));
+                    _this.currentEvents.push(_this.currentItems[i].on('position.1:set', function (val) { }));
+                    _this.currentEvents.push(_this.currentItems[i].on('position.2:set', function (val) { }));
+                    _this.currentEvents.push(_this.currentItems[i].on('rotation:set', function (val) { }));
+                    _this.currentEvents.push(_this.currentItems[i].on('rotation.0:set', function (val) { }));
+                    _this.currentEvents.push(_this.currentItems[i].on('rotation.1:set', function (val) { }));
+                    _this.currentEvents.push(_this.currentItems[i].on('rotation.2:set', function (val) { }));
+                    _this.currentEvents.push(_this.currentItems[i].on('scale:set', function (val) { }));
+                    _this.currentEvents.push(_this.currentItems[i].on('scale.0:set', function (val) { }));
+                    _this.currentEvents.push(_this.currentItems[i].on('scale.1:set', function (val) { }));
+                    _this.currentEvents.push(_this.currentItems[i].on('scale.2:set', function (val) { }));
+                }
+            }
+        });
+    };
+    GizmosCenter.setMode = function (m) {
+        this.mode = m;
+        if (this.mode == 0) {
+            this.gizmoManager.positionGizmoEnabled = true;
+            this.gizmoManager.rotationGizmoEnabled = false;
+            this.gizmoManager.scaleGizmoEnabled = false;
+        }
+        else if (this.mode === 1) {
+            this.gizmoManager.positionGizmoEnabled = false;
+            this.gizmoManager.rotationGizmoEnabled = true;
+            this.gizmoManager.scaleGizmoEnabled = false;
+        }
+        else {
+            this.gizmoManager.positionGizmoEnabled = false;
+            this.gizmoManager.rotationGizmoEnabled = false;
+            this.gizmoManager.scaleGizmoEnabled = true;
+        }
+    };
+    GizmosCenter.attach = function (mesh) {
+        if (mesh instanceof BABYLON.AbstractMesh) {
+            this.gizmoManager.attachToMesh(mesh);
+        }
+        else {
+            this.gizmoManager.attachToNode(mesh);
+        }
+        this.setMode(this.mode);
+    };
+    GizmosCenter.setPosition = function (pos) {
+        if (this.currentItems) {
+            if (this.currentItems.length === 1) {
+                this.currentItems[0].set('position.0', pos.x);
+                this.currentItems[0].set('position.1', pos.y);
+                this.currentItems[0].set('position.2', pos.z);
+            }
+            else {
+                // TODO
+                this.currentItems[this.currentItems.length - 1].set('position.0', pos.x);
+                this.currentItems[this.currentItems.length - 1].set('position.1', pos.y);
+                this.currentItems[this.currentItems.length - 1].set('position.2', pos.z);
+            }
+        }
+    };
+    GizmosCenter.setRotation = function (rotation) {
+        var eulerAngle = utility_1.Tools.radianToEulerAngle(rotation);
+        if (this.currentItems) {
+            if (this.currentItems.length === 1) {
+                this.currentItems[0].set('rotation.0', eulerAngle.x);
+                this.currentItems[0].set('rotation.1', eulerAngle.y);
+                this.currentItems[0].set('rotation.2', eulerAngle.z);
+            }
+            else {
+                // TODO
+                this.currentItems[this.currentItems.length - 1].set('rotation.0', eulerAngle.x);
+                this.currentItems[this.currentItems.length - 1].set('rotation.1', eulerAngle.y);
+                this.currentItems[this.currentItems.length - 1].set('rotation.2', eulerAngle.z);
+            }
+        }
+    };
+    GizmosCenter.setScale = function (scale) {
+        if (this.currentItems) {
+            if (this.currentItems.length === 1) {
+                this.currentItems[0].set('scale.0', scale.x);
+                this.currentItems[0].set('scale.1', scale.y);
+                this.currentItems[0].set('scale.2', scale.z);
+            }
+            else {
+                // TODO
+                this.currentItems[this.currentItems.length - 1].set('scale.0', scale.x);
+                this.currentItems[this.currentItems.length - 1].set('scale.1', scale.y);
+                this.currentItems[this.currentItems.length - 1].set('scale.2', scale.z);
+            }
+        }
+    };
+    GizmosCenter.clear = function () {
+        this.gizmoManager.attachToMesh(null);
+        if (this.currentEvents && this.currentEvents.length > 0) {
+            for (var i = 0; i < this.currentEvents.length; i++)
+                this.currentEvents[i].unbind();
+        }
+        this.currentEvents = [];
+        this.currentItems = [];
+    };
+    GizmosCenter.mode = 0;
+    GizmosCenter.currentItems = [];
+    GizmosCenter.currentEvents = [];
+    return GizmosCenter;
+}());
+exports.GizmosCenter = GizmosCenter;
+},{".":45,"../utility":97}],43:[function(require,module,exports){
+"use strict";
+// import { Observer } from "../Misc/observable";
+// import { Nullable } from "../types";
+// import { WebVRFreeCamera } from "../Cameras/VR/webVRCamera";
+// import { Scene, IDisposable } from "../scene";
+// import { Quaternion, Vector3, Matrix } from "../Maths/math.vector";
+// import { AbstractMesh } from "../Meshes/abstractMesh";
+// import { Mesh } from "../Meshes/mesh";
+// import { Camera } from "../Cameras/camera";
+// import { TargetCamera } from "../Cameras/targetCamera";
+// import { Node } from "../node";
+// import { Bone } from "../Bones/bone";
+// import { UtilityLayerRenderer } from "../Rendering/utilityLayerRenderer";
+// import { TransformNode } from '../Meshes/transformNode';
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Gizmo = void 0;
+var _1 = require(".");
+/**
+ * Renders gizmos on top of an existing scene which provide controls for position, rotation, etc.
+ */
+var Gizmo = /** @class */ (function () {
+    /**
+     * Creates a gizmo
+     * @param gizmoLayer The utility layer the gizmo will be added to
+     */
+    function Gizmo(
+    /** The utility layer the gizmo will be added to */
+    gizmoLayer) {
+        var _this = this;
+        if (gizmoLayer === void 0) { gizmoLayer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer; }
+        this.gizmoLayer = gizmoLayer;
+        this._attachedMesh = null;
+        this._attachedNode = null;
+        /**
+         * Ratio for the scale of the gizmo (Default: 1)
+         */
+        this._scaleRatio = 1;
+        this._operationType = '';
+        /**
+         * If a custom mesh has been set (Default: false)
+         */
+        this._customMeshSet = false;
+        this._updateGizmoRotationToMatchAttachedMesh = true;
+        /**
+         * If set the gizmo's position will be updated to match the attached mesh each frame (Default: true)
+         */
+        this.updateGizmoPositionToMatchAttachedMesh = true;
+        /**
+         * When set, the gizmo will always appear the same size no matter where the camera is (default: true)
+         */
+        this.updateScale = true;
+        this._interactionsEnabled = true;
+        this._tempQuaternion = new BABYLON.Quaternion(0, 0, 0, 1);
+        this._tempVector = new BABYLON.Vector3();
+        this._tempVector2 = new BABYLON.Vector3();
+        this._tempMatrix1 = new BABYLON.Matrix();
+        this._tempMatrix2 = new BABYLON.Matrix();
+        this._rightHandtoLeftHandMatrix = BABYLON.Matrix.RotationY(Math.PI);
+        this._rootMesh = new BABYLON.Mesh("gizmoRootNode", gizmoLayer.utilityLayerScene);
+        this._rootMesh.rotationQuaternion = BABYLON.Quaternion.Identity();
+        this._beforeRenderObserver = this.gizmoLayer.utilityLayerScene.onBeforeRenderObservable.add(function () {
+            _this._update();
+        });
+    }
+    Object.defineProperty(Gizmo.prototype, "scaleRatio", {
+        get: function () {
+            return this._scaleRatio;
+        },
+        /**
+         * Ratio for the scale of the gizmo (Default: 1)
+         */
+        set: function (value) {
+            this._scaleRatio = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Gizmo.prototype, "attachedMesh", {
+        /**
+         * Mesh that the gizmo will be attached to. (eg. on a drag gizmo the mesh that will be dragged)
+         * * When set, interactions will be enabled
+         */
+        get: function () {
+            return this._attachedMesh;
+        },
+        set: function (value) {
+            this._attachedMesh = value;
+            if (value) {
+                this._attachedNode = value;
+            }
+            this._rootMesh.setEnabled(value ? true : false);
+            this._attachedNodeChanged(value);
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Gizmo.prototype, "attachedNode", {
+        /**
+         * Node that the gizmo will be attached to. (eg. on a drag gizmo the mesh, bone or NodeTransform that will be dragged)
+         * * When set, interactions will be enabled
+         */
+        get: function () {
+            return this._attachedNode;
+        },
+        set: function (value) {
+            this._attachedNode = value;
+            this._attachedMesh = null;
+            this._rootMesh.setEnabled(value ? true : false);
+            this._attachedNodeChanged(value);
+        },
+        enumerable: false,
+        configurable: true
+    });
+    /**
+     * Disposes and replaces the current meshes in the gizmo with the specified mesh
+     * @param mesh The mesh to replace the default mesh of the gizmo
+     */
+    Gizmo.prototype.setCustomMesh = function (mesh) {
+        if (mesh.getScene() != this.gizmoLayer.utilityLayerScene) {
+            throw "When setting a custom mesh on a gizmo, the custom meshes scene must be the same as the gizmos (eg. gizmo.gizmoLayer.utilityLayerScene)";
+        }
+        this._rootMesh.getChildMeshes().forEach(function (c) {
+            c.dispose();
+        });
+        mesh.parent = this._rootMesh;
+        this._customMeshSet = true;
+    };
+    Object.defineProperty(Gizmo.prototype, "updateGizmoRotationToMatchAttachedMesh", {
+        get: function () {
+            return this._updateGizmoRotationToMatchAttachedMesh;
+        },
+        /**
+         * If set the gizmo's rotation will be updated to match the attached mesh each frame (Default: true)
+         */
+        set: function (value) {
+            this._updateGizmoRotationToMatchAttachedMesh = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Gizmo.prototype._attachedNodeChanged = function (value) {
+    };
+    /**
+     * Updates the gizmo to match the attached mesh's position/rotation
+     */
+    Gizmo.prototype._update = function () {
+        if (this.attachedNode) {
+            var effectiveNode = this.attachedNode;
+            if (this.attachedMesh) {
+                effectiveNode = this.attachedMesh._effectiveMesh || this.attachedNode;
+            }
+            // Position
+            if (this.updateGizmoPositionToMatchAttachedMesh) {
+                var row = effectiveNode.getWorldMatrix().getRow(3);
+                var position = row ? row.toVector3() : new BABYLON.Vector3(0, 0, 0);
+                this._rootMesh.position.copyFrom(position);
+            }
+            // Rotation
+            if (this.updateGizmoRotationToMatchAttachedMesh) {
+                effectiveNode.getWorldMatrix().decompose(undefined, this._rootMesh.rotationQuaternion);
+            }
+            else {
+                if (this._rootMesh.rotationQuaternion) {
+                    this._rootMesh.rotationQuaternion.set(0, 0, 0, 1);
+                }
+                else {
+                    this._rootMesh.rotation = BABYLON.Vector3.Zero();
+                }
+            }
+            // Scale
+            if (this.updateScale) {
+                var activeCamera = this.gizmoLayer.utilityLayerScene.activeCamera;
+                var cameraPosition = activeCamera.globalPosition;
+                if (activeCamera.devicePosition) {
+                    cameraPosition = activeCamera.devicePosition;
+                }
+                this._rootMesh.position.subtractToRef(cameraPosition, this._tempVector);
+                var dist = this._tempVector.length() * this.scaleRatio;
+                this._rootMesh.scaling.set(dist, dist, dist);
+                // Account for handedness, similar to Matrix.decompose
+                if (effectiveNode._getWorldMatrixDeterminant() < 0) {
+                    this._rootMesh.scaling.y *= -1;
+                }
+            }
+            else {
+                this._rootMesh.scaling.setAll(this.scaleRatio);
+            }
+        }
+    };
+    /**
+     * computes the rotation/scaling/position of the transform once the Node world matrix has changed.
+     * @param value Node, TransformNode or mesh
+     */
+    Gizmo.prototype._matrixChanged = function () {
+        if (!this._attachedNode) {
+            return;
+        }
+        if (this._attachedNode._isCamera) {
+            var camera = this._attachedNode;
+            var worldMatrix;
+            var worldMatrixUC;
+            if (camera.parent) {
+                var parentInv = this._tempMatrix2;
+                camera.parent._worldMatrix.invertToRef(parentInv);
+                this._attachedNode._worldMatrix.multiplyToRef(parentInv, this._tempMatrix1);
+                worldMatrix = this._tempMatrix1;
+            }
+            else {
+                worldMatrix = this._attachedNode._worldMatrix;
+            }
+            if (camera.getScene().useRightHandedSystem) {
+                // avoid desync with RH matrix computation. Otherwise, rotation of PI around Y axis happens each frame resulting in axis flipped because worldMatrix is computed as inverse of viewMatrix.
+                this._rightHandtoLeftHandMatrix.multiplyToRef(worldMatrix, this._tempMatrix2);
+                worldMatrixUC = this._tempMatrix2;
+            }
+            else {
+                worldMatrixUC = worldMatrix;
+            }
+            worldMatrixUC.decompose(this._tempVector2, this._tempQuaternion, this._tempVector);
+            var inheritsTargetCamera = this._attachedNode.getClassName() === "FreeCamera"
+                || this._attachedNode.getClassName() === "FlyCamera"
+                || this._attachedNode.getClassName() === "ArcFollowCamera"
+                || this._attachedNode.getClassName() === "TargetCamera"
+                || this._attachedNode.getClassName() === "TouchCamera"
+                || this._attachedNode.getClassName() === "UniversalCamera";
+            if (inheritsTargetCamera) {
+                var targetCamera = this._attachedNode;
+                targetCamera.rotation = this._tempQuaternion.toEulerAngles();
+                if (targetCamera.rotationQuaternion) {
+                    targetCamera.rotationQuaternion.copyFrom(this._tempQuaternion);
+                }
+            }
+            camera.position.copyFrom(this._tempVector);
+        }
+        else if (this._attachedNode._isMesh || this._attachedNode.getClassName() === "AbstractMesh" || this._attachedNode.getClassName() === "TransformNode" || this._attachedNode.getClassName() === "InstancedMesh") {
+            var transform = this._attachedNode;
+            if (transform.parent) {
+                var parentInv = this._tempMatrix1;
+                var localMat = this._tempMatrix2;
+                transform.parent.getWorldMatrix().invertToRef(parentInv);
+                this._attachedNode._worldMatrix.multiplyToRef(parentInv, localMat);
+                localMat.decompose(transform.scaling, this._tempQuaternion, transform.position);
+            }
+            else {
+                this._attachedNode._worldMatrix.decompose(transform.scaling, this._tempQuaternion, transform.position);
+            }
+            if (transform.rotationQuaternion) {
+                transform.rotationQuaternion.copyFrom(this._tempQuaternion);
+            }
+            else {
+                transform.rotation = this._tempQuaternion.toEulerAngles();
+            }
+            // console.warn(this._operationType);
+            if (this._operationType === 'translate' || this._operationType === 'plane') {
+                _1.GizmosCenter.setPosition(transform.position);
+            }
+            else if (this._operationType === 'rotate') {
+                _1.GizmosCenter.setRotation(transform.rotation);
+            }
+            else if (this._operationType === 'scale') {
+            }
+        }
+        else if (this._attachedNode.getClassName() === "Bone") {
+            var bone = this._attachedNode;
+            var parent_1 = bone.getParent();
+            if (parent_1) {
+                var invParent = this._tempMatrix1;
+                var boneLocalMatrix = this._tempMatrix2;
+                parent_1.getWorldMatrix().invertToRef(invParent);
+                bone.getWorldMatrix().multiplyToRef(invParent, boneLocalMatrix);
+                var lmat = bone.getLocalMatrix();
+                lmat.copyFrom(boneLocalMatrix);
+                bone.markAsDirty();
+            }
+        }
+    };
+    /**
+     * Disposes of the gizmo
+     */
+    Gizmo.prototype.dispose = function () {
+        this._rootMesh.dispose();
+        if (this._beforeRenderObserver) {
+            this.gizmoLayer.utilityLayerScene.onBeforeRenderObservable.remove(this._beforeRenderObserver);
+        }
+    };
+    return Gizmo;
+}());
+exports.Gizmo = Gizmo;
+},{".":45}],44:[function(require,module,exports){
+"use strict";
+// import { Observer, Observable } from "../Misc/observable";
+// import { Nullable } from "../types";
+// import { PointerInfo, PointerEventTypes } from "../Events/pointerEvents";
+// import { Scene, IDisposable } from "../scene";
+// import { Node } from "../node";
+// import { AbstractMesh } from "../Meshes/abstractMesh";
+// import { UtilityLayerRenderer } from "../Rendering/utilityLayerRenderer";
+// import { Color3 } from '../Maths/math.color';
+// import { SixDofDragBehavior } from "../Behaviors/Meshes/sixDofDragBehavior";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.GizmoManager = void 0;
+var rotationGizmo_1 = require("./rotationGizmo");
+var positionGizmo_1 = require("./positionGizmo");
+var scaleGizmo_1 = require("./scaleGizmo");
+var boundingBoxGizmo_1 = require("./boundingBoxGizmo");
+var _1 = require(".");
+/**
+ * Helps setup gizmo's in the scene to rotate/scale/position nodes
+ */
+var GizmoManager = /** @class */ (function () {
+    /**
+     * Instatiates a gizmo manager
+     * @param scene the scene to overlay the gizmos on top of
+     * @param thickness display gizmo axis thickness
+     */
+    function GizmoManager(scene, thickness) {
+        var _this = this;
+        if (thickness === void 0) { thickness = 1; }
+        this.scene = scene;
+        /** When true, the gizmo will be detached from the current object when a pointer down occurs with an empty picked mesh */
+        this.clearGizmoOnEmptyPointerEvent = false;
+        /** Fires an event when the manager is attached to a mesh */
+        this.onAttachedToMeshObservable = new BABYLON.Observable();
+        /** Fires an event when the manager is attached to a node */
+        this.onAttachedToNodeObservable = new BABYLON.Observable();
+        this._gizmosEnabled = { positionGizmo: false, rotationGizmo: false, scaleGizmo: false, boundingBoxGizmo: false };
+        this._pointerObserver = null;
+        this._attachedMesh = null;
+        this._attachedNode = null;
+        this._boundingBoxColor = BABYLON.Color3.FromHexString("#0984e3");
+        this._thickness = 1;
+        /**
+         * When bounding box gizmo is enabled, this can be used to track drag/end events
+         */
+        this.boundingBoxDragBehavior = new BABYLON.SixDofDragBehavior();
+        /**
+         * Array of meshes which will have the gizmo attached when a pointer selected them. If null, all meshes are attachable. (Default: null)
+         */
+        this.attachableMeshes = null;
+        /**
+         * Array of nodes which will have the gizmo attached when a pointer selected them. If null, all nodes are attachable. (Default: null)
+         */
+        this.attachableNodes = null;
+        /**
+         * If pointer events should perform attaching/detaching a gizmo, if false this can be done manually via attachToMesh/attachToNode. (Default: true)
+         */
+        this.usePointerToAttachGizmos = true;
+        this._defaultKeepDepthUtilityLayer = new BABYLON.UtilityLayerRenderer(scene);
+        this._defaultKeepDepthUtilityLayer.utilityLayerScene.autoClearDepthAndStencil = false;
+        this._defaultUtilityLayer = new BABYLON.UtilityLayerRenderer(scene);
+        this._thickness = thickness;
+        this.gizmos = { positionGizmo: null, rotationGizmo: null, scaleGizmo: null, boundingBoxGizmo: null };
+        // Instatiate/dispose gizmos based on pointer actions
+        this._pointerObserver = scene.onPointerObservable.add(function (pointerInfo) {
+            if (!_this.usePointerToAttachGizmos) {
+                return;
+            }
+            if (pointerInfo.type == BABYLON.PointerEventTypes.POINTERDOWN) {
+                if (pointerInfo.pickInfo && pointerInfo.pickInfo.pickedMesh) {
+                    // if (mesh === null) {
+                    //     GizmosCenter.clear();
+                    //     console.log('clear gizmos');
+                    // } else {
+                    //     console.log('pick mesh');
+                    //     // GizmosCenter.attach(mesh);
+                    //     var entity = editor.call('entities:get', mesh.id);
+                    //     console.error(entity);
+                    //     if (entity) {
+                    //         editor.call('selector:set', 'entity', [entity]);
+                    //     } else {
+                    //         console.error('失败');
+                    //     }
+                    // }
+                    // TODO: 选择方式重新确定
+                    var node = pointerInfo.pickInfo.pickedMesh;
+                    // if (this.attachableMeshes == null) {
+                    //     // Attach to the most parent node
+                    //     while (node && node.parent != null) {
+                    //         node = node.parent;
+                    //     }
+                    // } else {
+                    //     // Attach to the parent node that is an attachableMesh
+                    //     var found = false;
+                    //     this.attachableMeshes.forEach((mesh) => {
+                    //         if (node && (node == mesh || node.isDescendantOf(mesh))) {
+                    //             node = mesh;
+                    //             found = true;
+                    //         }
+                    //     });
+                    //     if (!found) {
+                    //         node = null;
+                    //     }
+                    // }
+                    if (node instanceof BABYLON.AbstractMesh) {
+                        // if (this._attachedMesh != node) {
+                        //     this.attachToMesh(node);
+                        // }
+                        // console.log('pick mesh');
+                        // GizmosCenter.attach(mesh);
+                        var entity = editor.call('entities:get', node.id);
+                        // console.error(entity);
+                        if (entity) {
+                            editor.call('selector:set', 'entity', [entity]);
+                        }
+                        else {
+                            console.error('失败');
+                        }
+                    }
+                    else {
+                        if (_this.clearGizmoOnEmptyPointerEvent) {
+                            // this.attachToMesh(null);
+                            _1.GizmosCenter.clear();
+                        }
+                    }
+                }
+                else {
+                    if (_this.clearGizmoOnEmptyPointerEvent) {
+                        _1.GizmosCenter.clear();
+                    }
+                }
+            }
+        });
+        this.initialize();
+    }
+    Object.defineProperty(GizmoManager.prototype, "keepDepthUtilityLayer", {
+        /**
+         * Utility layer that the bounding box gizmo belongs to
+         */
+        get: function () {
+            return this._defaultKeepDepthUtilityLayer;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(GizmoManager.prototype, "utilityLayer", {
+        /**
+         * Utility layer that all gizmos besides bounding box belong to
+         */
+        get: function () {
+            return this._defaultUtilityLayer;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    // public coordSystem: string = 'local';
+    GizmoManager.prototype.initialize = function () {
+        var self = this;
+        editor.on('selector:change', function (type, items) {
+        });
+        // editor.on('gizmo:coordSystem', function (system: string) {
+        //     if (self.coordSystem === system)
+        //         return;
+        //     self.coordSystem = system;
+        //     var rot = getGizmoRotation();
+        //     if (rot)
+        //         editor.call('gizmo:rotate:rotation', rot[0], rot[1], rot[2]);
+        //     var vec = getGizmoPosition();
+        //     if (vec)
+        //         editor.call('gizmo:rotate:position', vec.x, vec.y, vec.z);
+        // });
+    };
+    /**
+     * Attaches a set of gizmos to the specified mesh
+     * @param mesh The mesh the gizmo's should be attached to
+     */
+    GizmoManager.prototype.attachToMesh = function (mesh) {
+        if (this._attachedMesh) {
+            this._attachedMesh.removeBehavior(this.boundingBoxDragBehavior);
+            this._attachedMesh.showBoundingBox = false;
+        }
+        if (this._attachedNode) {
+            this._attachedNode.removeBehavior(this.boundingBoxDragBehavior);
+        }
+        this._attachedMesh = mesh;
+        if (this._attachedMesh) {
+            this._attachedMesh.showBoundingBox = true;
+        }
+        this._attachedNode = null;
+        for (var key in this.gizmos) {
+            var gizmo = (this.gizmos[key]);
+            if (gizmo && this._gizmosEnabled[key]) {
+                gizmo.attachedMesh = mesh;
+            }
+        }
+        if (this.boundingBoxGizmoEnabled && this._attachedMesh) {
+            this._attachedMesh.addBehavior(this.boundingBoxDragBehavior);
+        }
+        this.onAttachedToMeshObservable.notifyObservers(mesh);
+    };
+    /**
+     * Attaches a set of gizmos to the specified node
+     * @param node The node the gizmo's should be attached to
+     */
+    GizmoManager.prototype.attachToNode = function (node) {
+        if (this._attachedMesh) {
+            this._attachedMesh.removeBehavior(this.boundingBoxDragBehavior);
+            this._attachedMesh.showBoundingBox = false;
+        }
+        if (this._attachedNode) {
+            this._attachedNode.removeBehavior(this.boundingBoxDragBehavior);
+        }
+        this._attachedMesh = null;
+        this._attachedNode = node;
+        for (var key in this.gizmos) {
+            var gizmo = (this.gizmos[key]);
+            if (gizmo && this._gizmosEnabled[key]) {
+                gizmo.attachedNode = node;
+            }
+        }
+        if (this.boundingBoxGizmoEnabled && this._attachedNode) {
+            this._attachedNode.addBehavior(this.boundingBoxDragBehavior);
+        }
+        this.onAttachedToNodeObservable.notifyObservers(node);
+    };
+    Object.defineProperty(GizmoManager.prototype, "positionGizmoEnabled", {
+        get: function () {
+            return this._gizmosEnabled.positionGizmo;
+        },
+        /**
+         * If the position gizmo is enabled
+         */
+        set: function (value) {
+            if (value) {
+                if (!this.gizmos.positionGizmo) {
+                    this.gizmos.positionGizmo = new positionGizmo_1.PositionGizmo(this._defaultUtilityLayer, this._thickness);
+                }
+                if (this._attachedNode) {
+                    this.gizmos.positionGizmo.attachedNode = this._attachedNode;
+                }
+                else {
+                    this.gizmos.positionGizmo.attachedMesh = this._attachedMesh;
+                }
+            }
+            else if (this.gizmos.positionGizmo) {
+                this.gizmos.positionGizmo.attachedNode = null;
+            }
+            this._gizmosEnabled.positionGizmo = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(GizmoManager.prototype, "rotationGizmoEnabled", {
+        get: function () {
+            return this._gizmosEnabled.rotationGizmo;
+        },
+        /**
+         * If the rotation gizmo is enabled
+         */
+        set: function (value) {
+            if (value) {
+                if (!this.gizmos.rotationGizmo) {
+                    this.gizmos.rotationGizmo = new rotationGizmo_1.RotationGizmo(this._defaultUtilityLayer, 32, false, this._thickness);
+                }
+                if (this._attachedNode) {
+                    this.gizmos.rotationGizmo.attachedNode = this._attachedNode;
+                }
+                else {
+                    this.gizmos.rotationGizmo.attachedMesh = this._attachedMesh;
+                }
+            }
+            else if (this.gizmos.rotationGizmo) {
+                this.gizmos.rotationGizmo.attachedNode = null;
+            }
+            this._gizmosEnabled.rotationGizmo = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(GizmoManager.prototype, "scaleGizmoEnabled", {
+        get: function () {
+            return this._gizmosEnabled.scaleGizmo;
+        },
+        /**
+         * If the scale gizmo is enabled
+         */
+        set: function (value) {
+            if (value) {
+                this.gizmos.scaleGizmo = this.gizmos.scaleGizmo || new scaleGizmo_1.ScaleGizmo(this._defaultUtilityLayer, this._thickness);
+                if (this._attachedNode) {
+                    this.gizmos.scaleGizmo.attachedNode = this._attachedNode;
+                }
+                else {
+                    this.gizmos.scaleGizmo.attachedMesh = this._attachedMesh;
+                }
+            }
+            else if (this.gizmos.scaleGizmo) {
+                this.gizmos.scaleGizmo.attachedNode = null;
+            }
+            this._gizmosEnabled.scaleGizmo = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(GizmoManager.prototype, "boundingBoxGizmoEnabled", {
+        get: function () {
+            return this._gizmosEnabled.boundingBoxGizmo;
+        },
+        /**
+         * If the boundingBox gizmo is enabled
+         */
+        set: function (value) {
+            if (value) {
+                this.gizmos.boundingBoxGizmo = this.gizmos.boundingBoxGizmo || new boundingBoxGizmo_1.BoundingBoxGizmo(this._boundingBoxColor, this._defaultKeepDepthUtilityLayer);
+                if (this._attachedMesh) {
+                    this.gizmos.boundingBoxGizmo.attachedMesh = this._attachedMesh;
+                }
+                else {
+                    this.gizmos.boundingBoxGizmo.attachedNode = this._attachedNode;
+                }
+                if (this._attachedMesh) {
+                    this._attachedMesh.removeBehavior(this.boundingBoxDragBehavior);
+                    this._attachedMesh.addBehavior(this.boundingBoxDragBehavior);
+                }
+                else if (this._attachedNode) {
+                    this._attachedNode.removeBehavior(this.boundingBoxDragBehavior);
+                    this._attachedNode.addBehavior(this.boundingBoxDragBehavior);
+                }
+            }
+            else if (this.gizmos.boundingBoxGizmo) {
+                if (this._attachedMesh) {
+                    this._attachedMesh.removeBehavior(this.boundingBoxDragBehavior);
+                }
+                else if (this._attachedNode) {
+                    this._attachedNode.removeBehavior(this.boundingBoxDragBehavior);
+                }
+                this.gizmos.boundingBoxGizmo.attachedNode = null;
+            }
+            this._gizmosEnabled.boundingBoxGizmo = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    /**
+     * Disposes of the gizmo manager
+     */
+    GizmoManager.prototype.dispose = function () {
+        this.scene.onPointerObservable.remove(this._pointerObserver);
+        for (var key in this.gizmos) {
+            var gizmo = (this.gizmos[key]);
+            if (gizmo) {
+                gizmo.dispose();
+            }
+        }
+        this._defaultKeepDepthUtilityLayer.dispose();
+        this._defaultUtilityLayer.dispose();
+        this.boundingBoxDragBehavior.detach();
+        this.onAttachedToMeshObservable.clear();
+    };
+    return GizmoManager;
+}());
+exports.GizmoManager = GizmoManager;
+},{".":45,"./boundingBoxGizmo":40,"./positionGizmo":49,"./rotationGizmo":50,"./scaleGizmo":51}],45:[function(require,module,exports){
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+__exportStar(require("./axisDragGizmo"), exports);
+__exportStar(require("./axisScaleGizmo"), exports);
+__exportStar(require("./boundingBoxGizmo"), exports);
+__exportStar(require("./gizmo"), exports);
+__exportStar(require("./gizmoManager"), exports);
+__exportStar(require("./planeRotationGizmo"), exports);
+__exportStar(require("./positionGizmo"), exports);
+__exportStar(require("./rotationGizmo"), exports);
+__exportStar(require("./scaleGizmo"), exports);
+__exportStar(require("./lightGizmo"), exports);
+__exportStar(require("./cameraGizmo"), exports);
+__exportStar(require("./planeDragGizmo"), exports);
+__exportStar(require("./gizmo-center"), exports);
+},{"./axisDragGizmo":38,"./axisScaleGizmo":39,"./boundingBoxGizmo":40,"./cameraGizmo":41,"./gizmo":43,"./gizmo-center":42,"./gizmoManager":44,"./lightGizmo":46,"./planeDragGizmo":47,"./planeRotationGizmo":48,"./positionGizmo":49,"./rotationGizmo":50,"./scaleGizmo":51}],46:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.LightGizmo = void 0;
+// import { Nullable } from "../types";
+// import { Vector3, Quaternion } from "../Maths/math.vector";
+// import { Color3 } from '../Maths/math.color';
+// import { AbstractMesh } from "../Meshes/abstractMesh";
+// import { Mesh } from "../Meshes/mesh";
+var gizmo_1 = require("./gizmo");
+// import { UtilityLayerRenderer } from "../Rendering/utilityLayerRenderer";
+// import { StandardMaterial } from '../Materials/standardMaterial';
+// import { Light } from '../Lights/light';
+// import { Scene } from '../scene';
+// import { HemisphericLight } from '../Lights/hemisphericLight';
+// import { DirectionalLight } from '../Lights/directionalLight';
+// import { SphereBuilder } from '../Meshes/Builders/sphereBuilder';
+// import { HemisphereBuilder } from '../Meshes/Builders/hemisphereBuilder';
+// import { SpotLight } from '../Lights/spotLight';
+// import { TransformNode } from '../Meshes/transformNode';
+// import { PointerEventTypes, PointerInfo } from '../Events/pointerEvents';
+// import { Observer, Observable } from "../Misc/observable";
+/**
+ * Gizmo that enables viewing a light
+ */
+var LightGizmo = /** @class */ (function (_super) {
+    __extends(LightGizmo, _super);
+    /**
+     * Creates a LightGizmo
+     * @param gizmoLayer The utility layer the gizmo will be added to
+     */
+    function LightGizmo(gizmoLayer) {
+        if (gizmoLayer === void 0) { gizmoLayer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer; }
+        var _this = _super.call(this, gizmoLayer) || this;
+        _this._cachedPosition = new BABYLON.Vector3();
+        _this._cachedForward = new BABYLON.Vector3(0, 0, 1);
+        _this._pointerObserver = null;
+        /**
+         * Event that fires each time the gizmo is clicked
+         */
+        _this.onClickedObservable = new BABYLON.Observable();
+        _this._light = null;
+        _this.attachedMesh = new BABYLON.AbstractMesh("", _this.gizmoLayer.utilityLayerScene);
+        _this._attachedMeshParent = new BABYLON.TransformNode("parent", _this.gizmoLayer.utilityLayerScene);
+        _this.attachedMesh.parent = _this._attachedMeshParent;
+        _this._material = new BABYLON.StandardMaterial("light", _this.gizmoLayer.utilityLayerScene);
+        _this._material.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+        _this._material.specularColor = new BABYLON.Color3(0.1, 0.1, 0.1);
+        _this._pointerObserver = gizmoLayer.utilityLayerScene.onPointerObservable.add(function (pointerInfo) {
+            if (!_this._light) {
+                return;
+            }
+            var isHovered = pointerInfo.pickInfo && (_this._rootMesh.getChildMeshes().indexOf(pointerInfo.pickInfo.pickedMesh) != -1);
+            if (isHovered && pointerInfo.event.button === 0) {
+                _this.onClickedObservable.notifyObservers(_this._light);
+            }
+        }, BABYLON.PointerEventTypes.POINTERDOWN);
+        return _this;
+    }
+    Object.defineProperty(LightGizmo.prototype, "light", {
+        get: function () {
+            return this._light;
+        },
+        /**
+         * The light that the gizmo is attached to
+         */
+        set: function (light) {
+            var _this = this;
+            this._light = light;
+            if (light) {
+                // Create the mesh for the given light type
+                if (this._lightMesh) {
+                    this._lightMesh.dispose();
+                }
+                if (light instanceof BABYLON.HemisphericLight) {
+                    this._lightMesh = LightGizmo._CreateHemisphericLightMesh(this.gizmoLayer.utilityLayerScene);
+                }
+                else if (light instanceof BABYLON.DirectionalLight) {
+                    this._lightMesh = LightGizmo._CreateDirectionalLightMesh(this.gizmoLayer.utilityLayerScene);
+                }
+                else if (light instanceof BABYLON.SpotLight) {
+                    this._lightMesh = LightGizmo._CreateSpotLightMesh(this.gizmoLayer.utilityLayerScene);
+                }
+                else {
+                    this._lightMesh = LightGizmo._CreatePointLightMesh(this.gizmoLayer.utilityLayerScene);
+                }
+                this._lightMesh.getChildMeshes(false).forEach(function (m) {
+                    m.material = _this._material;
+                });
+                this._lightMesh.parent = this._rootMesh;
+                // Add lighting to the light gizmo
+                var gizmoLight = this.gizmoLayer._getSharedGizmoLight();
+                gizmoLight.includedOnlyMeshes = gizmoLight.includedOnlyMeshes.concat(this._lightMesh.getChildMeshes(false));
+                this._lightMesh.rotationQuaternion = new BABYLON.Quaternion();
+                if (!this.attachedMesh.reservedDataStore) {
+                    this.attachedMesh.reservedDataStore = {};
+                }
+                this.attachedMesh.reservedDataStore.lightGizmo = this;
+                if (light.parent) {
+                    // this._attachedMeshParent.freezeWorldMatrix(light.parent.getWorldMatrix());
+                    this._attachedMeshParent.freezeWorldMatrix();
+                }
+                // Get update position and direction if the light has it
+                if (light.position) {
+                    this.attachedMesh.position.copyFrom(light.position);
+                    this.attachedMesh.computeWorldMatrix(true);
+                    this._cachedPosition.copyFrom(this.attachedMesh.position);
+                }
+                if (light.direction) {
+                    this.attachedMesh.setDirection(light.direction);
+                    this.attachedMesh.computeWorldMatrix(true);
+                    this._cachedForward.copyFrom(this.attachedMesh.forward);
+                }
+                this._update();
+            }
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(LightGizmo.prototype, "material", {
+        /**
+         * Gets the material used to render the light gizmo
+         */
+        get: function () {
+            return this._material;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    /**
+     * @hidden
+     * Updates the gizmo to match the attached mesh's position/rotation
+     */
+    LightGizmo.prototype._update = function () {
+        _super.prototype._update.call(this);
+        if (!this._light) {
+            return;
+        }
+        if (this._light.parent) {
+            // this._attachedMeshParent.freezeWorldMatrix(this._light.parent.getWorldMatrix());
+            this._attachedMeshParent.freezeWorldMatrix();
+        }
+        if (this._light.position) {
+            // If the gizmo is moved update the light otherwise update the gizmo to match the light
+            if (!this.attachedMesh.position.equals(this._cachedPosition)) {
+                // update light to match gizmo
+                this._light.position.copyFrom(this.attachedMesh.position);
+                this._cachedPosition.copyFrom(this.attachedMesh.position);
+            }
+            else {
+                // update gizmo to match light
+                this.attachedMesh.position.copyFrom(this._light.position);
+                this.attachedMesh.computeWorldMatrix(true);
+                this._cachedPosition.copyFrom(this.attachedMesh.position);
+            }
+        }
+        if (this._light.direction) {
+            // If the gizmo is moved update the light otherwise update the gizmo to match the light
+            if (BABYLON.Vector3.DistanceSquared(this.attachedMesh.forward, this._cachedForward) > 0.0001) {
+                // update light to match gizmo
+                this._light.direction.copyFrom(this.attachedMesh.forward);
+                this._cachedForward.copyFrom(this.attachedMesh.forward);
+            }
+            else if (BABYLON.Vector3.DistanceSquared(this.attachedMesh.forward, this._light.direction) > 0.0001) {
+                // update gizmo to match light
+                this.attachedMesh.setDirection(this._light.direction);
+                this.attachedMesh.computeWorldMatrix(true);
+                this._cachedForward.copyFrom(this.attachedMesh.forward);
+            }
+        }
+    };
+    /**
+     * Disposes of the light gizmo
+     */
+    LightGizmo.prototype.dispose = function () {
+        this.onClickedObservable.clear();
+        this.gizmoLayer.utilityLayerScene.onPointerObservable.remove(this._pointerObserver);
+        this._material.dispose();
+        _super.prototype.dispose.call(this);
+        this._attachedMeshParent.dispose();
+    };
+    LightGizmo._CreateHemisphericLightMesh = function (scene) {
+        var root = new BABYLON.Mesh("hemisphereLight", scene);
+        var hemisphere = BABYLON.HemisphereBuilder.CreateHemisphere(root.name, { segments: 10, diameter: 1 }, scene);
+        hemisphere.position.z = -0.15;
+        hemisphere.rotation.x = Math.PI / 2;
+        hemisphere.parent = root;
+        var lines = this._CreateLightLines(3, scene);
+        lines.parent = root;
+        lines.position.z - 0.15;
+        root.scaling.scaleInPlace(LightGizmo._Scale);
+        root.rotation.x = Math.PI / 2;
+        return root;
+    };
+    LightGizmo._CreatePointLightMesh = function (scene) {
+        var root = new BABYLON.Mesh("pointLight", scene);
+        var sphere = BABYLON.SphereBuilder.CreateSphere(root.name, { segments: 10, diameter: 1 }, scene);
+        sphere.rotation.x = Math.PI / 2;
+        sphere.parent = root;
+        var lines = this._CreateLightLines(5, scene);
+        lines.parent = root;
+        root.scaling.scaleInPlace(LightGizmo._Scale);
+        root.rotation.x = Math.PI / 2;
+        return root;
+    };
+    LightGizmo._CreateSpotLightMesh = function (scene) {
+        var root = new BABYLON.Mesh("spotLight", scene);
+        var sphere = BABYLON.SphereBuilder.CreateSphere(root.name, { segments: 10, diameter: 1 }, scene);
+        sphere.parent = root;
+        var hemisphere = BABYLON.HemisphereBuilder.CreateHemisphere(root.name, { segments: 10, diameter: 2 }, scene);
+        hemisphere.parent = root;
+        hemisphere.rotation.x = -Math.PI / 2;
+        var lines = this._CreateLightLines(2, scene);
+        lines.parent = root;
+        root.scaling.scaleInPlace(LightGizmo._Scale);
+        root.rotation.x = Math.PI / 2;
+        return root;
+    };
+    LightGizmo._CreateDirectionalLightMesh = function (scene) {
+        var root = new BABYLON.Mesh("directionalLight", scene);
+        var mesh = new BABYLON.Mesh(root.name, scene);
+        mesh.parent = root;
+        var sphere = BABYLON.SphereBuilder.CreateSphere(root.name, { diameter: 1.2, segments: 10 }, scene);
+        sphere.parent = mesh;
+        var line = BABYLON.Mesh.CreateCylinder(root.name, 6, 0.3, 0.3, 6, 1, scene);
+        line.parent = mesh;
+        var left = line.clone(root.name);
+        left.scaling.y = 0.5;
+        left.position.x += 1.25;
+        var right = line.clone(root.name);
+        right.scaling.y = 0.5;
+        right.position.x += -1.25;
+        var arrowHead = BABYLON.Mesh.CreateCylinder(root.name, 1, 0, 0.6, 6, 1, scene);
+        arrowHead.position.y += 3;
+        arrowHead.parent = mesh;
+        var left = arrowHead.clone(root.name);
+        left.position.y = 1.5;
+        left.position.x += 1.25;
+        var right = arrowHead.clone(root.name);
+        right.position.y = 1.5;
+        right.position.x += -1.25;
+        mesh.scaling.scaleInPlace(LightGizmo._Scale);
+        mesh.rotation.z = Math.PI / 2;
+        mesh.rotation.y = Math.PI / 2;
+        return root;
+    };
+    // Static helper methods
+    LightGizmo._Scale = 0.007;
+    /**
+     * Creates the lines for a light mesh
+     */
+    LightGizmo._CreateLightLines = function (levels, scene) {
+        var distFromSphere = 1.2;
+        var root = new BABYLON.Mesh("root", scene);
+        root.rotation.x = Math.PI / 2;
+        // Create the top line, this will be cloned for all other lines
+        var linePivot = new BABYLON.Mesh("linePivot", scene);
+        linePivot.parent = root;
+        var line = BABYLON.Mesh.CreateCylinder("line", 2, 0.2, 0.3, 6, 1, scene);
+        line.position.y = line.scaling.y / 2 + distFromSphere;
+        line.parent = linePivot;
+        if (levels < 2) {
+            return linePivot;
+        }
+        for (var i = 0; i < 4; i++) {
+            var l = linePivot.clone("lineParentClone");
+            l.rotation.z = Math.PI / 4;
+            l.rotation.y = (Math.PI / 2) + (Math.PI / 2 * i);
+            l.getChildMeshes()[0].scaling.y = 0.5;
+            l.getChildMeshes()[0].scaling.x = l.getChildMeshes()[0].scaling.z = 0.8;
+            l.getChildMeshes()[0].position.y = l.getChildMeshes()[0].scaling.y / 2 + distFromSphere;
+        }
+        if (levels < 3) {
+            return root;
+        }
+        for (var i = 0; i < 4; i++) {
+            var l = linePivot.clone("linePivotClone");
+            l.rotation.z = Math.PI / 2;
+            l.rotation.y = (Math.PI / 2 * i);
+        }
+        if (levels < 4) {
+            return root;
+        }
+        for (var i = 0; i < 4; i++) {
+            var l = linePivot.clone("linePivotClone");
+            l.rotation.z = Math.PI + (Math.PI / 4);
+            l.rotation.y = (Math.PI / 2) + (Math.PI / 2 * i);
+            l.getChildMeshes()[0].scaling.y = 0.5;
+            l.getChildMeshes()[0].scaling.x = l.getChildMeshes()[0].scaling.z = 0.8;
+            l.getChildMeshes()[0].position.y = l.getChildMeshes()[0].scaling.y / 2 + distFromSphere;
+        }
+        if (levels < 5) {
+            return root;
+        }
+        var l = linePivot.clone("linePivotClone");
+        l.rotation.z = Math.PI;
+        return root;
+    };
+    return LightGizmo;
+}(gizmo_1.Gizmo));
+exports.LightGizmo = LightGizmo;
+},{"./gizmo":43}],47:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.PlaneDragGizmo = void 0;
+// import { Observer, Observable } from "../Misc/observable";
+// import { Nullable } from "../types";
+// import { PointerInfo } from "../Events/pointerEvents";
+// import { Vector3, Matrix } from "../Maths/math.vector";
+// import { Color3 } from '../Maths/math.color';
+// import { TransformNode } from "../Meshes/transformNode";
+// import { Node } from "../node";
+// import { Mesh } from "../Meshes/mesh";
+// import { PlaneBuilder } from "../Meshes/Builders/planeBuilder";
+// import { PointerDragBehavior } from "../Behaviors/Meshes/pointerDragBehavior";
+var gizmo_1 = require("./gizmo");
+/**
+ * Single plane drag gizmo
+ */
+var PlaneDragGizmo = /** @class */ (function (_super) {
+    __extends(PlaneDragGizmo, _super);
+    /**
+     * Creates a PlaneDragGizmo
+     * @param gizmoLayer The utility layer the gizmo will be added to
+     * @param dragPlaneNormal The axis normal to which the gizmo will be able to drag on
+     * @param color The color of the gizmo
+     */
+    function PlaneDragGizmo(dragPlaneNormal, color, gizmoLayer, parent) {
+        if (color === void 0) { color = BABYLON.Color3.Gray(); }
+        if (gizmoLayer === void 0) { gizmoLayer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer; }
+        if (parent === void 0) { parent = null; }
+        var _this = _super.call(this, gizmoLayer) || this;
+        _this._pointerObserver = null;
+        /**
+         * Drag distance in babylon units that the gizmo will snap to when dragged (Default: 0)
+         */
+        _this.snapDistance = 0;
+        /**
+         * Event that fires each time the gizmo snaps to a new location.
+         * * snapDistance is the the change in distance
+         */
+        _this.onSnapObservable = new BABYLON.Observable();
+        _this._isEnabled = false;
+        _this._parent = null;
+        _this._parent = parent;
+        // Create Material
+        _this._coloredMaterial = new BABYLON.StandardMaterial("", gizmoLayer.utilityLayerScene);
+        _this._coloredMaterial.diffuseColor = color;
+        _this._coloredMaterial.specularColor = color.subtract(new BABYLON.Color3(0.1, 0.1, 0.1));
+        _this._coloredMaterial.alpha = 0.5;
+        _this._hoverMaterial = new BABYLON.StandardMaterial("", gizmoLayer.utilityLayerScene);
+        _this._hoverMaterial.diffuseColor = color.add(new BABYLON.Color3(0.3, 0.3, 0.3));
+        _this._hoverMaterial.alpha = 0.4;
+        // Build plane mesh on root node
+        _this._plane = PlaneDragGizmo._CreatePlane(gizmoLayer.utilityLayerScene, _this._coloredMaterial);
+        _this._plane.lookAt(_this._rootMesh.position.add(dragPlaneNormal));
+        _this._plane.scaling.scaleInPlace(1 / 6);
+        _this._plane.parent = _this._rootMesh;
+        if (dragPlaneNormal.x > 0) {
+            _this._plane.position = new BABYLON.Vector3(0, .1375 / 12, .1375 / 12);
+        }
+        else if (dragPlaneNormal.y > 0) {
+            _this._plane.position = new BABYLON.Vector3(.1375 / 12, 0, .1375 / 12);
+        }
+        else {
+            _this._plane.position = new BABYLON.Vector3(.1375 / 12, .1375 / 12, 0);
+        }
+        var currentSnapDragDistance = 0;
+        var tmpVector = new BABYLON.Vector3();
+        var tmpSnapEvent = { snapDistance: 0 };
+        // Add dragPlaneNormal drag behavior to handle events when the gizmo is dragged
+        _this.dragBehavior = new BABYLON.PointerDragBehavior({ dragPlaneNormal: dragPlaneNormal });
+        _this.dragBehavior.moveAttached = false;
+        _this._rootMesh.addBehavior(_this.dragBehavior);
+        var localDelta = new BABYLON.Vector3();
+        var tmpMatrix = new BABYLON.Matrix();
+        _this.dragBehavior.onDragObservable.add(function (event) {
+            if (_this.attachedNode) {
+                // Convert delta to local translation if it has a parent
+                if (_this.attachedNode.parent) {
+                    _this.attachedNode.parent.computeWorldMatrix().invertToRef(tmpMatrix);
+                    tmpMatrix.setTranslationFromFloats(0, 0, 0);
+                    BABYLON.Vector3.TransformCoordinatesToRef(event.delta, tmpMatrix, localDelta);
+                }
+                else {
+                    localDelta.copyFrom(event.delta);
+                }
+                // Snapping logic
+                if (_this.snapDistance == 0) {
+                    _this.attachedNode.getWorldMatrix().addTranslationFromFloats(localDelta.x, localDelta.y, localDelta.z);
+                }
+                else {
+                    currentSnapDragDistance += event.dragDistance;
+                    if (Math.abs(currentSnapDragDistance) > _this.snapDistance) {
+                        var dragSteps = Math.floor(Math.abs(currentSnapDragDistance) / _this.snapDistance);
+                        currentSnapDragDistance = currentSnapDragDistance % _this.snapDistance;
+                        localDelta.normalizeToRef(tmpVector);
+                        tmpVector.scaleInPlace(_this.snapDistance * dragSteps);
+                        _this.attachedNode.getWorldMatrix().addTranslationFromFloats(tmpVector.x, tmpVector.y, tmpVector.z);
+                        tmpSnapEvent.snapDistance = _this.snapDistance * dragSteps;
+                        _this.onSnapObservable.notifyObservers(tmpSnapEvent);
+                    }
+                }
+                _this._operationType = 'plane';
+                _this._matrixChanged();
+            }
+        });
+        _this._pointerObserver = gizmoLayer.utilityLayerScene.onPointerObservable.add(function (pointerInfo) {
+            if (_this._customMeshSet) {
+                return;
+            }
+            var isHovered = pointerInfo.pickInfo && (_this._rootMesh.getChildMeshes().indexOf(pointerInfo.pickInfo.pickedMesh) != -1);
+            var material = isHovered ? _this._hoverMaterial : _this._coloredMaterial;
+            _this._rootMesh.getChildMeshes().forEach(function (m) {
+                m.material = material;
+            });
+        });
+        var light = gizmoLayer._getSharedGizmoLight();
+        light.includedOnlyMeshes = light.includedOnlyMeshes.concat(_this._rootMesh.getChildMeshes(false));
+        return _this;
+    }
+    /** @hidden */
+    PlaneDragGizmo._CreatePlane = function (scene, material) {
+        var plane = new BABYLON.TransformNode("plane", scene);
+        //make sure plane is double sided
+        var dragPlane = BABYLON.PlaneBuilder.CreatePlane("dragPlane", { width: .1375, height: .1375, sideOrientation: 2 }, scene);
+        // var dragPlane = BABYLON.MeshBuilder.CreateGround("dragPlane", { width: .1375, height: .1375 }, scene)
+        // .CreatePlane("dragPlane", .1375, scene, undefined, 2);
+        dragPlane.material = material;
+        dragPlane.parent = plane;
+        return plane;
+    };
+    /** @hidden */
+    PlaneDragGizmo._CreateArrowInstance = function (scene, arrow) {
+        var instance = new BABYLON.TransformNode("arrow", scene);
+        for (var _i = 0, _a = arrow.getChildMeshes(); _i < _a.length; _i++) {
+            var mesh = _a[_i];
+            var childInstance = mesh.createInstance(mesh.name);
+            childInstance.parent = instance;
+        }
+        return instance;
+    };
+    PlaneDragGizmo.prototype._attachedNodeChanged = function (value) {
+        if (this.dragBehavior) {
+            this.dragBehavior.enabled = value ? true : false;
+        }
+    };
+    Object.defineProperty(PlaneDragGizmo.prototype, "isEnabled", {
+        get: function () {
+            return this._isEnabled;
+        },
+        /**
+         * If the gizmo is enabled
+         */
+        set: function (value) {
+            this._isEnabled = value;
+            if (!value) {
+                this.attachedNode = null;
+            }
+            else {
+                if (this._parent) {
+                    this.attachedNode = this._parent.attachedNode;
+                }
+            }
+        },
+        enumerable: false,
+        configurable: true
+    });
+    /**
+     * Disposes of the gizmo
+     */
+    PlaneDragGizmo.prototype.dispose = function () {
+        this.onSnapObservable.clear();
+        this.gizmoLayer.utilityLayerScene.onPointerObservable.remove(this._pointerObserver);
+        this.dragBehavior.detach();
+        _super.prototype.dispose.call(this);
+        if (this._plane) {
+            this._plane.dispose();
+        }
+        [this._coloredMaterial, this._hoverMaterial].forEach(function (matl) {
+            if (matl) {
+                matl.dispose();
+            }
+        });
+    };
+    return PlaneDragGizmo;
+}(gizmo_1.Gizmo));
+exports.PlaneDragGizmo = PlaneDragGizmo;
+},{"./gizmo":43}],48:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.PlaneRotationGizmo = void 0;
+// import { Observer, Observable } from "../Misc/observable";
+// import { Nullable } from "../types";
+// import { PointerInfo } from "../Events/pointerEvents";
+// import { Quaternion, Matrix, Vector3 } from "../Maths/math.vector";
+// import { Color3 } from '../Maths/math.color';
+// import { AbstractMesh } from "../Meshes/abstractMesh";
+// import { Mesh } from "../Meshes/mesh";
+// import { Node } from "../node";
+// import { LinesMesh } from "../Meshes/linesMesh";
+// import { PointerDragBehavior } from "../Behaviors/Meshes/pointerDragBehavior";
+var gizmo_1 = require("./gizmo");
+/**
+ * Single plane rotation gizmo
+ */
+var PlaneRotationGizmo = /** @class */ (function (_super) {
+    __extends(PlaneRotationGizmo, _super);
+    /**
+     * Creates a PlaneRotationGizmo
+     * @param gizmoLayer The utility layer the gizmo will be added to
+     * @param planeNormal The normal of the plane which the gizmo will be able to rotate on
+     * @param color The color of the gizmo
+     * @param tessellation Amount of tessellation to be used when creating rotation circles
+     * @param useEulerRotation Use and update Euler angle instead of quaternion
+     * @param thickness display gizmo axis thickness
+     */
+    function PlaneRotationGizmo(planeNormal, color, gizmoLayer, tessellation, parent, useEulerRotation, thickness) {
+        if (color === void 0) { color = BABYLON.Color3.Gray(); }
+        if (gizmoLayer === void 0) { gizmoLayer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer; }
+        if (tessellation === void 0) { tessellation = 32; }
+        if (parent === void 0) { parent = null; }
+        if (useEulerRotation === void 0) { useEulerRotation = false; }
+        if (thickness === void 0) { thickness = 1; }
+        var _this = _super.call(this, gizmoLayer) || this;
+        _this._pointerObserver = null;
+        /**
+         * Rotation distance in radians that the gizmo will snap to (Default: 0)
+         */
+        _this.snapDistance = 0;
+        /**
+         * Event that fires each time the gizmo snaps to a new location.
+         * * snapDistance is the the change in distance
+         */
+        _this.onSnapObservable = new BABYLON.Observable();
+        _this._isEnabled = true;
+        _this._parent = null;
+        _this._parent = parent;
+        // Create Material
+        var coloredMaterial = new BABYLON.StandardMaterial("", gizmoLayer.utilityLayerScene);
+        coloredMaterial.diffuseColor = color;
+        coloredMaterial.specularColor = color.subtract(new BABYLON.Color3(0.1, 0.1, 0.1));
+        var hoverMaterial = new BABYLON.StandardMaterial("", gizmoLayer.utilityLayerScene);
+        hoverMaterial.diffuseColor = color.add(new BABYLON.Color3(0.3, 0.3, 0.3));
+        // Build mesh on root node
+        var parentMesh = new BABYLON.AbstractMesh("", gizmoLayer.utilityLayerScene);
+        var drag = BABYLON.Mesh.CreateTorus("", 0.6, 0.03 * thickness, tessellation, gizmoLayer.utilityLayerScene);
+        drag.visibility = 0;
+        var rotationMesh = BABYLON.Mesh.CreateTorus("", 0.6, 0.005 * thickness, tessellation, gizmoLayer.utilityLayerScene);
+        rotationMesh.material = coloredMaterial;
+        // Position arrow pointing in its drag axis
+        rotationMesh.rotation.x = Math.PI / 2;
+        drag.rotation.x = Math.PI / 2;
+        parentMesh.addChild(rotationMesh);
+        parentMesh.addChild(drag);
+        parentMesh.lookAt(_this._rootMesh.position.add(planeNormal));
+        _this._rootMesh.addChild(parentMesh);
+        parentMesh.scaling.scaleInPlace(1 / 3);
+        // Add drag behavior to handle events when the gizmo is dragged
+        _this.dragBehavior = new BABYLON.PointerDragBehavior({ dragPlaneNormal: planeNormal });
+        _this.dragBehavior.moveAttached = false;
+        _this.dragBehavior.maxDragAngle = Math.PI * 9 / 20;
+        _this.dragBehavior._useAlternatePickedPointAboveMaxDragAngle = true;
+        _this._rootMesh.addBehavior(_this.dragBehavior);
+        var lastDragPosition = new BABYLON.Vector3();
+        _this.dragBehavior.onDragStartObservable.add(function (e) {
+            if (_this.attachedNode) {
+                lastDragPosition.copyFrom(e.dragPlanePoint);
+            }
+        });
+        var rotationMatrix = new BABYLON.Matrix();
+        var planeNormalTowardsCamera = new BABYLON.Vector3();
+        var localPlaneNormalTowardsCamera = new BABYLON.Vector3();
+        var tmpSnapEvent = { snapDistance: 0 };
+        var currentSnapDragDistance = 0;
+        var tmpMatrix = new BABYLON.Matrix();
+        var amountToRotate = new BABYLON.Quaternion();
+        _this.dragBehavior.onDragObservable.add(function (event) {
+            if (_this.attachedNode) {
+                // Calc angle over full 360 degree (https://stackoverflow.com/questions/43493711/the-angle-between-two-3d-vectors-with-a-result-range-0-360)
+                var nodeScale = new BABYLON.Vector3(1, 1, 1);
+                var nodeQuaternion = new BABYLON.Quaternion(0, 0, 0, 1);
+                var nodeTranslation = new BABYLON.Vector3(0, 0, 0);
+                _this.attachedNode.getWorldMatrix().decompose(nodeScale, nodeQuaternion, nodeTranslation);
+                var newVector = event.dragPlanePoint.subtract(nodeTranslation).normalize();
+                var originalVector = lastDragPosition.subtract(nodeTranslation).normalize();
+                var cross = BABYLON.Vector3.Cross(newVector, originalVector);
+                var dot = BABYLON.Vector3.Dot(newVector, originalVector);
+                var angle = Math.atan2(cross.length(), dot);
+                planeNormalTowardsCamera.copyFrom(planeNormal);
+                localPlaneNormalTowardsCamera.copyFrom(planeNormal);
+                if (_this.updateGizmoRotationToMatchAttachedMesh) {
+                    nodeQuaternion.toRotationMatrix(rotationMatrix);
+                    localPlaneNormalTowardsCamera = BABYLON.Vector3.TransformCoordinates(planeNormalTowardsCamera, rotationMatrix);
+                }
+                // Flip up vector depending on which side the camera is on
+                if (gizmoLayer.utilityLayerScene.activeCamera) {
+                    var camVec = gizmoLayer.utilityLayerScene.activeCamera.position.subtract(nodeTranslation);
+                    if (BABYLON.Vector3.Dot(camVec, localPlaneNormalTowardsCamera) > 0) {
+                        planeNormalTowardsCamera.scaleInPlace(-1);
+                        localPlaneNormalTowardsCamera.scaleInPlace(-1);
+                    }
+                }
+                var halfCircleSide = BABYLON.Vector3.Dot(localPlaneNormalTowardsCamera, cross) > 0.0;
+                if (halfCircleSide) {
+                    angle = -angle;
+                }
+                // Snapping logic
+                var snapped = false;
+                if (_this.snapDistance != 0) {
+                    currentSnapDragDistance += angle;
+                    if (Math.abs(currentSnapDragDistance) > _this.snapDistance) {
+                        var dragSteps = Math.floor(Math.abs(currentSnapDragDistance) / _this.snapDistance);
+                        if (currentSnapDragDistance < 0) {
+                            dragSteps *= -1;
+                        }
+                        currentSnapDragDistance = currentSnapDragDistance % _this.snapDistance;
+                        angle = _this.snapDistance * dragSteps;
+                        snapped = true;
+                    }
+                    else {
+                        angle = 0;
+                    }
+                }
+                // Convert angle and axis to quaternion (http://www.euclideanspace.com/maths/geometry/rotations/conversions/angleToQuaternion/index.htm)
+                var quaternionCoefficient = Math.sin(angle / 2);
+                amountToRotate.set(planeNormalTowardsCamera.x * quaternionCoefficient, planeNormalTowardsCamera.y * quaternionCoefficient, planeNormalTowardsCamera.z * quaternionCoefficient, Math.cos(angle / 2));
+                // If the meshes local scale is inverted (eg. loaded gltf file parent with z scale of -1) the rotation needs to be inverted on the y axis
+                if (tmpMatrix.determinant() > 0) {
+                    var tmpVector = new BABYLON.Vector3();
+                    amountToRotate.toEulerAnglesToRef(tmpVector);
+                    BABYLON.Quaternion.RotationYawPitchRollToRef(tmpVector.y, -tmpVector.x, -tmpVector.z, amountToRotate);
+                }
+                if (_this.updateGizmoRotationToMatchAttachedMesh) {
+                    // Rotate selected mesh quaternion over fixed axis
+                    nodeQuaternion.multiplyToRef(amountToRotate, nodeQuaternion);
+                }
+                else {
+                    // Rotate selected mesh quaternion over rotated axis
+                    amountToRotate.multiplyToRef(nodeQuaternion, nodeQuaternion);
+                }
+                // recompose matrix
+                _this.attachedNode.getWorldMatrix().copyFrom(BABYLON.Matrix.Compose(nodeScale, nodeQuaternion, nodeTranslation));
+                lastDragPosition.copyFrom(event.dragPlanePoint);
+                if (snapped) {
+                    tmpSnapEvent.snapDistance = angle;
+                    _this.onSnapObservable.notifyObservers(tmpSnapEvent);
+                }
+                _this._operationType = 'rotate';
+                _this._matrixChanged();
+            }
+        });
+        _this._pointerObserver = gizmoLayer.utilityLayerScene.onPointerObservable.add(function (pointerInfo) {
+            if (_this._customMeshSet) {
+                return;
+            }
+            var isHovered = pointerInfo.pickInfo && (_this._rootMesh.getChildMeshes().indexOf(pointerInfo.pickInfo.pickedMesh) != -1);
+            var material = isHovered ? hoverMaterial : coloredMaterial;
+            _this._rootMesh.getChildMeshes().forEach(function (m) {
+                m.material = material;
+                if (m.color) {
+                    m.color = material.diffuseColor;
+                }
+            });
+        });
+        var light = gizmoLayer._getSharedGizmoLight();
+        light.includedOnlyMeshes = light.includedOnlyMeshes.concat(_this._rootMesh.getChildMeshes(false));
+        return _this;
+    }
+    PlaneRotationGizmo.prototype._attachedNodeChanged = function (value) {
+        if (this.dragBehavior) {
+            this.dragBehavior.enabled = value ? true : false;
+        }
+    };
+    Object.defineProperty(PlaneRotationGizmo.prototype, "isEnabled", {
+        get: function () {
+            return this._isEnabled;
+        },
+        /**
+             * If the gizmo is enabled
+             */
+        set: function (value) {
+            this._isEnabled = value;
+            if (!value) {
+                this.attachedMesh = null;
+            }
+            else {
+                if (this._parent) {
+                    this.attachedMesh = this._parent.attachedMesh;
+                }
+            }
+        },
+        enumerable: false,
+        configurable: true
+    });
+    /**
+     * Disposes of the gizmo
+     */
+    PlaneRotationGizmo.prototype.dispose = function () {
+        this.onSnapObservable.clear();
+        this.gizmoLayer.utilityLayerScene.onPointerObservable.remove(this._pointerObserver);
+        this.dragBehavior.detach();
+        _super.prototype.dispose.call(this);
+    };
+    return PlaneRotationGizmo;
+}(gizmo_1.Gizmo));
+exports.PlaneRotationGizmo = PlaneRotationGizmo;
+},{"./gizmo":43}],49:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.PositionGizmo = void 0;
+// import { Logger } from "../Misc/logger";
+// import { Observable } from "../Misc/observable";
+// import { Nullable } from "../types";
+// import { Vector3 } from "../Maths/math.vector";
+// import { Color3 } from '../Maths/math.color';
+// import { AbstractMesh } from "../Meshes/abstractMesh";
+// import { Node } from "../node";
+// import { Mesh } from "../Meshes/mesh";
+var gizmo_1 = require("./gizmo");
+var axisDragGizmo_1 = require("./axisDragGizmo");
+var planeDragGizmo_1 = require("./planeDragGizmo");
+// import { UtilityLayerRenderer } from "../Rendering/utilityLayerRenderer";
+/**
+ * Gizmo that enables dragging a mesh along 3 axis
+ */
+var PositionGizmo = /** @class */ (function (_super) {
+    __extends(PositionGizmo, _super);
+    /**
+     * Creates a PositionGizmo
+     * @param gizmoLayer The utility layer the gizmo will be added to
+      @param thickness display gizmo axis thickness
+     */
+    function PositionGizmo(gizmoLayer, thickness) {
+        if (gizmoLayer === void 0) { gizmoLayer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer; }
+        if (thickness === void 0) { thickness = 1; }
+        var _this = _super.call(this, gizmoLayer) || this;
+        /**
+         * private variables
+         */
+        _this._meshAttached = null;
+        _this._nodeAttached = null;
+        /** Fires an event when any of it's sub gizmos are dragged */
+        _this.onDragStartObservable = new BABYLON.Observable();
+        /** Fires an event when any of it's sub gizmos are released from dragging */
+        _this.onDragEndObservable = new BABYLON.Observable();
+        /**
+         * If set to true, planar drag is enabled
+         */
+        _this._planarGizmoEnabled = false;
+        _this.coordSystem = 'local';
+        _this.xGizmo = new axisDragGizmo_1.AxisDragGizmo(new BABYLON.Vector3(1, 0, 0), BABYLON.Color3.Red().scale(0.5), gizmoLayer, _this, thickness);
+        _this.yGizmo = new axisDragGizmo_1.AxisDragGizmo(new BABYLON.Vector3(0, 1, 0), BABYLON.Color3.Green().scale(0.5), gizmoLayer, _this, thickness);
+        _this.zGizmo = new axisDragGizmo_1.AxisDragGizmo(new BABYLON.Vector3(0, 0, 1), BABYLON.Color3.Blue().scale(0.5), gizmoLayer, _this, thickness);
+        _this.xPlaneGizmo = new planeDragGizmo_1.PlaneDragGizmo(new BABYLON.Vector3(1, 0, 0), BABYLON.Color3.Red().scale(0.5), _this.gizmoLayer, _this);
+        _this.yPlaneGizmo = new planeDragGizmo_1.PlaneDragGizmo(new BABYLON.Vector3(0, 1, 0), BABYLON.Color3.Green().scale(0.5), _this.gizmoLayer, _this);
+        _this.zPlaneGizmo = new planeDragGizmo_1.PlaneDragGizmo(new BABYLON.Vector3(0, 0, 1), BABYLON.Color3.Blue().scale(0.5), _this.gizmoLayer, _this);
+        _this.onDragEndObservable.add(function () {
+            // console.log('position drag 结束');
+            // console.error(gizmoLayer.utilityLayerScene.rootNodes);
+        });
+        // Relay drag events
+        [_this.xGizmo, _this.yGizmo, _this.zGizmo, _this.xPlaneGizmo, _this.yPlaneGizmo, _this.zPlaneGizmo].forEach(function (gizmo) {
+            gizmo.dragBehavior.onDragStartObservable.add(function () {
+                _this.onDragStartObservable.notifyObservers({});
+            });
+            gizmo.dragBehavior.onDragEndObservable.add(function () {
+                _this.onDragEndObservable.notifyObservers({});
+            });
+        });
+        _this.planarGizmoEnabled = true;
+        // this.updateGizmoRotationToMatchAttachedMesh = false;
+        _this.attachedMesh = null;
+        _this.initialize();
+        return _this;
+    }
+    Object.defineProperty(PositionGizmo.prototype, "attachedMesh", {
+        get: function () {
+            return this._meshAttached;
+        },
+        set: function (mesh) {
+            this._meshAttached = mesh;
+            this._nodeAttached = mesh;
+            [this.xGizmo, this.yGizmo, this.zGizmo, this.xPlaneGizmo, this.yPlaneGizmo, this.zPlaneGizmo].forEach(function (gizmo) {
+                if (gizmo.isEnabled) {
+                    gizmo.attachedMesh = mesh;
+                }
+                else {
+                    gizmo.attachedMesh = null;
+                }
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(PositionGizmo.prototype, "attachedNode", {
+        get: function () {
+            return this._nodeAttached;
+        },
+        set: function (node) {
+            this._meshAttached = null;
+            this._nodeAttached = null;
+            [this.xGizmo, this.yGizmo, this.zGizmo, this.xPlaneGizmo, this.yPlaneGizmo, this.zPlaneGizmo].forEach(function (gizmo) {
+                if (gizmo.isEnabled) {
+                    gizmo.attachedNode = node;
+                }
+                else {
+                    gizmo.attachedNode = null;
+                }
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    PositionGizmo.prototype.initialize = function () {
+        var self = this;
+        editor.on('gizmo:coordSystem', function (system) {
+            if (self.coordSystem === system)
+                return;
+            self.coordSystem = system;
+            if (self.coordSystem === 'world') {
+                self.updateGizmoRotationToMatchAttachedMesh = false;
+            }
+            else {
+                self.updateGizmoRotationToMatchAttachedMesh = true;
+            }
+            // console.log('position: ' + self.updateGizmoRotationToMatchAttachedMesh);
+        });
+    };
+    Object.defineProperty(PositionGizmo.prototype, "planarGizmoEnabled", {
+        get: function () {
+            return this._planarGizmoEnabled;
+        },
+        /**
+         * If the planar drag gizmo is enabled
+         * setting this will enable/disable XY, XZ and YZ planes regardless of individual gizmo settings.
+         */
+        set: function (value) {
+            var _this = this;
+            this._planarGizmoEnabled = value;
+            [this.xPlaneGizmo, this.yPlaneGizmo, this.zPlaneGizmo].forEach(function (gizmo) {
+                if (gizmo) {
+                    gizmo.isEnabled = value;
+                    if (value) {
+                        if (gizmo.attachedMesh) {
+                            gizmo.attachedMesh = _this.attachedMesh;
+                        }
+                        else {
+                            gizmo.attachedNode = _this.attachedNode;
+                        }
+                    }
+                }
+            }, this);
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(PositionGizmo.prototype, "updateGizmoRotationToMatchAttachedMesh", {
+        get: function () {
+            return this._updateGizmoRotationToMatchAttachedMesh;
+        },
+        set: function (value) {
+            this._updateGizmoRotationToMatchAttachedMesh = value;
+            [this.xGizmo, this.yGizmo, this.zGizmo, this.xPlaneGizmo, this.yPlaneGizmo, this.zPlaneGizmo].forEach(function (gizmo) {
+                if (gizmo) {
+                    gizmo.updateGizmoRotationToMatchAttachedMesh = value;
+                }
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(PositionGizmo.prototype, "snapDistance", {
+        get: function () {
+            return this._snapDistance;
+        },
+        /**
+         * Drag distance in babylon units that the gizmo will snap to when dragged (Default: 0)
+         */
+        set: function (value) {
+            this._snapDistance = value;
+            [this.xGizmo, this.yGizmo, this.zGizmo, this.xPlaneGizmo, this.yPlaneGizmo, this.zPlaneGizmo].forEach(function (gizmo) {
+                if (gizmo) {
+                    gizmo.snapDistance = value;
+                }
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(PositionGizmo.prototype, "scaleRatio", {
+        get: function () {
+            return this._scaleRatio;
+        },
+        /**
+         * Ratio for the scale of the gizmo (Default: 1)
+         */
+        set: function (value) {
+            this._scaleRatio = value;
+            [this.xGizmo, this.yGizmo, this.zGizmo, this.xPlaneGizmo, this.yPlaneGizmo, this.zPlaneGizmo].forEach(function (gizmo) {
+                if (gizmo) {
+                    gizmo.scaleRatio = value;
+                }
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    /**
+     * Disposes of the gizmo
+     */
+    PositionGizmo.prototype.dispose = function () {
+        [this.xGizmo, this.yGizmo, this.zGizmo, this.xPlaneGizmo, this.yPlaneGizmo, this.zPlaneGizmo].forEach(function (gizmo) {
+            if (gizmo) {
+                gizmo.dispose();
+            }
+        });
+        this.onDragStartObservable.clear();
+        this.onDragEndObservable.clear();
+    };
+    /**
+     * CustomMeshes are not supported by this gizmo
+     * @param mesh The mesh to replace the default mesh of the gizmo
+     */
+    PositionGizmo.prototype.setCustomMesh = function (mesh) {
+        BABYLON.Logger.Error("Custom meshes are not supported on this gizmo, please set the custom meshes on the gizmos contained within this one (gizmo.xGizmo, gizmo.yGizmo, gizmo.zGizmo,gizmo.xPlaneGizmo, gizmo.yPlaneGizmo, gizmo.zPlaneGizmo)");
+    };
+    return PositionGizmo;
+}(gizmo_1.Gizmo));
+exports.PositionGizmo = PositionGizmo;
+},{"./axisDragGizmo":38,"./gizmo":43,"./planeDragGizmo":47}],50:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.RotationGizmo = void 0;
+// import { Logger } from "../Misc/logger";
+// import { Observable } from "../Misc/observable";
+// import { Nullable } from "../types";
+// import { Vector3 } from "../Maths/math.vector";
+// import { Color3 } from '../Maths/math.color';
+// import { AbstractMesh } from "../Meshes/abstractMesh";
+// import { Mesh } from "../Meshes/mesh";
+var gizmo_1 = require("./gizmo");
+var planeRotationGizmo_1 = require("./planeRotationGizmo");
+// import { UtilityLayerRenderer } from "../Rendering/utilityLayerRenderer";
+// import { Node } from "../node";
+/**
+ * Gizmo that enables rotating a mesh along 3 axis
+ */
+var RotationGizmo = /** @class */ (function (_super) {
+    __extends(RotationGizmo, _super);
+    /**
+     * Creates a RotationGizmo
+     * @param gizmoLayer The utility layer the gizmo will be added to
+     * @param tessellation Amount of tessellation to be used when creating rotation circles
+     * @param useEulerRotation Use and update Euler angle instead of quaternion
+     * @param thickness display gizmo axis thickness
+     */
+    function RotationGizmo(gizmoLayer, tessellation, useEulerRotation, thickness) {
+        if (gizmoLayer === void 0) { gizmoLayer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer; }
+        if (tessellation === void 0) { tessellation = 32; }
+        if (useEulerRotation === void 0) { useEulerRotation = false; }
+        if (thickness === void 0) { thickness = 1; }
+        var _this = _super.call(this, gizmoLayer) || this;
+        /** Fires an event when any of it's sub gizmos are dragged */
+        _this.onDragStartObservable = new BABYLON.Observable();
+        /** Fires an event when any of it's sub gizmos are released from dragging */
+        _this.onDragEndObservable = new BABYLON.Observable();
+        _this.coordSystem = 'local';
+        _this.xGizmo = new planeRotationGizmo_1.PlaneRotationGizmo(new BABYLON.Vector3(1, 0, 0), BABYLON.Color3.Red().scale(0.5), gizmoLayer, tessellation, _this, useEulerRotation, thickness);
+        _this.yGizmo = new planeRotationGizmo_1.PlaneRotationGizmo(new BABYLON.Vector3(0, 1, 0), BABYLON.Color3.Green().scale(0.5), gizmoLayer, tessellation, _this, useEulerRotation, thickness);
+        _this.zGizmo = new planeRotationGizmo_1.PlaneRotationGizmo(new BABYLON.Vector3(0, 0, 1), BABYLON.Color3.Blue().scale(0.5), gizmoLayer, tessellation, _this, useEulerRotation, thickness);
+        // Relay drag events
+        [_this.xGizmo, _this.yGizmo, _this.zGizmo].forEach(function (gizmo) {
+            gizmo.dragBehavior.onDragStartObservable.add(function () {
+                _this.onDragStartObservable.notifyObservers({});
+            });
+            gizmo.dragBehavior.onDragEndObservable.add(function () {
+                _this.onDragEndObservable.notifyObservers({});
+            });
+        });
+        // this._updateGizmoRotationToMatchAttachedMesh = false;
+        _this.attachedMesh = null;
+        _this.attachedNode = null;
+        _this.initialize();
+        return _this;
+    }
+    Object.defineProperty(RotationGizmo.prototype, "attachedMesh", {
+        get: function () {
+            return this._meshAttached;
+        },
+        set: function (mesh) {
+            this._meshAttached = mesh;
+            this._nodeAttached = mesh;
+            [this.xGizmo, this.yGizmo, this.zGizmo].forEach(function (gizmo) {
+                if (gizmo.isEnabled) {
+                    gizmo.attachedMesh = mesh;
+                }
+                else {
+                    gizmo.attachedMesh = null;
+                }
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(RotationGizmo.prototype, "attachedNode", {
+        get: function () {
+            return this._nodeAttached;
+        },
+        set: function (node) {
+            this._meshAttached = null;
+            this._nodeAttached = node;
+            [this.xGizmo, this.yGizmo, this.zGizmo].forEach(function (gizmo) {
+                if (gizmo.isEnabled) {
+                    gizmo.attachedNode = node;
+                }
+                else {
+                    gizmo.attachedNode = null;
+                }
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    RotationGizmo.prototype.initialize = function () {
+        var self = this;
+        editor.on('gizmo:coordSystem', function (system) {
+            if (self.coordSystem === system)
+                return;
+            self.coordSystem = system;
+            if (self.coordSystem === 'world') {
+                self.updateGizmoRotationToMatchAttachedMesh = false;
+            }
+            else {
+                self.updateGizmoRotationToMatchAttachedMesh = true;
+            }
+            // console.log('rotate: ' + self.updateGizmoRotationToMatchAttachedMesh);
+        });
+    };
+    Object.defineProperty(RotationGizmo.prototype, "updateGizmoRotationToMatchAttachedMesh", {
+        get: function () {
+            return this.xGizmo.updateGizmoRotationToMatchAttachedMesh;
+        },
+        set: function (value) {
+            if (this.xGizmo) {
+                this.xGizmo.updateGizmoRotationToMatchAttachedMesh = value;
+                this.yGizmo.updateGizmoRotationToMatchAttachedMesh = value;
+                this.zGizmo.updateGizmoRotationToMatchAttachedMesh = value;
+            }
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(RotationGizmo.prototype, "snapDistance", {
+        get: function () {
+            return this.xGizmo.snapDistance;
+        },
+        /**
+         * Drag distance in babylon units that the gizmo will snap to when dragged (Default: 0)
+         */
+        set: function (value) {
+            if (this.xGizmo) {
+                this.xGizmo.snapDistance = value;
+                this.yGizmo.snapDistance = value;
+                this.zGizmo.snapDistance = value;
+            }
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(RotationGizmo.prototype, "scaleRatio", {
+        get: function () {
+            return this.xGizmo.scaleRatio;
+        },
+        /**
+         * Ratio for the scale of the gizmo (Default: 1)
+         */
+        set: function (value) {
+            if (this.xGizmo) {
+                this.xGizmo.scaleRatio = value;
+                this.yGizmo.scaleRatio = value;
+                this.zGizmo.scaleRatio = value;
+            }
+        },
+        enumerable: false,
+        configurable: true
+    });
+    /**
+     * Disposes of the gizmo
+     */
+    RotationGizmo.prototype.dispose = function () {
+        this.xGizmo.dispose();
+        this.yGizmo.dispose();
+        this.zGizmo.dispose();
+        this.onDragStartObservable.clear();
+        this.onDragEndObservable.clear();
+    };
+    /**
+     * CustomMeshes are not supported by this gizmo
+     * @param mesh The mesh to replace the default mesh of the gizmo
+     */
+    RotationGizmo.prototype.setCustomMesh = function (mesh) {
+        BABYLON.Logger.Error("Custom meshes are not supported on this gizmo, please set the custom meshes on the gizmos contained within this one (gizmo.xGizmo, gizmo.yGizmo, gizmo.zGizmo)");
+    };
+    return RotationGizmo;
+}(gizmo_1.Gizmo));
+exports.RotationGizmo = RotationGizmo;
+},{"./gizmo":43,"./planeRotationGizmo":48}],51:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ScaleGizmo = void 0;
+// import { Logger } from "../Misc/logger";
+// import { Observable } from "../Misc/observable";
+// import { Nullable } from "../types";
+// import { Vector3 } from "../Maths/math.vector";
+// import { Color3 } from '../Maths/math.color';
+// import { AbstractMesh } from "../Meshes/abstractMesh";
+// import { PolyhedronBuilder } from "../Meshes/Builders/polyhedronBuilder";
+var gizmo_1 = require("./gizmo");
+var axisScaleGizmo_1 = require("./axisScaleGizmo");
+// import { UtilityLayerRenderer } from "../Rendering/utilityLayerRenderer";
+// import { Mesh } from "../Meshes/mesh";
+// import { Node } from "../node";
+// /**
+//  * Gizmo that enables scaling a mesh along 3 axis
+//  */
+var ScaleGizmo = /** @class */ (function (_super) {
+    __extends(ScaleGizmo, _super);
+    /**
+     * Creates a ScaleGizmo
+     * @param gizmoLayer The utility layer the gizmo will be added to
+     * @param thickness display gizmo axis thickness
+     */
+    function ScaleGizmo(gizmoLayer, thickness) {
+        if (gizmoLayer === void 0) { gizmoLayer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer; }
+        if (thickness === void 0) { thickness = 1; }
+        var _this = _super.call(this, gizmoLayer) || this;
+        _this._meshAttached = null;
+        _this._nodeAttached = null;
+        _this._sensitivity = 1;
+        /** Fires an event when any of it's sub gizmos are dragged */
+        _this.onDragStartObservable = new BABYLON.Observable();
+        /** Fires an event when any of it's sub gizmos are released from dragging */
+        _this.onDragEndObservable = new BABYLON.Observable();
+        _this.coordSystem = 'local';
+        _this.xGizmo = new axisScaleGizmo_1.AxisScaleGizmo(new BABYLON.Vector3(1, 0, 0), BABYLON.Color3.Red().scale(0.5), gizmoLayer, _this, thickness);
+        _this.yGizmo = new axisScaleGizmo_1.AxisScaleGizmo(new BABYLON.Vector3(0, 1, 0), BABYLON.Color3.Green().scale(0.5), gizmoLayer, _this, thickness);
+        _this.zGizmo = new axisScaleGizmo_1.AxisScaleGizmo(new BABYLON.Vector3(0, 0, 1), BABYLON.Color3.Blue().scale(0.5), gizmoLayer, _this, thickness);
+        // Create uniform scale gizmo
+        _this.uniformScaleGizmo = new axisScaleGizmo_1.AxisScaleGizmo(new BABYLON.Vector3(0, 1, 0), BABYLON.Color3.Yellow().scale(0.5), gizmoLayer, _this);
+        _this.uniformScaleGizmo.updateGizmoRotationToMatchAttachedMesh = false;
+        _this.uniformScaleGizmo.uniformScaling = true;
+        _this._uniformScalingMesh = BABYLON.PolyhedronBuilder.CreatePolyhedron("", { type: 1 }, _this.uniformScaleGizmo.gizmoLayer.utilityLayerScene);
+        _this._uniformScalingMesh.scaling.scaleInPlace(0.02);
+        _this._uniformScalingMesh.visibility = 0;
+        _this._octahedron = BABYLON.PolyhedronBuilder.CreatePolyhedron("", { type: 1 }, _this.uniformScaleGizmo.gizmoLayer.utilityLayerScene);
+        _this._octahedron.scaling.scaleInPlace(0.007);
+        _this._uniformScalingMesh.addChild(_this._octahedron);
+        _this.uniformScaleGizmo.setCustomMesh(_this._uniformScalingMesh, true);
+        var light = gizmoLayer._getSharedGizmoLight();
+        light.includedOnlyMeshes = light.includedOnlyMeshes.concat(_this._octahedron);
+        // Relay drag events
+        [_this.xGizmo, _this.yGizmo, _this.zGizmo, _this.uniformScaleGizmo].forEach(function (gizmo) {
+            gizmo.dragBehavior.onDragStartObservable.add(function () {
+                _this.onDragStartObservable.notifyObservers({});
+            });
+            gizmo.dragBehavior.onDragEndObservable.add(function () {
+                _this.onDragEndObservable.notifyObservers({});
+            });
+        });
+        _this.attachedMesh = null;
+        _this.attachedNode = null;
+        _this.initialize();
+        return _this;
+    }
+    Object.defineProperty(ScaleGizmo.prototype, "attachedMesh", {
+        get: function () {
+            return this._meshAttached;
+        },
+        set: function (mesh) {
+            this._meshAttached = mesh;
+            this._nodeAttached = mesh;
+            [this.xGizmo, this.yGizmo, this.zGizmo, this.uniformScaleGizmo].forEach(function (gizmo) {
+                if (gizmo.isEnabled) {
+                    gizmo.attachedMesh = mesh;
+                }
+                else {
+                    gizmo.attachedMesh = null;
+                }
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(ScaleGizmo.prototype, "attachedNode", {
+        get: function () {
+            return this._nodeAttached;
+        },
+        set: function (node) {
+            this._meshAttached = null;
+            this._nodeAttached = node;
+            [this.xGizmo, this.yGizmo, this.zGizmo, this.uniformScaleGizmo].forEach(function (gizmo) {
+                if (gizmo.isEnabled) {
+                    gizmo.attachedNode = node;
+                }
+                else {
+                    gizmo.attachedNode = null;
+                }
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    ScaleGizmo.prototype.initialize = function () {
+        var self = this;
+        editor.on('gizmo:coordSystem', function (system) {
+            if (self.coordSystem === system)
+                return;
+            self.coordSystem = system;
+            // if (self.coordSystem === 'world') {
+            //     self.updateGizmoRotationToMatchAttachedMesh = false;
+            // } else {
+            //     self.updateGizmoRotationToMatchAttachedMesh = true;
+            // }
+        });
+    };
+    Object.defineProperty(ScaleGizmo.prototype, "updateGizmoRotationToMatchAttachedMesh", {
+        get: function () {
+            return this._updateGizmoRotationToMatchAttachedMesh;
+        },
+        set: function (value) {
+            if (!value) {
+                BABYLON.Logger.Warn("Setting updateGizmoRotationToMatchAttachedMesh = false on scaling gizmo is not supported.");
+            }
+            else {
+                this._updateGizmoRotationToMatchAttachedMesh = value;
+                [this.xGizmo, this.yGizmo, this.zGizmo, this.uniformScaleGizmo].forEach(function (gizmo) {
+                    if (gizmo) {
+                        gizmo.updateGizmoRotationToMatchAttachedMesh = value;
+                    }
+                });
+            }
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(ScaleGizmo.prototype, "snapDistance", {
+        get: function () {
+            return this._snapDistance;
+        },
+        /**
+         * Drag distance in babylon units that the gizmo will snap to when dragged (Default: 0)
+         */
+        set: function (value) {
+            this._snapDistance = value;
+            [this.xGizmo, this.yGizmo, this.zGizmo, this.uniformScaleGizmo].forEach(function (gizmo) {
+                if (gizmo) {
+                    gizmo.snapDistance = value;
+                }
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(ScaleGizmo.prototype, "scaleRatio", {
+        get: function () {
+            return this._scaleRatio;
+        },
+        /**
+         * Ratio for the scale of the gizmo (Default: 1)
+         */
+        set: function (value) {
+            this._scaleRatio = value;
+            [this.xGizmo, this.yGizmo, this.zGizmo, this.uniformScaleGizmo].forEach(function (gizmo) {
+                if (gizmo) {
+                    gizmo.scaleRatio = value;
+                }
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(ScaleGizmo.prototype, "sensitivity", {
+        get: function () {
+            return this._sensitivity;
+        },
+        /**
+         * Sensitivity factor for dragging (Default: 1)
+         */
+        set: function (value) {
+            this._sensitivity = value;
+            [this.xGizmo, this.yGizmo, this.zGizmo, this.uniformScaleGizmo].forEach(function (gizmo) {
+                if (gizmo) {
+                    gizmo.sensitivity = value;
+                }
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    /**
+     * Disposes of the gizmo
+     */
+    ScaleGizmo.prototype.dispose = function () {
+        [this.xGizmo, this.yGizmo, this.zGizmo, this.uniformScaleGizmo].forEach(function (gizmo) {
+            if (gizmo) {
+                gizmo.dispose();
+            }
+        });
+        this.onDragStartObservable.clear();
+        this.onDragEndObservable.clear();
+        [this._uniformScalingMesh, this._octahedron].forEach(function (msh) {
+            if (msh) {
+                msh.dispose();
+            }
+        });
+    };
+    return ScaleGizmo;
+}(gizmo_1.Gizmo));
+exports.ScaleGizmo = ScaleGizmo;
+},{"./axisScaleGizmo":39,"./gizmo":43}],52:[function(require,module,exports){
+"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Config = void 0;
 var Config = /** @class */ (function () {
@@ -7168,10 +10707,12 @@ var Config = /** @class */ (function () {
     Config.sceneIndex = 0;
     Config.sceneID = 'sceneID';
     Config.isSceneDirty = false;
+    // TODO: 暂时只允许加载一个表格
+    Config.tableAssetsID = '';
     return Config;
 }());
 exports.Config = Config;
-},{}],39:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -7185,7 +10726,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./config"), exports);
-},{"./config":38}],40:[function(require,module,exports){
+},{"./config":52}],54:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HierarchyContextMenu = void 0;
@@ -7346,7 +10887,7 @@ var HierarchyContextMenu = /** @class */ (function () {
     return HierarchyContextMenu;
 }());
 exports.HierarchyContextMenu = HierarchyContextMenu;
-},{"../../ui":115}],41:[function(require,module,exports){
+},{"../../ui":130}],55:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HierarchyControl = void 0;
@@ -7449,7 +10990,7 @@ var HierarchyControl = /** @class */ (function () {
     return HierarchyControl;
 }());
 exports.HierarchyControl = HierarchyControl;
-},{"../../engine":95,"../../ui":115}],42:[function(require,module,exports){
+},{"../../engine":110,"../../ui":130}],56:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HierarchyMenu = void 0;
@@ -7460,12 +11001,13 @@ var HierarchyMenu = /** @class */ (function () {
     return HierarchyMenu;
 }());
 exports.HierarchyMenu = HierarchyMenu;
-},{}],43:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HierarchyPanel = void 0;
 var ui_1 = require("../../ui");
 var engine_1 = require("../../engine");
+var babylonLoader_1 = require("../middleware/loader/babylonLoader");
 var HierarchyPanel = /** @class */ (function () {
     function HierarchyPanel() {
         // hierarchy index
@@ -7519,7 +11061,7 @@ var HierarchyPanel = /** @class */ (function () {
             item.elementTitle.focus();
             // add selection
             // TODO
-            console.log('hierarchy 面板选中entity');
+            // console.log('hierarchy 面板选中entity');
             // console.log(item.entity);
             // TODO: 当前entity为undefined
             editor.call('selector:add', 'entity', item.entity);
@@ -7569,7 +11111,7 @@ var HierarchyPanel = /** @class */ (function () {
             editor.call('drop:activate', true);
         });
         hierarchy.on('dragend', function () {
-            console.log('hierarchy panel drag end');
+            // console.log('hierarchy panel drag end');
             editor.call('drop:activate', false);
             editor.call('drop:set');
         });
@@ -7643,19 +11185,27 @@ var HierarchyPanel = /** @class */ (function () {
                 };
                 if (preserveTransform && record.entity) {
                     record.position = record.entity.node.position.clone();
-                    record.rotation = record.entity.entity.getRotation().clone();
+                    record.rotation = record.entity.node.rotation.clone();
                 }
                 // relative entity
                 record.indOld = record.parentOld.get('children').indexOf(record.resourceId);
-                record.indNew = Array.prototype.indexOf.call(record.item.parent.innerElement.childNodes, record.item.element) - 1;
+                // console.error(record.parent);
+                // console.error(record.entity);
+                // console.error(record.parentOld);
+                // console.warn(record.item);
+                // console.warn(record.item.parent);
+                // console.warn(record.item.parent.element);
+                // console.warn(record.item.parent.element.childNodes);
+                record.indNew = Array.prototype.indexOf.call(record.item.parent.element.childNodes, record.item.element) - 1;
+                // console.warn(record.indNew);
                 records.push(record);
             }
             for (var i = 0; i < records.length; i++) {
                 var record = records[i];
                 record.entity.reparenting = true;
-                record.parent.history.enabled = false;
-                record.parentOld.history.enabled = false;
-                record.entity.history.enabled = false;
+                // record.parent.history.enabled = false;
+                // record.parentOld.history.enabled = false;
+                // record.entity.history.enabled = false;
                 if (record.parent === record.parentOld) {
                     // move
                     record.parent.removeValue('children', record.resourceId);
@@ -7677,19 +11227,24 @@ var HierarchyPanel = /** @class */ (function () {
                     // set parent
                     record.entity.set('parent', record.parentId);
                 }
+                babylonLoader_1.BabylonLoader.updateSceneData(record.parentOld.get('resource_id'), record.parentOld._data2);
+                babylonLoader_1.BabylonLoader.updateSceneData(record.parent.get('resource_id'), record.parent._data2);
+                babylonLoader_1.BabylonLoader.updateSceneData(record.entity.get('resource_id'), record.entity._data2);
+                editor.call('make:scene:dirty');
                 if (preserveTransform && record.position) {
-                    record.entity.entity.setPosition(record.position);
-                    record.entity.entity.setRotation(record.rotation);
-                    var localPosition = record.entity.entity.getLocalPosition();
-                    var localRotation = record.entity.entity.getLocalEulerAngles();
-                    record.entity.set('position', [localPosition.x, localPosition.y, localPosition.z]);
-                    record.entity.set('rotation', [localRotation.x, localRotation.y, localRotation.z]);
+                    // record.entity.node.position = record.position;
+                    // record.entity.node.rotation = record.rotation;
+                    // var localPosition = record.entity.node.position;
+                    // var localRotation = record.entity.node.rotation;
+                    // record.entity.set('position', [localPosition.x, localPosition.y, localPosition.z]);
+                    // record.entity.set('rotation', [localRotation.x, localRotation.y, localRotation.z]);
                 }
-                record.parent.history.enabled = true;
-                record.parentOld.history.enabled = true;
-                record.entity.history.enabled = true;
+                // record.parent.history.enabled = true;
+                // record.parentOld.history.enabled = true;
+                // record.entity.history.enabled = true;
                 record.entity.reparenting = false;
             }
+            // TODO: history
             resizeQueue();
             // editor.call('viewport:render');
         });
@@ -7735,8 +11290,8 @@ var HierarchyPanel = /** @class */ (function () {
         // entity added
         editor.on('entities:add', function (entity, isRoot) {
             var _a, _b, _c;
-            console.log('add hierarchy entity: ' + entity.get('name'));
-            if (entity.get('type') === 'TransformNode' || entity.get('type') === 'Mesh') {
+            // console.log('add hierarchy entity: ' + entity.get('name'));
+            if (entity.get('type') === 'transformnode' || entity.get('type') === 'mesh') {
                 entity.node = engine_1.VeryEngine.viewScene.getNodeByID(entity.get('resource_id'));
             }
             var classList = ['tree-item-entity', 'entity-id-' + entity.get('resource_id')];
@@ -7808,7 +11363,7 @@ var HierarchyPanel = /** @class */ (function () {
             });
             // add children
             entity.on('children:insert', function (value, ind) {
-                console.warn('children:insert in hierarchy-panel');
+                // console.warn('children:insert in hierarchy-panel');
                 var item = self.uiItemIndex[value];
                 if (!item || item.entity.reparenting)
                     return;
@@ -7884,7 +11439,7 @@ var HierarchyPanel = /** @class */ (function () {
                     for (var c = 0; c < children.length; c++) {
                         var child = self.uiItemIndex[children[c]];
                         if (!child) {
-                            var err = 'Cannot find child entity ' + children[c];
+                            var err = '父物体： ' + entity.get('name') + '，hierarchy菜单无法关联到子物体，子物体ID：' + children[c];
                             editor.call('status:error', err);
                             console.error(err);
                             continue;
@@ -7917,7 +11472,7 @@ var HierarchyPanel = /** @class */ (function () {
     return HierarchyPanel;
 }());
 exports.HierarchyPanel = HierarchyPanel;
-},{"../../engine":95,"../../ui":115}],44:[function(require,module,exports){
+},{"../../engine":110,"../../ui":130,"../middleware/loader/babylonLoader":70}],58:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HierarchySearch = void 0;
@@ -8240,7 +11795,7 @@ var HierarchySearch = /** @class */ (function () {
     return HierarchySearch;
 }());
 exports.HierarchySearch = HierarchySearch;
-},{"../../engine":95,"../../ui":115}],45:[function(require,module,exports){
+},{"../../engine":110,"../../ui":130}],59:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -8259,7 +11814,7 @@ __exportStar(require("./hierarchy-menu"), exports);
 __exportStar(require("./hierarchy-control"), exports);
 __exportStar(require("./hierarchy-search"), exports);
 __exportStar(require("./hierarchy-context-menu"), exports);
-},{"./hierarchy-context-menu":40,"./hierarchy-control":41,"./hierarchy-menu":42,"./hierarchy-panel":43,"./hierarchy-search":44,"./keeper":46}],46:[function(require,module,exports){
+},{"./hierarchy-context-menu":54,"./hierarchy-control":55,"./hierarchy-menu":56,"./hierarchy-panel":57,"./hierarchy-search":58,"./keeper":60}],60:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HierarchyKeeper = void 0;
@@ -8342,7 +11897,7 @@ var HierarchyKeeper = /** @class */ (function () {
     return HierarchyKeeper;
 }());
 exports.HierarchyKeeper = HierarchyKeeper;
-},{"./hierarchy-context-menu":40,"./hierarchy-control":41,"./hierarchy-menu":42,"./hierarchy-panel":43,"./hierarchy-search":44}],47:[function(require,module,exports){
+},{"./hierarchy-context-menu":54,"./hierarchy-control":55,"./hierarchy-menu":56,"./hierarchy-panel":57,"./hierarchy-search":58}],61:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Hotkeys = void 0;
@@ -8861,7 +12416,7 @@ var Hotkeys = /** @class */ (function () {
     return Hotkeys;
 }());
 exports.Hotkeys = Hotkeys;
-},{}],48:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -8892,7 +12447,8 @@ __exportStar(require("./search"), exports);
 __exportStar(require("./drop"), exports);
 __exportStar(require("./global"), exports);
 __exportStar(require("./Initialize-data"), exports);
-},{"./Initialize-data":3,"./assets":18,"./drop":28,"./editor":29,"./entity":36,"./global":39,"./hierarchy":45,"./hotkeys":47,"./initialize-after":49,"./initialize-before":50,"./layout":51,"./localstorage":52,"./middleware":55,"./scenes":59,"./search":62,"./toolbar":67,"./utility":84,"./viewport":86}],49:[function(require,module,exports){
+__exportStar(require("./gizmos"), exports);
+},{"./Initialize-data":3,"./assets":18,"./drop":28,"./editor":29,"./entity":36,"./gizmos":45,"./global":53,"./hierarchy":59,"./hotkeys":61,"./initialize-after":63,"./initialize-before":64,"./layout":65,"./localstorage":66,"./middleware":69,"./scenes":73,"./search":76,"./toolbar":80,"./utility":97,"./viewport":100}],63:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.InitializeAfter = void 0;
@@ -8917,7 +12473,7 @@ var InitializeAfter = /** @class */ (function () {
     return InitializeAfter;
 }());
 exports.InitializeAfter = InitializeAfter;
-},{"./attributes":26,"./entity":36,"./scenes":59,"./toolbar":67,"./viewport/keeper":87}],50:[function(require,module,exports){
+},{"./attributes":26,"./entity":36,"./scenes":73,"./toolbar":80,"./viewport/keeper":101}],64:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.InitializeBefore = void 0;
@@ -8951,7 +12507,7 @@ var InitializeBefore = /** @class */ (function () {
     return InitializeBefore;
 }());
 exports.InitializeBefore = InitializeBefore;
-},{"./hotkeys":47,"./localstorage":52,"./selector":63,"./utility":84}],51:[function(require,module,exports){
+},{"./hotkeys":61,"./localstorage":66,"./selector":77,"./utility":97}],65:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Layout = void 0;
@@ -9133,7 +12689,7 @@ var Layout = /** @class */ (function () {
     return Layout;
 }());
 exports.Layout = Layout;
-},{"../engine":95,"../ui":115}],52:[function(require,module,exports){
+},{"../engine":110,"../ui":130}],66:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LocalStorage = void 0;
@@ -9164,7 +12720,7 @@ var LocalStorage = /** @class */ (function () {
     return LocalStorage;
 }());
 exports.LocalStorage = LocalStorage;
-},{}],53:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Component = void 0;
@@ -9225,7 +12781,7 @@ var Component = /** @class */ (function () {
     return Component;
 }());
 exports.Component = Component;
-},{"./gameobject":54,"./transform":58}],54:[function(require,module,exports){
+},{"./gameobject":68,"./transform":72}],68:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GameObject = void 0;
@@ -9392,7 +12948,7 @@ var GameObject = /** @class */ (function () {
     return GameObject;
 }());
 exports.GameObject = GameObject;
-},{"../../engine":95,"./transform":58}],55:[function(require,module,exports){
+},{"../../engine":110,"./transform":72}],69:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -9409,7 +12965,7 @@ __exportStar(require("./transform"), exports);
 __exportStar(require("./gameobject"), exports);
 __exportStar(require("./component"), exports);
 __exportStar(require("./resource-container"), exports);
-},{"./component":53,"./gameobject":54,"./resource-container":57,"./transform":58}],56:[function(require,module,exports){
+},{"./component":67,"./gameobject":68,"./resource-container":71,"./transform":72}],70:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BabylonLoader = void 0;
@@ -9457,11 +13013,11 @@ var BabylonLoader = /** @class */ (function () {
             console.log(dataBabylon.meshes);
             console.log(dataBabylon.materials);
             console.log(dataBabylon.lights);
-            if (dataBabylon.lights) {
-                dataBabylon.lights.forEach(function (element) {
-                    BabylonLoader.loadLight(element, engine_1.VeryEngine.viewScene);
-                });
-            }
+            // if (dataBabylon.lights) {
+            //     dataBabylon.lights.forEach((element: any) => {
+            //         BabylonLoader.loadLight(element, VeryEngine.viewScene);
+            //     });
+            // }
             // material assemble
             if (BabylonLoader.assetsData.babylon[assetID]) {
                 var mats = BabylonLoader.assetsData.babylon[assetID]['materials'];
@@ -9472,7 +13028,7 @@ var BabylonLoader = /** @class */ (function () {
                         // 检测texture
                         if (newMat.diffuseTexture && newMat.diffuseTexture.texture_id) {
                             newMat.diffuseTexture.name = BabylonLoader.prefix + newMat.diffuseTexture.texture_id + '/' + BabylonLoader.assetsData.assets[newMat.diffuseTexture.texture_id].name;
-                            console.warn(newMat.diffuseTexture.name);
+                            // console.warn(newMat.diffuseTexture.name);
                         }
                         if (newMat.specularTexture && newMat.specularTexture.texture_id) {
                             newMat.specularTexture.name = BabylonLoader.prefix + newMat.specularTexture.texture_id + '/' + BabylonLoader.assetsData.assets[newMat.specularTexture.texture_id].name;
@@ -9610,20 +13166,19 @@ var BabylonLoader = /** @class */ (function () {
             editor.call('make:scene:dirty');
             // editor.emit('entities:load', true);
             // TODO
-            engine_1.VeryEngine.viewScene.onPointerObservable.add(function (pointerInfo) {
-                switch (pointerInfo.type) {
-                    case BABYLON.PointerEventTypes.POINTERDOWN:
-                        // console.log('down');
-                        if (pointerInfo.pickInfo.pickedMesh != null) {
-                            editor.call('pick', pointerInfo.pickInfo.pickedMesh);
-                        }
-                        else {
-                            editor.call('pick', null);
-                        }
-                        // console.log(pointerInfo!.pickInfo!.pickedMesh);
-                        break;
-                }
-            });
+            // VeryEngine.viewScene.onPointerObservable.add(pointerInfo => {
+            //     switch (pointerInfo.type) {
+            //         case BABYLON.PointerEventTypes.POINTERDOWN:
+            //             // console.log('down');
+            //             if (pointerInfo!.pickInfo!.pickedMesh != null) {
+            //                 editor.call('pick', pointerInfo!.pickInfo!.pickedMesh);
+            //             } else {
+            //                 editor.call('pick', null);
+            //             }
+            //             // console.log(pointerInfo!.pickInfo!.pickedMesh);
+            //             break;
+            //     }
+            // });
             // });
         }
     };
@@ -9690,13 +13245,18 @@ var BabylonLoader = /** @class */ (function () {
                 parentID = mesh.parent.id;
             }
             else {
-                parentID = editor.call('entities:root').get('resource_id');
+                var root = editor.call('entities:root');
+                parentID = root.get('resource_id');
+                // root.insert('children', mesh.id);
+                // BabylonLoader.updateSceneData(parentID, root._data2);
+                // editor.call('make:scene:dirty');
             }
             var childs = mesh.getChildren();
             var myChildren = [];
             for (var k = 0; k < childs.length; k++) {
                 myChildren.push(childs[k].id);
             }
+            var eulerAngle = utility_1.Tools.radianToEulerAngle(mesh.rotation);
             var entityData = {
                 name: mesh.name,
                 resource_id: mesh.id,
@@ -9704,12 +13264,12 @@ var BabylonLoader = /** @class */ (function () {
                 asset_id: assetID,
                 parent: parentID,
                 position: [mesh.position.x, mesh.position.y, mesh.position.z],
-                rotation: [mesh.rotation.x, mesh.rotation.y, mesh.rotation.z],
+                rotation: [eulerAngle.x, eulerAngle.y, eulerAngle.z],
                 scale: [mesh.scaling.x, mesh.scaling.y, mesh.scaling.z],
                 children: myChildren,
                 enabled: mesh.isEnabled(),
                 checkCollisions: mesh.checkCollisions,
-                isPickable: mesh.isPickable,
+                pickable: mesh.isPickable,
                 isVisible: mesh.isVisible,
                 tags: [],
                 type: 'mesh'
@@ -9724,6 +13284,27 @@ var BabylonLoader = /** @class */ (function () {
     };
     BabylonLoader.addSceneData = function (resource_id, data) {
         BabylonLoader.scenesData.entities[resource_id] = data;
+        BabylonLoader.scenesData['modified'] = BabylonLoader.createdAtTime();
+    };
+    BabylonLoader.updateSceneData = function (resource_id, data) {
+        BabylonLoader.scenesData.entities[resource_id] = data;
+        BabylonLoader.scenesData['modified'] = BabylonLoader.createdAtTime();
+    };
+    BabylonLoader.createdAtTime = function () {
+        var now = new Date();
+        var Y = now.getFullYear();
+        var m = BabylonLoader.getRealTime(now.getMonth() + 1);
+        var d = BabylonLoader.getRealTime(now.getDate());
+        var H = BabylonLoader.getRealTime(now.getHours());
+        var i = BabylonLoader.getRealTime(now.getMinutes());
+        // var s = getRealTime(now.getSeconds());
+        return Y + "-" + m + "-" + d + " " + H + ":" + i;
+    };
+    BabylonLoader.getRealTime = function (str) {
+        if (str < 10) {
+            return "0" + str;
+        }
+        return str.toString();
     };
     BabylonLoader.saveScene = function () {
         if (global_1.Config.isSceneDirty) {
@@ -10021,7 +13602,7 @@ var BabylonLoader = /** @class */ (function () {
     return BabylonLoader;
 }());
 exports.BabylonLoader = BabylonLoader;
-},{"../../../editor/global":39,"../../../editor/utility":84,"../../../engine":95}],57:[function(require,module,exports){
+},{"../../../editor/global":53,"../../../editor/utility":97,"../../../engine":110}],71:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ResourceContainer = void 0;
@@ -10035,7 +13616,7 @@ var ResourceContainer = /** @class */ (function () {
     return ResourceContainer;
 }());
 exports.ResourceContainer = ResourceContainer;
-},{}],58:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Transform = void 0;
@@ -10490,7 +14071,7 @@ var Transform = /** @class */ (function () {
     return Transform;
 }());
 exports.Transform = Transform;
-},{}],59:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -10505,7 +14086,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./keeper"), exports);
 __exportStar(require("./scenes"), exports);
-},{"./keeper":60,"./scenes":61}],60:[function(require,module,exports){
+},{"./keeper":74,"./scenes":75}],74:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ScenesKeeper = void 0;
@@ -10517,23 +14098,26 @@ var ScenesKeeper = /** @class */ (function () {
     return ScenesKeeper;
 }());
 exports.ScenesKeeper = ScenesKeeper;
-},{"./scenes":61}],61:[function(require,module,exports){
+},{"./scenes":75}],75:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Scenes = void 0;
 var global_1 = require("../global");
 var Scenes = /** @class */ (function () {
     function Scenes() {
+        this._prefix = '（未保存）';
+        var self = this;
         editor.method('make:scene:dirty', function () {
-            if (!document.title.startsWith('*')) {
-                document.title = '*' + document.title;
+            if (!document.title.startsWith(self._prefix)) {
+                document.title = self._prefix + document.title;
             }
             global_1.Config.isSceneDirty = true;
+            // console.error('make:scene:dirty');
         });
         editor.method('make:scene:clear', function () {
             global_1.Config.isSceneDirty = false;
-            if (document.title.startsWith('*')) {
-                document.title = document.title.substring(1);
+            if (document.title.startsWith(self._prefix)) {
+                document.title = document.title.substring(self._prefix.length);
             }
         });
         // Create a scene and pass result to callback
@@ -10558,7 +14142,7 @@ var Scenes = /** @class */ (function () {
     return Scenes;
 }());
 exports.Scenes = Scenes;
-},{"../global":39}],62:[function(require,module,exports){
+},{"../global":53}],76:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Search = void 0;
@@ -10752,7 +14336,7 @@ var Search = /** @class */ (function () {
     return Search;
 }());
 exports.Search = Search;
-},{}],63:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -10767,7 +14351,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./selector"), exports);
 __exportStar(require("./selector-history"), exports);
-},{"./selector":65,"./selector-history":64}],64:[function(require,module,exports){
+},{"./selector":79,"./selector-history":78}],78:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SelectorHistory = void 0;
@@ -10777,7 +14361,7 @@ var SelectorHistory = /** @class */ (function () {
     return SelectorHistory;
 }());
 exports.SelectorHistory = SelectorHistory;
-},{}],65:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Selector = void 0;
@@ -10968,46 +14552,7 @@ var Selector = /** @class */ (function () {
     return Selector;
 }());
 exports.Selector = Selector;
-},{"../../lib":99}],66:[function(require,module,exports){
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.GizmosManager = void 0;
-var GizmosManager = /** @class */ (function () {
-    function GizmosManager() {
-    }
-    GizmosManager.init = function (scene) {
-        this.gizmoManager = new BABYLON.GizmoManager(scene);
-    };
-    GizmosManager.setMode = function (m) {
-        this.mode = m;
-        if (this.mode == 0) {
-            this.gizmoManager.positionGizmoEnabled = true;
-            this.gizmoManager.rotationGizmoEnabled = false;
-            this.gizmoManager.scaleGizmoEnabled = false;
-        }
-        else if (this.mode === 1) {
-            this.gizmoManager.positionGizmoEnabled = false;
-            this.gizmoManager.rotationGizmoEnabled = true;
-            this.gizmoManager.scaleGizmoEnabled = false;
-        }
-        else {
-            this.gizmoManager.positionGizmoEnabled = false;
-            this.gizmoManager.rotationGizmoEnabled = false;
-            this.gizmoManager.scaleGizmoEnabled = true;
-        }
-    };
-    GizmosManager.attach = function (mesh) {
-        this.gizmoManager.attachToMesh(mesh);
-        this.setMode(this.mode);
-    };
-    GizmosManager.clear = function () {
-        this.gizmoManager.attachToMesh(null);
-    };
-    GizmosManager.mode = 0;
-    return GizmosManager;
-}());
-exports.GizmosManager = GizmosManager;
-},{}],67:[function(require,module,exports){
+},{"../../lib":114}],80:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -11030,8 +14575,7 @@ __exportStar(require("./toolbar-control"), exports);
 __exportStar(require("./toolbar-editor-settings"), exports);
 __exportStar(require("./toolbar-publish"), exports);
 __exportStar(require("./toolbar-scene"), exports);
-__exportStar(require("./gizmo-manager"), exports);
-},{"./gizmo-manager":66,"./keeper":68,"./toolbar-control":69,"./toolbar-editor-settings":70,"./toolbar-gizmos":71,"./toolbar-help":72,"./toolbar-history":73,"./toolbar-logo":74,"./toolbar-publish":75,"./toolbar-scene":76,"./toolbar-top-control":77}],68:[function(require,module,exports){
+},{"./keeper":81,"./toolbar-control":82,"./toolbar-editor-settings":83,"./toolbar-gizmos":84,"./toolbar-help":85,"./toolbar-history":86,"./toolbar-logo":87,"./toolbar-publish":88,"./toolbar-scene":89,"./toolbar-top-control":90}],81:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarKeeper = void 0;
@@ -11057,38 +14601,36 @@ var ToolbarKeeper = /** @class */ (function () {
     return ToolbarKeeper;
 }());
 exports.ToolbarKeeper = ToolbarKeeper;
-},{"./toolbar-control":69,"./toolbar-editor-settings":70,"./toolbar-gizmos":71,"./toolbar-help":72,"./toolbar-history":73,"./toolbar-logo":74,"./toolbar-publish":75,"./toolbar-scene":76}],69:[function(require,module,exports){
+},{"./toolbar-control":82,"./toolbar-editor-settings":83,"./toolbar-gizmos":84,"./toolbar-help":85,"./toolbar-history":86,"./toolbar-logo":87,"./toolbar-publish":88,"./toolbar-scene":89}],82:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarControl = void 0;
-var engine_1 = require("../../engine");
-var ui_1 = require("../../ui");
 var ToolbarControl = /** @class */ (function () {
     function ToolbarControl() {
-        var toolbar = engine_1.VeryEngine.toolbar;
-        var button = new ui_1.Button('&#57654;');
-        button.class.add('pc-icon', 'help-controls', 'bottom');
-        toolbar.append(button);
-        button.on('click', function () {
-            editor.call('help:controls');
-        });
-        editor.on('help:controls:open', function () {
-            button.class.add('active');
-        });
-        editor.on('help:controls:close', function () {
-            button.class.remove('active');
-        });
-        ui_1.Tooltip.attach({
-            target: button.element,
-            text: 'Controls',
-            align: 'left',
-            root: editor.call('layout.root')
-        });
+        // var toolbar = VeryEngine.toolbar;
+        // var button = new Button('&#57654;');
+        // button.class!.add('pc-icon', 'help-controls', 'bottom');
+        // toolbar.append(button);
+        // button.on('click', function () {
+        //     editor.call('help:controls');
+        // });
+        // editor.on('help:controls:open', function () {
+        //     button.class!.add('active');
+        // });
+        // editor.on('help:controls:close', function () {
+        //     button.class!.remove('active');
+        // });
+        // Tooltip.attach({
+        //     target: button.element!,
+        //     text: 'Controls',
+        //     align: 'left',
+        //     root: editor.call('layout.root')
+        // });
     }
     return ToolbarControl;
 }());
 exports.ToolbarControl = ToolbarControl;
-},{"../../engine":95,"../../ui":115}],70:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarEditorSettings = void 0;
@@ -11102,7 +14644,8 @@ var ToolbarEditorSettings = /** @class */ (function () {
         button.class.add('pc-icon', 'editor-settings', 'bottom');
         toolbar.append(button);
         button.on('click', function () {
-            editor.call('selector:set', 'editorSettings', [editor.call('settings:projectUser')]);
+            // TODO:设置按钮按下
+            // editor.call('selector:set', 'editorSettings', [editor.call('settings:projectUser')]);
         });
         editor.on('attributes:clear', function () {
             button.class.remove('active');
@@ -11116,7 +14659,7 @@ var ToolbarEditorSettings = /** @class */ (function () {
         });
         ui_1.Tooltip.attach({
             target: button.element,
-            text: 'Settings',
+            text: '设置',
             align: 'left',
             root: editor.call('layout.root')
         });
@@ -11124,12 +14667,12 @@ var ToolbarEditorSettings = /** @class */ (function () {
     return ToolbarEditorSettings;
 }());
 exports.ToolbarEditorSettings = ToolbarEditorSettings;
-},{"../../engine":95,"../../ui":115}],71:[function(require,module,exports){
+},{"../../engine":110,"../../ui":130}],84:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarGizmos = void 0;
 var ui_1 = require("../../ui");
-var gizmo_manager_1 = require("./gizmo-manager");
+var gizmo_center_1 = require("../gizmos/gizmo-center");
 var ToolbarGizmos = /** @class */ (function () {
     function ToolbarGizmos() {
         var root = editor.call('layout.root');
@@ -11149,11 +14692,13 @@ var ToolbarGizmos = /** @class */ (function () {
                 icon: '&#57618;',
                 tooltip: '缩放',
                 op: 'scale'
-            }, {
-                icon: '&#57666;',
-                tooltip: 'Resize Element Component',
-                op: 'resize'
-            }].forEach(function (item, index) {
+            }
+            // , {
+            //     icon: '&#57666;',
+            //     tooltip: 'Resize Element Component',
+            //     op: 'resize'
+            // }
+        ].forEach(function (item, index) {
             var button = new ui_1.Button(item.icon);
             // button.hidden = !editor.call('permissions:write');
             button.op = item.op;
@@ -11169,13 +14714,13 @@ var ToolbarGizmos = /** @class */ (function () {
                 activeGizmo.tooltip.class.remove('innactive');
                 editor.call('gizmo:type', button.op);
                 if (button.op === 'translate') {
-                    gizmo_manager_1.GizmosManager.setMode(0);
+                    gizmo_center_1.GizmosCenter.setMode(0);
                 }
                 else if (button.op === 'rotate') {
-                    gizmo_manager_1.GizmosManager.setMode(1);
+                    gizmo_center_1.GizmosCenter.setMode(1);
                 }
                 else {
-                    gizmo_manager_1.GizmosManager.setMode(2);
+                    gizmo_center_1.GizmosCenter.setMode(2);
                 }
             });
             toolbar.append(button);
@@ -11196,49 +14741,49 @@ var ToolbarGizmos = /** @class */ (function () {
         // coordinate system
         var buttonWorld = new ui_1.Button('&#57624;');
         // buttonWorld.hidden = !editor.call('permissions:write');
-        buttonWorld.class.add('pc-icon', 'active');
+        // buttonWorld.class!.add('pc-icon', 'active');
+        buttonWorld.class.add('pc-icon');
         toolbar.append(buttonWorld);
         buttonWorld.on('click', function () {
             if (buttonWorld.class.contains('active')) {
                 buttonWorld.class.remove('active');
-                tooltipWorld.html = 'World / <span style="color:#fff">Local</span>';
+                tooltipWorld.html = '<span style="color:#fff">局部坐标</span> / 世界坐标';
             }
             else {
                 buttonWorld.class.add('active');
-                tooltipWorld.html = '<span style="color:#fff">World</span> / Local';
+                tooltipWorld.html = '局部坐标 / <span style="color:#fff">世界坐标</span>';
             }
-            editor.call('gizmo:coordSystem', buttonWorld.class.contains('active') ? 'world' : 'local');
+            editor.emit('gizmo:coordSystem', buttonWorld.class.contains('active') ? 'world' : 'local');
         });
         var tooltipWorld = ui_1.Tooltip.attach({
             target: buttonWorld.element,
             align: 'left',
             root: root
         });
-        tooltipWorld.html = '<span style="color:#fff">World</span> / Local';
+        tooltipWorld.html = '<span style="color:#fff">局部坐标</span> / 世界坐标';
         tooltipWorld.class.add('innactive');
         // toggle grid snap
-        var buttonSnap = new ui_1.Button('&#57622;');
-        // buttonSnap.hidden = !editor.call('permissions:write');
-        buttonSnap.class.add('pc-icon');
-        buttonSnap.on('click', function () {
-            if (buttonSnap.class.contains('active')) {
-                buttonSnap.class.remove('active');
-                tooltipSnap.class.add('innactive');
-            }
-            else {
-                buttonSnap.class.add('active');
-                tooltipSnap.class.remove('innactive');
-            }
-            editor.call('gizmo:snap', buttonSnap.class.contains('active'));
-        });
-        toolbar.append(buttonSnap);
-        var tooltipSnap = ui_1.Tooltip.attach({
-            target: buttonSnap.element,
-            text: 'Snap',
-            align: 'left',
-            root: root
-        });
-        tooltipSnap.class.add('innactive');
+        // var buttonSnap = new Button('&#57622;');
+        // // buttonSnap.hidden = !editor.call('permissions:write');
+        // buttonSnap.class!.add('pc-icon');
+        // buttonSnap.on('click', function () {
+        //     if (buttonSnap.class!.contains('active')) {
+        //         buttonSnap.class!.remove('active');
+        //         tooltipSnap.class!.add('innactive');
+        //     } else {
+        //         buttonSnap.class!.add('active');
+        //         tooltipSnap.class!.remove('innactive');
+        //     }
+        //     editor.call('gizmo:snap', buttonSnap.class!.contains('active'));
+        // });
+        // toolbar.append(buttonSnap);
+        // var tooltipSnap = Tooltip.attach({
+        //     target: buttonSnap.element!,
+        //     text: 'Snap',
+        //     align: 'left',
+        //     root: root
+        // });
+        // tooltipSnap.class!.add('innactive');
         editor.on('permissions:writeState', function (state) {
             for (var key in gizmoButtons) {
                 // gizmoButtons[key].hidden = !state;
@@ -11269,7 +14814,7 @@ var ToolbarGizmos = /** @class */ (function () {
         });
         var tooltipFocus = ui_1.Tooltip.attach({
             target: buttonFocus.element,
-            text: 'Focus',
+            text: '聚焦当前物体',
             align: 'left',
             root: root
         });
@@ -11278,38 +14823,36 @@ var ToolbarGizmos = /** @class */ (function () {
     return ToolbarGizmos;
 }());
 exports.ToolbarGizmos = ToolbarGizmos;
-},{"../../ui":115,"./gizmo-manager":66}],72:[function(require,module,exports){
+},{"../../ui":130,"../gizmos/gizmo-center":42}],85:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarHelp = void 0;
-var engine_1 = require("../../engine");
-var ui_1 = require("../../ui");
 var ToolbarHelp = /** @class */ (function () {
     function ToolbarHelp() {
-        var toolbar = engine_1.VeryEngine.toolbar;
-        var button = new ui_1.Button('&#57656;');
-        button.class.add('pc-icon', 'help-howdoi', 'bottom', 'push-top');
-        toolbar.append(button);
-        button.on('click', function () {
-            editor.call('help:howdoi:toggle');
-        });
-        editor.on('help:howdoi:open', function () {
-            button.class.add('active');
-        });
-        editor.on('help:howdoi:close', function () {
-            button.class.remove('active');
-        });
-        ui_1.Tooltip.attach({
-            target: button.element,
-            text: 'How do I...?',
-            align: 'left',
-            root: editor.call('layout.root')
-        });
+        // var toolbar = VeryEngine.toolbar;
+        // var button = new Button('&#57656;');
+        // button.class!.add('pc-icon', 'help-howdoi', 'bottom', 'push-top');
+        // toolbar.append(button);
+        // button.on('click', function () {
+        //     editor.call('help:howdoi:toggle');
+        // });
+        // editor.on('help:howdoi:open', function () {
+        //     button.class!.add('active');
+        // });
+        // editor.on('help:howdoi:close', function () {
+        //     button.class!.remove('active');
+        // });
+        // Tooltip.attach({
+        //     target: button.element!,
+        //     text: 'How do I...?',
+        //     align: 'left',
+        //     root: editor.call('layout.root')
+        // });
     }
     return ToolbarHelp;
 }());
 exports.ToolbarHelp = ToolbarHelp;
-},{"../../engine":95,"../../ui":115}],73:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarHistory = void 0;
@@ -11339,7 +14882,7 @@ var ToolbarHistory = /** @class */ (function () {
         });
         var tooltipUndo = ui_1.Tooltip.attach({
             target: buttonUndo.element,
-            text: 'Undo',
+            text: '撤销',
             align: 'left',
             root: root
         });
@@ -11365,7 +14908,7 @@ var ToolbarHistory = /** @class */ (function () {
         });
         var tooltipRedo = ui_1.Tooltip.attach({
             target: buttonRedo.element,
-            text: 'Redo',
+            text: '重做',
             align: 'left',
             root: root
         });
@@ -11378,7 +14921,7 @@ var ToolbarHistory = /** @class */ (function () {
     return ToolbarHistory;
 }());
 exports.ToolbarHistory = ToolbarHistory;
-},{"../../engine":95,"../../ui":115}],74:[function(require,module,exports){
+},{"../../engine":110,"../../ui":130}],87:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarLogo = void 0;
@@ -11398,7 +14941,7 @@ var ToolbarLogo = /** @class */ (function () {
     return ToolbarLogo;
 }());
 exports.ToolbarLogo = ToolbarLogo;
-},{"../../ui":115}],75:[function(require,module,exports){
+},{"../../ui":130}],88:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarPublish = void 0;
@@ -11421,7 +14964,7 @@ var ToolbarPublish = /** @class */ (function () {
         });
         ui_1.Tooltip.attach({
             target: button.element,
-            text: 'Publish / Download',
+            text: '发布',
             align: 'left',
             root: editor.call('layout.root')
         });
@@ -11429,7 +14972,7 @@ var ToolbarPublish = /** @class */ (function () {
     return ToolbarPublish;
 }());
 exports.ToolbarPublish = ToolbarPublish;
-},{"../../engine":95,"../../ui":115}],76:[function(require,module,exports){
+},{"../../engine":110,"../../ui":130}],89:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarScene = void 0;
@@ -11459,7 +15002,7 @@ var ToolbarScene = /** @class */ (function () {
         });
         ui_1.Tooltip.attach({
             target: projectName.element,
-            text: 'Project',
+            text: '项目名',
             align: 'top',
             root: root
         });
@@ -11474,7 +15017,7 @@ var ToolbarScene = /** @class */ (function () {
         });
         ui_1.Tooltip.attach({
             target: sceneName.element,
-            text: 'Settings',
+            text: '场景名',
             align: 'top',
             root: root
         });
@@ -11482,7 +15025,7 @@ var ToolbarScene = /** @class */ (function () {
             sceneName.text = name;
         });
         sceneName.on('click', function () {
-            editor.call('selector:set', 'editorSettings', [editor.call('settings:projectUser')]);
+            // editor.call('selector:set', 'editorSettings', [editor.call('settings:projectUser')]);
         });
         editor.on('attributes:clear', function () {
             sceneName.class.remove('active');
@@ -11525,12 +15068,12 @@ var ToolbarScene = /** @class */ (function () {
         panel.append(sceneList);
         ui_1.Tooltip.attach({
             target: sceneList.element,
-            text: 'Manage Scenes',
+            text: '场景设置',
             align: 'top',
             root: root
         });
         sceneList.on('click', function () {
-            editor.call('picker:scene');
+            // editor.call('picker:scene');
         });
         editor.on('picker:scene:open', function () {
             sceneList.class.add('active');
@@ -11542,7 +15085,7 @@ var ToolbarScene = /** @class */ (function () {
     return ToolbarScene;
 }());
 exports.ToolbarScene = ToolbarScene;
-},{"../../engine":95,"../../ui":115}],77:[function(require,module,exports){
+},{"../../engine":110,"../../ui":130}],90:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarTopControl = void 0;
@@ -11582,15 +15125,21 @@ var ToolbarTopControl = /** @class */ (function () {
             align: 'top',
             root: engine_1.VeryEngine.root
         });
+        // launch
+        var launch = new ui_1.Panel();
+        launch.class.add('launch');
+        panel.append(launch);
+        launch.style.marginRight = '2px';
+        // launch.disabled = true;
         var buttonLaunch = new ui_1.Button('&#57649;');
         buttonLaunch.class.add('icon');
-        panel.append(buttonLaunch);
+        launch.append(buttonLaunch);
         buttonLaunch.on('click', function () {
             window.open(window.location.protocol + '//' + window.location.host + '/publish/' + global_1.Config.projectID);
         });
         var tooltipLaunch = ui_1.Tooltip.attach({
             target: buttonLaunch.element,
-            text: '发布',
+            text: '运行',
             align: 'top',
             root: engine_1.VeryEngine.root
         });
@@ -11598,7 +15147,7 @@ var ToolbarTopControl = /** @class */ (function () {
     return ToolbarTopControl;
 }());
 exports.ToolbarTopControl = ToolbarTopControl;
-},{"../../engine":95,"../../ui":115,"../global":39}],78:[function(require,module,exports){
+},{"../../engine":110,"../../ui":130,"../global":53}],91:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -11777,7 +15326,7 @@ var AjaxRequest = /** @class */ (function (_super) {
     return AjaxRequest;
 }(lib_1.Events));
 exports.AjaxRequest = AjaxRequest;
-},{"../../lib":99}],79:[function(require,module,exports){
+},{"../../lib":114}],92:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ComponentsLogos = void 0;
@@ -11820,7 +15369,7 @@ var ComponentsLogos = /** @class */ (function () {
     return ComponentsLogos;
 }());
 exports.ComponentsLogos = ComponentsLogos;
-},{}],80:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ContextMenu = void 0;
@@ -11834,7 +15383,7 @@ var ContextMenu = /** @class */ (function () {
     return ContextMenu;
 }());
 exports.ContextMenu = ContextMenu;
-},{}],81:[function(require,module,exports){
+},{}],94:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Debug = void 0;
@@ -11873,7 +15422,7 @@ var Debug = /** @class */ (function () {
     return Debug;
 }());
 exports.Debug = Debug;
-},{}],82:[function(require,module,exports){
+},{}],95:[function(require,module,exports){
 (function (process,setImmediate){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -12362,7 +15911,7 @@ var EventProxy = /** @class */ (function () {
 exports.EventProxy = EventProxy;
 }).call(this,require('_process'),require("timers").setImmediate)
 
-},{"_process":1,"timers":2}],83:[function(require,module,exports){
+},{"_process":1,"timers":2}],96:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GUID = void 0;
@@ -12381,7 +15930,7 @@ var GUID = /** @class */ (function () {
     return GUID;
 }());
 exports.GUID = GUID;
-},{}],84:[function(require,module,exports){
+},{}],97:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -12401,14 +15950,113 @@ __exportStar(require("./eventproxy"), exports);
 __exportStar(require("./debug"), exports);
 __exportStar(require("./tools"), exports);
 __exportStar(require("./ajax"), exports);
-},{"./ajax":78,"./components-logos":79,"./context-menu":80,"./debug":81,"./eventproxy":82,"./guid":83,"./tools":85}],85:[function(require,module,exports){
+__exportStar(require("./sha1"), exports);
+},{"./ajax":91,"./components-logos":92,"./context-menu":93,"./debug":94,"./eventproxy":95,"./guid":96,"./sha1":98,"./tools":99}],98:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SHA1 = void 0;
+var SHA1 = /** @class */ (function () {
+    function SHA1() {
+    }
+    // SHA1  
+    SHA1.add = function (x, y) {
+        return ((x & 0x7FFFFFFF) + (y & 0x7FFFFFFF)) ^ (x & 0x80000000) ^ (y & 0x80000000);
+    };
+    SHA1.SHA1hex = function (num) {
+        var sHEXChars = "0123456789abcdef";
+        var str = "";
+        for (var j = 7; j >= 0; j--)
+            str += sHEXChars.charAt((num >> (j * 4)) & 0x0F);
+        return str;
+    };
+    SHA1.AlignSHA1 = function (sIn) {
+        var nblk = ((sIn.length + 8) >> 6) + 1, blks = new Array(nblk * 16);
+        for (var i = 0; i < nblk * 16; i++)
+            blks[i] = 0;
+        for (i = 0; i < sIn.length; i++)
+            blks[i >> 2] |= sIn.charCodeAt(i) << (24 - (i & 3) * 8);
+        blks[i >> 2] |= 0x80 << (24 - (i & 3) * 8);
+        blks[nblk * 16 - 1] = sIn.length * 8;
+        return blks;
+    };
+    SHA1.rol = function (num, cnt) {
+        return (num << cnt) | (num >>> (32 - cnt));
+    };
+    SHA1.ft = function (t, b, c, d) {
+        if (t < 20)
+            return (b & c) | ((~b) & d);
+        if (t < 40)
+            return b ^ c ^ d;
+        if (t < 60)
+            return (b & c) | (b & d) | (c & d);
+        return b ^ c ^ d;
+    };
+    SHA1.kt = function (t) {
+        return (t < 20) ? 1518500249 : (t < 40) ? 1859775393 :
+            (t < 60) ? -1894007588 : -899497514;
+    };
+    SHA1.SHA1 = function (sIn) {
+        var x = SHA1.AlignSHA1(sIn);
+        var w = new Array(80);
+        var a = 1732584193;
+        var b = -271733879;
+        var c = -1732584194;
+        var d = 271733878;
+        var e = -1009589776;
+        for (var i = 0; i < x.length; i += 16) {
+            var olda = a;
+            var oldb = b;
+            var oldc = c;
+            var oldd = d;
+            var olde = e;
+            for (var j = 0; j < 80; j++) {
+                if (j < 16)
+                    w[j] = x[i + j];
+                else
+                    w[j] = SHA1.rol(w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16], 1);
+                var t = SHA1.add(SHA1.add(SHA1.rol(a, 5), SHA1.ft(j, b, c, d)), SHA1.add(SHA1.add(e, w[j]), SHA1.kt(j)));
+                e = d;
+                d = c;
+                c = SHA1.rol(b, 30);
+                b = a;
+                a = t;
+            }
+            a = SHA1.add(a, olda);
+            b = SHA1.add(b, oldb);
+            c = SHA1.add(c, oldc);
+            d = SHA1.add(d, oldd);
+            e = SHA1.add(e, olde);
+        }
+        var SHA1Value = SHA1.SHA1hex(a) + SHA1.SHA1hex(b) + SHA1.SHA1hex(c) + SHA1.SHA1hex(d) + SHA1.SHA1hex(e);
+        return SHA1Value;
+    };
+    return SHA1;
+}());
+exports.SHA1 = SHA1;
+},{}],99:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Tools = void 0;
+// import { WebRequest } from '../middleware/offline/webrequest';
 var engine_1 = require("../../engine");
+var sha1_1 = require("./sha1");
 var Tools = /** @class */ (function () {
     function Tools() {
     }
+    Tools.eulerAngleToRadian = function (val) {
+        var para = Math.PI / 180;
+        return val.multiplyByFloats(para, para, para);
+    };
+    Tools.radianToEulerAngle = function (val) {
+        var para = 180 / Math.PI;
+        return val.multiplyByFloats(para, para, para);
+    };
+    Tools.vector3ToArray = function (val) {
+        return [val.x, val.y, val.z];
+    };
+    Tools.sha1 = function (val) {
+        return sha1_1.SHA1.SHA1(val);
+    };
     Tools.GetFilename = function (path) {
         var index = path.lastIndexOf('/');
         if (index < 0) {
@@ -12618,7 +16266,7 @@ var Tools = /** @class */ (function () {
     return Tools;
 }());
 exports.Tools = Tools;
-},{"../../engine":95}],86:[function(require,module,exports){
+},{"../../engine":110,"./sha1":98}],100:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -12634,25 +16282,28 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./viewport"), exports);
 __exportStar(require("./viewport-expand"), exports);
 __exportStar(require("./viewport-application"), exports);
+__exportStar(require("./viewport-entities-observer-binding"), exports);
 __exportStar(require("./viewport-instance-create"), exports);
 __exportStar(require("./viewport-drop-model"), exports);
-},{"./viewport":92,"./viewport-application":88,"./viewport-drop-model":89,"./viewport-expand":90,"./viewport-instance-create":91}],87:[function(require,module,exports){
+},{"./viewport":107,"./viewport-application":102,"./viewport-drop-model":103,"./viewport-entities-observer-binding":104,"./viewport-expand":105,"./viewport-instance-create":106}],101:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ViewportKeeper = void 0;
 var viewport_application_1 = require("./viewport-application");
 var viewport_instance_create_1 = require("./viewport-instance-create");
 var viewport_drop_model_1 = require("./viewport-drop-model");
+var viewport_entities_observer_binding_1 = require("./viewport-entities-observer-binding");
 var ViewportKeeper = /** @class */ (function () {
     function ViewportKeeper() {
         new viewport_application_1.ViewportApplication();
+        new viewport_entities_observer_binding_1.ViewportEntitiesObserverBinding();
         new viewport_instance_create_1.ViewportInstanceCreate();
         new viewport_drop_model_1.ViewportDropModel();
     }
     return ViewportKeeper;
 }());
 exports.ViewportKeeper = ViewportKeeper;
-},{"./viewport-application":88,"./viewport-drop-model":89,"./viewport-instance-create":91}],88:[function(require,module,exports){
+},{"./viewport-application":102,"./viewport-drop-model":103,"./viewport-entities-observer-binding":104,"./viewport-instance-create":106}],102:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ViewportApplication = void 0;
@@ -12661,34 +16312,108 @@ var babylonLoader_1 = require("../middleware/loader/babylonLoader");
 var utility_1 = require("../utility");
 var ViewportApplication = /** @class */ (function () {
     function ViewportApplication() {
+        // entities indexes for parenting
+        var childIndex = {};
+        var entitiesIndex = {};
+        var unknowns = {};
         editor.method('create:scene:element', function (entity) {
             // console.log('create scene element');
             // console.error(entity);
             if (entity.get('type') === 'light') {
                 // Lights
                 var light = BABYLON.Light.Parse(entity.get('data'), engine_1.VeryEngine.viewScene);
-                entity.node = light;
-                console.warn(light);
+                if (light) {
+                    entitiesIndex[entity.get('resource_id')] = light;
+                    entity.node = light;
+                    light.id = entity.get('resource_id');
+                    childAndParent(entity, light);
+                    // (<BABYLON.ShadowLight>light)
+                    // console.warn(light);
+                }
+                else {
+                    console.error('light创建失败，light原始信息：');
+                    console.error(entity.get('data'));
+                }
             }
             else if (entity.get('type') === 'camera') {
+                // TODO: camera要特别处理
                 // Cameras
                 // var camera = BABYLON.Camera.Parse(entity.get('data'), VeryEngine.viewScene);
                 // camera.attachControl(VeryEngine.viewCanvasElement);
+                // entity.node = camera;
+                // entitiesIndex[entity.get('resource_id')] = camera;
+                // camera!.id = entity.get('resource_id');
+                // childAndParent(entity, camera);
                 // console.warn(camera);
             }
             else if (entity.get('type') === 'box') {
                 // box
-                var box = BABYLON.MeshBuilder.CreateBox(entity.get('name'), { size: 1 }, engine_1.VeryEngine.viewScene);
+                var box = BABYLON.Mesh.CreateBox(entity.get('name'), 1, engine_1.VeryEngine.viewScene);
                 entity.node = box;
-                // VeryEngine.viewScene.activeCamera = camera;
-                console.warn(box);
+                entitiesIndex[entity.get('resource_id')] = box;
+                box.id = entity.get('resource_id');
+                box.position = BABYLON.Vector3.FromArray(entity.get('position'));
+                box.rotation = utility_1.Tools.eulerAngleToRadian(BABYLON.Vector3.FromArray(entity.get('rotation')));
+                box.scaling = BABYLON.Vector3.FromArray(entity.get('scale'));
+                box.isEnabled(entity.get('enabled'));
+                box.checkCollisions = entity.get('checkCollisions');
+                box.isVisible = entity.get('isVisible');
+                // 加载自定义关联材质
+                if (entity.get('material_id')) {
+                }
+                childAndParent(entity, box);
+                // console.warn(box);
             }
             else if (entity.get('type') === 'mesh') {
                 // 模型异步加载，因为mesh需要先加载.babylon文件；
-                console.warn('scene创建mesh：' + entity.get('name'));
+                // console.warn('scene创建mesh：' + entity.get('name'));
                 editor.call('scene:mesh:create', entity);
             }
         });
+        var childAndParent = function (entity, node) {
+            // children
+            var children = entity.get('children');
+            for (var i = 0; i < children.length; i++) {
+                childIndex[children[i]] = {
+                    index: i,
+                    parent: node
+                };
+                if (entitiesIndex[children[i]]) {
+                    insertChild(node, entitiesIndex[children[i]], i);
+                }
+            }
+            // parenting
+            if (!entity.get('parent')) {
+                // babylon root
+            }
+            else {
+                // child
+                var details = childIndex[entity.get('resource_id')];
+                if (details && details.parent) {
+                    insertChild(details.parent, node, details.index);
+                }
+            }
+        };
+        var insertChild = function (parent, node, index) {
+            // try to insert the node at the right index
+            // 但是babylon不支持直接操作children列表，_children为private类型，可以通过修改.d.ts文件获取，但是也没必要；
+            if (node !== null) {
+                node.parent = parent;
+            }
+            // for (var i = 0, len = parent._children.length; i < len; i++) {
+            //     var child = parent._children[i];
+            //     if (child instanceof pc.Entity && childIndex[child.getGuid()]) {
+            //         // if our index is less than this child's index
+            //         // then put the item here
+            //         if (index < childIndex[child.getGuid()].index) {
+            //             parent.insertChild(node, i);
+            //             return;
+            //         }
+            //     }
+            // }
+            // // the node can be safely added to the end of the child list
+            // parent.addChild(node);
+        };
         editor.method('scene:mesh:create', function (entity) {
             loadBabylon(entity);
             // // 变成异步事件
@@ -12724,7 +16449,7 @@ var ViewportApplication = /** @class */ (function () {
                         .on('load', function (status, data) {
                         dataBabylon = data;
                         babylonLoader_1.BabylonLoader.babylonCacheData[assetID] = dataBabylon;
-                        babylonLoader_1.BabylonLoader.parseBabylon(assetID, data);
+                        // BabylonLoader.parseBabylon(assetID, data);
                         babylonLoader_1.BabylonLoader.parseBabylon(assetID, data);
                         dataBabylon = babylonLoader_1.BabylonLoader.getParsedBabylonData(assetID);
                         toLoadEntity[assetID].forEach(function (item) {
@@ -12739,27 +16464,36 @@ var ViewportApplication = /** @class */ (function () {
                 }
             }
         };
-        var assembleSceneMesh = function (asset, parsedBabylon) {
+        var assembleSceneMesh = function (entity, parsedBabylon) {
             // TODO: 暂时未考虑TransformNode数据的情况
             if (parsedBabylon) {
-                var assetID = asset.get('asset_id');
+                var assetID = entity.get('asset_id');
                 // 先从.babylon提取原始mesh数据
-                var meshID = asset.get('babylon_id');
+                var meshID = entity.get('babylon_id');
                 if (parsedBabylon.meshes[meshID]) {
                     var meshData = parsedBabylon.meshes[meshID];
                     // 结合scene和babylon数据，更新mesh信息
-                    meshData.position = asset.has('position') && asset.get('position') ? asset.get('position') : meshData.position;
-                    meshData.rotation = asset.has('rotation') && asset.get('rotation') ? asset.get('rotation') : meshData.rotation;
-                    meshData.scale = asset.has('scale') && asset.get('scale') ? asset.get('scale') : meshData.scal;
-                    meshData.name = asset.has('name') && asset.get('name') ? asset.get('name') : meshData.name;
-                    meshData.id = asset.has('resource_id') && asset.get('resource_id') ? asset.get('resource_id') : meshData.id;
-                    meshData.isEnabled = asset.has('enabled') ? asset.get('enabled') : meshData.isEnabled;
-                    meshData.isVisible = asset.has('isVisible') ? asset.get('isVisible') : meshData.isVisible;
-                    meshData.isPickable = asset.has('isPickable') ? asset.get('isPickable') : meshData.isPickable;
-                    meshData.checkCollisions = asset.has('checkCollisions') ? asset.get('checkCollisions') : meshData.checkCollisions;
-                    meshData.materialId = asset.has('material_id') ? asset.get('material_id') : meshData.materialId;
+                    meshData.position = entity.has('position') && entity.get('position') ? entity.get('position') : meshData.position;
+                    var recordRotation = entity.get('rotation');
+                    if (recordRotation && recordRotation.length > 0) {
+                        recordRotation = utility_1.Tools.vector3ToArray(utility_1.Tools.eulerAngleToRadian(BABYLON.Vector3.FromArray(recordRotation)));
+                    }
+                    else {
+                        recordRotation = meshData.rotation;
+                    }
+                    meshData.rotation = recordRotation;
+                    meshData.scale = entity.has('scale') && entity.get('scale') ? entity.get('scale') : meshData.scal;
+                    meshData.name = entity.has('name') && entity.get('name') ? entity.get('name') : meshData.name;
+                    meshData.id = entity.has('resource_id') && entity.get('resource_id') ? entity.get('resource_id') : meshData.id;
+                    meshData.isEnabled = entity.has('enabled') ? entity.get('enabled') : meshData.isEnabled;
+                    meshData.isVisible = entity.has('isVisible') ? entity.get('isVisible') : meshData.isVisible;
+                    // meshData.pickable = entity.has('pickable') ? entity.get('pickable') : meshData.pickable;
+                    // TODO：scene编辑条件下默认就是加载状态；
+                    meshData.pickable = true;
+                    meshData.checkCollisions = entity.has('checkCollisions') ? entity.get('checkCollisions') : meshData.checkCollisions;
+                    meshData.materialId = entity.has('material_id') ? entity.get('material_id') : meshData.materialId;
                     // 要注意是否为root id
-                    meshData.parentId = asset.has('parent') ? asset.get('parent') : meshData.parentId;
+                    meshData.parentId = entity.has('parent') ? entity.get('parent') : meshData.parentId;
                     // 判断是否关联了geometry
                     if (meshData.geometryId) {
                         if (engine_1.VeryEngine.viewScene.getGeometryByID(meshData.geometryId) === null) {
@@ -12770,10 +16504,10 @@ var ViewportApplication = /** @class */ (function () {
                         }
                     }
                     // 组装material
-                    console.error(meshData.materialId);
+                    // console.error(meshData.materialId);
                     if (meshData.materialId) {
                         if (engine_1.VeryEngine.viewScene.getMaterialByID(meshData.materialId) === null) {
-                            console.error(babylonLoader_1.BabylonLoader.assetsData.babylon[assetID]);
+                            // console.error(BabylonLoader.assetsData.babylon[assetID]);
                             if (babylonLoader_1.BabylonLoader.assetsData.babylon[assetID]) {
                                 var mats = babylonLoader_1.BabylonLoader.assetsData.babylon[assetID]['materials'];
                                 if (mats && mats[meshData.materialId]) {
@@ -12783,7 +16517,7 @@ var ViewportApplication = /** @class */ (function () {
                                         // 检测texture
                                         if (newMat.diffuseTexture && newMat.diffuseTexture.texture_id) {
                                             newMat.diffuseTexture.name = babylonLoader_1.BabylonLoader.prefix + newMat.diffuseTexture.texture_id + '/' + babylonLoader_1.BabylonLoader.assetsData.assets[newMat.diffuseTexture.texture_id].name;
-                                            console.warn(newMat.diffuseTexture.name);
+                                            // console.warn(newMat.diffuseTexture.name);
                                         }
                                         if (newMat.specularTexture && newMat.specularTexture.texture_id) {
                                             newMat.specularTexture.name = babylonLoader_1.BabylonLoader.prefix + newMat.specularTexture.texture_id + '/' + babylonLoader_1.BabylonLoader.assetsData.assets[newMat.specularTexture.texture_id].name;
@@ -12809,7 +16543,7 @@ var ViewportApplication = /** @class */ (function () {
                                         if (newMat.lightmapTexture && newMat.lightmapTexture.texture_id) {
                                             newMat.lightmapTexture.name = babylonLoader_1.BabylonLoader.prefix + newMat.lightmapTexture.texture_id + '/' + babylonLoader_1.BabylonLoader.assetsData.assets[newMat.lightmapTexture.texture_id].name;
                                         }
-                                        console.error(newMat);
+                                        // console.error(newMat);
                                         babylonLoader_1.BabylonLoader.loadMaterial(newMat, engine_1.VeryEngine.viewScene, '');
                                     }
                                     else {
@@ -12824,7 +16558,9 @@ var ViewportApplication = /** @class */ (function () {
                     }
                     // 加载mesh
                     var mesh = babylonLoader_1.BabylonLoader.loadMesh(meshData, engine_1.VeryEngine.viewScene, '');
-                    asset.node = mesh;
+                    entity.node = mesh;
+                    entitiesIndex[entity.get('resource_id')] = mesh;
+                    childAndParent(entity, mesh);
                 }
                 else {
                     console.warn('scene mesh warn');
@@ -12835,15 +16571,38 @@ var ViewportApplication = /** @class */ (function () {
     return ViewportApplication;
 }());
 exports.ViewportApplication = ViewportApplication;
-},{"../../engine":95,"../middleware/loader/babylonLoader":56,"../utility":84}],89:[function(require,module,exports){
+},{"../../engine":110,"../middleware/loader/babylonLoader":70,"../utility":97}],103:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ViewportDropModel = void 0;
 var engine_1 = require("../../engine");
-var toolbar_1 = require("../toolbar");
 var babylonLoader_1 = require("../middleware/loader/babylonLoader");
+var gizmos_1 = require("../gizmos");
 var ViewportDropModel = /** @class */ (function () {
     function ViewportDropModel() {
+        editor.method('load:from:asset', function (babylon_data) {
+            babylonLoader_1.BabylonLoader.loadBabylon(babylon_data);
+            // console.log('assets加载模型');
+            // console.log(babylon_data);
+        });
+        editor.method('pick', function (mesh) {
+            if (mesh === null) {
+                gizmos_1.GizmosCenter.clear();
+                console.log('clear gizmos');
+            }
+            else {
+                console.log('pick mesh');
+                // GizmosCenter.attach(mesh);
+                var entity = editor.call('entities:get', mesh.id);
+                console.error(entity);
+                if (entity) {
+                    editor.call('selector:set', 'entity', [entity]);
+                }
+                else {
+                    console.error('失败');
+                }
+            }
+        });
         editor.method('loadTempModel', function (babylon_data) {
             babylonLoader_1.BabylonLoader.loadBabylon(babylon_data);
             console.log('加载模型');
@@ -12937,21 +16696,6 @@ var ViewportDropModel = /** @class */ (function () {
             });
             // 默认加载
             // editor.method('entity:new:mesh', )
-        });
-        editor.method('pick', function (mesh) {
-            if (mesh === null) {
-                toolbar_1.GizmosManager.clear();
-            }
-            else {
-                toolbar_1.GizmosManager.attach(mesh);
-                var entity = editor.call('entities:get', mesh.id);
-                if (entity) {
-                    editor.call('selector:set', 'entity', [entity]);
-                }
-                else {
-                    console.error('失败');
-                }
-            }
         });
         editor.method('loadTempModel2', function (rootUrl, modelName) {
             BABYLON.SceneLoader.Append(rootUrl, modelName, engine_1.VeryEngine.viewScene, function (scene) {
@@ -13228,7 +16972,151 @@ var ViewportDropModel = /** @class */ (function () {
     return ViewportDropModel;
 }());
 exports.ViewportDropModel = ViewportDropModel;
-},{"../../engine":95,"../middleware/loader/babylonLoader":56,"../toolbar":67}],90:[function(require,module,exports){
+},{"../../engine":110,"../gizmos":45,"../middleware/loader/babylonLoader":70}],104:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ViewportEntitiesObserverBinding = void 0;
+var babylonLoader_1 = require("../middleware/loader/babylonLoader");
+var utility_1 = require("../utility");
+var ViewportEntitiesObserverBinding = /** @class */ (function () {
+    function ViewportEntitiesObserverBinding() {
+        // let nnnode = new BABYLON.Node('sdf', VeryEngine.viewScene);
+        // nnnode
+        editor.on('entities:add', function (obj) {
+            // console.warn(obj);
+            // subscribe to changes
+            obj.on('*:set', function (path, value) {
+                var entity = obj.node;
+                if (!entity)
+                    return;
+                if (path === 'name') {
+                    entity.name = obj.get('name');
+                }
+                else if (path.startsWith('position')) {
+                    // TODO: 有数据值的最好换一个通用的方式记录
+                    entity.position = new BABYLON.Vector3(obj.get('position.0'), obj.get('position.1'), obj.get('position.2'));
+                }
+                else if (path.startsWith('rotation')) {
+                    entity.rotation = utility_1.Tools.eulerAngleToRadian(new BABYLON.Vector3(obj.get('rotation.0'), obj.get('rotation.1'), obj.get('rotation.2')));
+                }
+                else if (path.startsWith('scale')) {
+                    entity.scaling = new BABYLON.Vector3(obj.get('scale.0'), obj.get('scale.1'), obj.get('scale.2'));
+                }
+                else if (path.startsWith('enabled')) {
+                    entity.setEnabled(obj.get('enabled'));
+                }
+                else if (path.startsWith('checkCollisions')) {
+                    entity.checkCollisions = obj.get('checkCollisions');
+                }
+                else if (path.startsWith('pickable')) {
+                    // TODO: 编辑场景下entity不改，一直为true，publish加载才真改
+                    // entity.isPickable = obj.get('pickable');
+                }
+                else if (path.startsWith('isVisible')) {
+                    entity.isVisible = obj.get('isVisible');
+                }
+                else if (path.startsWith('parent')) {
+                    // 父子关系设定
+                    var parent = editor.call('entities:get', obj.get('parent'));
+                    // console.log('parent');
+                    // console.warn(parent);
+                    // TODO
+                    // if (parent && parent.node && entity.parent !== parent.node)
+                    //     entity.parent = parent.node;
+                }
+                else if (path === 'components.model.type' && value === 'asset') {
+                    // WORKAROUND
+                    // entity deletes asset when switching to primitive, restore it
+                    // do this in a timeout to allow the model type to change first
+                    // setTimeout(function () {
+                    //     var assetId = obj.get('components.model.asset');
+                    // if (assetId)
+                    //     entity.model.asset = assetId;
+                    // });
+                }
+                babylonLoader_1.BabylonLoader.updateSceneData(obj.get('resource_id'), obj._data2);
+                // console.error(obj._data2);
+                editor.call('make:scene:dirty');
+                // console.warn(entity);
+                // render
+                // editor.call('viewport:render');
+            });
+            var reparent = function (child, index) {
+                console.warn('reparent : ' + child);
+                var childEntity = editor.call('entities:get', child);
+                if (childEntity && childEntity.node) {
+                    // var oldParent = childEntity.node.parent;
+                    // TODO: Light、Camera等不是TransformNode对象
+                    if (childEntity.node instanceof BABYLON.TransformNode) {
+                        console.warn(childEntity.node);
+                        var absPos = BABYLON.Vector3.Zero().copyFrom(childEntity.node.getAbsolutePosition());
+                        // TODO: children中的数据要删除
+                        // 还有灯和摄像机怎么办
+                        // (<BABYLON.TransformNode>childEntity.node).setAbsolutePosition(absPos);
+                        // console.warn(childEntity.node);
+                        // VeryEngine.viewScene.render();
+                        childEntity.node.setParent(obj.node ? obj.node : null);
+                        // (<BABYLON.TransformNode>childEntity.node).parent =(obj.node ? obj.node : null);
+                        console.log(absPos);
+                        // (<BABYLON.TransformNode>childEntity.node).position = new BABYLON.Vector3(5,5,5);
+                        console.warn(childEntity.node);
+                        var localPosition = childEntity.node.position.clone();
+                        var localRotation = utility_1.Tools.radianToEulerAngle(childEntity.node.rotation.clone());
+                        childEntity.set('position.0', localPosition.x);
+                        childEntity.set('position.1', localPosition.y);
+                        childEntity.set('position.2', localPosition.z);
+                        childEntity.set('rotation.0', localRotation.x);
+                        childEntity.set('rotation.1', localRotation.y);
+                        childEntity.set('rotation.2', localRotation.z);
+                    }
+                    else {
+                        console.error('当前类型还未考虑');
+                        console.error(childEntity);
+                    }
+                    // childEntity.node.parent = null;
+                    // childEntity.node.parent = obj.node;
+                    // if (oldParent)
+                    //     oldParent.removeChild(childEntity.node);
+                    // skip any graph nodes
+                    // if (index > 0) {
+                    //     var children = obj.node.getChildren();
+                    //     for (var i = 0, len = children.length; i < len && index > 0; i++) {
+                    //         if (children[i] instanceof BABYLON.Node) {
+                    //             index--;
+                    //         }
+                    //     }
+                    //     index = i;
+                    // }
+                    // re-insert TODO
+                    // obj.node.insertChild(childEntity.node, index);
+                    // persist the positions and sizes of elements if they were previously
+                    // under control of a layout group but have now been reparented
+                    // if (oldParent && oldParent.layoutgroup) {
+                    //     editor.call('entities:layout:storeLayout', [childEntity.node.getGuid()]);
+                    // }
+                }
+            };
+            obj.on('children:insert', reparent);
+            obj.on('children:move', reparent);
+            obj.on('destroy', function () {
+                if (obj.node) {
+                    obj.node.dispose();
+                    editor.call('viewport:render');
+                }
+            });
+        });
+        editor.on('entities:remove', function (obj) {
+            var entity = obj.node;
+            if (!entity)
+                return;
+            entity.dispose();
+            // editor.call('viewport:render');
+        });
+    }
+    return ViewportEntitiesObserverBinding;
+}());
+exports.ViewportEntitiesObserverBinding = ViewportEntitiesObserverBinding;
+},{"../middleware/loader/babylonLoader":70,"../utility":97}],105:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ViewportExpand = void 0;
@@ -13267,7 +17155,7 @@ var ViewportExpand = /** @class */ (function () {
     return ViewportExpand;
 }());
 exports.ViewportExpand = ViewportExpand;
-},{"../../engine":95}],91:[function(require,module,exports){
+},{"../../engine":110}],106:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ViewportInstanceCreate = void 0;
@@ -13280,7 +17168,7 @@ var ViewportInstanceCreate = /** @class */ (function () {
     return ViewportInstanceCreate;
 }());
 exports.ViewportInstanceCreate = ViewportInstanceCreate;
-},{}],92:[function(require,module,exports){
+},{}],107:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Viewport = void 0;
@@ -13288,6 +17176,7 @@ var ui_1 = require("../../ui");
 var engine_1 = require("../../engine");
 var toolbar_1 = require("../toolbar");
 var viewport_expand_1 = require("./viewport-expand");
+var gizmos_1 = require("../gizmos");
 var Viewport = /** @class */ (function () {
     function Viewport() {
         var _this = this;
@@ -13298,7 +17187,8 @@ var Viewport = /** @class */ (function () {
         var self = this;
         var engine = this._engine;
         // TODO: 设定相机
-        this._scene.clearColor = new BABYLON.Color4(49 / 255, 77 / 255, 121 / 255, 1);
+        // this._scene.clearColor = new BABYLON.Color4(49 / 255, 77 / 255, 121 / 255, 1); 
+        this._scene.clearColor = new BABYLON.Color4(116 / 255, 116 / 255, 116 / 255, 1);
         var camera = new BABYLON.ArcRotateCamera('Default', 100, 50, 50, new BABYLON.Vector3(0, 0, 0), this._scene);
         camera.setPosition(new BABYLON.Vector3(0, 1, -20));
         camera.attachControl(this._canvas, true);
@@ -13419,7 +17309,7 @@ var Viewport = /** @class */ (function () {
         this._scene = new BABYLON.Scene(this._engine);
         engine_1.VeryEngine.viewScene = this._scene;
         this._scene.clearColor = new BABYLON.Color4(0, 0, 0, 1);
-        toolbar_1.GizmosManager.init(this._scene);
+        gizmos_1.GizmosCenter.init(this._scene);
     };
     Viewport.prototype.expandControl = function () {
         var control = new toolbar_1.ToolbarTopControl();
@@ -13428,7 +17318,7 @@ var Viewport = /** @class */ (function () {
     return Viewport;
 }());
 exports.Viewport = Viewport;
-},{"../../engine":95,"../../ui":115,"../toolbar":67,"./viewport-expand":90}],93:[function(require,module,exports){
+},{"../../engine":110,"../../ui":130,"../gizmos":45,"../toolbar":80,"./viewport-expand":105}],108:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Application = void 0;
@@ -13438,7 +17328,7 @@ var Application = /** @class */ (function () {
     return Application;
 }());
 exports.Application = Application;
-},{}],94:[function(require,module,exports){
+},{}],109:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BabylonEngine = void 0;
@@ -13448,7 +17338,7 @@ var BabylonEngine = /** @class */ (function () {
     return BabylonEngine;
 }());
 exports.BabylonEngine = BabylonEngine;
-},{}],95:[function(require,module,exports){
+},{}],110:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -13464,7 +17354,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./babylon-engine"), exports);
 __exportStar(require("./very-engine"), exports);
 __exportStar(require("./application"), exports);
-},{"./application":93,"./babylon-engine":94,"./very-engine":96}],96:[function(require,module,exports){
+},{"./application":108,"./babylon-engine":109,"./very-engine":111}],111:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VeryEngine = void 0;
@@ -13476,7 +17366,7 @@ var VeryEngine = /** @class */ (function () {
 }());
 exports.VeryEngine = VeryEngine;
 // export veryconfig
-},{}],97:[function(require,module,exports){
+},{}],112:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -13493,7 +17383,7 @@ __exportStar(require("./lib"), exports);
 __exportStar(require("./editor"), exports);
 __exportStar(require("./ui"), exports);
 __exportStar(require("./engine"), exports);
-},{"./editor":48,"./engine":95,"./lib":99,"./ui":115}],98:[function(require,module,exports){
+},{"./editor":62,"./engine":110,"./lib":114,"./ui":130}],113:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventHandle = exports.Events = void 0;
@@ -13637,7 +17527,7 @@ var EventHandle = /** @class */ (function () {
     return EventHandle;
 }());
 exports.EventHandle = EventHandle;
-},{}],99:[function(require,module,exports){
+},{}],114:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -13654,7 +17544,7 @@ __exportStar(require("./events"), exports);
 __exportStar(require("./observer"), exports);
 __exportStar(require("./observer-list"), exports);
 __exportStar(require("./observer-sync"), exports);
-},{"./events":98,"./observer":102,"./observer-list":100,"./observer-sync":101}],100:[function(require,module,exports){
+},{"./events":113,"./observer":117,"./observer-list":115,"./observer-sync":116}],115:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -13928,7 +17818,7 @@ var ObserverList = /** @class */ (function (_super) {
     return ObserverList;
 }(events_1.Events));
 exports.ObserverList = ObserverList;
-},{"./events":98}],101:[function(require,module,exports){
+},{"./events":113}],116:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -14083,7 +17973,7 @@ var ObserverSync = /** @class */ (function (_super) {
     return ObserverSync;
 }(events_1.Events));
 exports.ObserverSync = ObserverSync;
-},{"./events":98}],102:[function(require,module,exports){
+},{"./events":113}],117:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -14101,14 +17991,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Observer = void 0;
 var events_1 = require("./events");
-/**
- * json数据解析工具；
- * 要求：
- *  1.保存原始json数据；
- *  2.存储信息，根据路径快速索引到对应数据，包括数组，包括嵌套的对象，保持原始数据类型不变；
- *  3.插入、删除、clone数据；
- *
- */
+//  TODO： 当前暂不考虑赋值会超出现有类型的情况，比如原来是个number，赋值为了array；
 var Observer = /** @class */ (function (_super) {
     __extends(Observer, _super);
     // entity, assets, components: script, 一般components, selector, history
@@ -14116,23 +17999,29 @@ var Observer = /** @class */ (function (_super) {
         var _this = _super.call(this) || this;
         _this.entity = null;
         _this.SEPARATOR = '.';
+        _this._dataType = {}; // 暂时只判断是否为array分拆而成的类型；
+        _this._dataType2 = {}; // 暂时只判断是否为array分拆而成的类型；
         _this.sync = null;
+        // private sync!: History;
+        _this.node = null;
         _this.reparenting = false;
+        _this._pathsWithDuplicates = {};
         _this.origin = data;
+        options = options || {};
         _this._destroyed = false;
         _this._path = '';
         _this._keys = [];
         _this._data = {};
+        _this._data2 = {};
         // array paths where duplicate entries are allowed - normally
         // we check if an array already has a value before inserting it
         // but if the array path is in here we'll allow it
-        // this._pathsWithDuplicates = null;
-        // if (options.pathsWithDuplicates) {
-        //     this._pathsWithDuplicates = {};
-        //     for (let i = 0; i < options.pathsWithDuplicates.length; i++) {
-        //         this._pathsWithDuplicates[options.pathsWithDuplicates[i]] = true;
-        //     }
-        // }
+        if (options.pathsWithDuplicates) {
+            _this._pathsWithDuplicates = {};
+            for (var i = 0; i < options.pathsWithDuplicates.length; i++) {
+                _this._pathsWithDuplicates[options.pathsWithDuplicates[i]] = true;
+            }
+        }
         _this.patchData(data);
         // for (let ke in this._data) {
         //   debug.log('key: ' + ke);
@@ -14170,85 +18059,216 @@ var Observer = /** @class */ (function (_super) {
                 // debug.log('一般属性：' + key);
                 // debug.log(data[key]);
                 this.set(key, data[key]);
+                this._dataType[key] = false;
+                this._dataType2[key] = false;
                 // this.set(key, data[key]);
             }
         }
     };
+    // TODO: 若设置值为object，需要再parse
     Observer.prototype.set = function (path, value) {
-        // console.log(path + ' : ' + value);
+        // console.warn(path + ' : ' + value);
         var oldValue = this._data[path];
-        this._data[path] = value;
+        // console.warn(path);
+        // console.warn(value);
+        var keys = path.split('.');
+        var parentID = '';
+        for (var i = 0; i < keys.length - 1; i++) {
+            if (i === 0) {
+                parentID = keys[i];
+            }
+            else {
+                parentID += this.SEPARATOR + keys[i];
+            }
+        }
+        // 数组处理，其他形式暂不考虑
+        if (keys.length > 1 && this._dataType[path]) {
+            var index = parseInt(keys[keys.length - 1]);
+            this._data[path] = value;
+            // 上一级数组修改
+            this._data[parentID][index] = value;
+        }
+        else {
+            // if (value instanceof Array) {
+            //     value = value.slice(0);
+            // }
+            this._data[path] = value;
+            this.updateChildData(path, value);
+            this._data2[path] = value;
+        }
+        // console.warn(this._data);
+        // if (parentID && this._dataType2[parentID] && this.isNumber(keys[keys.length - 1])) {
+        //     this._data2[parentID][parseInt(keys[keys.length - 1])] = value;
+        // }
         this.emit(path + ':set', value, oldValue);
         this.emit('*:set', path, value, oldValue);
+    };
+    Observer.prototype.isNumber = function (str) {
+        var n = Number(str);
+        return !isNaN(n) ? true : false;
+    };
+    Observer.prototype.updateChildData = function (path, value) {
+        if (value instanceof Array) {
+            for (var key in this._data) {
+                if (key.startsWith(path + this.SEPARATOR)) {
+                    delete this._data[key];
+                    delete this._dataType[key];
+                }
+            }
+            var newPath = '';
+            for (var i = 0; i < value.length; i++) {
+                newPath = path + this.SEPARATOR + i.toString();
+                this._data[newPath] = value[i];
+                this._dataType[newPath] = true;
+            }
+        }
     };
     // TODO
     Observer.prototype.unset = function (path, value) {
         // console.log(path + ' : ' + value);
-        // let oldValue = this._data[path];
-        // this._data[path] = value;
-        // this.emit(path + ':set', value, oldValue);
-        // this.emit('*:set', path, value, oldValue);
-    };
-    Observer.prototype.insert = function (path, value, ind) {
-        var keys = path.split(".");
-        var key = keys[keys.length - 1];
-        if (this._data[key] && this._data[key] instanceof Array) {
-            if (ind === undefined) {
-                this._data[key].push(value);
-                ind = this._data[key].length - 1;
-            }
-            else {
-                this._data[key].splice(ind, 0, value);
-            }
-            ;
+        if (!this.has(path)) {
+            return false;
         }
+        var oldValue = this._data[path];
+        delete this._data[path];
+        delete this._dataType[path];
+        delete this._data2[path];
+        delete this._dataType2[path];
+        this.emit(path + ':set', value, oldValue);
+        this.emit('*:set', path, value, oldValue);
+        return true;
+    };
+    // 在数组的某个指定位置增加值
+    Observer.prototype.insert = function (path, value, ind) {
+        // console.error(path + ':insert-value: ' + value);
+        // console.warn(this._data);
+        if (!this.has(path) || !(this._data[path] instanceof Array)) {
+            return false;
+        }
+        var arr = this._data[path];
+        if (value instanceof Array) {
+            value = value.slice(0);
+        }
+        // if (!this._pathsWithDuplicates || !this._pathsWithDuplicates[path]) {
+        //     if (arr.indexOf(value) !== -1) {
+        //         return false;
+        //     }
+        // }
+        if (ind === undefined) {
+            arr.push(value);
+            ind = arr.length - 1;
+        }
+        else {
+            arr.splice(ind, 0, value);
+        }
+        this.updateChildData(path, arr);
+        // TODO
+        // let arr2 = this._data2[path];
+        // console.error(arr2);
+        // if (arr2) {
+        //     // if (!this._pathsWithDuplicates || !this._pathsWithDuplicates[path]) {
+        //     //     if (arr2.indexOf(value) !== -1) {
+        //     //         return false;
+        //     //     }
+        //     // }
+        //     if (ind === undefined) {
+        //         arr2.push(value);
+        //     } else {
+        //         arr2.splice(ind, 0, value);
+        //     }
+        // }
+        // console.error(arr2);
+        // console.warn(this._data);
         this.emit(path + ':insert', value, ind);
         this.emit('*:insert', path, value, ind);
         return true;
     };
-    // public set2(path: string, value: any): void {
-    //     // console.log(path + ' : ' + value);
-    //     this._data[path] = value;
-    //     var keys = path.split('.');
-    //     var length = keys.length;
-    //     var key = keys[length - 1];
-    //     var node = this;
-    //     var nodePath = '';
-    //     var obj = this;
-    //     var state;
-    //     for (var i = 0; i < length - 1; i++) {
-    //         if (node instanceof Array) {
-    //             node = node[keys[i]];
-    //             if (node instanceof Observer) {
-    //                 path = keys.slice(i + 1).join('.');
-    //                 obj = node;
-    //             }
-    //         } else {
-    //             if (i < length && typeof node._data[keys[i]] !== 'object') {
-    //                 if (node._data[keys[i]])
-    //                     obj.unset((node.__path ? node.__path + '.' : '') + keys[i]);
-    //                 node._data[keys[i]] = {
-    //                     _path: path,
-    //                     _keys: [],
-    //                     _data: {}
-    //                 };
-    //                 node._keys.push(keys[i]);
-    //             }
-    //             if (i === length - 1 && node.__path)
-    //                 nodePath = node.__path + '.' + keys[i];
-    //             node = node._data[keys[i]];
-    //         }
-    //     }
-    // }
+    // 删除数组指定某个序号的值
+    Observer.prototype.remove = function (path, ind) {
+        if (!this.has(path) || !(this._data[path] instanceof Array)) {
+            return false;
+        }
+        var arr = this._data[path];
+        if (arr.length < ind)
+            return false;
+        var value = arr[ind];
+        arr.splice(ind, 1);
+        this.updateChildData(path, arr);
+        // TODO
+        // let arr2 = this._data2[path];
+        // if (arr2 && arr2.length >= ind) {
+        //     arr2.splice(ind, 1);
+        // }
+        this.emit(path + ':remove', value, ind);
+        this.emit('*:remove', path, value, ind);
+        return true;
+    };
+    // 删除数组中的某个value值
+    Observer.prototype.removeValue = function (path, value) {
+        if (!this.has(path) || !(this._data[path] instanceof Array)) {
+            return false;
+        }
+        var arr = this._data[path];
+        var ind = arr.indexOf(value);
+        if (ind === -1) {
+            return false;
+        }
+        var oldValue = arr[ind];
+        arr.splice(ind, 1);
+        this.updateChildData(path, arr);
+        // TODO
+        // let arr2 = this._data2[path];
+        // if (arr2 && ind >= 0) {
+        //     arr2.splice(ind, 1);
+        // }
+        // console.warn('删除');
+        // console.warn(this._data);
+        // console.warn(this._data2);
+        this.emit(path + ':remove', oldValue, ind);
+        this.emit('*:remove', path, oldValue, ind);
+        return true;
+    };
+    Observer.prototype.move = function (path, indOld, indNew) {
+        if (!this.has(path) || !(this._data[path] instanceof Array)) {
+            return false;
+        }
+        var indNew2 = indNew;
+        var arr = this._data[path];
+        if (arr.length < indOld || arr.length < indNew || indOld === indNew)
+            return false;
+        var oldValue = arr[indOld];
+        arr.splice(indOld, 1);
+        if (indNew === -1)
+            indNew = arr.length;
+        arr.splice(indNew, 0, oldValue);
+        this.updateChildData(path, arr);
+        // TODO
+        // let arr2 = this._data2[path];
+        // if (arr2) {
+        //     if (arr2.length < indOld || arr2.length < indNew2 || indOld === indNew2) {
+        //     } else {
+        //         let oldValue2 = arr2[indOld]
+        //         arr2.splice(indOld, 1);
+        //         if (indNew2 === -1) indNew2 = arr2.length;
+        //         arr2.splice(indNew2, 0, oldValue2);
+        //     }
+        // }
+        this.emit(path + ':move', oldValue, indNew, indOld);
+        this.emit('*:move', path, oldValue, indNew, indOld);
+        return true;
+    };
     Observer.prototype.parserObject = function (prefix, key, value) {
         // 先保存一份
         this.set(prefix, value);
+        this._dataType[prefix] = false;
         var path;
         var type = typeof value;
         if (type === 'object' && value instanceof Array) {
+            this._dataType2[prefix] = true;
             for (var i = 0; i < value.length; i++) {
                 path = prefix + this.SEPARATOR + i.toString();
                 this.set(path, value[i]);
+                this._dataType[path] = true;
                 // 数组元素还是对象的情况暂时不处理
             }
         }
@@ -14261,6 +18281,8 @@ var Observer = /** @class */ (function (_super) {
                 else {
                     path = prefix + this.SEPARATOR + key2;
                     this.set(path, value[key2]);
+                    this._dataType[path] = false;
+                    this._dataType2[prefix] = false;
                 }
             }
         }
@@ -14401,131 +18423,6 @@ var Observer = /** @class */ (function (_super) {
         if (state[1] && this.sync !== null && this.sync.enabled !== undefined)
             this.sync.enabled = true;
     };
-    // public has(path: string): boolean {
-    //   let keys = path.split('.');
-    //   let node = this;
-    //   for (let i = 0, len = keys.length; i < len; i++) {
-    //     if (node === undefined) return false;
-    //     if (node._data) {
-    //       node = node._data[keys[i]];
-    //     } else {
-    //       // node = node[keys[i]];
-    //     }
-    //   }
-    //   return node !== undefined;
-    // }
-    // public get(path: string, raw?: boolean): Nullable<Observer> {
-    //   let keys = path.split('.');
-    //   let node = this;
-    //   for (let i = 0; i < keys.length; i++) {
-    //     if (node === undefined)
-    //       return null;
-    //     if (node._data) {
-    //       node = node._data[keys[i]];
-    //     } else {
-    //       // node = node[keys[i]];
-    //     }
-    //   }
-    //   if (raw !== undefined && raw)
-    //     return node;
-    //   if (node === null) {
-    //     return null;
-    //   } else {
-    //     return this.json(node);
-    //   }
-    // }
-    // public move(path: string, indOld: number, indNew: number, silent: boolean, remote: boolean): void {
-    //   let keys = path.split('.');
-    //   let key = keys[keys.length - 1];
-    //   let node = this;
-    //   let obj = this;
-    //   for (let i = 0; i < keys.length - 1; i++) {
-    //     if (node instanceof Array) {
-    //       node = node[parseInt(keys[i], 10)];
-    //       if (node instanceof Observer) {
-    //         path = keys.slice(i + 1).join('.');
-    //         obj = node;
-    //       }
-    //     } else if (node._data && node._data.hasOwnProperty(keys[i])) {
-    //       node = node._data[keys[i]];
-    //     } else {
-    //       return;
-    //     }
-    //   }
-    //   if (!node._data || !node._data.hasOwnProperty(key) || !(node._data[key] instanceof Array))
-    //     return;
-    //   let arr = node._data[key];
-    //   if (arr.length < indOld || arr.length < indNew || indOld === indNew)
-    //     return;
-    //   let value = arr[indOld];
-    //   arr.splice(indOld, 1);
-    //   if (indNew === -1)
-    //     indNew = arr.length;
-    //   arr.splice(indNew, 0, value);
-    //   if (!(value instanceof Observer))
-    //     value = obj.json(value);
-    //   let state: boolean[];
-    //   if (silent)
-    //     state = obj.silence();
-    //   obj.emit(path + ':move', value, indNew, indOld, remote);
-    //   obj.emit('*:move', path, value, indNew, indOld, remote);
-    //   if (silent)
-    //     obj.silenceRestore(state!);
-    //   return;
-    // };
-    // 将json对象复制解析出来
-    // public patch(data: any): void {
-    //   if (typeof data !== 'object') {
-    //     debug.warn(this.className + ': 不是正确的json对象，打印：\n' + data);
-    //     return;
-    //   }
-    //   for (let key in data) {
-    //     if (typeof data[key] === 'object' && !this._data.hasOwnProperty(key)) {
-    //       // 对象属性
-    //       debug.log('对象属性：' + key);
-    //       debug.log(data[key]);
-    //       // this._prepare(this, key, data[key]);
-    //     } else if (this._data[key] !== data[key]) {
-    //       // 一般属性
-    //       debug.log('一般属性：' + key);
-    //       debug.log(data[key]);
-    //       // this.set(key, data[key]);
-    //     }
-    //   }
-    // }
-    // public set2(path: string, value: any, silent?: boolean, remote?: boolean, force?: boolean): void {
-    //   var keys = path.split('.');
-    //   var length = keys.length;
-    //   var key = keys[length - 1];
-    //   var node: any = this;
-    //   var nodePath = '';
-    //   var obj: any = this;
-    //   var state;
-    //   for (var i = 0; i < length - 1; i++) {
-    //     if (node instanceof Array) {
-    //       // TODO: 这是啥啊？
-    //       // node = node[keys[i]];
-    //       if (node instanceof Observer) {
-    //         path = keys.slice(i + 1).join('.');
-    //         obj = node;
-    //       }
-    //     } else {
-    //       if (i < length && typeof (node._data[keys[i]]) !== 'object') {
-    //         if (node._data[keys[i]])
-    //           obj.unset((node.__path ? node.__path + '.' : '') + keys[i]);
-    //         node._data[keys[i]] = {
-    //           _path: path,
-    //           _keys: [],
-    //           _data: {}
-    //         };
-    //         node._keys.push(keys[i]);
-    //       }
-    //       if (i === length - 1 && node.__path)
-    //         nodePath = node.__path + '.' + keys[i];
-    //       node = node._data[keys[i]];
-    //     }
-    //   }
-    // }
     // public json(target?: Observer): Observer {
     //   let obj: { [key: string]: any } = {};
     //   let node = target === undefined ? this : target;
@@ -14596,7 +18493,7 @@ var Observer = /** @class */ (function (_super) {
     return Observer;
 }(events_1.Events));
 exports.Observer = Observer;
-},{"./events":98}],103:[function(require,module,exports){
+},{"./events":113}],118:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -14610,7 +18507,9 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var editor_1 = require("./editor");
+// import { Element, Canvas } from './ui';
 var engine_1 = require("./engine");
+// import { Database } from './editor/middleware/offline/database';
 __exportStar(require("./index"), exports);
 // 添加到全局变量
 window.editor = new editor_1.Editor();
@@ -14700,7 +18599,7 @@ editor.call('method', 123);
 // for(let i: number = 0; i < parent.childNodes.length; i++) {
 //   console.log(parent.childNodes[i] instanceof HTMLElement);
 // }
-},{"./editor":48,"./engine":95,"./index":97}],104:[function(require,module,exports){
+},{"./editor":62,"./engine":110,"./index":112}],119:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -14763,7 +18662,7 @@ var Bubble = /** @class */ (function (_super) {
     return Bubble;
 }(element_1.Element));
 exports.Bubble = Bubble;
-},{"./element":111}],105:[function(require,module,exports){
+},{"./element":126}],120:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -14835,7 +18734,7 @@ var Button = /** @class */ (function (_super) {
     return Button;
 }(element_1.Element));
 exports.Button = Button;
-},{"./element":111}],106:[function(require,module,exports){
+},{"./element":126}],121:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -14909,7 +18808,7 @@ var Canvas = /** @class */ (function (_super) {
     return Canvas;
 }(element_1.Element));
 exports.Canvas = Canvas;
-},{"./element":111}],107:[function(require,module,exports){
+},{"./element":126}],122:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -15002,7 +18901,7 @@ var Checkbox = /** @class */ (function (_super) {
     return Checkbox;
 }(element_1.Element));
 exports.Checkbox = Checkbox;
-},{"./element":111}],108:[function(require,module,exports){
+},{"./element":126}],123:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -15041,7 +18940,7 @@ var Code = /** @class */ (function (_super) {
     return Code;
 }(container_element_1.ContainerElement));
 exports.Code = Code;
-},{"./container-element":110}],109:[function(require,module,exports){
+},{"./container-element":125}],124:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -15269,7 +19168,7 @@ var ColorField = /** @class */ (function (_super) {
     return ColorField;
 }(element_1.Element));
 exports.ColorField = ColorField;
-},{"./element":111}],110:[function(require,module,exports){
+},{"./element":126}],125:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -15524,7 +19423,7 @@ var ContainerElement = /** @class */ (function (_super) {
     return ContainerElement;
 }(element_1.Element));
 exports.ContainerElement = ContainerElement;
-},{"./element":111}],111:[function(require,module,exports){
+},{"./element":126}],126:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -15866,7 +19765,7 @@ var Element = /** @class */ (function (_super) {
     return Element;
 }(lib_1.Events));
 exports.Element = Element;
-},{"../lib":99}],112:[function(require,module,exports){
+},{"../lib":114}],127:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -15974,7 +19873,7 @@ var GridItemArgs = /** @class */ (function () {
     return GridItemArgs;
 }());
 exports.GridItemArgs = GridItemArgs;
-},{"./element":111}],113:[function(require,module,exports){
+},{"./element":126}],128:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -16141,7 +20040,7 @@ var Grid = /** @class */ (function (_super) {
     return Grid;
 }(container_element_1.ContainerElement));
 exports.Grid = Grid;
-},{"../editor":48,"./container-element":110}],114:[function(require,module,exports){
+},{"../editor":62,"./container-element":125}],129:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -16272,7 +20171,7 @@ var ImageField = /** @class */ (function (_super) {
     return ImageField;
 }(element_1.Element));
 exports.ImageField = ImageField;
-},{"./element":111}],115:[function(require,module,exports){
+},{"./element":126}],130:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -16314,7 +20213,7 @@ __exportStar(require("./image-field"), exports);
 __exportStar(require("./number-field"), exports);
 __exportStar(require("./slider"), exports);
 __exportStar(require("./select-field"), exports);
-},{"./bubble":104,"./button":105,"./canvas":106,"./checkbox":107,"./code":108,"./color-field":109,"./container-element":110,"./element":111,"./grid":113,"./grid-item":112,"./image-field":114,"./label":116,"./link":117,"./list":119,"./list-item":118,"./menu":121,"./menu-item":120,"./number-field":122,"./overlay":123,"./panel":124,"./progress":125,"./select-field":126,"./slider":127,"./text-field":128,"./textarea-field":129,"./tooltip":130,"./top/index":131,"./tree":136,"./tree-item":135}],116:[function(require,module,exports){
+},{"./bubble":119,"./button":120,"./canvas":121,"./checkbox":122,"./code":123,"./color-field":124,"./container-element":125,"./element":126,"./grid":128,"./grid-item":127,"./image-field":129,"./label":131,"./link":132,"./list":134,"./list-item":133,"./menu":136,"./menu-item":135,"./number-field":137,"./overlay":138,"./panel":139,"./progress":140,"./select-field":141,"./slider":142,"./text-field":143,"./textarea-field":144,"./tooltip":145,"./top/index":146,"./tree":151,"./tree-item":150}],131:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -16423,7 +20322,7 @@ var Label = /** @class */ (function (_super) {
     return Label;
 }(element_1.Element));
 exports.Label = Label;
-},{"./element":111}],117:[function(require,module,exports){
+},{"./element":126}],132:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LinkSchema = exports.Link = void 0;
@@ -16459,7 +20358,7 @@ var LinkSchema = /** @class */ (function () {
     return LinkSchema;
 }());
 exports.LinkSchema = LinkSchema;
-},{}],118:[function(require,module,exports){
+},{}],133:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -16539,7 +20438,7 @@ var ListItem = /** @class */ (function (_super) {
     return ListItem;
 }(element_1.Element));
 exports.ListItem = ListItem;
-},{"./element":111}],119:[function(require,module,exports){
+},{"./element":126}],134:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -16677,7 +20576,7 @@ var List = /** @class */ (function (_super) {
     return List;
 }(container_element_1.ContainerElement));
 exports.List = List;
-},{"../editor":48,"./container-element":110}],120:[function(require,module,exports){
+},{"../editor":62,"./container-element":125}],135:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -16856,7 +20755,7 @@ var MenuItem = /** @class */ (function (_super) {
     return MenuItem;
 }(container_element_1.ContainerElement));
 exports.MenuItem = MenuItem;
-},{"./container-element":110}],121:[function(require,module,exports){
+},{"./container-element":125}],136:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -17080,7 +20979,7 @@ var Menu = /** @class */ (function (_super) {
     return Menu;
 }(container_element_1.ContainerElement));
 exports.Menu = Menu;
-},{"./container-element":110,"./menu-item":120}],122:[function(require,module,exports){
+},{"./container-element":125,"./menu-item":135}],137:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -17298,7 +21197,7 @@ var NumberField = /** @class */ (function (_super) {
     return NumberField;
 }(element_1.Element));
 exports.NumberField = NumberField;
-},{"./element":111}],123:[function(require,module,exports){
+},{"./element":126}],138:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -17410,7 +21309,7 @@ var Overlay = /** @class */ (function (_super) {
     return Overlay;
 }(container_element_1.ContainerElement));
 exports.Overlay = Overlay;
-},{"./container-element":110}],124:[function(require,module,exports){
+},{"./container-element":125}],139:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -17779,7 +21678,7 @@ var Panel = /** @class */ (function (_super) {
     return Panel;
 }(container_element_1.ContainerElement));
 exports.Panel = Panel;
-},{"./container-element":110}],125:[function(require,module,exports){
+},{"./container-element":125}],140:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -17916,7 +21815,7 @@ var Progress = /** @class */ (function (_super) {
     return Progress;
 }(element_1.Element));
 exports.Progress = Progress;
-},{"./element":111}],126:[function(require,module,exports){
+},{"./element":126}],141:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -18322,7 +22221,7 @@ var SelectField = /** @class */ (function (_super) {
     return SelectField;
 }(element_1.Element));
 exports.SelectField = SelectField;
-},{"./element":111}],127:[function(require,module,exports){
+},{"./element":126}],142:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -18575,7 +22474,7 @@ var Slider = /** @class */ (function (_super) {
     return Slider;
 }(element_1.Element));
 exports.Slider = Slider;
-},{"./element":111}],128:[function(require,module,exports){
+},{"./element":126}],143:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -18756,7 +22655,7 @@ var TextField = /** @class */ (function (_super) {
     return TextField;
 }(element_1.Element));
 exports.TextField = TextField;
-},{"./element":111}],129:[function(require,module,exports){
+},{"./element":126}],144:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -18939,7 +22838,7 @@ var TextAreaField = /** @class */ (function (_super) {
     return TextAreaField;
 }(element_1.Element));
 exports.TextAreaField = TextAreaField;
-},{"./element":111}],130:[function(require,module,exports){
+},{"./element":126}],145:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -19202,7 +23101,7 @@ var Tooltip = /** @class */ (function (_super) {
     return Tooltip;
 }(container_element_1.ContainerElement));
 exports.Tooltip = Tooltip;
-},{"./container-element":110}],131:[function(require,module,exports){
+},{"./container-element":125}],146:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -19218,7 +23117,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./top-element"), exports);
 __exportStar(require("./top-element-container"), exports);
 __exportStar(require("./top-element-panel"), exports);
-},{"./top-element":134,"./top-element-container":132,"./top-element-panel":133}],132:[function(require,module,exports){
+},{"./top-element":149,"./top-element-container":147,"./top-element-panel":148}],147:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -19672,7 +23571,7 @@ var TopElementContainer = /** @class */ (function (_super) {
     return TopElementContainer;
 }(top_element_1.TopElement));
 exports.TopElementContainer = TopElementContainer;
-},{"./top-element":134}],133:[function(require,module,exports){
+},{"./top-element":149}],148:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -19972,7 +23871,7 @@ var TopElementPanel = /** @class */ (function (_super) {
     return TopElementPanel;
 }(top_element_container_1.TopElementContainer));
 exports.TopElementPanel = TopElementPanel;
-},{"./top-element-container":132}],134:[function(require,module,exports){
+},{"./top-element-container":147}],149:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -20290,7 +24189,7 @@ var TopElement = /** @class */ (function (_super) {
     return TopElement;
 }(lib_1.Events));
 exports.TopElement = TopElement;
-},{"../../lib":99}],135:[function(require,module,exports){
+},{"../../lib":114}],150:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -20444,8 +24343,8 @@ var TreeItem = /** @class */ (function (_super) {
                 this.emit('close');
                 this.tree.emit('close', this);
             }
-            if (this.element) {
-            }
+            // if (this.element) {
+            // }
         },
         enumerable: false,
         configurable: true
@@ -20851,7 +24750,7 @@ var TreeItem = /** @class */ (function (_super) {
     return TreeItem;
 }(element_1.Element));
 exports.TreeItem = TreeItem;
-},{"./element":111,"./text-field":128,"./tree":136}],136:[function(require,module,exports){
+},{"./element":126,"./text-field":143,"./tree":151}],151:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -21422,6 +25321,6 @@ var Tree = /** @class */ (function (_super) {
     return Tree;
 }(container_element_1.ContainerElement));
 exports.Tree = Tree;
-},{"../editor":48,"./container-element":110,"./tree-item":135}]},{},[103])
+},{"../editor":62,"./container-element":125,"./tree-item":150}]},{},[118])
 
 //# sourceMappingURL=vreditor.js.map

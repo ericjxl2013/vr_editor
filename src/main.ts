@@ -1,7 +1,7 @@
 import { Editor, Layout, Viewport, HierarchyKeeper, AssetsPanel, InitializeBefore, InitializeAfter, Debug, Tools, AssetsKeeper, Search, Drop, InitializeData } from './editor';
-import { Element, Canvas } from './ui';
+// import { Element, Canvas } from './ui';
 import { VeryEngine } from './engine';
-import { Database } from './editor/middleware/offline/database';
+// import { Database } from './editor/middleware/offline/database';
 
 export * from './index';
 
@@ -60,7 +60,6 @@ let initializeData: InitializeData = new InitializeData();
 //   console.log(im.name);
 //   console.log(im.sizes);
 // }
-
 
 /* TEST
 editor.once('load', () => {

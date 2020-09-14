@@ -1,5 +1,5 @@
 import { Button, Tooltip } from "../../ui";
-import { GizmosManager } from "./gizmo-manager";
+import { GizmosCenter } from "../gizmos/gizmo-center";
 
 export class ToolbarGizmos {
 
@@ -24,11 +24,13 @@ export class ToolbarGizmos {
             icon: '&#57618;',
             tooltip: '缩放',
             op: 'scale'
-        }, {
-            icon: '&#57666;',
-            tooltip: 'Resize Element Component',
-            op: 'resize'
-        }].forEach(function (item, index) {
+        }
+        // , {
+        //     icon: '&#57666;',
+        //     tooltip: 'Resize Element Component',
+        //     op: 'resize'
+        // }
+    ].forEach(function (item, index) {
             var button = new Button(item.icon);
             // button.hidden = !editor.call('permissions:write');
             button.op = item.op;
@@ -49,11 +51,11 @@ export class ToolbarGizmos {
                 editor.call('gizmo:type', button.op);
 
                 if (button.op === 'translate') {
-                    GizmosManager.setMode(0);
+                    GizmosCenter.setMode(0);
                 } else if (button.op === 'rotate') {
-                    GizmosManager.setMode(1);
+                    GizmosCenter.setMode(1);
                 } else {
-                    GizmosManager.setMode(2);
+                    GizmosCenter.setMode(2);
                 }
             });
 
@@ -78,18 +80,19 @@ export class ToolbarGizmos {
         // coordinate system
         var buttonWorld = new Button('&#57624;');
         // buttonWorld.hidden = !editor.call('permissions:write');
-        buttonWorld.class!.add('pc-icon', 'active');
+        // buttonWorld.class!.add('pc-icon', 'active');
+        buttonWorld.class!.add('pc-icon');
         toolbar.append(buttonWorld);
 
         buttonWorld.on('click', function () {
             if (buttonWorld.class!.contains('active')) {
                 buttonWorld.class!.remove('active');
-                tooltipWorld.html = 'World / <span style="color:#fff">Local</span>';
+                tooltipWorld.html = '<span style="color:#fff">局部坐标</span> / 世界坐标';
             } else {
                 buttonWorld.class!.add('active');
-                tooltipWorld.html = '<span style="color:#fff">World</span> / Local';
+                tooltipWorld.html = '局部坐标 / <span style="color:#fff">世界坐标</span>';
             }
-            editor.call('gizmo:coordSystem', buttonWorld.class!.contains('active') ? 'world' : 'local');
+            editor.emit('gizmo:coordSystem', buttonWorld.class!.contains('active') ? 'world' : 'local');
         });
 
         var tooltipWorld = Tooltip.attach({
@@ -97,33 +100,33 @@ export class ToolbarGizmos {
             align: 'left',
             root: root
         });
-        tooltipWorld.html = '<span style="color:#fff">World</span> / Local';
+        tooltipWorld.html = '<span style="color:#fff">局部坐标</span> / 世界坐标';
         tooltipWorld.class!.add('innactive');
 
 
         // toggle grid snap
-        var buttonSnap = new Button('&#57622;');
-        // buttonSnap.hidden = !editor.call('permissions:write');
-        buttonSnap.class!.add('pc-icon');
-        buttonSnap.on('click', function () {
-            if (buttonSnap.class!.contains('active')) {
-                buttonSnap.class!.remove('active');
-                tooltipSnap.class!.add('innactive');
-            } else {
-                buttonSnap.class!.add('active');
-                tooltipSnap.class!.remove('innactive');
-            }
-            editor.call('gizmo:snap', buttonSnap.class!.contains('active'));
-        });
-        toolbar.append(buttonSnap);
+        // var buttonSnap = new Button('&#57622;');
+        // // buttonSnap.hidden = !editor.call('permissions:write');
+        // buttonSnap.class!.add('pc-icon');
+        // buttonSnap.on('click', function () {
+        //     if (buttonSnap.class!.contains('active')) {
+        //         buttonSnap.class!.remove('active');
+        //         tooltipSnap.class!.add('innactive');
+        //     } else {
+        //         buttonSnap.class!.add('active');
+        //         tooltipSnap.class!.remove('innactive');
+        //     }
+        //     editor.call('gizmo:snap', buttonSnap.class!.contains('active'));
+        // });
+        // toolbar.append(buttonSnap);
 
-        var tooltipSnap = Tooltip.attach({
-            target: buttonSnap.element!,
-            text: 'Snap',
-            align: 'left',
-            root: root
-        });
-        tooltipSnap.class!.add('innactive');
+        // var tooltipSnap = Tooltip.attach({
+        //     target: buttonSnap.element!,
+        //     text: 'Snap',
+        //     align: 'left',
+        //     root: root
+        // });
+        // tooltipSnap.class!.add('innactive');
 
 
         editor.on('permissions:writeState', function (state: boolean) {
@@ -160,7 +163,7 @@ export class ToolbarGizmos {
 
         var tooltipFocus = Tooltip.attach({
             target: buttonFocus.element!,
-            text: 'Focus',
+            text: '聚焦当前物体',
             align: 'left',
             root: root
         });

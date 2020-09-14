@@ -27,29 +27,29 @@ exports.acquire = async (ctx, next) => {
     let req_query = request.query;
     let req_queryString = request.querystring;
     let projectID = req_query.projectID;
+    let assetID = req_query.id;
+    let name = decodeURI(req_query.name);
 
     // console.log(url);
     // console.log(req_queryString);
     // console.log(name);
-
-    if (!fs.existsSync("dist/projects/" + projectID + "/tableTest.json")) {
-        console.log("文件不存在");
-        return ctx.sendError("0005", "No Such File");
+    var path = "dist/assets/" + assetID + "/" + name;
+    if (!fs.existsSync(path)) {
+        console.log("表格文件不存在：" + path);
+        return ctx.sendError("0005", "表格文件不存在：" + path);
     } else {
         var data;
         try {
-            data = await readFile(
-                "dist/projects/" + projectID + "/tableTest.json"
-            );
+            data = await readFile(path);
         } catch {
-            return ctx.sendError("0005", "No Such File");
+            return ctx.sendError("0005", "表格文件不存在：" + path);
         }
         if (data) {
             // console.log('data: ' + data);
             return ctx.send(JSON.parse(data));
         } else {
             console.log("Empty");
-            return ctx.sendError("0005", "Empty");
+            return ctx.sendError("0005", "表格为空：" + path);
         }
     }
 };
@@ -60,20 +60,27 @@ exports.commit = async (ctx, next) => {
     let req_query = request.query;
     let req_queryString = request.querystring;
     let projectID = req_query.projectID;
+    let assetID = req_query.id;
+    let name = decodeURI(req_query.name);
+    
 
     let data = ctx.request.body;
+
+    var path = "dist/assets/" + assetID + "/" + name;
     // console.log('数据：' + data);
     if (data) {
-        // 数据格式
-        try {
-            await writeFile(
-                "dist/projects/" + projectID + "/tableTest.json",
-                JSON.stringify(data)
-            );
-            return ctx.send("success");
-        } catch (err) {
-            console.log("write file error: " + err);
-            return ctx.sendError("0004", "save error: " + err);
+        if (!fs.existsSync(path)) {
+            console.log("表格文件不存在：" + path);
+            return ctx.sendError("0005", "表格文件不存在：" + path);
+        } else {
+            // 数据格式
+            try {
+                await writeFile(path, JSON.stringify(data));
+                return ctx.send("success");
+            } catch (err) {
+                console.log("write file error: " + err);
+                return ctx.sendError("0004", "save error: " + err);
+            }
         }
     } else {
         return ctx.sendError("0004", "undifined data! check please!");

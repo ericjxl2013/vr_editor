@@ -46,9 +46,16 @@ export class ToolbarTopControl {
             root: VeryEngine.root
         });
 
+        // launch
+        var launch = new Panel();
+        launch.class!.add('launch');
+        panel.append(launch);
+        launch.style!.marginRight = '2px';
+        // launch.disabled = true;
+
         var buttonLaunch = new Button('&#57649;');
         buttonLaunch.class!.add('icon');
-        panel.append(buttonLaunch);
+        launch.append(buttonLaunch);
 
         buttonLaunch.on('click', function () {
             window.open(window.location.protocol + '//' + window.location.host + '/publish/' + Config.projectID);
@@ -56,7 +63,7 @@ export class ToolbarTopControl {
 
         var tooltipLaunch = Tooltip.attach({
             target: buttonLaunch.element!,
-            text: '发布',
+            text: '运行',
             align: 'top',
             root: VeryEngine.root
         });

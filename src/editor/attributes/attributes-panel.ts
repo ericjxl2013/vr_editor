@@ -1,7 +1,6 @@
 import { Panel, Label, Progress, Element, TextField, Button, TextAreaField, Slider, NumberField, Checkbox, ColorField, ImageField, Code, SelectField, TopElementPanel } from "../../ui";
 import { VeryEngine } from "../../engine";
 import { Observer } from "../../lib";
-import { GizmosManager } from "../toolbar";
 
 export class AttributesPanel {
 
@@ -27,13 +26,13 @@ export class AttributesPanel {
 
         // set header
         editor.method('attributes:header', (text: string) => {
-            if(text.toLowerCase() === 'texture') {
+            if (text.toLowerCase() === 'texture') {
                 text = '贴图';
-            } else if(text.toLowerCase() === 'material') {
+            } else if (text.toLowerCase() === 'material') {
                 text = '材质';
-            } else if(text.toLowerCase() === 'model') {
+            } else if (text.toLowerCase() === 'model') {
                 text = '模型';
-            } else if(text.toLowerCase() === 'folder') {
+            } else if (text.toLowerCase() === 'folder') {
                 text = '文件夹';
             }
             self.root.headerText = text;
@@ -186,7 +185,7 @@ export class AttributesPanel {
                     //         valueFound = true;
                     //         value = args.link[i].get(path);
                     //     } else {
-                            
+
                     //         var v = args.link[i].get(path);
                     //         console.error(args.link[i]);
                     //         console.error(v);
@@ -209,12 +208,13 @@ export class AttributesPanel {
 
                 args.field._changing = false;
 
-                if (args.enum) {
-                    var opt = args.field.optionElements[''];
-                    if (opt) opt.style.display = value !== '' ? 'none' : '';
-                } else {
-                    args.field.proxy = value == null ? '...' : null;
-                }
+                // TODO
+                // if (args.enum) {
+                //     var opt = args.field.optionElements[''];
+                //     if (opt) opt.style.display = value !== '' ? 'none' : '';
+                // } else {
+                //     args.field.proxy = value == null ? '...' : null;
+                // }
             };
 
             changeField = function (value: any) {
@@ -325,7 +325,7 @@ export class AttributesPanel {
             };
 
             changeFieldQueue = function () {
-                console.log('changeFieldQueue');
+                // console.log('changeFieldQueue');
 
                 if (args.field._changing)
                     return;
@@ -1280,8 +1280,8 @@ export class AttributesPanel {
                     icon.addEventListener('click', function (e) {
                         e.stopPropagation();
 
-                        if (editor.call('permissions:write'))
-                            field.text = '';
+                        // if (editor.call('permissions:write'))
+                        //     field.text = '';
                     });
 
                     field.on('change', function (value: string) {
@@ -1498,11 +1498,17 @@ export class AttributesPanel {
                 return;
             }
 
+            // console.warn('选择类型：' + type);
+            // console.warn(items);
+
             // clear if destroyed
             for (let i = 0; i < items.length; i++) {
                 // TODO：当前item为空
+                // console.error(type);
+                // if (type === 'entity') {
+                //     GizmosCenter.attach(items[i].node);
+                // }
                 // console.error(items[i]);
-                GizmosManager.attach(items[i].node);
                 inspectedItems.push(items[i].once('destroy', function () {
                     editor.call('attributes:clear');
                 }));

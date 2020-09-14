@@ -78,9 +78,8 @@ export class TreeItem extends Element {
             this.tree!.emit('close', this);
         }
 
-        if (this.element) {
-
-        }
+        // if (this.element) {
+        // }
     }
 
     public get prev(): Nullable<TreeItem> {

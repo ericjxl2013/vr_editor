@@ -11,16 +11,21 @@ export class EntityEdit {
         let deletedCache: { [key: string]: string } = {};
 
         editor.on('entities:add', function (entity: Observer) {
+            // console.log('entity-edit-children');
             var children = entity.get('children');
             for (var i = 0; i < children.length; i++)
                 childToParent[children[i]] = entity.get('resource_id');
 
             entity.on('children:insert', function (value: string) {
-                console.warn('children:insert in entity-edit');
+                // console.warn('children:insert in entity-edit');
                 childToParent[value] = entity.get('resource_id');
+                BabylonLoader.updateSceneData(entity.get('resource_id'), entity._data2);
+                editor.call('make:scene:dirty');
             });
             entity.on('children:remove', function (value: string) {
                 delete childToParent[value];
+                BabylonLoader.updateSceneData(entity.get('resource_id'), entity._data2);
+                editor.call('make:scene:dirty');
             });
         });
 
@@ -53,9 +58,9 @@ export class EntityEdit {
             // call add event
             editor.call('entities:add', entity);
 
-            console.error(entity);
+            // console.error(entity);
 
-            BabylonLoader.addSceneData(entity.get('resource_id'), entity.origin);
+            
 
             // TODO: 上传到服务器
             // shareDb 
@@ -68,6 +73,10 @@ export class EntityEdit {
             // parent.history.enabled = false;
             // 添加tree item 菜单入口
             parent.insert('children', entity.get('resource_id'), ind);
+            // console.warn(parent);
+
+
+            
             // parent.history.enabled = true;
 
             // if (select) {
@@ -91,16 +100,14 @@ export class EntityEdit {
             //             return;
             //         }
             //         // If we've been provided an object, we're creating children for a new entity
-            //     } else if (typeof childIdOrData === 'object') {
-            //         data = childIdOrData;
-            //     } else {
-            //         throw new Error('Unhandled childIdOrData format');
-            //     }
+            //     } 
 
             //     var child = new Observer(data);
             //     // TODO
             //     addEntity(child, entity, false, 0, entityReferencesMap);
             // });
+
+            BabylonLoader.addSceneData(entity.get('resource_id'), entity.origin);
 
             // Hook up any entity references which need to be pointed to this newly created entity
             // (happens when addEntity() is being called during the undoing of a deletion). In order

@@ -217,7 +217,7 @@ export class Drop {
             obj.evtDrop = function (e: DragEvent | MouseEvent) {
                 e.preventDefault();
 
-                console.log('obj.evtDrop');
+                // console.log('obj.evtDrop');
 
                 if (!currentType)
                     return;
@@ -232,8 +232,8 @@ export class Drop {
                 if (currentType == 'files' && (<DragEvent>e).dataTransfer)
                     data = (<DragEvent>e).dataTransfer!.files;
 
-                console.log(currentType);
-                console.log(data);
+                // console.log(currentType);
+                // console.log(data);
                 if (obj.drop)
                     obj.drop(currentType, data);
             };

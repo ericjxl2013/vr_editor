@@ -163,6 +163,34 @@ export class AttributesEntity {
             argsList.push(argsScale);
             argsFieldsChanges = argsFieldsChanges.concat(items.fieldScale);
 
+            // checkCollisions
+            var argsCheckCollisions = {
+                parent: panel,
+                // name: 'Enabled',
+                name: '碰撞检测',
+                type: 'checkbox',
+                path: 'checkCollisions'
+            };
+            items.checkCollisions = editor.call('attributes:addField', argsCheckCollisions);
+            // TODO: 帮助文档链接
+            // editor.call('attributes:reference:attach', 'entity:enabled', items.fieldEnabled.parent.innerElement.firstChild.ui);
+            argsList.push(argsCheckCollisions);
+            argsFieldsChanges.push(items.checkCollisions);
+
+            // isPickable
+            var argsIsPickable = {
+                parent: panel,
+                // name: 'Enabled',
+                name: '可选中',
+                type: 'checkbox',
+                path: 'pickable'
+            };
+            items.pickable = editor.call('attributes:addField', argsIsPickable);
+            // TODO: 帮助文档链接
+            // editor.call('attributes:reference:attach', 'entity:enabled', items.fieldEnabled.parent.innerElement.firstChild.ui);
+            argsList.push(argsIsPickable);
+            argsFieldsChanges.push(items.pickable);
+
 
             // components panel
             panelComponents = items.panelComponents = editor.call('attributes:addPanel');
@@ -188,6 +216,12 @@ export class AttributesEntity {
 
         // before clearing inspector, preserve elements
         editor.on('attributes:beforeClear', function () {
+            // console.error('attributes:beforeClear');
+            // unlink fields
+            for (var i = 0; i < argsList.length; i++) {
+                argsList[i].link = null;
+                argsList[i].unlinkField();
+            }
             if (!items || !items.panel.parent)
                 return;
 
@@ -198,11 +232,7 @@ export class AttributesEntity {
             items.panelComponents.parent.remove(items.panelComponents);
             items.panelComponents.clear();
 
-            // unlink fields
-            for (var i = 0; i < argsList.length; i++) {
-                argsList[i].link = null;
-                argsList[i].unlinkField();
-            }
+
         });
 
         var inspectEvents: any = [];
@@ -217,6 +247,7 @@ export class AttributesEntity {
 
             if (!items)
                 initialize();
+            // console.warn(items);
 
             var root = editor.call('attributes.rootPanel');
 

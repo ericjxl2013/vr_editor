@@ -269,7 +269,7 @@ export class AssetsPanel {
         });
 
         editor.on('drop:active', function (state: boolean, type: string, data: any) {
-            console.log('drop:active: ' + state + ' - ' + type + ' - ' + data);
+            // console.log('drop:active: ' + state + ' - ' + type + ' - ' + data);
 
             dragging = state;
 
@@ -282,8 +282,8 @@ export class AssetsPanel {
 
         editor.on('drop:set', function (type: string, data: any) {
             draggingData = data;
-            console.warn('drop:set');
-            console.warn(draggingData);
+            // console.warn('drop:set');
+            // console.warn(draggingData);
         });
 
 
@@ -945,7 +945,7 @@ export class AssetsPanel {
                 }
             } else {
                 parent = treeRoot;
-                console.warn(path);
+                // console.warn(path);
             }
 
             // console.warn(item.text);
