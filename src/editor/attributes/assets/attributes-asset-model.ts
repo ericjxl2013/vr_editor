@@ -1,5 +1,5 @@
-import { Observer } from "../../lib";
-import { Label, Button, Progress, ImageField } from "../../ui";
+import { Observer } from "../../../lib";
+import { Label, Button, Progress, ImageField } from "../../../ui";
 
 export class AttributesAssetModel {
 

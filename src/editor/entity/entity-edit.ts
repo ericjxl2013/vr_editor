@@ -8,7 +8,7 @@ export class EntityEdit {
 
         let childToParent: { [key: string]: string } = {};
         // 为回退作准备
-        let deletedCache: { [key: string]: string } = {};
+        let deletedCache: { [key: string]: any } = {};
 
         editor.on('entities:add', function (entity: Observer) {
             // console.log('entity-edit-children');
@@ -131,10 +131,10 @@ export class EntityEdit {
         var removeEntity = function (entity: Observer, entityReferencesMap: any) {
             entityReferencesMap = entityReferencesMap || {};
             // deletedCache[entity.get('resource_id')] = entity.json();
-            deletedCache[entity.get('resource_id')] = entity.origin;
+            deletedCache[entity.get('resource_id')] = entity._data2;
 
             // Nullify any entity references which currently point to this guid
-            updateEntityReferenceFields(entityReferencesMap, entity.get('resource_id'), null);
+            // updateEntityReferenceFields(entityReferencesMap, entity.get('resource_id'), null);
 
             // remove children
             entity.get('children').forEach(function (child: string) {
@@ -148,6 +148,7 @@ export class EntityEdit {
             if (editor.call('selector:type') === 'entity' && editor.call('selector:items').indexOf(entity) !== -1) {
                 editor.call('selector:history', false);
                 editor.call('selector:remove', entity);
+                // TODO：选择历史记录
                 editor.once('selector:change', function () {
                     editor.call('selector:history', true);
                 });
@@ -158,20 +159,19 @@ export class EntityEdit {
             if (parentId) {
                 var parent = editor.call('entities:get', parentId);
                 if (parent) {
-                    parent.history.enabled = false;
+                    // parent.history.enabled = false;
                     parent.removeValue('children', entity.get('resource_id'));
-                    parent.history.enabled = true;
+                    // parent.history.enabled = true;
                 }
             }
-
+            let removeEntityID = entity.get('resource_id');
             // call remove method
             editor.call('entities:remove', entity);
 
-            // sharedb
-            editor.call('realtime:scene:op', {
-                p: ['entities', entity.get('resource_id')],
-                od: {}
-            });
+            // 更新scene数据
+            BabylonLoader.removeSceneData(removeEntityID);
+            editor.call('make:scene:dirty');
+            
         };
 
 

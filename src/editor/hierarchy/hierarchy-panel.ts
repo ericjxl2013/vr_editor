@@ -15,14 +15,6 @@ export class HierarchyPanel {
 
     public constructor() {
 
-
-
-        this.init();
-
-    }
-
-    public init(): void {
-
         let self = this;
         // left control
         // hierarchy index
@@ -241,6 +233,8 @@ export class HierarchyPanel {
 
                 record.entity.reparenting = true;
 
+                // console.warn(record);
+
                 // record.parent.history.enabled = false;
                 // record.parentOld.history.enabled = false;
                 // record.entity.history.enabled = false;
@@ -268,7 +262,9 @@ export class HierarchyPanel {
                     record.entity.set('parent', record.parentId);
                 }
 
-                BabylonLoader.updateSceneData(record.parentOld.get('resource_id'), record.parentOld._data2); 
+                // console.error(record);
+
+                BabylonLoader.updateSceneData(record.parentOld.get('resource_id'), record.parentOld._data2);
                 BabylonLoader.updateSceneData(record.parent.get('resource_id'), record.parent._data2);
                 BabylonLoader.updateSceneData(record.entity.get('resource_id'), record.entity._data2);
                 editor.call('make:scene:dirty');
@@ -559,6 +555,29 @@ export class HierarchyPanel {
             //     editor.call('loadTempModel2', path1, path2);
             // }
         });
+
+
+        // deleting entity
+        editor.on('entity:delete', function (entity: Observer) {
+            editor.call('entities:remove', entity);
+        });
+
+        // get entity item
+        editor.method('entities:panel:get', function (resourceId: string) {
+            return self.uiItemIndex[resourceId];
+        });
+
+        // highlight entity
+        editor.method('entities:panel:highlight', function (resourceId: string, highlight: boolean) {
+            var item = self.uiItemIndex[resourceId];
+            if (!item) return;
+
+            if (highlight)
+                item.class!.add('highlight');
+            else
+                item.class!.remove('highlight');
+        });
+
     }
 
 }

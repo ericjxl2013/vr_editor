@@ -13,6 +13,7 @@
 // import { TransformNode } from '../Meshes/transformNode';
 
 import { GizmosCenter } from ".";
+import { UtilityLayerRenderer } from "./UtilityLayerRenderer";
 
 
 /**
@@ -128,7 +129,7 @@ export class Gizmo implements BABYLON.IDisposable {
      */
     constructor(
         /** The utility layer the gizmo will be added to */
-        public gizmoLayer: BABYLON.UtilityLayerRenderer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer) {
+        public gizmoLayer: UtilityLayerRenderer = UtilityLayerRenderer.DefaultUtilityLayer) {
 
         this._rootMesh = new BABYLON.Mesh("gizmoRootNode", gizmoLayer.utilityLayerScene);
         this._rootMesh.rotationQuaternion = BABYLON.Quaternion.Identity();
@@ -174,9 +175,22 @@ export class Gizmo implements BABYLON.IDisposable {
                 if ((<BABYLON.WebVRFreeCamera>activeCamera).devicePosition) {
                     cameraPosition = (<BABYLON.WebVRFreeCamera>activeCamera).devicePosition;
                 }
-                this._rootMesh.position.subtractToRef(cameraPosition, this._tempVector);
-                var dist = this._tempVector.length() * this.scaleRatio;
-                this._rootMesh.scaling.set(dist, dist, dist);
+                if (activeCamera.mode === BABYLON.Camera.PERSPECTIVE_CAMERA) {
+                    this._rootMesh.position.subtractToRef(cameraPosition, this._tempVector);
+                    var dist = this._tempVector.length() * this.scaleRatio;
+                    this._rootMesh.scaling.set(dist, dist, dist);
+                } else {
+                    // 正交相机比例处理
+                    let rate = this.scaleRatio * 600;
+                    let ortho: number;
+                    if (activeCamera.orthoRight) {
+                        ortho = activeCamera.orthoRight / this.gizmoLayer.utilityLayerScene.getEngine().getRenderWidth();
+                    } else {
+                        ortho = 1;
+                    }
+                    rate *= 2.2 * ortho;
+                    this._rootMesh.scaling.set(rate, rate, rate);
+                }
 
                 // Account for handedness, similar to Matrix.decompose
                 if (effectiveNode._getWorldMatrixDeterminant() < 0) {

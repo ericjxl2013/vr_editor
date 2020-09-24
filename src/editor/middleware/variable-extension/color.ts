@@ -1,4 +1,3 @@
-import { BabylonEngine } from 'src/engine';
 
 export class Color {
 

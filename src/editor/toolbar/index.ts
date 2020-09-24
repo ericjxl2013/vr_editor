@@ -8,3 +8,5 @@ export * from './toolbar-control';
 export * from './toolbar-editor-settings';
 export * from './toolbar-publish';
 export * from './toolbar-scene';
+export * from './toolbar-camera';
+export * from './toolbar-status';

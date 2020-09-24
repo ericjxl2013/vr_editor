@@ -1,4 +1,4 @@
-import { Element } from "./element";
+import { Element } from './element';
 
 export class Canvas extends Element {
 
@@ -10,7 +10,7 @@ export class Canvas extends Element {
     if ((<HTMLCanvasElement>this.element).width === val) return;
 
     (<HTMLCanvasElement>this.element).width = val;
-    this.emit("resize", (<HTMLCanvasElement>this.element).width, (<HTMLCanvasElement>this.element).height);
+    this.emit('resize', (<HTMLCanvasElement>this.element).width, (<HTMLCanvasElement>this.element).height);
   }
 
   public get height(): number {
@@ -21,7 +21,7 @@ export class Canvas extends Element {
     if ((<HTMLCanvasElement>this.element).height === val) return;
 
     (<HTMLCanvasElement>this.element).height = val;
-    this.emit("resize", (<HTMLCanvasElement>this.element).width, (<HTMLCanvasElement>this.element).height);
+    this.emit('resize', (<HTMLCanvasElement>this.element).width, (<HTMLCanvasElement>this.element).height);
   }
 
   public constructor(id?: string) {
@@ -45,7 +45,7 @@ export class Canvas extends Element {
 
     (<HTMLCanvasElement>this.element).width = width;
     (<HTMLCanvasElement>this.element).height = height;
-    this.emit("resize", (<HTMLCanvasElement>this.element).width, (<HTMLCanvasElement>this.element).height);
+    this.emit('resize', (<HTMLCanvasElement>this.element).width, (<HTMLCanvasElement>this.element).height);
   };
 
 }

@@ -146,6 +146,13 @@ export class Selector {
                 items = items.filter(function (item: Observer) {
                     return !!editor.call('entities:get', item.get('resource_id'));
                 });
+                let rootEntity = editor.call('entities:root');
+                if (items.indexOf(rootEntity) !== -1) {
+                    editor.call('selector:set', 'entity', []);
+                    // editor.emit('attributes:inspect[editorSettings]');
+                    type = 'editorSettings';
+                    items = [editor.call('settings:data')];
+                }
             }
 
             if (!items.length)
@@ -182,6 +189,14 @@ export class Selector {
 
             if (self.selector.length > 0 && self.selector.type !== type) {
                 self.selector.clear();
+            }
+
+            // root为场景设置
+            if (type === 'entity' && item.get('type') === 'root') {
+                editor.call('selector:set', 'entity', []);
+                // editor.emit('attributes:inspect[editorSettings]');
+                type = 'editorSettings';
+                item = editor.call('settings:data');
             }
 
             self.selector.type = type;

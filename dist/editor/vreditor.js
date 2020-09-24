@@ -283,7 +283,7 @@ var InitializeData = /** @class */ (function () {
             .then(function (response) {
             var data = response.data;
             if (data.code === '0000') {
-                console.log(data.data);
+                // console.log(data.data);
                 babylonLoader_1.BabylonLoader.projectData = data.data;
                 global_1.Config.projectName = data.data.project.name;
                 global_1.Config.userID = data.data.owner.id;
@@ -304,7 +304,7 @@ var InitializeData = /** @class */ (function () {
             .then(function (response) {
             var data = response.data;
             if (data.code === '0000') {
-                console.log(data.data);
+                // console.log(data.data);
                 babylonLoader_1.BabylonLoader.assetsData = data.data;
                 global_1.Config.assetsData = data.data;
                 editor.call('initAssets', global_1.Config.assetsData);
@@ -328,7 +328,7 @@ var InitializeData = /** @class */ (function () {
                     var lastScene = data.data.last;
                     global_1.Config.scenesData = data.data.scenes[lastScene];
                     global_1.Config.sceneIndex = lastScene;
-                    console.log(global_1.Config.scenesData);
+                    // console.log(Config.scenesData);
                     babylonLoader_1.BabylonLoader.scenesData = global_1.Config.scenesData;
                     babylonLoader_1.BabylonLoader.sceneIndex = lastScene;
                     editor.emit('scene:raw', global_1.Config.scenesData);
@@ -347,7 +347,7 @@ var InitializeData = /** @class */ (function () {
     return InitializeData;
 }());
 exports.InitializeData = InitializeData;
-},{"./global":53,"./middleware/loader/babylonLoader":70}],4:[function(require,module,exports){
+},{"./global":63,"./middleware/loader/babylonLoader":80}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsContextMenu = void 0;
@@ -449,7 +449,6 @@ var AssetsContextMenu = /** @class */ (function () {
             'upload': '上传',
             'folder': '新建文件夹',
             'table': '表格',
-            'material': '材质'
         };
         // if (editor.call('users:hasFlag', 'hasBundles')) {
         //     assets.bundle = 'Asset Bundle';
@@ -504,47 +503,47 @@ var AssetsContextMenu = /** @class */ (function () {
             addNewMenuItem(keys[i], assets[keys[i]]);
         }
         // related
-        var menuItemReferences = new ui_1.MenuItem({
-            text: 'References',
-            icon: ICONS.REFERENCES,
-            value: 'references'
-        });
-        menu.append(menuItemReferences);
+        // var menuItemReferences = new MenuItem({
+        //     text: 'References',
+        //     icon: ICONS.REFERENCES,
+        //     value: 'references'
+        // });
+        // menu.append(menuItemReferences);
         // Create Atlas
-        var menuItemTextureToAtlas = new ui_1.MenuItem({
-            text: 'Create Texture Atlas',
-            icon: ICONS.TEXTURE_ATLAS,
-            value: 'texture-to-atlas'
-        });
-        menu.append(menuItemTextureToAtlas);
-        menuItemTextureToAtlas.on('select', function () {
-            editor.call('assets:textureToAtlas', currentAsset);
-        });
+        // var menuItemTextureToAtlas = new MenuItem({
+        //     text: 'Create Texture Atlas',
+        //     icon: ICONS.TEXTURE_ATLAS,
+        //     value: 'texture-to-atlas'
+        // });
+        // menu.append(menuItemTextureToAtlas);
+        // menuItemTextureToAtlas.on('select', function () {
+        //     editor.call('assets:textureToAtlas', currentAsset);
+        // });
         // Create Sprite From Atlas
-        var menuItemCreateSprite = new ui_1.MenuItem({
-            text: 'Create Sprite Asset',
-            icon: ICONS.SPRITE_ASSET,
-            value: 'atlas-to-sprite'
-        });
-        menu.append(menuItemCreateSprite);
-        menuItemCreateSprite.on('select', function () {
-            editor.call('assets:atlasToSprite', {
-                asset: currentAsset
-            });
-        });
+        // var menuItemCreateSprite = new MenuItem({
+        //     text: 'Create Sprite Asset',
+        //     icon: ICONS.SPRITE_ASSET,
+        //     value: 'atlas-to-sprite'
+        // });
+        // menu.append(menuItemCreateSprite);
+        // menuItemCreateSprite.on('select', function () {
+        //     editor.call('assets:atlasToSprite', {
+        //         asset: currentAsset
+        //     });
+        // });
         // Create Sliced Sprite From Atlas
-        var menuItemCreateSlicedSprite = new ui_1.MenuItem({
-            text: 'Create Sliced Sprite Asset',
-            icon: ICONS.SPRITE_ASSET,
-            value: 'atlas-to-sliced-sprite'
-        });
-        menu.append(menuItemCreateSlicedSprite);
-        menuItemCreateSlicedSprite.on('select', function () {
-            editor.call('assets:atlasToSprite', {
-                asset: currentAsset,
-                sliced: true
-            });
-        });
+        // var menuItemCreateSlicedSprite = new MenuItem({
+        //     text: 'Create Sliced Sprite Asset',
+        //     icon: ICONS.SPRITE_ASSET,
+        //     value: 'atlas-to-sliced-sprite'
+        // });
+        // menu.append(menuItemCreateSlicedSprite);
+        // menuItemCreateSlicedSprite.on('select', function () {
+        //     editor.call('assets:atlasToSprite', {
+        //         asset: currentAsset,
+        //         sliced: true
+        //     });
+        // });
         // replace
         var replaceAvailable = {
             material: true,
@@ -612,35 +611,43 @@ var AssetsContextMenu = /** @class */ (function () {
         // });
         // menu.append(menuItemReplaceTextureToSprite);
         // extract. Used for source assets.
-        var menuItemExtract = new ui_1.MenuItem({
-            text: 'Re-Import',
-            icon: ICONS.REIMPORT,
-            value: 'extract'
-        });
-        menuItemExtract.on('select', function () {
-            editor.call('assets:reimport', currentAsset.get('id'), currentAsset.get('type'));
-        });
-        menu.append(menuItemExtract);
+        // var menuItemExtract = new MenuItem({
+        //     text: 'Re-Import',
+        //     icon: ICONS.REIMPORT,
+        //     value: 'extract'
+        // });
+        // menuItemExtract.on('select', function () {
+        //     editor.call(
+        //         'assets:reimport',
+        //         currentAsset.get('id'),
+        //         currentAsset.get('type')
+        //     );
+        // });
+        // menu.append(menuItemExtract);
         // re-import. Used for target assets.
-        var menuItemReImport = new ui_1.MenuItem({
-            text: 'Re-Import',
-            icon: ICONS.REIMPORT,
-            value: 're-import'
-        });
-        menuItemReImport.on('select', function () {
-            editor.call('assets:reimport', currentAsset.get('id'), currentAsset.get('type'));
-        });
-        menu.append(menuItemReImport);
+        // var menuItemReImport = new MenuItem({
+        //     text: 'Re-Import',
+        //     icon: ICONS.REIMPORT,
+        //     value: 're-import'
+        // });
+        // menuItemReImport.on('select', function () {
+        //     editor.call(
+        //         'assets:reimport',
+        //         currentAsset.get('id'),
+        //         currentAsset.get('type')
+        //     );
+        // });
+        // menu.append(menuItemReImport);
         // download
-        var menuItemDownload = new ui_1.MenuItem({
-            text: '下载',
-            icon: ICONS.DOWNLOAD,
-            value: 'download'
-        });
-        menuItemDownload.on('select', function () {
-            window.open(currentAsset.get('file.url'));
-        });
-        menu.append(menuItemDownload);
+        // var menuItemDownload = new MenuItem({
+        //     text: '下载',
+        //     icon: ICONS.DOWNLOAD,
+        //     value: 'download'
+        // });
+        // menuItemDownload.on('select', function () {
+        //     window.open(currentAsset.get('file.url'));
+        // });
+        // menu.append(menuItemDownload);
         // edit
         var menuItemEdit = new ui_1.MenuItem({
             text: '编辑',
@@ -649,18 +656,19 @@ var AssetsContextMenu = /** @class */ (function () {
         });
         menuItemEdit.on('select', function () {
             // editor.call('assets:edit', currentAsset);
-            console.log('编辑表格');
-            console.warn(currentAsset);
+            // console.log('编辑表格');
+            // console.warn(currentAsset);
             editor.call('assets:open-table', currentAsset.get('name'));
         });
         menu.append(menuItemEdit);
         // duplicate
         var menuItemDuplicate = new ui_1.MenuItem({
-            text: '复制',
+            text: '创建副本',
             icon: ICONS.DUPLICATE,
             value: 'duplicate'
         });
         menuItemDuplicate.on('select', function () {
+            editor.call('status:text', '抱歉，创建副本功能待添加！');
             editor.call('assets:duplicate', currentAsset);
         });
         menu.append(menuItemDuplicate);
@@ -672,6 +680,7 @@ var AssetsContextMenu = /** @class */ (function () {
         });
         menuItemDelete.style.fontWeight = '200';
         menuItemDelete.on('select', function () {
+            editor.call('status:text', '抱歉，删除功能待添加！');
             var asset = currentAsset;
             var multiple = false;
             if (asset) {
@@ -706,7 +715,7 @@ var AssetsContextMenu = /** @class */ (function () {
             menuItemNew.hidden = !menuItemNewScript.hidden;
             if (currentAsset) {
                 // download，TODO：下载菜单
-                menuItemDownload.hidden = true;
+                // menuItemDownload.hidden = true;
                 // menuItemDownload.hidden = !(
                 //     (!config.project.privateAssets ||
                 //         (config.project.privateAssets &&
@@ -750,22 +759,22 @@ var AssetsContextMenu = /** @class */ (function () {
                     menuItemEdit.hidden = true;
                 }
                 // create atlas
-                menuItemTextureToAtlas.hidden =
-                    currentAsset.get('type') !== 'texture' ||
-                        currentAsset.get('source') ||
-                        currentAsset.get('task') ||
-                        !editor.call('permissions:write');
+                // menuItemTextureToAtlas.hidden =
+                //     currentAsset.get('type') !== 'texture' ||
+                //     currentAsset.get('source') ||
+                //     currentAsset.get('task') ||
+                //     !editor.call('permissions:write');
                 // create sprite
-                menuItemCreateSprite.hidden =
-                    currentAsset.get('type') !== 'textureatlas' ||
-                        currentAsset.get('source') ||
-                        currentAsset.get('task') ||
-                        !editor.call('permissions:write');
-                menuItemCreateSlicedSprite.hidden = menuItemCreateSprite.hidden;
+                // menuItemCreateSprite.hidden =
+                //     currentAsset.get('type') !== 'textureatlas' ||
+                //     currentAsset.get('source') ||
+                //     currentAsset.get('task') ||
+                //     !editor.call('permissions:write');
+                // menuItemCreateSlicedSprite.hidden = menuItemCreateSprite.hidden;
                 // delete
                 menuItemDelete.hidden = false;
                 if (!currentAsset.get('source')) {
-                    menuItemExtract.hidden = true;
+                    // menuItemExtract.hidden = true;
                     // re-import
                     var sourceId = currentAsset.get('source_asset_id');
                     if (sourceId) {
@@ -774,26 +783,26 @@ var AssetsContextMenu = /** @class */ (function () {
                             if (source.get('type') === 'scene' &&
                                 (['texture', 'material'].indexOf(currentAsset.get('type')) !== -1 ||
                                     !source.get('meta'))) {
-                                menuItemReImport.hidden = true;
+                                // menuItemReImport.hidden = true;
                             }
                             else if (currentAsset.get('type') === 'animation' &&
                                 !source.get('meta.animation.available')) {
-                                menuItemReImport.hidden = true;
+                                // menuItemReImport.hidden = true;
                             }
                             else if (currentAsset.get('type') === 'material' &&
                                 !currentAsset.has('meta.index')) {
-                                menuItemReImport.hidden = true;
+                                // menuItemReImport.hidden = true;
                             }
                             else {
-                                menuItemReImport.hidden = false;
+                                // menuItemReImport.hidden = false;
                             }
                         }
                         else {
-                            menuItemReImport.hidden = true;
+                            // menuItemReImport.hidden = true;
                         }
                     }
                     else {
-                        menuItemReImport.hidden = true;
+                        // menuItemReImport.hidden = true;
                     }
                     // references
                     // var ref = editor.call('assets:used:index')[
@@ -886,28 +895,30 @@ var AssetsContextMenu = /** @class */ (function () {
                     // }
                 }
                 else {
-                    menuItemReferences.hidden = true;
+                    // menuItemReferences.hidden = true;
                     menuItemReplace.hidden = true;
                     // menuItemReplaceTextureToSprite.hidden = true;
-                    menuItemReImport.hidden = true;
-                    menuItemExtract.hidden =
-                        ['scene', 'texture', 'textureatlas'].indexOf(currentAsset.get('type')) === -1 || !currentAsset.get('meta');
+                    // menuItemReImport.hidden = true;
+                    // menuItemExtract.hidden =
+                    //     ['scene', 'texture', 'textureatlas'].indexOf(
+                    //         currentAsset.get('type')
+                    //     ) === -1 || !currentAsset.get('meta');
                 }
             }
             else {
                 // no asset
-                menuItemExtract.hidden = true;
-                menuItemReImport.hidden = true;
-                menuItemDownload.hidden = true;
+                // menuItemExtract.hidden = true;
+                // menuItemReImport.hidden = true;
+                // menuItemDownload.hidden = true;
                 menuItemDuplicate.hidden = true;
                 menuItemEdit.hidden = true;
                 menuItemDelete.hidden = true;
-                menuItemReferences.hidden = true;
+                // menuItemReferences.hidden = true;
                 menuItemReplace.hidden = true;
                 // menuItemReplaceTextureToSprite.hidden = true;
-                menuItemTextureToAtlas.hidden = true;
-                menuItemCreateSprite.hidden = true;
-                menuItemCreateSlicedSprite.hidden = true;
+                // menuItemTextureToAtlas.hidden = true;
+                // menuItemCreateSprite.hidden = true;
+                // menuItemCreateSlicedSprite.hidden = true;
             }
             for (var i = 0; i < customMenuItems.length; i++) {
                 if (!customMenuItems[i].filter)
@@ -940,11 +951,31 @@ var AssetsContextMenu = /** @class */ (function () {
                 item.tree.elementTitle.addEventListener('contextmenu', contextMenuHandler, false);
             }
         });
+        // folders
+        editor.call('assets:panel:folders').innerElement.addEventListener('contextmenu', function (evt) {
+            evt.preventDefault();
+            evt.stopPropagation();
+            // if (!editor.call('permissions:write'))
+            //     return;
+            currentAsset = undefined;
+            menu.open = true;
+            menu.position(evt.clientX + 1, evt.clientY);
+        }, false);
+        // files
+        editor.call('assets:panel:files').innerElement.addEventListener('contextmenu', function (evt) {
+            evt.preventDefault();
+            evt.stopPropagation();
+            // if (!editor.call('permissions:write'))
+            //     return;
+            currentAsset = null;
+            menu.open = true;
+            menu.position(evt.clientX + 1, evt.clientY);
+        }, false);
     }
     return AssetsContextMenu;
 }());
 exports.AssetsContextMenu = AssetsContextMenu;
-},{"../../engine":110,"../../ui":130}],5:[function(require,module,exports){
+},{"../../engine":128,"../../ui":148}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsCreateFolder = void 0;
@@ -954,7 +985,7 @@ var AssetsCreateFolder = /** @class */ (function () {
         editor.method('assets:create:folder', function (args) {
             // if (!editor.call('permissions:write'))
             //     return;
-            console.log('assets:create:folder');
+            // console.log('assets:create:folder');
             args = args || {};
             var path = [];
             var currentFolder = editor.call('assets:panel:currentFolder');
@@ -973,14 +1004,14 @@ var AssetsCreateFolder = /** @class */ (function () {
                 },
                 path: path.join(',')
             };
-            console.log(asset);
+            // console.log(asset);
             editor.call('assets:create', asset);
         });
     }
     return AssetsCreateFolder;
 }());
 exports.AssetsCreateFolder = AssetsCreateFolder;
-},{"../global":53}],6:[function(require,module,exports){
+},{"../global":63}],6:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsCreateTable = void 0;
@@ -990,6 +1021,7 @@ var AssetsCreateTable = /** @class */ (function () {
         editor.method('assets:create:table', function (args) {
             if (global_1.Config.tableAssetsID !== '') {
                 console.warn('抱歉，暂时只允许创建一个表格！');
+                editor.call('status:text', '抱歉，暂时只允许创建一个表格！');
                 return;
             }
             // if (!editor.call('permissions:write'))
@@ -1024,14 +1056,14 @@ var AssetsCreateTable = /** @class */ (function () {
         editor.on('assets:add', function (asset) {
             if (asset.get('type') === 'table') {
                 global_1.Config.tableAssetsID = asset.get('id');
-                console.log('设置表格ID：' + global_1.Config.tableAssetsID);
+                // console.log('设置表格ID：' + Config.tableAssetsID);
             }
         });
     }
     return AssetsCreateTable;
 }());
 exports.AssetsCreateTable = AssetsCreateTable;
-},{"../global":53}],7:[function(require,module,exports){
+},{"../global":63}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsDrop = void 0;
@@ -1436,7 +1468,7 @@ var AssetsFilter = /** @class */ (function () {
     return AssetsFilter;
 }());
 exports.AssetsFilter = AssetsFilter;
-},{"../../engine":110,"../../ui":130}],9:[function(require,module,exports){
+},{"../../engine":128,"../../ui":148}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsFs = void 0;
@@ -1518,7 +1550,7 @@ var AssetsFs = /** @class */ (function () {
     return AssetsFs;
 }());
 exports.AssetsFs = AssetsFs;
-},{"../global":53,"../utility":97}],10:[function(require,module,exports){
+},{"../global":63,"../utility":114}],10:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsPanelControl = void 0;
@@ -1799,7 +1831,7 @@ var AssetsPanelControl = /** @class */ (function () {
     return AssetsPanelControl;
 }());
 exports.AssetsPanelControl = AssetsPanelControl;
-},{"../../engine":110,"../../ui":130}],11:[function(require,module,exports){
+},{"../../engine":128,"../../ui":148}],11:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsPanel = void 0;
@@ -1863,6 +1895,9 @@ var AssetsPanel = /** @class */ (function () {
         files.horizontal = true;
         files.scroll = true;
         assetsPanel.append(files);
+        editor.method('assets:panel:files', function () {
+            return files;
+        });
         // grid
         var grid = new ui_1.Grid();
         // grid.enabled = false;
@@ -2272,7 +2307,7 @@ var AssetsPanel = /** @class */ (function () {
         grid.on('select', function (item) {
             if (assetsChanged)
                 return;
-            console.log('grid select');
+            // console.log('grid select');
             if (item.asset) {
                 editor.call('selector:add', 'asset', item.asset);
             }
@@ -3116,10 +3151,11 @@ var AssetsPanel = /** @class */ (function () {
     return AssetsPanel;
 }());
 exports.AssetsPanel = AssetsPanel;
-},{"../../engine":110,"../../ui":130,"../middleware/loader/babylonLoader":70}],12:[function(require,module,exports){
+},{"../../engine":128,"../../ui":148,"../middleware/loader/babylonLoader":80}],12:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsPreview = void 0;
+var babylonLoader_1 = require("../middleware/loader/babylonLoader");
 var AssetsPreview = /** @class */ (function () {
     function AssetsPreview() {
         editor.method('preview:render', function (asset, width, height, canvas, args) {
@@ -3138,16 +3174,23 @@ var AssetsPreview = /** @class */ (function () {
         var scene = new BABYLON.Scene(engine);
         // scene.clearColor = BABYLON.Color4.FromColor3(BABYLON.Color3.Green());
         scene.clearColor.a = 0;
-        var light = new BABYLON.DirectionalLight('light', new BABYLON.Vector3(45, 45, 0), scene);
-        var camera = new BABYLON.ArcRotateCamera('PreviewCamera', 10, 10, 10, new BABYLON.Vector3(0, 0, 0), scene);
-        // camera.setPosition(new BABYLON.Vector3(20, 200, 400));
-        camera.attachControl(matPreviewCanvas, true);
-        camera.lowerBetaLimit = 0.1;
-        camera.upperBetaLimit = (Math.PI / 2) * 0.99;
-        camera.lowerRadiusLimit = 150;
-        var previewSphere = BABYLON.MeshBuilder.CreateSphere('__previewSphere', { diameter: 80 }, scene);
-        var testMat = new BABYLON.StandardMaterial('__previewShere', scene);
-        previewSphere.material = testMat;
+        // let light = new BABYLON.DirectionalLight('__previewlight', new BABYLON.Vector3(1, 1, 3), scene);
+        var light = new BABYLON.HemisphericLight('__previewlight', new BABYLON.Vector3(-3, 1, -5), scene);
+        light.intensity = 0.6;
+        var camera = new BABYLON.UniversalCamera('__previewCamera', new BABYLON.Vector3(0, 62, -120), scene);
+        var node = new BABYLON.TransformNode('__previewNode', scene);
+        node.position.copyFrom(camera.position);
+        node.rotation.copyFrom(camera.rotation);
+        camera.parent = node;
+        camera.position = BABYLON.Vector3.Zero();
+        camera.rotation = BABYLON.Vector3.Zero();
+        camera.inputs.clear();
+        node.rotation.x = 27.2 * Math.PI / 180;
+        // camera.setTarget(BABYLON.Vector3.Zero());
+        var previewSphere = BABYLON.MeshBuilder.CreateSphere('__previewSphere', { diameter: 100 }, scene);
+        var defaultMat = new BABYLON.StandardMaterial('__previewShere', scene);
+        // defaultMat.diffuseColor = BABYLON.Color3.Green();
+        previewSphere.material = defaultMat;
         // engine.runRenderLoop(() => {
         //     if (scene) {
         //         scene.render();
@@ -3160,35 +3203,126 @@ var AssetsPreview = /** @class */ (function () {
             matQueuing = true;
             var _loop_1 = function () {
                 var queueElement = queueMaterialAssets.shift();
-                // 球改一下
-                // (<BABYLON.StandardMaterial>previewSphere.material).diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
-                scene.render();
-                // TODO: 需要更新
-                BABYLON.Tools.CreateScreenshotUsingRenderTarget(engine, camera, 64, function (data) {
-                    console.log(data);
-                    queueElement[0].src = data;
-                });
+                // console.warn(queueElement[1]);
+                // console.error(queueElement[1]._data2.data);
+                var newMat = babylonLoader_1.BabylonLoader.loadMaterial(queueElement[1]._data2.data, scene, '');
+                // console.warn(newMat);
+                if (newMat) {
+                    previewSphere.material = newMat;
+                }
+                else {
+                    previewSphere.material = defaultMat;
+                }
+                if (scene.isReady()) {
+                    // 球改一下
+                    // (<BABYLON.StandardMaterial>previewSphere.material).diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
+                    scene.render();
+                    // TODO: 需要更新
+                    BABYLON.Tools.CreateScreenshotUsingRenderTarget(engine, camera, 64, function (data) {
+                        // console.log(data);
+                        queueElement[0].src = data;
+                    });
+                }
+                else {
+                    setTimeout(function () {
+                        waitForRender(queueElement[0]);
+                    }, 300);
+                    matQueuing = false;
+                    return { value: void 0 };
+                }
             };
             while (queueMaterialAssets.length > 0) {
-                _loop_1();
+                var state_1 = _loop_1();
+                if (typeof state_1 === "object")
+                    return state_1.value;
             }
             matQueuing = false;
         };
+        var waitForRender = function (element) {
+            if (scene.isReady()) {
+                scene.render();
+                // TODO: 需要更新
+                BABYLON.Tools.CreateScreenshotUsingRenderTarget(engine, camera, 64, function (data) {
+                    // console.log(data);
+                    element.src = data;
+                });
+                setTimeout(createMatPreview, 0);
+            }
+            else {
+                setTimeout(function () {
+                    waitForRender(element);
+                }, 300);
+            }
+        };
         editor.method('material:preview', function (thumbnail, asset) {
             queueMaterialAssets.push([thumbnail, asset]);
+        });
+        editor.method('material:preview:start', function () {
             if (!matQueuing) {
                 // console.warn('入口打开material preview');
+                // console.warn(asset);
                 setTimeout(createMatPreview, 0);
             }
             else {
                 // console.warn('中间排队material preview');
             }
         });
+        // TODO: 简易处理
+        editor.method('material:preview:assemble', function (asset_data) {
+            if (asset_data && asset_data.babylon) {
+                for (var firstKey in asset_data.babylon) {
+                    if (asset_data.babylon[firstKey]['materials']) {
+                        var materialData = asset_data.babylon[firstKey]['materials'];
+                        for (var secondKey in materialData) {
+                            if (materialData[secondKey]['asset_id']) {
+                                var matAssetID = materialData[secondKey]['asset_id'];
+                                if (materialData[secondKey]['diffuseTexture']) {
+                                    var textureID = asset_data.assets[matAssetID].data.diffuseTexture.texture_id;
+                                    asset_data.assets[matAssetID].data.diffuseTexture.name = babylonLoader_1.BabylonLoader.prefix + textureID + '/' + asset_data.assets[textureID].name;
+                                }
+                                if (materialData[secondKey]['specularTexture']) {
+                                    var textureID = asset_data.assets[matAssetID].data.specularTexture.texture_id;
+                                    asset_data.assets[matAssetID].data.specularTexture.name = babylonLoader_1.BabylonLoader.prefix + textureID + '/' + asset_data.assets[textureID].name;
+                                }
+                                if (materialData[secondKey]['reflectionTexture']) {
+                                    var textureID = asset_data.assets[matAssetID].data.reflectionTexture.texture_id;
+                                    asset_data.assets[matAssetID].data.reflectionTexture.name = babylonLoader_1.BabylonLoader.prefix + textureID + '/' + asset_data.assets[textureID].name;
+                                }
+                                if (materialData[secondKey]['refractionTexture']) {
+                                    var textureID = asset_data.assets[matAssetID].data.refractionTexture.texture_id;
+                                    asset_data.assets[matAssetID].data.refractionTexture.name = babylonLoader_1.BabylonLoader.prefix + textureID + '/' + asset_data.assets[textureID].name;
+                                }
+                                if (materialData[secondKey]['emissiveTexture']) {
+                                    var textureID = asset_data.assets[matAssetID].data.emissiveTexture.texture_id;
+                                    asset_data.assets[matAssetID].data.emissiveTexture.name = babylonLoader_1.BabylonLoader.prefix + textureID + '/' + asset_data.assets[textureID].name;
+                                }
+                                if (materialData[secondKey]['bumpTexture']) {
+                                    var textureID = asset_data.assets[matAssetID].data.bumpTexture.texture_id;
+                                    asset_data.assets[matAssetID].data.bumpTexture.name = babylonLoader_1.BabylonLoader.prefix + textureID + '/' + asset_data.assets[textureID].name;
+                                }
+                                if (materialData[secondKey]['opacityTexture']) {
+                                    var textureID = asset_data.assets[matAssetID].data.opacityTexture.texture_id;
+                                    asset_data.assets[matAssetID].data.opacityTexture.name = babylonLoader_1.BabylonLoader.prefix + textureID + '/' + asset_data.assets[textureID].name;
+                                }
+                                if (materialData[secondKey]['ambientTexture']) {
+                                    var textureID = asset_data.assets[matAssetID].data.ambientTexture.texture_id;
+                                    asset_data.assets[matAssetID].data.ambientTexture.name = babylonLoader_1.BabylonLoader.prefix + textureID + '/' + asset_data.assets[textureID].name;
+                                }
+                                if (materialData[secondKey]['lightmapTexture']) {
+                                    var textureID = asset_data.assets[matAssetID].data.lightmapTexture.texture_id;
+                                    asset_data.assets[matAssetID].data.lightmapTexture.name = babylonLoader_1.BabylonLoader.prefix + textureID + '/' + asset_data.assets[textureID].name;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
     return AssetsPreview;
 }());
 exports.AssetsPreview = AssetsPreview;
-},{}],13:[function(require,module,exports){
+},{"../middleware/loader/babylonLoader":80}],13:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsRename = void 0;
@@ -3261,7 +3395,7 @@ var AssetsRename = /** @class */ (function () {
     return AssetsRename;
 }());
 exports.AssetsRename = AssetsRename;
-},{"../global":53,"../utility":97}],14:[function(require,module,exports){
+},{"../global":63,"../utility":114}],14:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsStore = void 0;
@@ -3270,17 +3404,17 @@ var engine_1 = require("../../engine");
 var AssetsStore = /** @class */ (function () {
     function AssetsStore() {
         var assetsPanel = engine_1.VeryEngine.assets;
-        var btnStore = new ui_1.Button('资源库');
+        var btnStore = new ui_1.Button('说明文档');
         btnStore.class.add('store');
         assetsPanel.header.append(btnStore);
         btnStore.on('click', function () {
-            window.open('http://www.veryengine.cn/', '_blank');
+            window.open('http://doc.veryengine.cn/readme/web/?#/12', '_blank');
         });
     }
     return AssetsStore;
 }());
 exports.AssetsStore = AssetsStore;
-},{"../../engine":110,"../../ui":130}],15:[function(require,module,exports){
+},{"../../engine":128,"../../ui":148}],15:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsSync = void 0;
@@ -3288,8 +3422,11 @@ var lib_1 = require("../../lib");
 var AssetsSync = /** @class */ (function () {
     function AssetsSync() {
         editor.method('initAssets', function (assets_data) {
-            if (assets_data.assets)
+            if (assets_data.assets) {
                 onLoad(assets_data.assets);
+                editor.call('material:preview:assemble', assets_data);
+                editor.call('material:preview:start');
+            }
         });
         // Asseting, uniqueId为assets索引id
         editor.method('loadAsset', function (asset_data, callback) {
@@ -3377,7 +3514,7 @@ var AssetsSync = /** @class */ (function () {
     return AssetsSync;
 }());
 exports.AssetsSync = AssetsSync;
-},{"../../lib":114}],16:[function(require,module,exports){
+},{"../../lib":132}],16:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsUpload = void 0;
@@ -3775,7 +3912,7 @@ var AssetsUpload = /** @class */ (function () {
     return AssetsUpload;
 }());
 exports.AssetsUpload = AssetsUpload;
-},{"../../engine":110,"../../lib":114,"../global":53,"../utility":97}],17:[function(require,module,exports){
+},{"../../engine":128,"../../lib":132,"../global":63,"../utility":114}],17:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Assets = void 0;
@@ -3902,7 +4039,7 @@ var Assets = /** @class */ (function () {
     return Assets;
 }());
 exports.Assets = Assets;
-},{"../../lib":114}],18:[function(require,module,exports){
+},{"../../lib":132}],18:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -4232,7 +4369,7 @@ var AttributeAssetsTexture = /** @class */ (function () {
     return AttributeAssetsTexture;
 }());
 exports.AttributeAssetsTexture = AttributeAssetsTexture;
-},{"../../../ui":130,"../../middleware/loader/babylonLoader":70}],21:[function(require,module,exports){
+},{"../../../ui":148,"../../middleware/loader/babylonLoader":80}],21:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AttributesAssets = void 0;
@@ -4493,7 +4630,7 @@ var AttributesAssets = /** @class */ (function () {
     return AttributesAssets;
 }());
 exports.AttributesAssets = AttributesAssets;
-},{"../../ui":130,"../middleware/loader/babylonLoader":70}],22:[function(require,module,exports){
+},{"../../ui":148,"../middleware/loader/babylonLoader":80}],22:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AttributesEntity = void 0;
@@ -4504,39 +4641,113 @@ var AttributesEntity = /** @class */ (function () {
         editor.method('attributes:entity.panelComponents', function () {
             return panelComponents;
         });
-        // add component menu
-        // var menuAddComponent = new Menu();
-        // var components = editor.call('components:schema');
-        // var list = editor.call('components:list');
-        // for (var i = 0; i < list.length; i++) {
-        //     menuAddComponent.append(new MenuItem({
-        //         text: components[list[i]].$title,
-        //         value: list[i]
-        //     }));
-        // }
-        // menuAddComponent.on('open', function () {
-        //     var items = editor.call('selector:items');
-        //     var legacyAudio = editor.call('settings:project').get('useLegacyAudio');
-        //     for (var i = 0; i < list.length; i++) {
-        //         var different = false;
-        //         var disabled = items[0].has('components.' + list[i]);
-        //         for (var n = 1; n < items.length; n++) {
-        //             if (disabled !== items[n].has('components.' + list[i])) {
-        //                 var different = true;
-        //                 break;
-        //             }
-        //         }
-        //         menuAddComponent.findByPath([list[i]])!.disabled = different ? false : disabled;
-        //         if (list[i] === 'audiosource')
-        //             menuAddComponent.findByPath([list[i]])!.hidden = !legacyAudio;
-        //     }
-        // });
-        // menuAddComponent.on('select', function (path) {
-        //     var items = editor.call('selector:items');
-        //     var component = path[0];
-        //     editor.call('entities:addComponent', items, component);
-        // });
-        // editor.call('layout.root').append(menuAddComponent);
+        editor.method('attributes:entity:addComponentPanel', function (args) {
+            var title = args.title;
+            var name = args.name;
+            var entities = args.entities;
+            var events = [];
+            // panel
+            var panel = editor.call('attributes:addPanel', {
+                parent: panelComponents,
+                name: title
+            });
+            panel.class.add('component', 'entity', name);
+            // reference
+            editor.call('attributes:reference:' + name + ':attach', panel, panel.headerElementTitle);
+            // show/hide panel
+            var checkingPanel;
+            var checkPanel = function () {
+                checkingPanel = false;
+                var show = entities[0].has('components.' + name);
+                for (var i = 1; i < entities.length; i++) {
+                    if (show !== entities[i].has('components.' + name)) {
+                        show = false;
+                        break;
+                    }
+                }
+                panel.disabled = !show;
+                panel.hidden = !show;
+            };
+            var queueCheckPanel = function () {
+                if (checkingPanel)
+                    return;
+                checkingPanel = true;
+                setTimeout(checkPanel);
+            };
+            checkPanel();
+            for (var i = 0; i < entities.length; i++) {
+                events.push(entities[i].on('components.' + name + ':set', queueCheckPanel));
+                events.push(entities[i].on('components.' + name + ':unset', queueCheckPanel));
+            }
+            panel.once('destroy', function () {
+                for (var i = 0; i < entities.length; i++)
+                    events[i].unbind();
+            });
+            // remove
+            // var fieldRemove = new Button();
+            // fieldRemove.hidden = !editor.call('permissions:write');
+            // events.push(editor.on('permissions:writeState', function (state: boolean) {
+            //     fieldRemove.hidden = !state;
+            // }));
+            // fieldRemove.class!.add('component-remove');
+            // fieldRemove.on('click', function () {
+            //     var records: any = [];
+            //     for (var i = 0; i < entities.length; i++) {
+            //         records.push({
+            //             get: entities[i].history._getItemFn,
+            //             value: entities[i].get('components.' + name)
+            //         });
+            //         entities[i].history.enabled = false;
+            //         entities[i].unset('components.' + name);
+            //         entities[i].history.enabled = true;
+            //     }
+            // editor.call('history:add', {
+            //     name: 'entities.set[components.' + name + ']',
+            //     undo: function () {
+            //         for (var i = 0; i < records.length; i++) {
+            //             var item = records[i].get();
+            //             if (!item)
+            //                 continue;
+            //             item.history.enabled = false;
+            //             item.set('components.' + name, records[i].value);
+            //             item.history.enabled = true;
+            //         }
+            //     },
+            //     redo: function () {
+            //         for (var i = 0; i < records.length; i++) {
+            //             var item = records[i].get();
+            //             if (!item)
+            //                 continue;
+            //             item.history.enabled = false;
+            //             item.unset('components.' + name);
+            //             item.history.enabled = true;
+            //         }
+            //     }
+            // });
+            // });
+            // panel.headerAppend(fieldRemove);
+            // enable/disable
+            var fieldEnabled = editor.call('attributes:addField', {
+                panel: panel,
+                type: 'checkbox',
+                link: entities,
+                path: 'components.' + name + '.enabled'
+            });
+            fieldEnabled.class.remove('tick');
+            fieldEnabled.class.add('component-toggle');
+            fieldEnabled.element.parentNode.removeChild(fieldEnabled.element);
+            panel.headerAppend(fieldEnabled);
+            // toggle-label
+            var labelEnabled = new ui_1.Label();
+            labelEnabled.renderChanges = false;
+            labelEnabled.class.add('component-toggle-label');
+            panel.headerAppend(labelEnabled);
+            labelEnabled.text = fieldEnabled.value ? 'On' : 'Off';
+            fieldEnabled.on('change', function (value) {
+                labelEnabled.text = value ? 'On' : 'Off';
+            });
+            return panel;
+        });
         var items = null;
         var argsList = [];
         var argsFieldsChanges = [];
@@ -4721,6 +4932,7 @@ var AttributesEntity = /** @class */ (function () {
             // disable fields if needed
             toggleFields(entities);
             onInspect(entities);
+            console.log('entity finished');
         });
         editor.on('attributes:clear', function () {
             onUninspect();
@@ -4779,7 +4991,7 @@ var AttributesEntity = /** @class */ (function () {
     return AttributesEntity;
 }());
 exports.AttributesEntity = AttributesEntity;
-},{"../../ui":130}],23:[function(require,module,exports){
+},{"../../ui":148}],23:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AttributeHistory = void 0;
@@ -4797,15 +5009,17 @@ var ui_1 = require("../../ui");
 var engine_1 = require("../../engine");
 var AttributesPanel = /** @class */ (function () {
     function AttributesPanel() {
+        var _this = this;
         // private inspectedItems: EventHandle[] = [];
         this.title = '属性面板';
         this.root = engine_1.VeryEngine.attributes;
-        this.init();
-    }
-    AttributesPanel.prototype.init = function () {
         var self = this;
-        // clearing
-        editor.method('attributes:clear', this.clearPanel);
+        var clearPanel = function () {
+            editor.emit('attributes:beforeClear');
+            // console.warn(this.root);
+            _this.root.clear();
+            editor.emit('attributes:clear');
+        };
         // set header
         editor.method('attributes:header', function (text) {
             if (text.toLowerCase() === 'texture') {
@@ -6032,7 +6246,7 @@ var AttributesPanel = /** @class */ (function () {
             inspectedItems = [];
         });
         editor.method('attributes:inspect', function (type, item) {
-            self.clearPanel();
+            clearPanel();
             // clear if destroyed
             inspectedItems.push(item.once('destroy', function () {
                 editor.call('attributes:clear');
@@ -6042,7 +6256,7 @@ var AttributesPanel = /** @class */ (function () {
             editor.emit('attributes:inspect[*]', type, [item]);
         });
         editor.on('selector:change', function (type, items) {
-            self.clearPanel();
+            clearPanel();
             // console.warn('selector:change：type --- ' + type + '* length --- ' + items.length);
             // nothing selected
             if (items.length === 0) {
@@ -6077,16 +6291,13 @@ var AttributesPanel = /** @class */ (function () {
         });
         // 初始时，默认没有选中物体
         editor.emit('selector:change', null, []);
-    };
-    AttributesPanel.prototype.clearPanel = function () {
-        editor.emit('attributes:beforeClear');
-        this.root.clear();
-        editor.emit('attributes:clear');
-    };
+        // clearing
+        editor.method('attributes:clear', clearPanel);
+    }
     return AttributesPanel;
 }());
 exports.AttributesPanel = AttributesPanel;
-},{"../../engine":110,"../../ui":130}],25:[function(require,module,exports){
+},{"../../engine":128,"../../ui":148}],25:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AttributesReference = void 0;
@@ -6223,7 +6434,61 @@ var AttributesReference = /** @class */ (function () {
     return AttributesReference;
 }());
 exports.AttributesReference = AttributesReference;
-},{"../../engine":110,"../../ui":130}],26:[function(require,module,exports){
+},{"../../engine":128,"../../ui":148}],26:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AttributeComponentCamera = void 0;
+var ui_1 = require("../../../ui");
+var AttributeComponentCamera = /** @class */ (function () {
+    function AttributeComponentCamera() {
+        editor.on('attributes:inspect[entity]', function (entities) {
+            console.log('camera attribute');
+            console.warn(entities);
+            var panelComponents = editor.call('attributes:entity.panelComponents');
+            if (!panelComponents)
+                return;
+            console.warn(panelComponents);
+            var projectSettings = editor.call('settings:project');
+            var panel = editor.call('attributes:entity:addComponentPanel', {
+                title: '摄像机属性',
+                name: 'camera',
+                entities: entities
+            });
+            // clearColorBuffer
+            var fieldClearColorBuffer = editor.call('attributes:addField', {
+                parent: panel,
+                type: 'checkbox',
+                name: 'Clear Buffers',
+                link: entities,
+                path: 'components.camera.clearColorBuffer'
+            });
+            // label
+            var label = new ui_1.Label('Color');
+            label.class.add('label-infield');
+            label.style.paddingRight = '12px';
+            fieldClearColorBuffer.parent.append(label);
+            // reference
+            editor.call('attributes:reference:attach', 'camera:clearColorBuffer', label);
+            // camera.clearColor
+            var fieldClearColor = editor.call('attributes:addField', {
+                parent: panel,
+                name: 'Clear Color',
+                type: 'rgb',
+                link: entities,
+                path: 'components.camera.clearColor'
+            });
+            fieldClearColor.parent.hidden = !(fieldClearColorBuffer.value || fieldClearColorBuffer.class.contains('null'));
+            fieldClearColorBuffer.on('change', function (value) {
+                fieldClearColor.parent.hidden = !(value || fieldClearColorBuffer.class.contains('null'));
+            });
+            // reference
+            editor.call('attributes:reference:attach', 'camera:clearColor', fieldClearColor.parent.innerElement.firstChild.ui);
+        });
+    }
+    return AttributeComponentCamera;
+}());
+exports.AttributeComponentCamera = AttributeComponentCamera;
+},{"../../../ui":148}],27:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -6241,8 +6506,9 @@ __exportStar(require("./attributes-entity"), exports);
 __exportStar(require("./attributes-history"), exports);
 __exportStar(require("./attributes-reference"), exports);
 __exportStar(require("./attributes-assets"), exports);
+__exportStar(require("./components/attributes-component-camera"), exports);
 __exportStar(require("./keeper"), exports);
-},{"./attributes-assets":21,"./attributes-entity":22,"./attributes-history":23,"./attributes-panel":24,"./attributes-reference":25,"./keeper":27}],27:[function(require,module,exports){
+},{"./attributes-assets":21,"./attributes-entity":22,"./attributes-history":23,"./attributes-panel":24,"./attributes-reference":25,"./components/attributes-component-camera":26,"./keeper":28}],28:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AttributesKeeper = void 0;
@@ -6252,6 +6518,7 @@ var attributes_entity_1 = require("./attributes-entity");
 var attributes_assets_1 = require("./attributes-assets");
 var attributes_history_1 = require("./attributes-history");
 var attributes_assets_texture_1 = require("./assets/attributes-assets-texture");
+var attributes_component_camera_1 = require("./components/attributes-component-camera");
 var AttributesKeeper = /** @class */ (function () {
     function AttributesKeeper() {
         var attributesPanel = new attributes_panel_1.AttributesPanel();
@@ -6260,11 +6527,498 @@ var AttributesKeeper = /** @class */ (function () {
         var attributesEntity = new attributes_entity_1.AttributesEntity();
         var attributesAsset = new attributes_assets_1.AttributesAssets();
         var attributesAssetsTexture = new attributes_assets_texture_1.AttributeAssetsTexture();
+        new attributes_component_camera_1.AttributeComponentCamera();
     }
     return AttributesKeeper;
 }());
 exports.AttributesKeeper = AttributesKeeper;
-},{"./assets/attributes-assets-texture":20,"./attributes-assets":21,"./attributes-entity":22,"./attributes-history":23,"./attributes-panel":24,"./attributes-reference":25}],28:[function(require,module,exports){
+},{"./assets/attributes-assets-texture":20,"./attributes-assets":21,"./attributes-entity":22,"./attributes-history":23,"./attributes-panel":24,"./attributes-reference":25,"./components/attributes-component-camera":26}],29:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CameraDepth = void 0;
+var CameraDepth = /** @class */ (function () {
+    function CameraDepth() {
+    }
+    return CameraDepth;
+}());
+exports.CameraDepth = CameraDepth;
+},{}],30:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CameraPreview = void 0;
+var ui_1 = require("../../ui");
+var middleware_1 = require("../middleware");
+var CameraPreview = /** @class */ (function () {
+    function CameraPreview() {
+        var selectedEntity = null; // currently selected entity
+        var currentCamera = null; // current camera rendering to viewport
+        var renderCamera = false;
+        var pinnedCamera = null; // camera that is currently pinned in preview
+        var previewing = false;
+        var pinned = false;
+        var viewport = editor.call('layout.viewport');
+        var cameraPreviewBorder = document.createElement('div');
+        cameraPreviewBorder.classList.add('camera-preview');
+        cameraPreviewBorder.classList.add('clickable');
+        // var btnPin = new Button('&#57636;');
+        var btnPin = new ui_1.Button('&#58177;');
+        btnPin.class.add('pin');
+        cameraPreviewBorder.appendChild(btnPin.element);
+        btnPin.on('click', function (evt) {
+            evt.stopPropagation();
+            if (pinnedCamera) {
+                pinnedCamera = null;
+                btnPin.class.remove('active');
+                pinned = false;
+                if (!selectedEntity) {
+                    stopPreview();
+                }
+            }
+            else {
+                pinnedCamera = currentCamera;
+                btnPin.class.add('active');
+                pinned = true;
+            }
+            // updateCameraState();
+        });
+        ui_1.Tooltip.attach({
+            target: btnPin.element,
+            text: '锁定画面',
+            align: 'left',
+            root: editor.call('layout.root')
+        });
+        viewport.append(cameraPreviewBorder);
+        editor.on('selector:change', function (type, items) {
+            // console.warn(type);
+            // console.warn(items);
+            if (type === 'entity' && items && items.length === 1) {
+                selectedEntity = items[0];
+                if (selectedEntity.node instanceof middleware_1.VeryCamera) {
+                    if (currentCamera) {
+                        if (currentCamera === selectedEntity.node) {
+                            return;
+                        }
+                        else {
+                            stopPreview();
+                        }
+                    }
+                    currentCamera = selectedEntity.node;
+                    currentCamera.renderCamera(true);
+                    previewing = true;
+                    if (!cameraPreviewBorder.classList.contains('active')) {
+                        cameraPreviewBorder.classList.add('active');
+                    }
+                    if (pinned)
+                        pinnedCamera = currentCamera;
+                }
+                else {
+                    selectedEntity = null;
+                    if (!pinned) {
+                        stopPreview();
+                    }
+                }
+            }
+            else {
+                selectedEntity = null;
+                if (!pinned) {
+                    stopPreview();
+                }
+            }
+        });
+        var stopPreview = function () {
+            if (currentCamera)
+                currentCamera.renderCamera(false);
+            currentCamera = null;
+            previewing = false;
+            if (cameraPreviewBorder.classList.contains('active')) {
+                cameraPreviewBorder.classList.remove('active');
+            }
+        };
+    }
+    return CameraPreview;
+}());
+exports.CameraPreview = CameraPreview;
+},{"../../ui":148,"../middleware":79}],31:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CameraUserdata = void 0;
+var CameraUserdata = /** @class */ (function () {
+    function CameraUserdata() {
+    }
+    return CameraUserdata;
+}());
+exports.CameraUserdata = CameraUserdata;
+},{}],32:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CameraViewport = void 0;
+var engine_1 = require("../../engine");
+var utility_1 = require("../utility");
+var CameraViewport = /** @class */ (function () {
+    function CameraViewport() {
+        var orbiting = false;
+        var panning = false;
+        var zooming = false;
+        var deltaTime = 0.02;
+        var target = new BABYLON.TransformNode('__viewCameraTarget__', engine_1.VeryEngine.viewScene);
+        target.position.copyFromFloats(0, 0, 0);
+        target.rotation.copyFromFloats(0, 0, 0);
+        var MouseWheelSensitivity = 1; //滚轮灵敏度设置
+        var MouseZoomMin = 0.1; //相机距离最小值
+        var MouseZoomMax = 10000; //相机距离最大值
+        var moveSpeed = 1; //相机跟随速度（中键平移时），采用平滑模式时起作用，越大则运动越平滑
+        var wheelSpeed = 0.01;
+        var xSpeed = 250.0; //旋转视角时相机x轴转速
+        var ySpeed = 120.0; //旋转视角时相机y轴转速
+        var yMinLimit = -360;
+        var yMaxLimit = 360;
+        var x = 0.0; //存储相机的euler角
+        var y = 0.0; //存储相机的euler角
+        var StandardDistance = 300;
+        var Distance = 300; //相机和target之间的距离，因为相机的Z轴总是指向target，也就是相机z轴方向上的距离
+        var targetOnScreenPosition; //目标的屏幕坐标，第三个值为z轴距离
+        var storeRotation; //存储相机的姿态四元数
+        var CameraTargetPosition; //target的位置
+        var initPosition = BABYLON.Vector3.Zero(); //平移时用于存储平移的起点位置
+        var cameraX; //相机的x轴方向向量
+        var cameraY; //相机的y轴方向向量
+        var cameraZ; //相机的z轴方向向量
+        var initScreenPos; //中键刚按下时鼠标的屏幕坐标（第三个值其实没什么用）
+        var curScreenPos; //当前鼠标的屏幕坐标（第三个值其实没什么用）
+        //这里就是设置一下初始的相机视角以及一些其他变量，这里的x和y。。。是和下面getAxis的mouse x与mouse y对应
+        var angles = utility_1.Tools.radianToEulerAngle(engine_1.VeryEngine.viewCamera.rotation);
+        x = angles.y;
+        y = angles.x;
+        CameraTargetPosition = target.position.clone();
+        targetOnScreenPosition = target.position.clone();
+        storeRotation = BABYLON.Quaternion.FromEulerVector(utility_1.Tools.eulerAngleToRadian(new BABYLON.Vector3(y + 60, x, 0)));
+        engine_1.VeryEngine.viewCamera.rotation = storeRotation.toEulerAngles(); //设置相机姿态
+        var position = utility_1.Tools.quatMultiplyVector3(storeRotation, new BABYLON.Vector3(0.0, 0.0, -Distance)).add(CameraTargetPosition); //四元数表示一个旋转，四元数乘以向量相当于把向量旋转对应角度，然后加上目标物体的位置就是相机位置了
+        engine_1.VeryEngine.viewCamera.position.copyFrom(position); //设置相机位置
+        editor.method('viewport:camera:initilize', function (target_position, target_rotation) {
+        });
+        editor.on('viewport:update', function (dt) {
+            // 毫秒变成秒
+            deltaTime = dt * 0.001;
+            // 聚焦
+            if (focusing) {
+                var pos = engine_1.VeryEngine.viewCamera.position.clone();
+                var dist = vecA.copyFrom(pos).subtract(focusPoint).length();
+                // vecA.copyFrom(pos);
+                if (dist > 0.1) {
+                    var speed = Math.min(1.0, Math.min(1.0, flySpeed * ((firstUpdate ? 1 / 60 : deltaTime * 1.8) / (1 / 60))));
+                    vecA = utility_1.Tools.lerpVector3(pos, focusPoint, speed);
+                    engine_1.VeryEngine.viewCamera.position.copyFrom(vecA);
+                }
+                else {
+                    engine_1.VeryEngine.viewCamera.position.copyFrom(focusPoint);
+                    // VeryEngine.viewCamera.position.copyFrom(focusTarget);
+                    focusing = false;
+                    editor.emit('camera:focus:end', focusTarget, vecA.copyFrom(focusTarget).subtract(engine_1.VeryEngine.viewCamera.position).length());
+                    // editor.once('viewport:postUpdate', function () {
+                    //     editor.call('camera:history:stop', focusCamera);
+                    // });
+                }
+                firstUpdate = false;
+            }
+        });
+        editor.on('viewport:mouse:down', function (evt, rect) {
+            if (!focusing) {
+                // 鼠标中键按下，平移允许
+                if (evt.button === 1) {
+                    panning = true;
+                    cameraX = engine_1.VeryEngine.viewCamera.right;
+                    cameraY = engine_1.VeryEngine.viewCamera.up;
+                    cameraZ = engine_1.VeryEngine.viewCamera.forward;
+                    initScreenPos = new BABYLON.Vector3(evt.clientX - rect.left, rect.height - evt.clientY, targetOnScreenPosition.z);
+                    // targetOnScreenPosition.z为目标物体到相机xmidbuttonDownPositiony平面的法线距离
+                    targetOnScreenPosition = utility_1.Tools.worldToScreenPoint(CameraTargetPosition, engine_1.VeryEngine.viewScene, engine_1.VeryEngine.viewCamera.camera, engine_1.VeryEngine.viewEngine);
+                    initPosition.copyFrom(CameraTargetPosition);
+                }
+                // 鼠标右键按下，旋转允许
+                if (evt.button === 2) {
+                    orbiting = true;
+                    if (_lastMode !== '透视相机' && _lastMode !== '正交相机') {
+                        editor.call('camera:ortho:set');
+                        _lastMode = '正交相机';
+                    }
+                }
+            }
+        });
+        editor.on('viewport:mouse:up', function (evt, rect) {
+            // 鼠标中键抬起，平移停止
+            if (evt.button === 1) {
+                panning = false;
+                //平移结束把cameraTargetPosition的位置更新一下，不然会影响缩放与旋转功能
+                CameraTargetPosition.copyFrom(target.position);
+            }
+            // 鼠标右键抬起，旋转停止
+            if (evt.button === 2) {
+                orbiting = false;
+            }
+        });
+        editor.on('viewport:mouse:move', function (evt, rect) {
+            if (!focusing) {
+                if (orbiting) {
+                    x += evt.movementX * xSpeed * 0.002;
+                    y -= -evt.movementY * ySpeed * 0.002;
+                    y = utility_1.Tools.clampAngle(y, yMinLimit, yMaxLimit);
+                    storeRotation = BABYLON.Quaternion.FromEulerVector(utility_1.Tools.eulerAngleToRadian(new BABYLON.Vector3(y + 60, x, 0)));
+                    position = utility_1.Tools.quatMultiplyVector3(storeRotation, new BABYLON.Vector3(0.0, 0.0, -Distance)).add(CameraTargetPosition);
+                    engine_1.VeryEngine.viewCamera.rotation = storeRotation.toEulerAngles(); //设置相机姿态
+                    engine_1.VeryEngine.viewCamera.position.copyFrom(position);
+                }
+                if (panning) {
+                    // console.warn(evt);
+                    // console.error(rect);
+                    curScreenPos = new BABYLON.Vector3(evt.clientX - rect.left, rect.height - evt.clientY, targetOnScreenPosition.z);
+                    //0.01这个系数是控制平移的速度，要根据相机和目标物体的distance来灵活选择
+                    if (engine_1.VeryEngine.viewCamera.mode === BABYLON.Camera.PERSPECTIVE_CAMERA) {
+                        moveSpeed = 1;
+                    }
+                    else {
+                        if (engine_1.VeryEngine.viewCamera.orthoSize < 0.05) {
+                            moveSpeed = 0.4;
+                        }
+                        else {
+                            moveSpeed = 1;
+                        }
+                    }
+                    target.position = initPosition.subtract(cameraX.scale(curScreenPos.x - initScreenPos.x).add(cameraY.scale(curScreenPos.y - initScreenPos.y)).scale(1 * moveSpeed));
+                    //重新计算位置
+                    var mPosition = utility_1.Tools.quatMultiplyVector3(storeRotation, new BABYLON.Vector3(0.0, 0.0, -Distance)).add(target.position);
+                    engine_1.VeryEngine.viewCamera.position.copyFrom(mPosition);
+                }
+            }
+        });
+        editor.on('viewport:mouse:wheel', function (evt, rect) {
+            if (!focusing) {
+                if (engine_1.VeryEngine.viewCamera.mode === BABYLON.Camera.PERSPECTIVE_CAMERA) {
+                    if (Distance >= MouseZoomMin && Distance <= MouseZoomMax) {
+                        Distance += evt.deltaY * MouseWheelSensitivity * 0.1;
+                    }
+                    if (Distance < MouseZoomMin) {
+                        Distance = MouseZoomMin;
+                    }
+                    if (Distance > MouseZoomMax) {
+                        Distance = MouseZoomMax;
+                    }
+                    // console.log('distance: ' + Distance);
+                    // console.log('delta: ' + (evt.deltaY * MouseWheelSensitivity * 0.1));
+                    position = utility_1.Tools.quatMultiplyVector3(storeRotation, new BABYLON.Vector3(0.0, 0.0, -Distance)).add(CameraTargetPosition);
+                    engine_1.VeryEngine.viewCamera.position.copyFrom(position);
+                }
+                else {
+                    wheelSpeed = 0.5;
+                    if (Distance >= MouseZoomMin && Distance <= MouseZoomMax) {
+                        Distance += evt.deltaY * MouseWheelSensitivity * 0.1 * wheelSpeed;
+                    }
+                    if (Distance < MouseZoomMin) {
+                        Distance = MouseZoomMin;
+                    }
+                    if (Distance > MouseZoomMax) {
+                        Distance = MouseZoomMax;
+                    }
+                    // console.log('distance: ' + Distance);
+                    // console.log('delta: ' + (evt.deltaY * MouseWheelSensitivity * 0.1));
+                    var delta = evt.deltaY * MouseWheelSensitivity * 0.1 * 0.0012;
+                    if (engine_1.VeryEngine.viewCamera.orthoSize > 0.01 || (engine_1.VeryEngine.viewCamera.orthoSize <= 0.01 && delta > 0)) {
+                        engine_1.VeryEngine.viewCamera.orthoSize += delta;
+                        position = utility_1.Tools.quatMultiplyVector3(storeRotation, new BABYLON.Vector3(0.0, 0.0, -Distance)).add(CameraTargetPosition);
+                        engine_1.VeryEngine.viewCamera.position.copyFrom(position);
+                    }
+                    if (engine_1.VeryEngine.viewCamera.orthoSize <= 0.01) {
+                        engine_1.VeryEngine.viewCamera.orthoSize = 0.01;
+                    }
+                    // console.warn(VeryEngine.viewCamera.orthoSize);
+                }
+            }
+        });
+        var focusTarget = BABYLON.Vector3.Zero();
+        var focusPoint = BABYLON.Vector3.Zero();
+        var focusOrthoHeight = 0;
+        // var focusCamera;
+        var focusing = false;
+        var firstUpdate = false;
+        var flySpeed = 0.25;
+        var vecA = BABYLON.Vector3.Zero();
+        var vecB = BABYLON.Vector3.Zero();
+        editor.method('camera:focus', function (point, distance) {
+            // var camera = editor.call('camera:current');
+            focusing = true;
+            firstUpdate = true;
+            focusTarget.copyFrom(point);
+            CameraTargetPosition.copyFrom(focusTarget);
+            Distance = distance;
+            vecA = utility_1.Tools.quatMultiplyVector3(storeRotation, new BABYLON.Vector3(0.0, 0.0, -Distance)).add(CameraTargetPosition);
+            focusPoint.copyFrom(vecA);
+            editor.emit('camera:focus', point, distance);
+        });
+        editor.method('camera:focus:stop', function () {
+            if (!focusing)
+                return;
+            focusing = false;
+            // var camera = editor.call('camera:current');
+            // editor.emit('camera:focus:end', focusTarget, vecA.copyFrom(focusTarget).subtract(camera.getPosition()).length());
+            // editor.once('viewport:postUpdate', function () {
+            //     editor.call('camera:history:stop', focusCamera);
+            // });
+        });
+        editor.on('camera:focus:end', function (target_position, distance) {
+            // angles = Tools.radianToEulerAngle(VeryEngine.viewCamera.rotation);
+            // x = angles.y;
+            // y = angles.x;
+            target.position.copyFrom(target_position);
+            // CameraTargetPosition = target.position.clone();
+            // targetOnScreenPosition = target.position.clone();
+            Distance = distance;
+            // storeRotation = BABYLON.Quaternion.FromEulerVector(Tools.eulerAngleToRadian(new BABYLON.Vector3(y + 60, x, 0)));
+            // VeryEngine.viewCamera.rotation = storeRotation.toEulerAngles(); //设置相机姿态
+            // let position: BABYLON.Vector3 = Tools.quatMultiplyVector3(storeRotation, new BABYLON.Vector3(0.0, 0.0, -Distance)).add(CameraTargetPosition); //四元数表示一个旋转，四元数乘以向量相当于把向量旋转对应角度，然后加上目标物体的位置就是相机位置了
+            // VeryEngine.viewCamera.position = position.clone(); //设置相机位置
+        });
+        var _lastMode = '透视相机';
+        editor.method('camera:change:mode', function (mode_type) {
+            if (mode_type !== _lastMode) {
+                if (mode_type === '透视相机') {
+                    engine_1.VeryEngine.viewCamera.mode = BABYLON.Camera.PERSPECTIVE_CAMERA;
+                }
+                else {
+                    var currentDistance = Distance;
+                    if (_lastMode === '透视相机') {
+                        currentDistance = StandardDistance;
+                        engine_1.VeryEngine.viewCamera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
+                    }
+                    if (mode_type === '正交相机') {
+                    }
+                    else if (mode_type === '左视图') {
+                        engine_1.VeryEngine.viewCamera.rotation = utility_1.Tools.eulerAngleToRadian(new BABYLON.Vector3(0, 90, 0));
+                    }
+                    else if (mode_type === '右视图') {
+                        engine_1.VeryEngine.viewCamera.rotation = utility_1.Tools.eulerAngleToRadian(new BABYLON.Vector3(0, -90, 0));
+                    }
+                    else if (mode_type === '顶视图') {
+                        engine_1.VeryEngine.viewCamera.rotation = utility_1.Tools.eulerAngleToRadian(new BABYLON.Vector3(90, 0, 0));
+                    }
+                    else if (mode_type === '底视图') {
+                        engine_1.VeryEngine.viewCamera.rotation = utility_1.Tools.eulerAngleToRadian(new BABYLON.Vector3(-90, 0, 0));
+                    }
+                    else if (mode_type === '前视图') {
+                        engine_1.VeryEngine.viewCamera.rotation = utility_1.Tools.eulerAngleToRadian(new BABYLON.Vector3(0, 180, 0));
+                    }
+                    else if (mode_type === '后视图') {
+                        engine_1.VeryEngine.viewCamera.rotation = utility_1.Tools.eulerAngleToRadian(new BABYLON.Vector3(0, 0, 0));
+                    }
+                    storeRotation = engine_1.VeryEngine.viewCamera.rotation.toQuaternion();
+                    var tempAngle = utility_1.Tools.radianToEulerAngle(engine_1.VeryEngine.viewCamera.rotation);
+                    x = tempAngle.y;
+                    y = tempAngle.x - 60;
+                    editor.call('camera:focus', target.getAbsolutePosition(), currentDistance);
+                }
+                _lastMode = mode_type;
+            }
+        });
+        editor.method('viewport:focus', function () {
+            var selection = editor.call('selection:aabb');
+            if (!selection)
+                return;
+            // var camera = editor.call('camera:current');
+            // aabb
+            // var distance = Math.max(aabb.halfExtents.x, Math.max(aabb.halfExtents.y, aabb.halfExtents.z));
+            // // fov
+            // distance = (distance / Math.tan(0.5 * camera.camera.fov * Math.PI / 180.0));
+            // // extra space
+            // distance = distance * 1.1 + 1;
+            // VeryEngine.viewCamera.position.copyFrom(selection);
+            editor.call('camera:focus', selection, 300);
+        });
+        editor.method('selection:aabb', function () {
+            if (editor.call('selector:type') !== 'entity')
+                return null;
+            return editor.call('entities:aabb', editor.call('selector:items'));
+        });
+        // TODO: 当前以物体位置简单处理，distance参数也是固定的
+        editor.method('entities:aabb', function (items) {
+            if (!items)
+                return null;
+            if (!(items instanceof Array))
+                items = [items];
+            if (items[items.length - 1].node) {
+                return items[items.length - 1].node.getAbsolutePosition().clone();
+            }
+            else {
+                return null;
+            }
+            // aabb.center.set(0, 0, 0);
+            // aabb.halfExtents.copy(defaultSizeSmall);
+            // // calculate aabb for selected entities
+            // for (var i = 0; i < items.length; i++) {
+            //     var entity = items[i].entity;
+            //     if (!entity)
+            //         continue;
+            //     aabbA.center.copy(entity.getPosition());
+            //     aabbA.halfExtents.copy(defaultSizeSmall);
+            //     calculateChildAABB(entity);
+            //     if (i === 0) {
+            //         aabb.copy(aabbA);
+            //     } else {
+            //         aabb.add(aabbA);
+            //     }
+            // }
+            // return aabb;
+        });
+    }
+    return CameraViewport;
+}());
+exports.CameraViewport = CameraViewport;
+},{"../../engine":128,"../utility":114}],33:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Cameras = void 0;
+var Cameras = /** @class */ (function () {
+    function Cameras() {
+    }
+    return Cameras;
+}());
+exports.Cameras = Cameras;
+},{}],34:[function(require,module,exports){
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+__exportStar(require("./cameras"), exports);
+__exportStar(require("./camera-viewport"), exports);
+__exportStar(require("./camera-userdata"), exports);
+__exportStar(require("./camera-depth"), exports);
+__exportStar(require("./camera-preview"), exports);
+__exportStar(require("./keeper"), exports);
+},{"./camera-depth":29,"./camera-preview":30,"./camera-userdata":31,"./camera-viewport":32,"./cameras":33,"./keeper":35}],35:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CameraKeeper = void 0;
+var cameras_1 = require("./cameras");
+var camera_preview_1 = require("./camera-preview");
+var camera_viewport_1 = require("./camera-viewport");
+var CameraKeeper = /** @class */ (function () {
+    function CameraKeeper() {
+        new cameras_1.Cameras();
+        new camera_viewport_1.CameraViewport();
+        // new CameraUserdata();
+        // new CameraDepth();
+        new camera_preview_1.CameraPreview();
+    }
+    return CameraKeeper;
+}());
+exports.CameraKeeper = CameraKeeper;
+},{"./camera-preview":30,"./camera-viewport":32,"./cameras":33}],36:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Drop = void 0;
@@ -6606,7 +7360,7 @@ var Drop = /** @class */ (function () {
     return Drop;
 }());
 exports.Drop = Drop;
-},{}],29:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -6678,7 +7432,7 @@ var Editor = /** @class */ (function (_super) {
     return Editor;
 }(lib_1.Events));
 exports.Editor = Editor;
-},{"../lib":114}],30:[function(require,module,exports){
+},{"../lib":132}],38:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Entities = void 0;
@@ -6810,10 +7564,11 @@ var Entities = /** @class */ (function () {
     return Entities;
 }());
 exports.Entities = Entities;
-},{"../../lib":114,"../middleware":69}],31:[function(require,module,exports){
+},{"../../lib":132,"../middleware":79}],39:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EntityCreate = void 0;
+var engine_1 = require("../../engine");
 var lib_1 = require("../../lib");
 var utility_1 = require("../utility");
 var EntityCreate = /** @class */ (function () {
@@ -6872,15 +7627,16 @@ var EntityCreate = /** @class */ (function () {
                 selectorType = editor.call('selector:type');
                 selectorItems = editor.call('selector:items');
                 if (selectorType === 'entity') {
+                    // TODO
                     for (var i = 0; i < selectorItems.length; i++)
                         selectorItems[i] = selectorItems[i].get('resource_id');
                 }
             }
             // create new Entity data
-            console.error(defaultData);
+            // console.error(defaultData);
             var entity = new lib_1.Observer(defaultData);
             editor.call('entities:addEntity', entity, parent, !defaultData.noSelect);
-            console.error(entity);
+            // console.error(entity);
             // history
             if (!defaultData.noHistory) {
                 var resourceId = entity.get('resource_id');
@@ -6920,11 +7676,269 @@ var EntityCreate = /** @class */ (function () {
             }
             return entity;
         });
+        editor.method('entities:editor:new', function (defaultData) {
+            defaultData = defaultData || {};
+            // console.log('type: ' + defaultData.type);
+            // console.warn(defaultData.parent);
+            var parent = defaultData.parent || editor.call('entities:root');
+            if (defaultData.type) {
+                var entityData = createEntityDataFromEditor(defaultData.type, defaultData.subtype, parent.get('resource_id'));
+                var entity = new lib_1.Observer(entityData);
+                var instance = createEntityInstance(defaultData.type, defaultData.subtype, entity);
+                editor.call('entities:addEntity', entity, parent, !defaultData.noSelect);
+                editor.call('selector:set', 'entity', [entity]);
+                // if (defaultData.type === 'empty') {
+                // } else if (defaultData.type === 'primitive') {
+                //     if (defaultData.subtype === 'box') {
+                //     } else if (defaultData.subtype === 'sphere') {
+                //     } else if (defaultData.subtype === 'plane') {
+                //     } else if (defaultData.subtype === 'cylinder') {
+                //     }
+                // } else if (defaultData.type === 'light') {
+                //     if (defaultData.subtype === 'hemispheric') {
+                //     } else if (defaultData.subtype === 'directional') {
+                //     } else if (defaultData.subtype === 'point') {
+                //     } else if (defaultData.subtype === 'spot') {
+                //     }
+                // } else if (defaultData.type === 'camera') {
+                // }
+            }
+        });
+        var typeToName = {
+            'empty': '空物体',
+            'box': '立方体',
+            'sphere': '球体',
+            'plane': '平面',
+            'cylinder': '圆柱体',
+            'hemispheric': '环境光',
+            'directional': '平行光',
+            'point': '点光源',
+            'spot': '聚光灯',
+            'camera': '摄像机'
+        };
+        var createEntityDataFromEditor = function (type, subtype, parentResourceId) {
+            var entityData = {
+                name: typeToName[type] || typeToName[subtype] || '空物体',
+                type: type,
+                subtype: subtype,
+                resource_id: utility_1.GUID.create(),
+                parent: parentResourceId,
+                position: [0, 0, 0],
+                rotation: [0, 0, 0],
+                scale: [1, 1, 1],
+                enabled: true,
+                tags: Array(),
+                children: Array(),
+            };
+            if (type === 'primitive') {
+                entityData.checkCollisions = false;
+                entityData.pickable = true;
+                entityData.isVisible = true;
+                entityData.material_id = '';
+            }
+            else if (type === 'light') {
+                entityData.position = [300, 300, 300];
+                if (subtype === 'directional') {
+                    entityData.rotation = [50, -30, 0];
+                }
+            }
+            else if (type === 'camera') {
+                entityData.position = [0, 100, -200];
+                entityData.mode = 0;
+                entityData.fov = 0.8;
+                entityData.inertia = 0.9;
+                entityData.orthoSize = 0.5;
+                entityData.ellipsoid = [0.5, 1, 0.5];
+                entityData.ellipsoidOffset = [0, 0, 0];
+                entityData.checkCollisions = true;
+                entityData.applyGravity = true;
+                entityData.minZ = 1;
+                entityData.maxZ = 20000;
+                entityData.priority = 0;
+                entityData.viewport = [0, 0, 1, 1];
+                entityData.clearColor = [0.176, 0.569, 0.729, 1];
+            }
+            return entityData;
+        };
+        var createEntityInstance = function (type, subtype, entity) {
+            if (type === 'empty') {
+                var empty = new BABYLON.TransformNode(entity.get('name'), engine_1.VeryEngine.viewScene);
+                entity.node = empty;
+                empty.id = entity.get('resource_id');
+                empty.position = BABYLON.Vector3.FromArray(entity.get('position'));
+                empty.rotation = utility_1.Tools.eulerAngleToRadian(BABYLON.Vector3.FromArray(entity.get('rotation')));
+                empty.scaling = BABYLON.Vector3.FromArray(entity.get('scale'));
+                empty.isEnabled(entity.get('enabled'));
+                return empty;
+            }
+            else if (type === 'primitive') {
+                if (subtype === 'box') {
+                    var box = BABYLON.MeshBuilder.CreateBox(entity.get('name'), { size: 100 }, engine_1.VeryEngine.viewScene);
+                    entity.node = box;
+                    box.id = entity.get('resource_id');
+                    box.position = BABYLON.Vector3.FromArray(entity.get('position'));
+                    box.rotation = utility_1.Tools.eulerAngleToRadian(BABYLON.Vector3.FromArray(entity.get('rotation')));
+                    box.scaling = BABYLON.Vector3.FromArray(entity.get('scale'));
+                    if (entity.has('checkCollisions')) {
+                        box.checkCollisions = entity.get('checkCollisions');
+                    }
+                    if (entity.has('pickable')) {
+                        box.isPickable = entity.get('pickable');
+                    }
+                    if (entity.has('isVisible')) {
+                        box.isVisible = entity.get('isVisible');
+                    }
+                    return box;
+                }
+                else if (subtype === 'sphere') {
+                    var box = BABYLON.MeshBuilder.CreateSphere(entity.get('name'), { segments: 20, diameter: 100 }, engine_1.VeryEngine.viewScene);
+                    entity.node = box;
+                    box.id = entity.get('resource_id');
+                    box.position = BABYLON.Vector3.FromArray(entity.get('position'));
+                    box.rotation = utility_1.Tools.eulerAngleToRadian(BABYLON.Vector3.FromArray(entity.get('rotation')));
+                    box.scaling = BABYLON.Vector3.FromArray(entity.get('scale'));
+                    if (entity.has('checkCollisions')) {
+                        box.checkCollisions = entity.get('checkCollisions');
+                    }
+                    if (entity.has('pickable')) {
+                        box.isPickable = entity.get('pickable');
+                    }
+                    if (entity.has('isVisible')) {
+                        box.isVisible = entity.get('isVisible');
+                    }
+                    return box;
+                }
+                else if (subtype === 'plane') {
+                    var box = BABYLON.MeshBuilder.CreateGround(entity.get('name'), { width: 5000, height: 5000, subdivisions: 10 }, engine_1.VeryEngine.viewScene);
+                    entity.node = box;
+                    box.id = entity.get('resource_id');
+                    box.position = BABYLON.Vector3.FromArray(entity.get('position'));
+                    box.rotation = utility_1.Tools.eulerAngleToRadian(BABYLON.Vector3.FromArray(entity.get('rotation')));
+                    box.scaling = BABYLON.Vector3.FromArray(entity.get('scale'));
+                    if (entity.has('checkCollisions')) {
+                        box.checkCollisions = entity.get('checkCollisions');
+                    }
+                    if (entity.has('pickable')) {
+                        box.isPickable = entity.get('pickable');
+                    }
+                    if (entity.has('isVisible')) {
+                        box.isVisible = entity.get('isVisible');
+                    }
+                    return box;
+                }
+                else if (subtype === 'cylinder') {
+                    var box = BABYLON.MeshBuilder.CreateCylinder(entity.get('name'), { height: 200, diameter: 100 }, engine_1.VeryEngine.viewScene);
+                    entity.node = box;
+                    box.id = entity.get('resource_id');
+                    box.position = BABYLON.Vector3.FromArray(entity.get('position'));
+                    box.rotation = utility_1.Tools.eulerAngleToRadian(BABYLON.Vector3.FromArray(entity.get('rotation')));
+                    box.scaling = BABYLON.Vector3.FromArray(entity.get('scale'));
+                    if (entity.has('checkCollisions')) {
+                        box.checkCollisions = entity.get('checkCollisions');
+                    }
+                    if (entity.has('pickable')) {
+                        box.isPickable = entity.get('pickable');
+                    }
+                    if (entity.has('isVisible')) {
+                        box.isVisible = entity.get('isVisible');
+                    }
+                    return box;
+                }
+            }
+            // // box
+            // var box = BABYLON.Mesh.CreateBox(entity.get('name'), 1, VeryEngine.viewScene);
+            // entity.node = box;
+            // entitiesIndex[entity.get('resource_id')] = box;
+            // box.id = entity.get('resource_id');
+            // box.position = BABYLON.Vector3.FromArray(entity.get('position'));
+            // box.rotation = Tools.eulerAngleToRadian(BABYLON.Vector3.FromArray(entity.get('rotation')));
+            // box.scaling = BABYLON.Vector3.FromArray(entity.get('scale'));
+            // box.isEnabled(entity.get('enabled'));
+            // box.checkCollisions = entity.get('checkCollisions');
+            // box.isVisible = entity.get('isVisible');
+            // // 加载自定义关联材质
+            // if (entity.get('material_id')) {
+            // }
+            // childAndParent(entity, box);
+            return null;
+        };
     }
     return EntityCreate;
 }());
 exports.EntityCreate = EntityCreate;
-},{"../../lib":114,"../utility":97}],32:[function(require,module,exports){
+},{"../../engine":128,"../../lib":132,"../utility":114}],40:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.EntityDelete = void 0;
+var EntityDelete = /** @class */ (function () {
+    function EntityDelete() {
+        editor.method('entities:delete', function (entities) {
+            var records = [];
+            var entitiesToDelete = [];
+            var i;
+            var parent;
+            // index entities
+            var resourceIds = {};
+            for (i = 0; i < entities.length; i++) {
+                resourceIds[entities[i].get('resource_id')] = entities[i];
+            }
+            // find out if entity has ancestor
+            for (i = 0; i < entities.length; i++) {
+                var child = false;
+                parent = editor.call('entities:getParentResourceId', entities[i].get('resource_id'));
+                while (!child && parent) {
+                    if (resourceIds[parent]) {
+                        child = true;
+                    }
+                    else {
+                        parent = editor.call('entities:getParentResourceId', parent);
+                    }
+                }
+                if (!child) {
+                    entitiesToDelete.push(entities[i]);
+                }
+            }
+            // delete only top level entities
+            entities = entitiesToDelete;
+            for (i = 0; i < entities.length; i++) {
+                var resourceId = entities[i].get('resource_id');
+                var parentId = editor.call('entities:getParentResourceId', resourceId);
+                var ind;
+                if (parentId) {
+                    parent = editor.call('entities:get', parentId);
+                    if (parent) {
+                        ind = parent.get('children').indexOf(resourceId);
+                    }
+                }
+                records.push({
+                    resourceId: resourceId,
+                    parentId: parentId,
+                    ind: ind,
+                    data: entities[i]._data2
+                });
+            }
+            // Build a map of all entity reference properties in the graph. This is
+            // effectively a snapshot of the entity references as they were at the point of deletion,
+            // so that they can be re-constituted later if the deletion is undone.
+            // var entityReferencesMap = {};
+            // recursivelySearchForEntityReferences(editor.call('entities:root'), entityReferencesMap);
+            // remove the entities from the scene
+            for (i = 0; i < entities.length; i++) {
+                editor.call('entities:removeEntity', entities[i], null);
+            }
+            // sort records by index
+            // so that entities are re-added
+            // in the correct order in undo
+            records.sort(function (a, b) {
+                return a.ind - b.ind;
+            });
+            // TODO: history
+        });
+    }
+    return EntityDelete;
+}());
+exports.EntityDelete = EntityDelete;
+},{}],41:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EntityEdit = void 0;
@@ -7031,9 +8045,9 @@ var EntityEdit = /** @class */ (function () {
         var removeEntity = function (entity, entityReferencesMap) {
             entityReferencesMap = entityReferencesMap || {};
             // deletedCache[entity.get('resource_id')] = entity.json();
-            deletedCache[entity.get('resource_id')] = entity.origin;
+            deletedCache[entity.get('resource_id')] = entity._data2;
             // Nullify any entity references which currently point to this guid
-            updateEntityReferenceFields(entityReferencesMap, entity.get('resource_id'), null);
+            // updateEntityReferenceFields(entityReferencesMap, entity.get('resource_id'), null);
             // remove children
             entity.get('children').forEach(function (child) {
                 var entity = editor.call('entities:get', child);
@@ -7044,6 +8058,7 @@ var EntityEdit = /** @class */ (function () {
             if (editor.call('selector:type') === 'entity' && editor.call('selector:items').indexOf(entity) !== -1) {
                 editor.call('selector:history', false);
                 editor.call('selector:remove', entity);
+                // TODO：选择历史记录
                 editor.once('selector:change', function () {
                     editor.call('selector:history', true);
                 });
@@ -7053,18 +8068,17 @@ var EntityEdit = /** @class */ (function () {
             if (parentId) {
                 var parent = editor.call('entities:get', parentId);
                 if (parent) {
-                    parent.history.enabled = false;
+                    // parent.history.enabled = false;
                     parent.removeValue('children', entity.get('resource_id'));
-                    parent.history.enabled = true;
+                    // parent.history.enabled = true;
                 }
             }
+            var removeEntityID = entity.get('resource_id');
             // call remove method
             editor.call('entities:remove', entity);
-            // sharedb
-            editor.call('realtime:scene:op', {
-                p: ['entities', entity.get('resource_id')],
-                od: {}
-            });
+            // 更新scene数据
+            babylonLoader_1.BabylonLoader.removeSceneData(removeEntityID);
+            editor.call('make:scene:dirty');
         };
         editor.method('entities:addEntity', addEntity);
         editor.method('entities:removeEntity', removeEntity);
@@ -7084,7 +8098,7 @@ var EntityEdit = /** @class */ (function () {
     return EntityEdit;
 }());
 exports.EntityEdit = EntityEdit;
-},{"../middleware/loader/babylonLoader":70}],33:[function(require,module,exports){
+},{"../middleware/loader/babylonLoader":80}],42:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EntityLoad = void 0;
@@ -7143,7 +8157,7 @@ var EntityLoad = /** @class */ (function () {
     return EntityLoad;
 }());
 exports.EntityLoad = EntityLoad;
-},{"../../lib":114,"../../ui":130}],34:[function(require,module,exports){
+},{"../../lib":132,"../../ui":148}],43:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EntitySync = void 0;
@@ -7153,7 +8167,7 @@ var EntitySync = /** @class */ (function () {
     return EntitySync;
 }());
 exports.EntitySync = EntitySync;
-},{}],35:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Entity = void 0;
@@ -7165,7 +8179,7 @@ var Entity = /** @class */ (function () {
     return Entity;
 }());
 exports.Entity = Entity;
-},{}],36:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -7184,8 +8198,9 @@ __exportStar(require("./entity-load"), exports);
 __exportStar(require("./entity-create"), exports);
 __exportStar(require("./entity-sync"), exports);
 __exportStar(require("./entity-edit"), exports);
+__exportStar(require("./entity-delete"), exports);
 __exportStar(require("./keeper"), exports);
-},{"./entities":30,"./entity":35,"./entity-create":31,"./entity-edit":32,"./entity-load":33,"./entity-sync":34,"./keeper":37}],37:[function(require,module,exports){
+},{"./entities":38,"./entity":44,"./entity-create":39,"./entity-delete":40,"./entity-edit":41,"./entity-load":42,"./entity-sync":43,"./keeper":46}],46:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EntityKeeper = void 0;
@@ -7194,6 +8209,7 @@ var entities_1 = require("./entities");
 var entity_create_1 = require("./entity-create");
 var entity_sync_1 = require("./entity-sync");
 var entity_edit_1 = require("./entity-edit");
+var entity_delete_1 = require("./entity-delete");
 var EntityKeeper = /** @class */ (function () {
     function EntityKeeper() {
         new entities_1.Entities();
@@ -7201,11 +8217,351 @@ var EntityKeeper = /** @class */ (function () {
         new entity_create_1.EntityCreate();
         new entity_load_1.EntityLoad();
         new entity_sync_1.EntitySync();
+        new entity_delete_1.EntityDelete();
     }
     return EntityKeeper;
 }());
 exports.EntityKeeper = EntityKeeper;
-},{"./entities":30,"./entity-create":31,"./entity-edit":32,"./entity-load":33,"./entity-sync":34}],38:[function(require,module,exports){
+},{"./entities":38,"./entity-create":39,"./entity-delete":40,"./entity-edit":41,"./entity-load":42,"./entity-sync":43}],47:[function(require,module,exports){
+"use strict";
+// import { IDisposable, Scene } from "../scene";
+// import { Nullable } from "../types";
+// import { Observable, Observer } from "../Misc/observable";
+// import { PointerInfoPre, PointerInfo, PointerEventTypes } from "../Events/pointerEvents";
+// import { PickingInfo } from "../Collisions/pickingInfo";
+// import { AbstractMesh } from "../Meshes/abstractMesh";
+// import { EngineStore } from "../Engines/engineStore";
+// import { HemisphericLight } from '../Lights/hemisphericLight';
+// import { Vector3 } from '../Maths/math.vector';
+// import { Camera } from '../Cameras/camera';
+// import { Color3 } from '../Maths/math.color';
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.UtilityLayerRenderer = void 0;
+/**
+ * Renders a layer on top of an existing scene
+ */
+var UtilityLayerRenderer = /** @class */ (function () {
+    /**
+     * Instantiates a UtilityLayerRenderer
+     * @param originalScene the original scene that will be rendered on top of
+     * @param handleEvents boolean indicating if the utility layer should handle events
+     */
+    function UtilityLayerRenderer(
+    /** the original scene that will be rendered on top of */
+    originalScene, handleEvents) {
+        var _this = this;
+        if (handleEvents === void 0) { handleEvents = true; }
+        this.originalScene = originalScene;
+        this._pointerCaptures = {};
+        this._lastPointerEvents = {};
+        this._sharedGizmoLight = null;
+        this._renderCamera = null;
+        /**
+         * If the picking should be done on the utility layer prior to the actual scene (Default: true)
+         */
+        this.pickUtilitySceneFirst = true;
+        /**
+         *  If the utility layer should automatically be rendered on top of existing scene
+        */
+        this.shouldRender = true;
+        /**
+         * If set to true, only pointer down onPointerObservable events will be blocked when picking is occluded by original scene
+         */
+        this.onlyCheckPointerDownEvents = true;
+        /**
+         * If set to false, only pointerUp, pointerDown and pointerMove will be sent to the utilityLayerScene (false by default)
+         */
+        this.processAllEvents = false;
+        /**
+         * Observable raised when the pointer move from the utility layer scene to the main scene
+         */
+        this.onPointerOutObservable = new BABYLON.Observable();
+        /** Gets or sets a predicate that will be used to indicate utility meshes present in the main scene */
+        this.mainSceneTrackerPredicate = null;
+        this._originalPointerObserver = null;
+        this._backUpOrtho = 0;
+        // Create scene which will be rendered in the foreground and remove it from being referenced by engine to avoid interfering with existing app
+        this.utilityLayerScene = new BABYLON.Scene(originalScene.getEngine(), { virtual: true });
+        this.utilityLayerScene.useRightHandedSystem = originalScene.useRightHandedSystem;
+        this.utilityLayerScene._allowPostProcessClearColor = false;
+        // Detach controls on utility scene, events will be fired by logic below to handle picking priority
+        this.utilityLayerScene.detachControl();
+        if (handleEvents) {
+            this._originalPointerObserver = originalScene.onPrePointerObservable.add(function (prePointerInfo, eventState) {
+                if (!_this.utilityLayerScene.activeCamera) {
+                    return;
+                }
+                if (!_this.processAllEvents) {
+                    if (prePointerInfo.type !== BABYLON.PointerEventTypes.POINTERMOVE
+                        && prePointerInfo.type !== BABYLON.PointerEventTypes.POINTERUP
+                        && prePointerInfo.type !== BABYLON.PointerEventTypes.POINTERDOWN
+                        && prePointerInfo.type !== BABYLON.PointerEventTypes.POINTERDOUBLETAP) {
+                        return;
+                    }
+                }
+                _this.utilityLayerScene.pointerX = originalScene.pointerX;
+                _this.utilityLayerScene.pointerY = originalScene.pointerY;
+                var pointerEvent = (prePointerInfo.event);
+                if (originalScene.isPointerCaptured(pointerEvent.pointerId)) {
+                    _this._pointerCaptures[pointerEvent.pointerId] = false;
+                    return;
+                }
+                var utilityScenePick = prePointerInfo.ray ? _this.utilityLayerScene.pickWithRay(prePointerInfo.ray) : _this.utilityLayerScene.pick(originalScene.pointerX, originalScene.pointerY);
+                if (!prePointerInfo.ray && utilityScenePick) {
+                    prePointerInfo.ray = utilityScenePick.ray;
+                }
+                // always fire the prepointer oversvable
+                _this.utilityLayerScene.onPrePointerObservable.notifyObservers(prePointerInfo);
+                // allow every non pointer down event to flow to the utility layer
+                if (_this.onlyCheckPointerDownEvents && prePointerInfo.type != BABYLON.PointerEventTypes.POINTERDOWN) {
+                    if (!prePointerInfo.skipOnPointerObservable) {
+                        _this.utilityLayerScene.onPointerObservable.notifyObservers(new BABYLON.PointerInfo(prePointerInfo.type, prePointerInfo.event, utilityScenePick), prePointerInfo.type);
+                    }
+                    if (prePointerInfo.type === BABYLON.PointerEventTypes.POINTERUP && _this._pointerCaptures[pointerEvent.pointerId]) {
+                        _this._pointerCaptures[pointerEvent.pointerId] = false;
+                    }
+                    return;
+                }
+                if (_this.utilityLayerScene.autoClearDepthAndStencil || _this.pickUtilitySceneFirst) {
+                    // If this layer is an overlay, check if this layer was hit and if so, skip pointer events for the main scene
+                    if (utilityScenePick && utilityScenePick.hit) {
+                        if (!prePointerInfo.skipOnPointerObservable) {
+                            _this.utilityLayerScene.onPointerObservable.notifyObservers(new BABYLON.PointerInfo(prePointerInfo.type, prePointerInfo.event, utilityScenePick), prePointerInfo.type);
+                        }
+                        prePointerInfo.skipOnPointerObservable = true;
+                    }
+                }
+                else {
+                    var originalScenePick = prePointerInfo.ray ? originalScene.pickWithRay(prePointerInfo.ray) : originalScene.pick(originalScene.pointerX, originalScene.pointerY);
+                    var pointerEvent_1 = (prePointerInfo.event);
+                    // If the layer can be occluded by the original scene, only fire pointer events to the first layer that hit they ray
+                    if (originalScenePick && utilityScenePick) {
+                        // No pick in utility scene
+                        if (utilityScenePick.distance === 0 && originalScenePick.pickedMesh) {
+                            if (_this.mainSceneTrackerPredicate && _this.mainSceneTrackerPredicate(originalScenePick.pickedMesh)) {
+                                // We touched an utility mesh present in the main scene
+                                _this._notifyObservers(prePointerInfo, originalScenePick, pointerEvent_1);
+                                prePointerInfo.skipOnPointerObservable = true;
+                            }
+                            else if (prePointerInfo.type === BABYLON.PointerEventTypes.POINTERDOWN) {
+                                _this._pointerCaptures[pointerEvent_1.pointerId] = true;
+                            }
+                            else if (_this._lastPointerEvents[pointerEvent_1.pointerId]) {
+                                // We need to send a last pointerup to the utilityLayerScene to make sure animations can complete
+                                _this.onPointerOutObservable.notifyObservers(pointerEvent_1.pointerId);
+                                delete _this._lastPointerEvents[pointerEvent_1.pointerId];
+                            }
+                        }
+                        else if (!_this._pointerCaptures[pointerEvent_1.pointerId] && (utilityScenePick.distance < originalScenePick.distance || originalScenePick.distance === 0)) {
+                            // We pick something in utility scene or the pick in utility is closer than the one in main scene
+                            _this._notifyObservers(prePointerInfo, utilityScenePick, pointerEvent_1);
+                            // If a previous utility layer set this, do not unset this
+                            if (!prePointerInfo.skipOnPointerObservable) {
+                                prePointerInfo.skipOnPointerObservable = utilityScenePick.distance > 0;
+                            }
+                        }
+                        else if (!_this._pointerCaptures[pointerEvent_1.pointerId] && (utilityScenePick.distance > originalScenePick.distance)) {
+                            // We have a pick in both scenes but main is closer than utility
+                            // We touched an utility mesh present in the main scene
+                            if (_this.mainSceneTrackerPredicate && _this.mainSceneTrackerPredicate(originalScenePick.pickedMesh)) {
+                                _this._notifyObservers(prePointerInfo, originalScenePick, pointerEvent_1);
+                                prePointerInfo.skipOnPointerObservable = true;
+                            }
+                            else if (_this._lastPointerEvents[pointerEvent_1.pointerId]) {
+                                // We need to send a last pointerup to the utilityLayerScene to make sure animations can complete
+                                _this.onPointerOutObservable.notifyObservers(pointerEvent_1.pointerId);
+                                delete _this._lastPointerEvents[pointerEvent_1.pointerId];
+                            }
+                        }
+                        if (prePointerInfo.type === BABYLON.PointerEventTypes.POINTERUP && _this._pointerCaptures[pointerEvent_1.pointerId]) {
+                            _this._pointerCaptures[pointerEvent_1.pointerId] = false;
+                        }
+                    }
+                }
+            });
+            // As a newly added utility layer will be rendered over the screen last, it's pointer events should be processed first
+            if (this._originalPointerObserver) {
+                originalScene.onPrePointerObservable.makeObserverTopPriority(this._originalPointerObserver);
+            }
+        }
+        // Render directly on top of existing scene without clearing
+        this.utilityLayerScene.autoClear = false;
+        this._afterRenderObserver = this.originalScene.onAfterCameraRenderObservable.add(function (camera) {
+            // Only render when the render camera finishes rendering
+            if (_this.shouldRender && camera == _this.getRenderCamera()) {
+                _this.render();
+            }
+        });
+        this._sceneDisposeObserver = this.originalScene.onDisposeObservable.add(function () {
+            _this.dispose();
+        });
+        this._updateCamera();
+    }
+    /**
+     * Gets the camera that is used to render the utility layer (when not set, this will be the last active camera)
+     * @param getRigParentIfPossible if the current active camera is a rig camera, should its parent camera be returned
+     * @returns the camera that is used when rendering the utility layer
+     */
+    UtilityLayerRenderer.prototype.getRenderCamera = function (getRigParentIfPossible) {
+        if (this._renderCamera) {
+            return this._renderCamera;
+        }
+        else {
+            var activeCam = void 0;
+            if (this.originalScene.activeCameras.length > 1) {
+                // activeCam = this.originalScene.activeCameras[this.originalScene.activeCameras.length - 1];
+                activeCam = this.originalScene.activeCameras[0];
+            }
+            else {
+                activeCam = (this.originalScene.activeCamera);
+            }
+            if (getRigParentIfPossible && activeCam && activeCam.isRightCamera) {
+                return activeCam.rightCamera;
+            }
+            return activeCam;
+        }
+    };
+    /**
+     * Sets the camera that should be used when rendering the utility layer (If set to null the last active camera will be used)
+     * @param cam the camera that should be used when rendering the utility layer
+     */
+    UtilityLayerRenderer.prototype.setRenderCamera = function (cam) {
+        this._renderCamera = cam;
+    };
+    /**
+     * @hidden
+     * Light which used by gizmos to get light shading
+     */
+    UtilityLayerRenderer.prototype._getSharedGizmoLight = function () {
+        if (!this._sharedGizmoLight) {
+            this._sharedGizmoLight = new BABYLON.HemisphericLight("shared gizmo light", new BABYLON.Vector3(0, 1, 0), this.utilityLayerScene);
+            this._sharedGizmoLight.intensity = 2;
+            this._sharedGizmoLight.groundColor = BABYLON.Color3.Gray();
+        }
+        return this._sharedGizmoLight;
+    };
+    Object.defineProperty(UtilityLayerRenderer, "DefaultUtilityLayer", {
+        /**
+         * A shared utility layer that can be used to overlay objects into a scene (Depth map of the previous scene is cleared before drawing on top of it)
+         */
+        get: function () {
+            if (UtilityLayerRenderer._DefaultUtilityLayer == null) {
+                UtilityLayerRenderer._DefaultUtilityLayer = new UtilityLayerRenderer(BABYLON.EngineStore.LastCreatedScene);
+                UtilityLayerRenderer._DefaultUtilityLayer.originalScene.onDisposeObservable.addOnce(function () {
+                    UtilityLayerRenderer._DefaultUtilityLayer = null;
+                });
+            }
+            return UtilityLayerRenderer._DefaultUtilityLayer;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(UtilityLayerRenderer, "DefaultKeepDepthUtilityLayer", {
+        /**
+         * A shared utility layer that can be used to embed objects into a scene (Depth map of the previous scene is not cleared before drawing on top of it)
+         */
+        get: function () {
+            if (UtilityLayerRenderer._DefaultKeepDepthUtilityLayer == null) {
+                UtilityLayerRenderer._DefaultKeepDepthUtilityLayer = new UtilityLayerRenderer(BABYLON.EngineStore.LastCreatedScene);
+                UtilityLayerRenderer._DefaultKeepDepthUtilityLayer.utilityLayerScene.autoClearDepthAndStencil = false;
+                UtilityLayerRenderer._DefaultKeepDepthUtilityLayer.originalScene.onDisposeObservable.addOnce(function () {
+                    UtilityLayerRenderer._DefaultKeepDepthUtilityLayer = null;
+                });
+            }
+            return UtilityLayerRenderer._DefaultKeepDepthUtilityLayer;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    UtilityLayerRenderer.prototype._notifyObservers = function (prePointerInfo, pickInfo, pointerEvent) {
+        if (!prePointerInfo.skipOnPointerObservable) {
+            this.utilityLayerScene.onPointerObservable.notifyObservers(new BABYLON.PointerInfo(prePointerInfo.type, prePointerInfo.event, pickInfo), prePointerInfo.type);
+            this._lastPointerEvents[pointerEvent.pointerId] = true;
+        }
+    };
+    /**
+     * Renders the utility layers scene on top of the original scene
+     */
+    UtilityLayerRenderer.prototype.render = function () {
+        this._updateCamera();
+        if (this.utilityLayerScene.activeCamera) {
+            // if (this.utilityLayerScene.activeCamera.mode === BABYLON.Camera.ORTHOGRAPHIC_CAMERA) {
+            //     this.orthoSize(this.utilityLayerScene.activeCamera);
+            // }
+            // // Set the camera's scene to utility layers scene
+            var oldScene = this.utilityLayerScene.activeCamera.getScene();
+            var camera = this.utilityLayerScene.activeCamera;
+            camera._scene = this.utilityLayerScene;
+            if (camera.leftCamera) {
+                camera.leftCamera._scene = this.utilityLayerScene;
+            }
+            if (camera.rightCamera) {
+                camera.rightCamera._scene = this.utilityLayerScene;
+            }
+            this.utilityLayerScene.render(false);
+            // Reset camera's scene back to original
+            camera._scene = oldScene;
+            if (camera.leftCamera) {
+                camera.leftCamera._scene = oldScene;
+            }
+            if (camera.rightCamera) {
+                camera.rightCamera._scene = oldScene;
+            }
+            // if (this.utilityLayerScene.activeCamera.mode === BABYLON.Camera.ORTHOGRAPHIC_CAMERA) {
+            //     this.orthoSize(this.utilityLayerScene.activeCamera, true);
+            // }
+        }
+    };
+    /**
+     * Disposes of the renderer
+     */
+    UtilityLayerRenderer.prototype.dispose = function () {
+        this.onPointerOutObservable.clear();
+        if (this._afterRenderObserver) {
+            this.originalScene.onAfterCameraRenderObservable.remove(this._afterRenderObserver);
+        }
+        if (this._sceneDisposeObserver) {
+            this.originalScene.onDisposeObservable.remove(this._sceneDisposeObserver);
+        }
+        if (this._originalPointerObserver) {
+            this.originalScene.onPrePointerObservable.remove(this._originalPointerObserver);
+        }
+        this.utilityLayerScene.dispose();
+    };
+    UtilityLayerRenderer.prototype._updateCamera = function () {
+        var camera = this.getRenderCamera();
+        this.utilityLayerScene.cameraToUseForPointers = camera;
+        // console.warn(this.utilityLayerScene.cameraToUseForPointers);
+        this.utilityLayerScene.activeCamera = camera;
+    };
+    UtilityLayerRenderer.prototype.orthoSize = function (camera, recovery) {
+        if (recovery === void 0) { recovery = false; }
+        if (camera.mode === BABYLON.Camera.ORTHOGRAPHIC_CAMERA) {
+            if (recovery) {
+                this.setOrthoSize(camera, this._backUpOrtho);
+            }
+            else {
+                this._backUpOrtho = camera.orthoRight / this.utilityLayerScene.getEngine().getRenderWidth();
+                // console.log('1: ' + this._backUpOrtho);
+                this.setOrthoSize(camera, 0.5);
+                // console.log('2: ' + camera.orthoRight! / this.utilityLayerScene.getEngine().getRenderWidth());
+            }
+        }
+    };
+    UtilityLayerRenderer.prototype.setOrthoSize = function (camera, val) {
+        if (camera.mode === BABYLON.Camera.ORTHOGRAPHIC_CAMERA) {
+            camera.orthoRight = val * this.utilityLayerScene.getEngine().getRenderWidth();
+            camera.orthoLeft = -val * this.utilityLayerScene.getEngine().getRenderWidth();
+            camera.orthoTop = val * this.utilityLayerScene.getEngine().getRenderHeight();
+            camera.orthoBottom = -val * this.utilityLayerScene.getEngine().getRenderHeight();
+        }
+    };
+    UtilityLayerRenderer._DefaultUtilityLayer = null;
+    UtilityLayerRenderer._DefaultKeepDepthUtilityLayer = null;
+    return UtilityLayerRenderer;
+}());
+exports.UtilityLayerRenderer = UtilityLayerRenderer;
+},{}],48:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -7233,6 +8589,7 @@ exports.AxisDragGizmo = void 0;
 // import { CylinderBuilder } from "../Meshes/Builders/cylinderBuilder";
 // import { PointerDragBehavior } from "../Behaviors/Meshes/pointerDragBehavior";
 var gizmo_1 = require("./gizmo");
+var UtilityLayerRenderer_1 = require("./UtilityLayerRenderer");
 // import { Color3 } from '../Maths/math.color';
 /**
  * Single axis drag gizmo
@@ -7248,7 +8605,7 @@ var AxisDragGizmo = /** @class */ (function (_super) {
      */
     function AxisDragGizmo(dragAxis, color, gizmoLayer, parent, thickness) {
         if (color === void 0) { color = BABYLON.Color3.Gray(); }
-        if (gizmoLayer === void 0) { gizmoLayer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer; }
+        if (gizmoLayer === void 0) { gizmoLayer = UtilityLayerRenderer_1.UtilityLayerRenderer.DefaultUtilityLayer; }
         if (parent === void 0) { parent = null; }
         if (thickness === void 0) { thickness = 1; }
         var _this = _super.call(this, gizmoLayer) || this;
@@ -7414,7 +8771,7 @@ var AxisDragGizmo = /** @class */ (function (_super) {
     return AxisDragGizmo;
 }(gizmo_1.Gizmo));
 exports.AxisDragGizmo = AxisDragGizmo;
-},{"./gizmo":43}],39:[function(require,module,exports){
+},{"./UtilityLayerRenderer":47,"./gizmo":53}],49:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -7444,6 +8801,7 @@ exports.AxisScaleGizmo = void 0;
 // import { StandardMaterial } from "../Materials/standardMaterial";
 // import { PointerDragBehavior } from "../Behaviors/Meshes/pointerDragBehavior";
 var gizmo_1 = require("./gizmo");
+var UtilityLayerRenderer_1 = require("./UtilityLayerRenderer");
 // import { Color3 } from '../Maths/math.color';
 /**
  * Single axis scale gizmo
@@ -7459,7 +8817,7 @@ var AxisScaleGizmo = /** @class */ (function (_super) {
      */
     function AxisScaleGizmo(dragAxis, color, gizmoLayer, parent, thickness) {
         if (color === void 0) { color = BABYLON.Color3.Gray(); }
-        if (gizmoLayer === void 0) { gizmoLayer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer; }
+        if (gizmoLayer === void 0) { gizmoLayer = UtilityLayerRenderer_1.UtilityLayerRenderer.DefaultUtilityLayer; }
         if (parent === void 0) { parent = null; }
         if (thickness === void 0) { thickness = 1; }
         var _this = _super.call(this, gizmoLayer) || this;
@@ -7644,7 +9002,7 @@ var AxisScaleGizmo = /** @class */ (function (_super) {
     return AxisScaleGizmo;
 }(gizmo_1.Gizmo));
 exports.AxisScaleGizmo = AxisScaleGizmo;
-},{"./gizmo":43}],40:[function(require,module,exports){
+},{"./UtilityLayerRenderer":47,"./gizmo":53}],50:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -7674,6 +9032,7 @@ exports.BoundingBoxGizmo = void 0;
 // import { LinesBuilder } from "../Meshes/Builders/linesBuilder";
 // import { PointerDragBehavior } from "../Behaviors/Meshes/pointerDragBehavior";
 var gizmo_1 = require("./gizmo");
+var UtilityLayerRenderer_1 = require("./UtilityLayerRenderer");
 // import { UtilityLayerRenderer } from "../Rendering/utilityLayerRenderer";
 // import { StandardMaterial } from "../Materials/standardMaterial";
 // import { PivotTools } from "../Misc/pivotTools";
@@ -7693,7 +9052,7 @@ var BoundingBoxGizmo = /** @class */ (function (_super) {
      */
     function BoundingBoxGizmo(color, gizmoLayer) {
         if (color === void 0) { color = BABYLON.Color3.Gray(); }
-        if (gizmoLayer === void 0) { gizmoLayer = BABYLON.UtilityLayerRenderer.DefaultKeepDepthUtilityLayer; }
+        if (gizmoLayer === void 0) { gizmoLayer = UtilityLayerRenderer_1.UtilityLayerRenderer.DefaultKeepDepthUtilityLayer; }
         var _this = _super.call(this, gizmoLayer) || this;
         _this._boundingDimensions = new BABYLON.Vector3(1, 1, 1);
         _this._renderObserver = null;
@@ -8266,7 +9625,7 @@ var BoundingBoxGizmo = /** @class */ (function (_super) {
     return BoundingBoxGizmo;
 }(gizmo_1.Gizmo));
 exports.BoundingBoxGizmo = BoundingBoxGizmo;
-},{"./gizmo":43}],41:[function(require,module,exports){
+},{"./UtilityLayerRenderer":47,"./gizmo":53}],51:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -8283,11 +9642,13 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CameraGizmo = void 0;
+var middleware_1 = require("../middleware");
 // import { Nullable } from "../types";
 // import { Vector3 } from "../Maths/math.vector";
 // import { Color3 } from '../Maths/math.color';
 // import { Mesh } from "../Meshes/mesh";
 var gizmo_1 = require("./gizmo");
+var UtilityLayerRenderer_1 = require("./UtilityLayerRenderer");
 // import { UtilityLayerRenderer } from "../Rendering/utilityLayerRenderer";
 // import { StandardMaterial } from '../Materials/standardMaterial';
 // import { Scene } from '../scene';
@@ -8308,7 +9669,7 @@ var CameraGizmo = /** @class */ (function (_super) {
      * @param gizmoLayer The utility layer the gizmo will be added to
      */
     function CameraGizmo(gizmoLayer) {
-        if (gizmoLayer === void 0) { gizmoLayer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer; }
+        if (gizmoLayer === void 0) { gizmoLayer = UtilityLayerRenderer_1.UtilityLayerRenderer.DefaultUtilityLayer; }
         var _this = _super.call(this, gizmoLayer) || this;
         _this._pointerObserver = null;
         /**
@@ -8326,6 +9687,16 @@ var CameraGizmo = /** @class */ (function (_super) {
             }
             var isHovered = pointerInfo.pickInfo && (_this._rootMesh.getChildMeshes().indexOf(pointerInfo.pickInfo.pickedMesh) != -1);
             if (isHovered && pointerInfo.event.button === 0) {
+                if (_this._camera.parent && _this._camera.parent instanceof middleware_1.VeryCamera) {
+                    var entity = editor.call('entities:get', _this._camera.parent.id);
+                    // console.error(entity);
+                    if (entity) {
+                        editor.call('selector:set', 'entity', [entity]);
+                    }
+                    else {
+                        console.error('失败');
+                    }
+                }
                 _this.onClickedObservable.notifyObservers(_this._camera);
             }
         }, BABYLON.PointerEventTypes.POINTERDOWN);
@@ -8481,12 +9852,14 @@ var CameraGizmo = /** @class */ (function (_super) {
     return CameraGizmo;
 }(gizmo_1.Gizmo));
 exports.CameraGizmo = CameraGizmo;
-},{"./gizmo":43}],42:[function(require,module,exports){
+},{"../middleware":79,"./UtilityLayerRenderer":47,"./gizmo":53}],52:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GizmosCenter = void 0;
 var _1 = require(".");
 var utility_1 = require("../utility");
+var middleware_1 = require("../middleware");
+var cameraGizmo_1 = require("./cameraGizmo");
 var GizmosCenter = /** @class */ (function () {
     function GizmosCenter() {
     }
@@ -8496,23 +9869,52 @@ var GizmosCenter = /** @class */ (function () {
         GizmosCenter.gizmoManager.positionGizmoEnabled = true;
         GizmosCenter.gizmoManager.rotationGizmoEnabled = true;
         GizmosCenter.gizmoManager.scaleGizmoEnabled = true;
-        GizmosCenter.gizmoManager.gizmos.positionGizmo.scaleRatio = 2;
-        GizmosCenter.gizmoManager.gizmos.rotationGizmo.scaleRatio = 2;
-        GizmosCenter.gizmoManager.gizmos.scaleGizmo.scaleRatio = 2;
+        GizmosCenter.gizmoManager.gizmos.positionGizmo.scaleRatio = 1.5;
+        GizmosCenter.gizmoManager.gizmos.rotationGizmo.scaleRatio = 1.5;
+        GizmosCenter.gizmoManager.gizmos.scaleGizmo.scaleRatio = 1.5;
         GizmosCenter.gizmoManager.positionGizmoEnabled = false;
         GizmosCenter.gizmoManager.rotationGizmoEnabled = false;
         GizmosCenter.gizmoManager.scaleGizmoEnabled = false;
+        var lastCameraGizmo = null;
         editor.on('selector:change', function (type, items) {
             GizmosCenter.clear();
             if (type === 'entity') {
+                if (items && items.length === 0) {
+                    return;
+                }
+                var node = void 0;
                 if (items.length === 1) {
-                    GizmosCenter.attach(items[0].node);
+                    node = items[0].node;
+                    // GizmosCenter.attach(node);
                 }
                 else {
-                    // TODO
                     // 创建一个空物体作为所有物体的父物体；
                     // 记录原始父物体；
-                    GizmosCenter.attach(items[items.length - 1].node);
+                    node = items[items.length - 1].node;
+                }
+                GizmosCenter.attach(node);
+                // Camera Gizmo处理
+                if (node && node instanceof middleware_1.VeryCamera) {
+                    var tempGizmo = editor.call('gizmo:get', node.id);
+                    if (tempGizmo === lastCameraGizmo) {
+                        return;
+                    }
+                    else {
+                        if (lastCameraGizmo) {
+                            lastCameraGizmo.displayFrustum = false;
+                            lastCameraGizmo = null;
+                        }
+                    }
+                    if (tempGizmo && tempGizmo instanceof cameraGizmo_1.CameraGizmo) {
+                        tempGizmo.displayFrustum = true;
+                        lastCameraGizmo = tempGizmo;
+                    }
+                }
+                else {
+                    if (lastCameraGizmo) {
+                        lastCameraGizmo.displayFrustum = false;
+                        lastCameraGizmo = null;
+                    }
                 }
                 _this.currentItems = items;
                 for (var i = 0; i < _this.currentItems.length; i++) {
@@ -8551,6 +9953,10 @@ var GizmosCenter = /** @class */ (function () {
         }
     };
     GizmosCenter.attach = function (mesh) {
+        // if (mesh instanceof VeryLight) {
+        //     this.gizmoManager.attachToNode(mesh.light);
+        // }
+        // else 
         if (mesh instanceof BABYLON.AbstractMesh) {
             this.gizmoManager.attachToMesh(mesh);
         }
@@ -8620,7 +10026,7 @@ var GizmosCenter = /** @class */ (function () {
     return GizmosCenter;
 }());
 exports.GizmosCenter = GizmosCenter;
-},{".":45,"../utility":97}],43:[function(require,module,exports){
+},{".":55,"../middleware":79,"../utility":114,"./cameraGizmo":51}],53:[function(require,module,exports){
 "use strict";
 // import { Observer } from "../Misc/observable";
 // import { Nullable } from "../types";
@@ -8638,6 +10044,7 @@ exports.GizmosCenter = GizmosCenter;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Gizmo = void 0;
 var _1 = require(".");
+var UtilityLayerRenderer_1 = require("./UtilityLayerRenderer");
 /**
  * Renders gizmos on top of an existing scene which provide controls for position, rotation, etc.
  */
@@ -8650,7 +10057,7 @@ var Gizmo = /** @class */ (function () {
     /** The utility layer the gizmo will be added to */
     gizmoLayer) {
         var _this = this;
-        if (gizmoLayer === void 0) { gizmoLayer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer; }
+        if (gizmoLayer === void 0) { gizmoLayer = UtilityLayerRenderer_1.UtilityLayerRenderer.DefaultUtilityLayer; }
         this.gizmoLayer = gizmoLayer;
         this._attachedMesh = null;
         this._attachedNode = null;
@@ -8797,9 +10204,24 @@ var Gizmo = /** @class */ (function () {
                 if (activeCamera.devicePosition) {
                     cameraPosition = activeCamera.devicePosition;
                 }
-                this._rootMesh.position.subtractToRef(cameraPosition, this._tempVector);
-                var dist = this._tempVector.length() * this.scaleRatio;
-                this._rootMesh.scaling.set(dist, dist, dist);
+                if (activeCamera.mode === BABYLON.Camera.PERSPECTIVE_CAMERA) {
+                    this._rootMesh.position.subtractToRef(cameraPosition, this._tempVector);
+                    var dist = this._tempVector.length() * this.scaleRatio;
+                    this._rootMesh.scaling.set(dist, dist, dist);
+                }
+                else {
+                    // 正交相机比例处理
+                    var rate = this.scaleRatio * 600;
+                    var ortho = void 0;
+                    if (activeCamera.orthoRight) {
+                        ortho = activeCamera.orthoRight / this.gizmoLayer.utilityLayerScene.getEngine().getRenderWidth();
+                    }
+                    else {
+                        ortho = 1;
+                    }
+                    rate *= 2.2 * ortho;
+                    this._rootMesh.scaling.set(rate, rate, rate);
+                }
                 // Account for handedness, similar to Matrix.decompose
                 if (effectiveNode._getWorldMatrixDeterminant() < 0) {
                     this._rootMesh.scaling.y *= -1;
@@ -8909,7 +10331,7 @@ var Gizmo = /** @class */ (function () {
     return Gizmo;
 }());
 exports.Gizmo = Gizmo;
-},{".":45}],44:[function(require,module,exports){
+},{".":55,"./UtilityLayerRenderer":47}],54:[function(require,module,exports){
 "use strict";
 // import { Observer, Observable } from "../Misc/observable";
 // import { Nullable } from "../types";
@@ -8927,6 +10349,7 @@ var positionGizmo_1 = require("./positionGizmo");
 var scaleGizmo_1 = require("./scaleGizmo");
 var boundingBoxGizmo_1 = require("./boundingBoxGizmo");
 var _1 = require(".");
+var UtilityLayerRenderer_1 = require("./UtilityLayerRenderer");
 /**
  * Helps setup gizmo's in the scene to rotate/scale/position nodes
  */
@@ -8968,9 +10391,9 @@ var GizmoManager = /** @class */ (function () {
          * If pointer events should perform attaching/detaching a gizmo, if false this can be done manually via attachToMesh/attachToNode. (Default: true)
          */
         this.usePointerToAttachGizmos = true;
-        this._defaultKeepDepthUtilityLayer = new BABYLON.UtilityLayerRenderer(scene);
+        this._defaultKeepDepthUtilityLayer = new UtilityLayerRenderer_1.UtilityLayerRenderer(scene);
         this._defaultKeepDepthUtilityLayer.utilityLayerScene.autoClearDepthAndStencil = false;
-        this._defaultUtilityLayer = new BABYLON.UtilityLayerRenderer(scene);
+        this._defaultUtilityLayer = new UtilityLayerRenderer_1.UtilityLayerRenderer(scene);
         this._thickness = thickness;
         this.gizmos = { positionGizmo: null, rotationGizmo: null, scaleGizmo: null, boundingBoxGizmo: null };
         // Instatiate/dispose gizmos based on pointer actions
@@ -8979,7 +10402,8 @@ var GizmoManager = /** @class */ (function () {
                 return;
             }
             if (pointerInfo.type == BABYLON.PointerEventTypes.POINTERDOWN) {
-                if (pointerInfo.pickInfo && pointerInfo.pickInfo.pickedMesh) {
+                // 只支持鼠标左键选择
+                if (pointerInfo.pickInfo && pointerInfo.event.button === 0 && pointerInfo.pickInfo.pickedMesh) {
                     // if (mesh === null) {
                     //     GizmosCenter.clear();
                     //     console.log('clear gizmos');
@@ -9272,7 +10696,7 @@ var GizmoManager = /** @class */ (function () {
     return GizmoManager;
 }());
 exports.GizmoManager = GizmoManager;
-},{".":45,"./boundingBoxGizmo":40,"./positionGizmo":49,"./rotationGizmo":50,"./scaleGizmo":51}],45:[function(require,module,exports){
+},{".":55,"./UtilityLayerRenderer":47,"./boundingBoxGizmo":50,"./positionGizmo":59,"./rotationGizmo":60,"./scaleGizmo":61}],55:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -9298,7 +10722,7 @@ __exportStar(require("./lightGizmo"), exports);
 __exportStar(require("./cameraGizmo"), exports);
 __exportStar(require("./planeDragGizmo"), exports);
 __exportStar(require("./gizmo-center"), exports);
-},{"./axisDragGizmo":38,"./axisScaleGizmo":39,"./boundingBoxGizmo":40,"./cameraGizmo":41,"./gizmo":43,"./gizmo-center":42,"./gizmoManager":44,"./lightGizmo":46,"./planeDragGizmo":47,"./planeRotationGizmo":48,"./positionGizmo":49,"./rotationGizmo":50,"./scaleGizmo":51}],46:[function(require,module,exports){
+},{"./axisDragGizmo":48,"./axisScaleGizmo":49,"./boundingBoxGizmo":50,"./cameraGizmo":51,"./gizmo":53,"./gizmo-center":52,"./gizmoManager":54,"./lightGizmo":56,"./planeDragGizmo":57,"./planeRotationGizmo":58,"./positionGizmo":59,"./rotationGizmo":60,"./scaleGizmo":61}],56:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -9315,12 +10739,15 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LightGizmo = void 0;
+var middleware_1 = require("../middleware");
+var utility_1 = require("../utility");
 // import { Nullable } from "../types";
 // import { Vector3, Quaternion } from "../Maths/math.vector";
 // import { Color3 } from '../Maths/math.color';
 // import { AbstractMesh } from "../Meshes/abstractMesh";
 // import { Mesh } from "../Meshes/mesh";
 var gizmo_1 = require("./gizmo");
+var UtilityLayerRenderer_1 = require("./UtilityLayerRenderer");
 // import { UtilityLayerRenderer } from "../Rendering/utilityLayerRenderer";
 // import { StandardMaterial } from '../Materials/standardMaterial';
 // import { Light } from '../Lights/light';
@@ -9343,7 +10770,7 @@ var LightGizmo = /** @class */ (function (_super) {
      * @param gizmoLayer The utility layer the gizmo will be added to
      */
     function LightGizmo(gizmoLayer) {
-        if (gizmoLayer === void 0) { gizmoLayer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer; }
+        if (gizmoLayer === void 0) { gizmoLayer = UtilityLayerRenderer_1.UtilityLayerRenderer.DefaultUtilityLayer; }
         var _this = _super.call(this, gizmoLayer) || this;
         _this._cachedPosition = new BABYLON.Vector3();
         _this._cachedForward = new BABYLON.Vector3(0, 0, 1);
@@ -9365,6 +10792,18 @@ var LightGizmo = /** @class */ (function (_super) {
             }
             var isHovered = pointerInfo.pickInfo && (_this._rootMesh.getChildMeshes().indexOf(pointerInfo.pickInfo.pickedMesh) != -1);
             if (isHovered && pointerInfo.event.button === 0) {
+                // console.warn('pick light: ' + this._light.name);
+                // 选择到light父物体
+                if (_this._light.parent && _this._light.parent instanceof middleware_1.VeryLight) {
+                    var entity = editor.call('entities:get', _this._light.parent.id);
+                    // console.error(entity);
+                    if (entity) {
+                        editor.call('selector:set', 'entity', [entity]);
+                    }
+                    else {
+                        console.error('失败');
+                    }
+                }
                 _this.onClickedObservable.notifyObservers(_this._light);
             }
         }, BABYLON.PointerEventTypes.POINTERDOWN);
@@ -9413,16 +10852,44 @@ var LightGizmo = /** @class */ (function (_super) {
                     // this._attachedMeshParent.freezeWorldMatrix(light.parent.getWorldMatrix());
                     this._attachedMeshParent.freezeWorldMatrix();
                 }
-                // Get update position and direction if the light has it
-                if (light.position) {
-                    this.attachedMesh.position.copyFrom(light.position);
-                    this.attachedMesh.computeWorldMatrix(true);
-                    this._cachedPosition.copyFrom(this.attachedMesh.position);
+                if (light.parent && light.parent instanceof middleware_1.VeryLight) {
+                    if (light instanceof BABYLON.HemisphericLight) {
+                        this.attachedMesh.position.copyFrom(light.parent.position);
+                        this.attachedMesh.computeWorldMatrix(true);
+                        this._cachedPosition.copyFrom(this.attachedMesh.position);
+                        var newDirection = utility_1.Tools.transformLocalToWorldDirection(light.parent, BABYLON.Vector3.Down());
+                        // this.attachedMesh!.setDirection((light as any).direction);
+                        this.attachedMesh.setDirection(newDirection);
+                        this.attachedMesh.computeWorldMatrix(true);
+                        this._cachedForward.copyFrom(this.attachedMesh.forward);
+                    }
+                    else {
+                        if (light.position) {
+                            this.attachedMesh.position.copyFrom(light.parent.position);
+                            this.attachedMesh.computeWorldMatrix(true);
+                            this._cachedPosition.copyFrom(this.attachedMesh.position);
+                        }
+                        if (light.direction) {
+                            var newDirection = utility_1.Tools.transformLocalToWorldDirection(light, light.direction);
+                            // this.attachedMesh!.setDirection((light as any).direction);
+                            this.attachedMesh.setDirection(newDirection);
+                            this.attachedMesh.computeWorldMatrix(true);
+                            this._cachedForward.copyFrom(this.attachedMesh.forward);
+                        }
+                    }
                 }
-                if (light.direction) {
-                    this.attachedMesh.setDirection(light.direction);
-                    this.attachedMesh.computeWorldMatrix(true);
-                    this._cachedForward.copyFrom(this.attachedMesh.forward);
+                else {
+                    // Get update position and direction if the light has it
+                    if (light.position) {
+                        this.attachedMesh.position.copyFrom(light.position);
+                        this.attachedMesh.computeWorldMatrix(true);
+                        this._cachedPosition.copyFrom(this.attachedMesh.position);
+                    }
+                    if (light.direction) {
+                        this.attachedMesh.setDirection(light.direction);
+                        this.attachedMesh.computeWorldMatrix(true);
+                        this._cachedForward.copyFrom(this.attachedMesh.forward);
+                    }
                 }
                 this._update();
             }
@@ -9453,32 +10920,104 @@ var LightGizmo = /** @class */ (function (_super) {
             // this._attachedMeshParent.freezeWorldMatrix(this._light.parent.getWorldMatrix());
             this._attachedMeshParent.freezeWorldMatrix();
         }
-        if (this._light.position) {
-            // If the gizmo is moved update the light otherwise update the gizmo to match the light
-            if (!this.attachedMesh.position.equals(this._cachedPosition)) {
-                // update light to match gizmo
-                this._light.position.copyFrom(this.attachedMesh.position);
-                this._cachedPosition.copyFrom(this.attachedMesh.position);
+        // 更改light rotation
+        if (this._light.parent && this._light.parent instanceof middleware_1.VeryLight) {
+            if (this._light instanceof BABYLON.HemisphericLight) {
+                // If the gizmo is moved update the light otherwise update the gizmo to match the light
+                if (!this.attachedMesh.position.equals(this._cachedPosition)) {
+                    // update light to match gizmo
+                    this._light.parent.position.copyFrom(this.attachedMesh.position);
+                    this._cachedPosition.copyFrom(this.attachedMesh.position);
+                }
+                else {
+                    // update gizmo to match light
+                    this.attachedMesh.position.copyFrom(this._light.parent.position);
+                    // console.log((this._light as any).getAbsolutePosition());
+                    this.attachedMesh.computeWorldMatrix(true);
+                    this._cachedPosition.copyFrom(this.attachedMesh.position);
+                }
+                var newDirection = utility_1.Tools.transformLocalToWorldDirection(this._light.parent, BABYLON.Vector3.Up());
+                // If the gizmo is moved update the light otherwise update the gizmo to match the light
+                if (BABYLON.Vector3.DistanceSquared(this.attachedMesh.forward, this._cachedForward) > 0.0001) {
+                    // update light to match gizmo
+                    // TODO
+                    // newDirection.copyFrom(this.attachedMesh!.forward);
+                    // (<BABYLON.HemisphericLight>this.light).direction.copyFrom(newDirection);
+                    this._cachedForward.copyFrom(this.attachedMesh.forward);
+                }
+                else if (BABYLON.Vector3.DistanceSquared(this.attachedMesh.forward, newDirection) > 0.0001) {
+                    // console.log('hemi');
+                    // update gizmo to match light
+                    this.attachedMesh.setDirection(newDirection);
+                    this.attachedMesh.computeWorldMatrix(true);
+                    this._cachedForward.copyFrom(this.attachedMesh.forward);
+                    this.light.direction.copyFrom(this._light.parent.up);
+                }
             }
             else {
-                // update gizmo to match light
-                this.attachedMesh.position.copyFrom(this._light.position);
-                this.attachedMesh.computeWorldMatrix(true);
-                this._cachedPosition.copyFrom(this.attachedMesh.position);
+                if (this._light.position) {
+                    // If the gizmo is moved update the light otherwise update the gizmo to match the light
+                    if (!this.attachedMesh.position.equals(this._cachedPosition)) {
+                        // update light to match gizmo
+                        this._light.position.copyFrom(this.attachedMesh.position);
+                        this._cachedPosition.copyFrom(this.attachedMesh.position);
+                    }
+                    else {
+                        // update gizmo to match light
+                        this.attachedMesh.position.copyFrom(this._light.parent.position);
+                        // console.log((this._light as any).getAbsolutePosition());
+                        this.attachedMesh.computeWorldMatrix(true);
+                        this._cachedPosition.copyFrom(this.attachedMesh.position);
+                    }
+                }
+                // console.log((this._light as any).direction);
+                if (this._light.direction) {
+                    var newDirection = utility_1.Tools.transformLocalToWorldDirection(this._light, this._light.direction);
+                    // If the gizmo is moved update the light otherwise update the gizmo to match the light
+                    if (BABYLON.Vector3.DistanceSquared(this.attachedMesh.forward, this._cachedForward) > 0.0001) {
+                        console.log('light');
+                        // update light to match gizmo
+                        newDirection.copyFrom(this.attachedMesh.forward);
+                        this._cachedForward.copyFrom(this.attachedMesh.forward);
+                    }
+                    else if (BABYLON.Vector3.DistanceSquared(this.attachedMesh.forward, newDirection) > 0.0001) {
+                        // update gizmo to match light
+                        this.attachedMesh.setDirection(newDirection);
+                        this.attachedMesh.computeWorldMatrix(true);
+                        this._cachedForward.copyFrom(this.attachedMesh.forward);
+                    }
+                }
             }
         }
-        if (this._light.direction) {
-            // If the gizmo is moved update the light otherwise update the gizmo to match the light
-            if (BABYLON.Vector3.DistanceSquared(this.attachedMesh.forward, this._cachedForward) > 0.0001) {
-                // update light to match gizmo
-                this._light.direction.copyFrom(this.attachedMesh.forward);
-                this._cachedForward.copyFrom(this.attachedMesh.forward);
+        else {
+            if (this._light.position) {
+                // If the gizmo is moved update the light otherwise update the gizmo to match the light
+                if (!this.attachedMesh.position.equals(this._cachedPosition)) {
+                    // update light to match gizmo
+                    this._light.position.copyFrom(this.attachedMesh.position);
+                    this._cachedPosition.copyFrom(this.attachedMesh.position);
+                }
+                else {
+                    // update gizmo to match light
+                    this.attachedMesh.position.copyFrom(this._light.position);
+                    // console.log((this._light as any).getAbsolutePosition());
+                    this.attachedMesh.computeWorldMatrix(true);
+                    this._cachedPosition.copyFrom(this.attachedMesh.position);
+                }
             }
-            else if (BABYLON.Vector3.DistanceSquared(this.attachedMesh.forward, this._light.direction) > 0.0001) {
-                // update gizmo to match light
-                this.attachedMesh.setDirection(this._light.direction);
-                this.attachedMesh.computeWorldMatrix(true);
-                this._cachedForward.copyFrom(this.attachedMesh.forward);
+            if (this._light.direction) {
+                // If the gizmo is moved update the light otherwise update the gizmo to match the light
+                if (BABYLON.Vector3.DistanceSquared(this.attachedMesh.forward, this._cachedForward) > 0.0001) {
+                    // update light to match gizmo
+                    this._light.direction.copyFrom(this.attachedMesh.forward);
+                    this._cachedForward.copyFrom(this.attachedMesh.forward);
+                }
+                else if (BABYLON.Vector3.DistanceSquared(this.attachedMesh.forward, this._light.direction) > 0.0001) {
+                    // update gizmo to match light
+                    this.attachedMesh.setDirection(this._light.direction);
+                    this.attachedMesh.computeWorldMatrix(true);
+                    this._cachedForward.copyFrom(this.attachedMesh.forward);
+                }
             }
         }
     };
@@ -9612,7 +11151,7 @@ var LightGizmo = /** @class */ (function (_super) {
     return LightGizmo;
 }(gizmo_1.Gizmo));
 exports.LightGizmo = LightGizmo;
-},{"./gizmo":43}],47:[function(require,module,exports){
+},{"../middleware":79,"../utility":114,"./UtilityLayerRenderer":47,"./gizmo":53}],57:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -9640,6 +11179,7 @@ exports.PlaneDragGizmo = void 0;
 // import { PlaneBuilder } from "../Meshes/Builders/planeBuilder";
 // import { PointerDragBehavior } from "../Behaviors/Meshes/pointerDragBehavior";
 var gizmo_1 = require("./gizmo");
+var UtilityLayerRenderer_1 = require("./UtilityLayerRenderer");
 /**
  * Single plane drag gizmo
  */
@@ -9653,7 +11193,7 @@ var PlaneDragGizmo = /** @class */ (function (_super) {
      */
     function PlaneDragGizmo(dragPlaneNormal, color, gizmoLayer, parent) {
         if (color === void 0) { color = BABYLON.Color3.Gray(); }
-        if (gizmoLayer === void 0) { gizmoLayer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer; }
+        if (gizmoLayer === void 0) { gizmoLayer = UtilityLayerRenderer_1.UtilityLayerRenderer.DefaultUtilityLayer; }
         if (parent === void 0) { parent = null; }
         var _this = _super.call(this, gizmoLayer) || this;
         _this._pointerObserver = null;
@@ -9812,7 +11352,7 @@ var PlaneDragGizmo = /** @class */ (function (_super) {
     return PlaneDragGizmo;
 }(gizmo_1.Gizmo));
 exports.PlaneDragGizmo = PlaneDragGizmo;
-},{"./gizmo":43}],48:[function(require,module,exports){
+},{"./UtilityLayerRenderer":47,"./gizmo":53}],58:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -9840,6 +11380,7 @@ exports.PlaneRotationGizmo = void 0;
 // import { LinesMesh } from "../Meshes/linesMesh";
 // import { PointerDragBehavior } from "../Behaviors/Meshes/pointerDragBehavior";
 var gizmo_1 = require("./gizmo");
+var UtilityLayerRenderer_1 = require("./UtilityLayerRenderer");
 /**
  * Single plane rotation gizmo
  */
@@ -9856,7 +11397,7 @@ var PlaneRotationGizmo = /** @class */ (function (_super) {
      */
     function PlaneRotationGizmo(planeNormal, color, gizmoLayer, tessellation, parent, useEulerRotation, thickness) {
         if (color === void 0) { color = BABYLON.Color3.Gray(); }
-        if (gizmoLayer === void 0) { gizmoLayer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer; }
+        if (gizmoLayer === void 0) { gizmoLayer = UtilityLayerRenderer_1.UtilityLayerRenderer.DefaultUtilityLayer; }
         if (tessellation === void 0) { tessellation = 32; }
         if (parent === void 0) { parent = null; }
         if (useEulerRotation === void 0) { useEulerRotation = false; }
@@ -10044,7 +11585,7 @@ var PlaneRotationGizmo = /** @class */ (function (_super) {
     return PlaneRotationGizmo;
 }(gizmo_1.Gizmo));
 exports.PlaneRotationGizmo = PlaneRotationGizmo;
-},{"./gizmo":43}],49:[function(require,module,exports){
+},{"./UtilityLayerRenderer":47,"./gizmo":53}],59:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -10072,6 +11613,7 @@ exports.PositionGizmo = void 0;
 var gizmo_1 = require("./gizmo");
 var axisDragGizmo_1 = require("./axisDragGizmo");
 var planeDragGizmo_1 = require("./planeDragGizmo");
+var UtilityLayerRenderer_1 = require("./UtilityLayerRenderer");
 // import { UtilityLayerRenderer } from "../Rendering/utilityLayerRenderer";
 /**
  * Gizmo that enables dragging a mesh along 3 axis
@@ -10084,7 +11626,7 @@ var PositionGizmo = /** @class */ (function (_super) {
       @param thickness display gizmo axis thickness
      */
     function PositionGizmo(gizmoLayer, thickness) {
-        if (gizmoLayer === void 0) { gizmoLayer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer; }
+        if (gizmoLayer === void 0) { gizmoLayer = UtilityLayerRenderer_1.UtilityLayerRenderer.DefaultUtilityLayer; }
         if (thickness === void 0) { thickness = 1; }
         var _this = _super.call(this, gizmoLayer) || this;
         /**
@@ -10280,7 +11822,7 @@ var PositionGizmo = /** @class */ (function (_super) {
     return PositionGizmo;
 }(gizmo_1.Gizmo));
 exports.PositionGizmo = PositionGizmo;
-},{"./axisDragGizmo":38,"./gizmo":43,"./planeDragGizmo":47}],50:[function(require,module,exports){
+},{"./UtilityLayerRenderer":47,"./axisDragGizmo":48,"./gizmo":53,"./planeDragGizmo":57}],60:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -10306,6 +11848,7 @@ exports.RotationGizmo = void 0;
 // import { Mesh } from "../Meshes/mesh";
 var gizmo_1 = require("./gizmo");
 var planeRotationGizmo_1 = require("./planeRotationGizmo");
+var UtilityLayerRenderer_1 = require("./UtilityLayerRenderer");
 // import { UtilityLayerRenderer } from "../Rendering/utilityLayerRenderer";
 // import { Node } from "../node";
 /**
@@ -10321,7 +11864,7 @@ var RotationGizmo = /** @class */ (function (_super) {
      * @param thickness display gizmo axis thickness
      */
     function RotationGizmo(gizmoLayer, tessellation, useEulerRotation, thickness) {
-        if (gizmoLayer === void 0) { gizmoLayer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer; }
+        if (gizmoLayer === void 0) { gizmoLayer = UtilityLayerRenderer_1.UtilityLayerRenderer.DefaultUtilityLayer; }
         if (tessellation === void 0) { tessellation = 32; }
         if (useEulerRotation === void 0) { useEulerRotation = false; }
         if (thickness === void 0) { thickness = 1; }
@@ -10470,7 +12013,7 @@ var RotationGizmo = /** @class */ (function (_super) {
     return RotationGizmo;
 }(gizmo_1.Gizmo));
 exports.RotationGizmo = RotationGizmo;
-},{"./gizmo":43,"./planeRotationGizmo":48}],51:[function(require,module,exports){
+},{"./UtilityLayerRenderer":47,"./gizmo":53,"./planeRotationGizmo":58}],61:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -10496,6 +12039,7 @@ exports.ScaleGizmo = void 0;
 // import { PolyhedronBuilder } from "../Meshes/Builders/polyhedronBuilder";
 var gizmo_1 = require("./gizmo");
 var axisScaleGizmo_1 = require("./axisScaleGizmo");
+var UtilityLayerRenderer_1 = require("./UtilityLayerRenderer");
 // import { UtilityLayerRenderer } from "../Rendering/utilityLayerRenderer";
 // import { Mesh } from "../Meshes/mesh";
 // import { Node } from "../node";
@@ -10510,7 +12054,7 @@ var ScaleGizmo = /** @class */ (function (_super) {
      * @param thickness display gizmo axis thickness
      */
     function ScaleGizmo(gizmoLayer, thickness) {
-        if (gizmoLayer === void 0) { gizmoLayer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer; }
+        if (gizmoLayer === void 0) { gizmoLayer = UtilityLayerRenderer_1.UtilityLayerRenderer.DefaultUtilityLayer; }
         if (thickness === void 0) { thickness = 1; }
         var _this = _super.call(this, gizmoLayer) || this;
         _this._meshAttached = null;
@@ -10696,7 +12240,7 @@ var ScaleGizmo = /** @class */ (function (_super) {
     return ScaleGizmo;
 }(gizmo_1.Gizmo));
 exports.ScaleGizmo = ScaleGizmo;
-},{"./axisScaleGizmo":39,"./gizmo":43}],52:[function(require,module,exports){
+},{"./UtilityLayerRenderer":47,"./axisScaleGizmo":49,"./gizmo":53}],62:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Config = void 0;
@@ -10707,12 +12251,16 @@ var Config = /** @class */ (function () {
     Config.sceneIndex = 0;
     Config.sceneID = 'sceneID';
     Config.isSceneDirty = false;
+    Config.x = 4;
+    Config.y = 291;
+    Config.width = 444;
+    Config.height = 250;
     // TODO: 暂时只允许加载一个表格
     Config.tableAssetsID = '';
     return Config;
 }());
 exports.Config = Config;
-},{}],53:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -10726,7 +12274,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./config"), exports);
-},{"./config":52}],54:[function(require,module,exports){
+},{"./config":62}],64:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HierarchyContextMenu = void 0;
@@ -10743,68 +12291,144 @@ var HierarchyContextMenu = /** @class */ (function () {
     HierarchyContextMenu.prototype.initMenu = function () {
         var that = this;
         var menuData = {};
-        menuData['new-entity'] = {
-            title: 'New Entity',
+        menuData['new-empty'] = {
+            title: '创建空物体',
             className: 'menu-item-new-entity',
+            icon: '&#57632;',
+            select: function () {
+                editor.call('entities:editor:new', { parent: that.items[0], type: 'empty', subtype: '' });
+            }
+            // filter: function () {
+            //   return that.items.length === 1;
+            // },
+            // select: function () {
+            //   editor.call('entities:new', { parent: that.items[0] });
+            // },
+            // 
+            // items: editor.call('menu:entities:new', function () { return that.items[0]; })
         };
-        menuData['add-component'] = {
-            title: 'Add Component',
-            className: 'menu-item-add-component',
-            // items: editor.call('menu:entities:add-component')
+        menuData['add-primitive'] = {
+            title: '创建3D物体',
+            className: 'menu-item-primitive-sub-menu',
+            icon: '&#57736;',
             items: {
-                'add-new-entity': {
-                    title: 'Entity',
-                    className: 'menu-item-add-entity',
-                    icon: '&#57632;'
+                'add-new-box': {
+                    title: '立方体',
+                    className: 'menu-item-add-box-primitive',
+                    icon: '&#57736;',
+                    select: function () {
+                        editor.call('entities:editor:new', { parent: that.items[0], type: 'primitive', subtype: 'box' });
+                    }
                 },
-                'audio-sub-menu': {
-                    title: 'Audio',
-                    className: 'menu-item-audio-sub-menu',
-                    icon: editor.call('components:logos')['sound'],
-                    items: {
-                        'add-new-entity2': {
-                            title: '测试1',
-                            className: 'menu-item-add-entity2',
-                            icon: '&#57632;'
-                        },
-                        'audio-sub-menu2': {
-                            title: '测试2',
-                            className: 'menu-item-audio-sub-menu2',
-                            icon: editor.call('components:logos')['sound']
-                        }
+                'add-new-sphere': {
+                    title: '球',
+                    className: 'menu-item-add-sphere-primitive',
+                    icon: '&#57736;',
+                    select: function () {
+                        editor.call('entities:editor:new', { parent: that.items[0], type: 'primitive', subtype: 'sphere' });
+                    }
+                },
+                'add-new-plane': {
+                    title: '平面',
+                    className: 'menu-item-add-plane-primitive',
+                    icon: '&#57736;',
+                    select: function () {
+                        editor.call('entities:editor:new', { parent: that.items[0], type: 'primitive', subtype: 'plane' });
+                    }
+                },
+                'add-new-cylinder': {
+                    title: '圆柱体',
+                    className: 'menu-item-add-cylinder-primitive',
+                    icon: '&#57736;',
+                    select: function () {
+                        editor.call('entities:editor:new', { parent: that.items[0], type: 'primitive', subtype: 'cylinder' });
                     }
                 }
             }
         };
-        menuData['enable'] = {
-            title: 'Enable',
-            className: 'menu-item-enable',
-            icon: '&#57651;',
+        menuData['add-new-light'] = {
+            title: '创建灯光',
+            className: 'menu-item-light-sub-menu',
+            icon: '&#57748;',
+            filter: function () {
+                return false;
+            },
+            items: {
+                'add-new-hemispheric': {
+                    title: '环境光',
+                    className: 'menu-item-add-directional-light',
+                    icon: '&#57748;',
+                    select: function () {
+                        editor.call('entities:editor:new', { parent: that.items[0], type: 'light', subtype: 'hemispheric' });
+                    }
+                },
+                'add-new-directional': {
+                    title: '平行光',
+                    className: 'menu-item-add-directional-light',
+                    icon: '&#57748;',
+                    select: function () {
+                        editor.call('entities:editor:new', { parent: that.items[0], type: 'light', subtype: 'directional' });
+                    }
+                },
+                'add-new-point': {
+                    title: '点光源',
+                    className: 'menu-item-add-point-light',
+                    icon: '&#57748;',
+                    select: function () {
+                        editor.call('entities:editor:new', { parent: that.items[0], type: 'light', subtype: 'point' });
+                    }
+                },
+                'add-new-spot': {
+                    title: '聚光灯',
+                    className: 'menu-item-add-spot-light',
+                    icon: '&#57748;',
+                    select: function () {
+                        editor.call('entities:editor:new', { parent: that.items[0], type: 'light', subtype: 'spot' });
+                    }
+                }
+            }
         };
-        menuData['disable'] = {
-            title: 'Disable',
-            className: 'menu-item-disable',
-            icon: '&#57650;',
+        menuData['add-new-camera'] = {
+            title: '创建摄像机',
+            className: 'menu-item-add-camera',
+            icon: '&#57874;',
+            filter: function () {
+                return false;
+            },
+            select: function () {
+                editor.call('entities:editor:new', { parent: that.items[0], type: 'camera', subtype: '' });
+            }
         };
-        menuData['copy'] = {
-            title: 'Copy',
-            className: 'menu-item-copy',
-            icon: '&#58193;',
-        };
-        menuData['paste'] = {
-            title: 'Paste',
-            className: 'menu-item-paste',
-            icon: '&#58184;',
+        menuData['add-new-gui'] = {
+            title: '创建GUI',
+            className: 'menu-item-add-camera',
+            icon: '&#58232;',
+            filter: function () {
+                return false;
+            },
+            items: {
+                'add-new-button': {
+                    title: 'To Be Continued',
+                    className: 'menu-item-add-directional-light',
+                    icon: '&#58373;',
+                },
+            }
         };
         menuData['duplicate'] = {
-            title: 'Duplicate',
+            title: '创建副本',
             className: 'menu-item-duplicate',
             icon: '&#57638;',
+            filter: function () {
+                return false;
+            },
         };
         menuData['delete'] = {
-            title: 'Delete',
+            title: '删除',
             className: 'menu-item-delete',
             icon: '&#57636;',
+            select: function () {
+                editor.call('entities:delete', that.items);
+            }
         };
         // menu
         this.menu = ui_1.Menu.fromData(menuData, { clickableSubmenus: this.clickableSubmenus });
@@ -10849,16 +12473,16 @@ var HierarchyContextMenu = /** @class */ (function () {
         //   return item;
         // });
         editor.method('entities:contextmenu:open', function (item, x, y, ignoreSelection) {
-            // TODO
-            // if (!that.menu || !editor.call('permissions:write')) return;
             if (!that.menu)
                 return;
-            // that.entity = item;
-            // if (ignoreSelection) {
-            //   items = [];
-            // } else {
-            //   items = getSelection();
-            // }
+            that.entity = item;
+            if (ignoreSelection) {
+                that.items = [];
+            }
+            else {
+                that.items = that.getSelection();
+            }
+            // console.log(item.get('name'));
             that.menu.open = true;
             that.menu.position(x + 1, y);
             return true;
@@ -10887,7 +12511,7 @@ var HierarchyContextMenu = /** @class */ (function () {
     return HierarchyContextMenu;
 }());
 exports.HierarchyContextMenu = HierarchyContextMenu;
-},{"../../ui":130}],55:[function(require,module,exports){
+},{"../../ui":148}],65:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HierarchyControl = void 0;
@@ -10990,7 +12614,7 @@ var HierarchyControl = /** @class */ (function () {
     return HierarchyControl;
 }());
 exports.HierarchyControl = HierarchyControl;
-},{"../../engine":110,"../../ui":130}],56:[function(require,module,exports){
+},{"../../engine":128,"../../ui":148}],66:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HierarchyMenu = void 0;
@@ -11001,7 +12625,7 @@ var HierarchyMenu = /** @class */ (function () {
     return HierarchyMenu;
 }());
 exports.HierarchyMenu = HierarchyMenu;
-},{}],57:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HierarchyPanel = void 0;
@@ -11012,9 +12636,6 @@ var HierarchyPanel = /** @class */ (function () {
     function HierarchyPanel() {
         // hierarchy index
         this.uiItemIndex = {};
-        this.init();
-    }
-    HierarchyPanel.prototype.init = function () {
         var self = this;
         // left control
         // hierarchy index
@@ -11203,6 +12824,7 @@ var HierarchyPanel = /** @class */ (function () {
             for (var i = 0; i < records.length; i++) {
                 var record = records[i];
                 record.entity.reparenting = true;
+                // console.warn(record);
                 // record.parent.history.enabled = false;
                 // record.parentOld.history.enabled = false;
                 // record.entity.history.enabled = false;
@@ -11227,6 +12849,7 @@ var HierarchyPanel = /** @class */ (function () {
                     // set parent
                     record.entity.set('parent', record.parentId);
                 }
+                // console.error(record);
                 babylonLoader_1.BabylonLoader.updateSceneData(record.parentOld.get('resource_id'), record.parentOld._data2);
                 babylonLoader_1.BabylonLoader.updateSceneData(record.parent.get('resource_id'), record.parent._data2);
                 babylonLoader_1.BabylonLoader.updateSceneData(record.entity.get('resource_id'), record.entity._data2);
@@ -11468,11 +13091,29 @@ var HierarchyPanel = /** @class */ (function () {
             //     editor.call('loadTempModel2', path1, path2);
             // }
         });
-    };
+        // deleting entity
+        editor.on('entity:delete', function (entity) {
+            editor.call('entities:remove', entity);
+        });
+        // get entity item
+        editor.method('entities:panel:get', function (resourceId) {
+            return self.uiItemIndex[resourceId];
+        });
+        // highlight entity
+        editor.method('entities:panel:highlight', function (resourceId, highlight) {
+            var item = self.uiItemIndex[resourceId];
+            if (!item)
+                return;
+            if (highlight)
+                item.class.add('highlight');
+            else
+                item.class.remove('highlight');
+        });
+    }
     return HierarchyPanel;
 }());
 exports.HierarchyPanel = HierarchyPanel;
-},{"../../engine":110,"../../ui":130,"../middleware/loader/babylonLoader":70}],58:[function(require,module,exports){
+},{"../../engine":128,"../../ui":148,"../middleware/loader/babylonLoader":80}],68:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HierarchySearch = void 0;
@@ -11795,7 +13436,7 @@ var HierarchySearch = /** @class */ (function () {
     return HierarchySearch;
 }());
 exports.HierarchySearch = HierarchySearch;
-},{"../../engine":110,"../../ui":130}],59:[function(require,module,exports){
+},{"../../engine":128,"../../ui":148}],69:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -11814,7 +13455,7 @@ __exportStar(require("./hierarchy-menu"), exports);
 __exportStar(require("./hierarchy-control"), exports);
 __exportStar(require("./hierarchy-search"), exports);
 __exportStar(require("./hierarchy-context-menu"), exports);
-},{"./hierarchy-context-menu":54,"./hierarchy-control":55,"./hierarchy-menu":56,"./hierarchy-panel":57,"./hierarchy-search":58,"./keeper":60}],60:[function(require,module,exports){
+},{"./hierarchy-context-menu":64,"./hierarchy-control":65,"./hierarchy-menu":66,"./hierarchy-panel":67,"./hierarchy-search":68,"./keeper":70}],70:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HierarchyKeeper = void 0;
@@ -11822,7 +13463,6 @@ var hierarchy_search_1 = require("./hierarchy-search");
 var hierarchy_menu_1 = require("./hierarchy-menu");
 var hierarchy_context_menu_1 = require("./hierarchy-context-menu");
 var hierarchy_panel_1 = require("./hierarchy-panel");
-var hierarchy_control_1 = require("./hierarchy-control");
 var HierarchyKeeper = /** @class */ (function () {
     // public hierarchyMain: Panel;
     function HierarchyKeeper() {
@@ -11889,7 +13529,7 @@ var HierarchyKeeper = /** @class */ (function () {
         var hierarchyMainPanel = new hierarchy_panel_1.HierarchyPanel();
         // 全局菜单
         var contextMenuLogo = new hierarchy_menu_1.HierarchyMenu();
-        var controlMenu = new hierarchy_control_1.HierarchyControl();
+        // let controlMenu = new HierarchyControl();
         // 搜索区域：Search Field
         var searchField = new hierarchy_search_1.HierarchySearch();
         var contextMenu = new hierarchy_context_menu_1.HierarchyContextMenu();
@@ -11897,7 +13537,7 @@ var HierarchyKeeper = /** @class */ (function () {
     return HierarchyKeeper;
 }());
 exports.HierarchyKeeper = HierarchyKeeper;
-},{"./hierarchy-context-menu":54,"./hierarchy-control":55,"./hierarchy-menu":56,"./hierarchy-panel":57,"./hierarchy-search":58}],61:[function(require,module,exports){
+},{"./hierarchy-context-menu":64,"./hierarchy-menu":66,"./hierarchy-panel":67,"./hierarchy-search":68}],71:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Hotkeys = void 0;
@@ -12416,7 +14056,7 @@ var Hotkeys = /** @class */ (function () {
     return Hotkeys;
 }());
 exports.Hotkeys = Hotkeys;
-},{}],62:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -12438,7 +14078,9 @@ __exportStar(require("./hotkeys"), exports);
 __exportStar(require("./entity"), exports);
 __exportStar(require("./assets"), exports);
 __exportStar(require("./scenes"), exports);
+__exportStar(require("./camera"), exports);
 __exportStar(require("./toolbar"), exports);
+__exportStar(require("./settings"), exports);
 __exportStar(require("./utility"), exports);
 __exportStar(require("./middleware"), exports);
 __exportStar(require("./initialize-after"), exports);
@@ -12448,32 +14090,37 @@ __exportStar(require("./drop"), exports);
 __exportStar(require("./global"), exports);
 __exportStar(require("./Initialize-data"), exports);
 __exportStar(require("./gizmos"), exports);
-},{"./Initialize-data":3,"./assets":18,"./drop":28,"./editor":29,"./entity":36,"./gizmos":45,"./global":53,"./hierarchy":59,"./hotkeys":61,"./initialize-after":63,"./initialize-before":64,"./layout":65,"./localstorage":66,"./middleware":69,"./scenes":73,"./search":76,"./toolbar":80,"./utility":97,"./viewport":100}],63:[function(require,module,exports){
+},{"./Initialize-data":3,"./assets":18,"./camera":34,"./drop":36,"./editor":37,"./entity":45,"./gizmos":55,"./global":63,"./hierarchy":69,"./hotkeys":71,"./initialize-after":73,"./initialize-before":74,"./layout":75,"./localstorage":76,"./middleware":79,"./scenes":85,"./search":88,"./settings":92,"./toolbar":95,"./utility":114,"./viewport":117}],73:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.InitializeAfter = void 0;
 var attributes_1 = require("./attributes");
 var toolbar_1 = require("./toolbar");
-var keeper_1 = require("./viewport/keeper");
+var viewport_1 = require("./viewport");
 var entity_1 = require("./entity");
 var scenes_1 = require("./scenes");
+var camera_1 = require("./camera");
+var settings_1 = require("./settings");
 var InitializeAfter = /** @class */ (function () {
     function InitializeAfter() {
         // entity
         var entity = new entity_1.EntityKeeper();
         // scenes
         new scenes_1.ScenesKeeper();
+        // camera
+        new camera_1.CameraKeeper();
         // attributes
         var attributes = new attributes_1.AttributesKeeper();
         // toolbar
         var toolbar = new toolbar_1.ToolbarKeeper();
+        new settings_1.SettingsKeeper();
         // viewport
-        new keeper_1.ViewportKeeper();
+        new viewport_1.ViewportKeeper();
     }
     return InitializeAfter;
 }());
 exports.InitializeAfter = InitializeAfter;
-},{"./attributes":26,"./entity":36,"./scenes":73,"./toolbar":80,"./viewport/keeper":101}],64:[function(require,module,exports){
+},{"./attributes":27,"./camera":34,"./entity":45,"./scenes":85,"./settings":92,"./toolbar":95,"./viewport":117}],74:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.InitializeBefore = void 0;
@@ -12507,7 +14154,7 @@ var InitializeBefore = /** @class */ (function () {
     return InitializeBefore;
 }());
 exports.InitializeBefore = InitializeBefore;
-},{"./hotkeys":61,"./localstorage":66,"./selector":77,"./utility":97}],65:[function(require,module,exports){
+},{"./hotkeys":71,"./localstorage":76,"./selector":89,"./utility":114}],75:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Layout = void 0;
@@ -12689,7 +14336,7 @@ var Layout = /** @class */ (function () {
     return Layout;
 }());
 exports.Layout = Layout;
-},{"../engine":110,"../ui":130}],66:[function(require,module,exports){
+},{"../engine":128,"../ui":148}],76:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LocalStorage = void 0;
@@ -12720,7 +14367,7 @@ var LocalStorage = /** @class */ (function () {
     return LocalStorage;
 }());
 exports.LocalStorage = LocalStorage;
-},{}],67:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Component = void 0;
@@ -12781,7 +14428,7 @@ var Component = /** @class */ (function () {
     return Component;
 }());
 exports.Component = Component;
-},{"./gameobject":68,"./transform":72}],68:[function(require,module,exports){
+},{"./gameobject":78,"./transform":82}],78:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GameObject = void 0;
@@ -12948,7 +14595,7 @@ var GameObject = /** @class */ (function () {
     return GameObject;
 }());
 exports.GameObject = GameObject;
-},{"../../engine":110,"./transform":72}],69:[function(require,module,exports){
+},{"../../engine":128,"./transform":82}],79:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -12965,13 +14612,17 @@ __exportStar(require("./transform"), exports);
 __exportStar(require("./gameobject"), exports);
 __exportStar(require("./component"), exports);
 __exportStar(require("./resource-container"), exports);
-},{"./component":67,"./gameobject":68,"./resource-container":71,"./transform":72}],70:[function(require,module,exports){
+__exportStar(require("./very-camera"), exports);
+__exportStar(require("./very-light"), exports);
+},{"./component":77,"./gameobject":78,"./resource-container":81,"./transform":82,"./very-camera":83,"./very-light":84}],80:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BabylonLoader = void 0;
 var utility_1 = require("../../../editor/utility");
 var engine_1 = require("../../../engine");
 var global_1 = require("../../../editor/global");
+var very_light_1 = require("../very-light");
+var very_camera_1 = require("../very-camera");
 var BabylonLoader = /** @class */ (function () {
     function BabylonLoader() {
     }
@@ -13009,10 +14660,10 @@ var BabylonLoader = /** @class */ (function () {
     BabylonLoader.assembleBabylon = function (assetID, dataBabylon) {
         var _a;
         if (dataBabylon !== null) {
-            console.warn(dataBabylon);
-            console.log(dataBabylon.meshes);
-            console.log(dataBabylon.materials);
-            console.log(dataBabylon.lights);
+            // console.warn(dataBabylon);
+            // console.log(dataBabylon.meshes);
+            // console.log(dataBabylon.materials);
+            // console.log(dataBabylon.lights);
             // if (dataBabylon.lights) {
             //     dataBabylon.lights.forEach((element: any) => {
             //         BabylonLoader.loadLight(element, VeryEngine.viewScene);
@@ -13094,7 +14745,7 @@ var BabylonLoader = /** @class */ (function () {
                         dataBabylon.meshes.forEach(function (element2) {
                             if (element2.parentId === oldID_1) {
                                 element2.parentId = newID_1;
-                                console.log('change parent id');
+                                // console.log('change parent id');
                             }
                         });
                     }
@@ -13286,9 +14937,19 @@ var BabylonLoader = /** @class */ (function () {
         BabylonLoader.scenesData.entities[resource_id] = data;
         BabylonLoader.scenesData['modified'] = BabylonLoader.createdAtTime();
     };
+    BabylonLoader.removeSceneData = function (resource_id) {
+        delete BabylonLoader.scenesData.entities[resource_id];
+        BabylonLoader.scenesData['modified'] = BabylonLoader.createdAtTime();
+    };
     BabylonLoader.updateSceneData = function (resource_id, data) {
         BabylonLoader.scenesData.entities[resource_id] = data;
         BabylonLoader.scenesData['modified'] = BabylonLoader.createdAtTime();
+    };
+    BabylonLoader.changeSceneName = function (resource_id, name) {
+        BabylonLoader.scenesData.entities[resource_id].name = name;
+        BabylonLoader.scenesData['name'] = name;
+        BabylonLoader.scenesData['modified'] = BabylonLoader.createdAtTime();
+        editor.call('make:scene:dirty');
     };
     BabylonLoader.createdAtTime = function () {
         var now = new Date();
@@ -13493,6 +15154,60 @@ var BabylonLoader = /** @class */ (function () {
         //     }
         // }
     };
+    // hierarchy创建灯光，直接创建wraper
+    BabylonLoader.createCameraWraper = function (name, scene, canvas) {
+        var camera = new BABYLON.UniversalCamera(name, new BABYLON.Vector3(0, 100, -200), scene);
+        // camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
+        // camera.minZ = -800;
+        camera.maxZ = 20000;
+        var cameraWraper = new very_camera_1.VeryCamera(camera, scene, canvas);
+        cameraWraper.orthoSize = 0.5;
+        return cameraWraper;
+    };
+    BabylonLoader.createLightWraper = function (type, name, scene) {
+        var light = BabylonLoader.createLight(type, name, scene);
+        var lightWraper = new very_light_1.VeryLight(light, scene);
+        return lightWraper;
+    };
+    BabylonLoader.createLight = function (type, name, scene) {
+        var light;
+        type = type.toLowerCase();
+        if (type === 'point') {
+            light = new BABYLON.PointLight(name, BABYLON.Vector3.Zero(), scene);
+        }
+        else if (type === 'spot') {
+            light = new BABYLON.SpotLight(name, BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, -1, 0), Math.PI * 0.75, 8, scene);
+        }
+        else if (type === 'hemispheric') {
+            light = new BABYLON.HemisphericLight(name, BABYLON.Vector3.Up(), scene);
+        }
+        else {
+            light = new BABYLON.DirectionalLight(name, BABYLON.Vector3.Forward(), scene);
+        }
+        return light;
+    };
+    BabylonLoader.createPrimitive = function (type, name, scene) {
+        var primitive;
+        if (type === 'box') {
+            primitive = BABYLON.MeshBuilder.CreateBox(name, {}, scene);
+        }
+        else if (type === 'sphere') {
+            primitive = BABYLON.MeshBuilder.CreateSphere(name, {}, scene);
+        }
+        else if (type === 'plane') {
+            primitive = BABYLON.MeshBuilder.CreateGround(name, {}, scene);
+        }
+        else if (type === 'cylinder') {
+            primitive = BABYLON.MeshBuilder.CreateCylinder(name, {}, scene);
+        }
+        // else if (type === 'capsule') {
+        //     primitive = BABYLON.MeshBuilder(name, {}, scene);
+        // } 
+        else {
+            primitive = new BABYLON.TransformNode(name, scene);
+        }
+        return primitive;
+    };
     BabylonLoader.load = function (rootUrl, sceneFilename, scene) {
         // // Browsing all the graph to connect the dots
         // for (index = 0, cache = scene.cameras.length; index < cache; index++) {
@@ -13602,7 +15317,7 @@ var BabylonLoader = /** @class */ (function () {
     return BabylonLoader;
 }());
 exports.BabylonLoader = BabylonLoader;
-},{"../../../editor/global":53,"../../../editor/utility":97,"../../../engine":110}],71:[function(require,module,exports){
+},{"../../../editor/global":63,"../../../editor/utility":114,"../../../engine":128,"../very-camera":83,"../very-light":84}],81:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ResourceContainer = void 0;
@@ -13616,7 +15331,7 @@ var ResourceContainer = /** @class */ (function () {
     return ResourceContainer;
 }());
 exports.ResourceContainer = ResourceContainer;
-},{}],72:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Transform = void 0;
@@ -14071,7 +15786,250 @@ var Transform = /** @class */ (function () {
     return Transform;
 }());
 exports.Transform = Transform;
-},{}],73:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.VeryCamera = void 0;
+var engine_1 = require("../../engine");
+var global_1 = require("../global");
+var VeryCamera = /** @class */ (function (_super) {
+    __extends(VeryCamera, _super);
+    // public get mode()
+    function VeryCamera(camera, scene, canvas) {
+        var _this = _super.call(this, camera.name, scene) || this;
+        _this._orthoSize = 0;
+        _this.clearColor = null;
+        _this._backupViewport = new BABYLON.Viewport(0, 0, 1, 1);
+        _this._render = true;
+        _this.camera = camera;
+        camera.name += '-Camera';
+        _this._canvas = canvas;
+        _this._width = canvas.width;
+        _this._height = canvas.height;
+        _this.position.copyFrom(camera.position);
+        _this.rotation.copyFrom(camera.rotation);
+        camera.parent = _this;
+        camera.position = BABYLON.Vector3.Zero();
+        camera.rotation = BABYLON.Vector3.Zero();
+        camera.inputs.clear();
+        return _this;
+    }
+    Object.defineProperty(VeryCamera.prototype, "mode", {
+        get: function () {
+            return this.camera.mode;
+        },
+        set: function (val) {
+            this.camera.mode = val;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(VeryCamera.prototype, "fov", {
+        get: function () {
+            return this.camera.fov;
+        },
+        set: function (val) {
+            this.camera.fov = val;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(VeryCamera.prototype, "inertia", {
+        get: function () {
+            return this.camera.inertia;
+        },
+        set: function (val) {
+            this.camera.inertia = val;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(VeryCamera.prototype, "orthoSize", {
+        get: function () {
+            if (this.camera.mode === BABYLON.Camera.ORTHOGRAPHIC_CAMERA) {
+                this._orthoSize = this.camera.orthoRight / this._scene.getEngine().getRenderWidth() / this.camera.viewport.width;
+                return this._orthoSize;
+            }
+            else {
+                return 0;
+            }
+        },
+        set: function (val) {
+            this._orthoSize = val;
+            if (this.camera.mode === BABYLON.Camera.ORTHOGRAPHIC_CAMERA) {
+                this.camera.orthoRight = val * this._scene.getEngine().getRenderWidth() * this.camera.viewport.width;
+                this.camera.orthoLeft = -val * this._scene.getEngine().getRenderWidth() * this.camera.viewport.width;
+                this.camera.orthoTop = val * this._scene.getEngine().getRenderHeight() * this.camera.viewport.height;
+                this.camera.orthoBottom = -val * this._scene.getEngine().getRenderHeight() * this.camera.viewport.height;
+            }
+        },
+        enumerable: false,
+        configurable: true
+    });
+    VeryCamera.prototype.renderCamera = function (render) {
+        if (this._render === render)
+            return;
+        this._render = render;
+        if (render) {
+            this.camera.viewport = this._backupViewport.clone();
+        }
+        else {
+            this._backupViewport = this.camera.viewport.clone();
+            this.camera.viewport = new BABYLON.Viewport(0, 0, 0, 0);
+        }
+    };
+    // orthographic相机在窗口resize后需要刷新；
+    VeryCamera.prototype.resize = function (editor) {
+        if (this.camera && this._canvas) {
+            if (this._canvas.width !== this._width || this._canvas.height !== this._height) {
+                this._width = this._canvas.width;
+                this._height = this._canvas.height;
+                var w = this._scene.getEngine().getRenderWidth();
+                var h = this._scene.getEngine().getRenderHeight();
+                if (editor) {
+                    if (this !== engine_1.VeryEngine.viewCamera) {
+                        if (this._render) {
+                            this.camera.viewport = new BABYLON.Viewport(global_1.Config.x / w, (h - global_1.Config.y) / h, global_1.Config.width / w, global_1.Config.height / h);
+                        }
+                        else {
+                            this._backupViewport = new BABYLON.Viewport(global_1.Config.x / w, (h - global_1.Config.y) / h, global_1.Config.width / w, global_1.Config.height / h);
+                        }
+                        // console.warn(this.camera.viewport);
+                    }
+                }
+                if (this.camera.mode === BABYLON.Camera.ORTHOGRAPHIC_CAMERA) {
+                    this.camera.orthoRight = this._orthoSize * w * this.camera.viewport.width;
+                    this.camera.orthoLeft = -this._orthoSize * w * this.camera.viewport.width;
+                    this.camera.orthoTop = this._orthoSize * h * this.camera.viewport.height;
+                    this.camera.orthoBottom = -this._orthoSize * h * this.camera.viewport.height;
+                }
+                else {
+                }
+                // console.log('设置ortho参数: ' + this._orthoSize);
+                // console.warn(this.camera);
+            }
+        }
+    };
+    return VeryCamera;
+}(BABYLON.TransformNode));
+exports.VeryCamera = VeryCamera;
+},{"../../engine":128,"../global":63}],84:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.VeryLight = void 0;
+var VeryLight = /** @class */ (function (_super) {
+    __extends(VeryLight, _super);
+    function VeryLight(light, scene) {
+        var _this = _super.call(this, light.name, scene) || this;
+        light.name += '-Light';
+        // light
+        _this.light = light;
+        _this.position.copyFrom(light.getAbsolutePosition());
+        // this.rotation = BABYLON.Vector3.Zero();
+        light.parent = _this;
+        return _this;
+    }
+    Object.defineProperty(VeryLight.prototype, "type", {
+        get: function () {
+            return this.light.getTypeID();
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(VeryLight.prototype, "intensity", {
+        get: function () {
+            return this.light.intensity;
+        },
+        set: function (value) {
+            this.light.intensity = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(VeryLight.prototype, "diffuse", {
+        get: function () {
+            return this.light.diffuse;
+        },
+        set: function (value) {
+            this.light.diffuse = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(VeryLight.prototype, "specular", {
+        get: function () {
+            return this.light.specular;
+        },
+        set: function (value) {
+            this.light.specular = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(VeryLight.prototype, "angle", {
+        get: function () {
+            if (this.light instanceof BABYLON.SpotLight) {
+                return this.light.angle;
+            }
+            else {
+                return 0;
+            }
+        },
+        set: function (value) {
+            if (this.light instanceof BABYLON.SpotLight) {
+                this.light.angle = value;
+            }
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(VeryLight.prototype, "exponent", {
+        get: function () {
+            if (this.light instanceof BABYLON.SpotLight) {
+                return this.light.exponent;
+            }
+            else {
+                return 0;
+            }
+        },
+        set: function (value) {
+            if (this.light instanceof BABYLON.SpotLight) {
+                this.light.exponent = value;
+            }
+        },
+        enumerable: false,
+        configurable: true
+    });
+    return VeryLight;
+}(BABYLON.TransformNode));
+exports.VeryLight = VeryLight;
+},{}],85:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -14086,7 +16044,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./keeper"), exports);
 __exportStar(require("./scenes"), exports);
-},{"./keeper":74,"./scenes":75}],74:[function(require,module,exports){
+},{"./keeper":86,"./scenes":87}],86:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ScenesKeeper = void 0;
@@ -14098,7 +16056,7 @@ var ScenesKeeper = /** @class */ (function () {
     return ScenesKeeper;
 }());
 exports.ScenesKeeper = ScenesKeeper;
-},{"./scenes":75}],75:[function(require,module,exports){
+},{"./scenes":87}],87:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Scenes = void 0;
@@ -14142,7 +16100,7 @@ var Scenes = /** @class */ (function () {
     return Scenes;
 }());
 exports.Scenes = Scenes;
-},{"../global":53}],76:[function(require,module,exports){
+},{"../global":63}],88:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Search = void 0;
@@ -14336,7 +16294,7 @@ var Search = /** @class */ (function () {
     return Search;
 }());
 exports.Search = Search;
-},{}],77:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -14351,7 +16309,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./selector"), exports);
 __exportStar(require("./selector-history"), exports);
-},{"./selector":79,"./selector-history":78}],78:[function(require,module,exports){
+},{"./selector":91,"./selector-history":90}],90:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SelectorHistory = void 0;
@@ -14361,7 +16319,7 @@ var SelectorHistory = /** @class */ (function () {
     return SelectorHistory;
 }());
 exports.SelectorHistory = SelectorHistory;
-},{}],79:[function(require,module,exports){
+},{}],91:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Selector = void 0;
@@ -14479,6 +16437,13 @@ var Selector = /** @class */ (function () {
                 items = items.filter(function (item) {
                     return !!editor.call('entities:get', item.get('resource_id'));
                 });
+                var rootEntity = editor.call('entities:root');
+                if (items.indexOf(rootEntity) !== -1) {
+                    editor.call('selector:set', 'entity', []);
+                    // editor.emit('attributes:inspect[editorSettings]');
+                    type = 'editorSettings';
+                    items = [editor.call('settings:data')];
+                }
             }
             if (!items.length)
                 return;
@@ -14506,6 +16471,13 @@ var Selector = /** @class */ (function () {
             // console.warn(item.get('id'));
             if (self.selector.length > 0 && self.selector.type !== type) {
                 self.selector.clear();
+            }
+            // root为场景设置
+            if (type === 'entity' && item.get('type') === 'root') {
+                editor.call('selector:set', 'entity', []);
+                // editor.emit('attributes:inspect[editorSettings]');
+                type = 'editorSettings';
+                item = editor.call('settings:data');
             }
             self.selector.type = type;
             self.type = type;
@@ -14552,7 +16524,102 @@ var Selector = /** @class */ (function () {
     return Selector;
 }());
 exports.Selector = Selector;
-},{"../../lib":114}],80:[function(require,module,exports){
+},{"../../lib":132}],92:[function(require,module,exports){
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+__exportStar(require("./settings-attribute"), exports);
+__exportStar(require("./keeper"), exports);
+},{"./keeper":93,"./settings-attribute":94}],93:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SettingsKeeper = void 0;
+var settings_attribute_1 = require("./settings-attribute");
+var SettingsKeeper = /** @class */ (function () {
+    function SettingsKeeper() {
+        new settings_attribute_1.SettingsAttribute();
+    }
+    return SettingsKeeper;
+}());
+exports.SettingsKeeper = SettingsKeeper;
+},{"./settings-attribute":94}],94:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SettingsAttribute = void 0;
+var lib_1 = require("../../lib");
+var babylonLoader_1 = require("../middleware/loader/babylonLoader");
+var SettingsAttribute = /** @class */ (function () {
+    function SettingsAttribute() {
+        var sceneName = '新建场景';
+        var settingsData = new lib_1.Observer({ scene_name: sceneName });
+        editor.method('settings:data', function () {
+            return settingsData;
+        });
+        editor.on('scene:name', function (name) {
+            settingsData.set('scene_name', name);
+            sceneName = name;
+        });
+        editor.method('editorSettings:panel:unfold', function (panel) {
+            var element = editor.call('layout.attributes').dom.querySelector('.ui-panel.component.foldable.' + panel);
+            if (element && element.ui) {
+                element.ui.folded = false;
+            }
+        });
+        editor.on('attributes:inspect[editorSettings]', function () {
+            editor.call('attributes:header', '场景设置');
+        });
+        // inspecting
+        editor.on('attributes:inspect[editorSettings]', function () {
+            var panelScene = editor.call('attributes:addPanel');
+            panelScene.class.add('component');
+            // scene name
+            var fieldName = editor.call('attributes:addField', {
+                parent: panelScene,
+                name: '场景名',
+                type: 'string',
+                value: sceneName
+            });
+            var changingName = false;
+            fieldName.on('change', function (value) {
+                if (changingName)
+                    return;
+                // editor.call('realtime:scene:op', {
+                //     p: ['name'],
+                //     od: sceneName || '',
+                //     oi: value || ''
+                // });
+                editor.emit('scene:name', value);
+                var rootEntity = editor.call('entities:root');
+                if (rootEntity) {
+                    rootEntity.set('name', value);
+                    babylonLoader_1.BabylonLoader.changeSceneName(rootEntity.get('resource_id'), value);
+                }
+            });
+            // var evtNameChange = editor.on('realtime:scene:op:name', function (op) {
+            //     changingName = true;
+            //     fieldName.value = op.oi;
+            //     changingName = false;
+            // });
+            // fieldName.on('destroy', function () {
+            //     evtNameChange.unbind();
+            // });
+            // // reference
+            // editor.call('attributes:reference:attach', 'settings:name', fieldName.parent.innerElement.firstChild.ui);
+        });
+    }
+    return SettingsAttribute;
+}());
+exports.SettingsAttribute = SettingsAttribute;
+},{"../../lib":132,"../middleware/loader/babylonLoader":80}],95:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -14575,7 +16642,9 @@ __exportStar(require("./toolbar-control"), exports);
 __exportStar(require("./toolbar-editor-settings"), exports);
 __exportStar(require("./toolbar-publish"), exports);
 __exportStar(require("./toolbar-scene"), exports);
-},{"./keeper":81,"./toolbar-control":82,"./toolbar-editor-settings":83,"./toolbar-gizmos":84,"./toolbar-help":85,"./toolbar-history":86,"./toolbar-logo":87,"./toolbar-publish":88,"./toolbar-scene":89,"./toolbar-top-control":90}],81:[function(require,module,exports){
+__exportStar(require("./toolbar-camera"), exports);
+__exportStar(require("./toolbar-status"), exports);
+},{"./keeper":96,"./toolbar-camera":97,"./toolbar-control":98,"./toolbar-editor-settings":99,"./toolbar-gizmos":100,"./toolbar-help":101,"./toolbar-history":102,"./toolbar-logo":103,"./toolbar-publish":104,"./toolbar-scene":105,"./toolbar-status":106,"./toolbar-top-control":107}],96:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarKeeper = void 0;
@@ -14587,8 +16656,11 @@ var toolbar_control_1 = require("./toolbar-control");
 var toolbar_editor_settings_1 = require("./toolbar-editor-settings");
 var toolbar_publish_1 = require("./toolbar-publish");
 var toolbar_scene_1 = require("./toolbar-scene");
+var toolbar_camera_1 = require("./toolbar-camera");
+var toolbar_status_1 = require("./toolbar-status");
 var ToolbarKeeper = /** @class */ (function () {
     function ToolbarKeeper() {
+        new toolbar_status_1.ToolbarStatus();
         var logo = new toolbar_logo_1.ToolbarLogo();
         var gizmos = new toolbar_gizmos_1.ToolbarGizmos();
         var history = new toolbar_history_1.ToolbarHistory();
@@ -14597,11 +16669,170 @@ var ToolbarKeeper = /** @class */ (function () {
         var settings = new toolbar_editor_settings_1.ToolbarEditorSettings();
         var publish = new toolbar_publish_1.ToolbarPublish();
         var scene = new toolbar_scene_1.ToolbarScene();
+        new toolbar_camera_1.ToolbarCamera();
     }
     return ToolbarKeeper;
 }());
 exports.ToolbarKeeper = ToolbarKeeper;
-},{"./toolbar-control":82,"./toolbar-editor-settings":83,"./toolbar-gizmos":84,"./toolbar-help":85,"./toolbar-history":86,"./toolbar-logo":87,"./toolbar-publish":88,"./toolbar-scene":89}],82:[function(require,module,exports){
+},{"./toolbar-camera":97,"./toolbar-control":98,"./toolbar-editor-settings":99,"./toolbar-gizmos":100,"./toolbar-help":101,"./toolbar-history":102,"./toolbar-logo":103,"./toolbar-publish":104,"./toolbar-scene":105,"./toolbar-status":106}],97:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ToolbarCamera = void 0;
+var ui_1 = require("../../ui");
+var ToolbarCamera = /** @class */ (function () {
+    function ToolbarCamera() {
+        var viewport = editor.call('layout.viewport');
+        // var options: { [key: string]: string } = {
+        //     'perspective': '透视相机|perspective',
+        //     'orthographic': '正交相机|orthographic',
+        //     'left': '左视图|left',
+        //     'right': '右视图|right',
+        //     'top': '顶视图|top',
+        //     'bottom': '底视图|bottom',
+        //     'front': '前视图|front',
+        //     'back': '后视图|back',
+        // };
+        var options = {
+            '透视相机': '透视相机|perspective',
+            '正交相机': '正交相机|orthographic',
+            '左视图': '左视图|left',
+            '右视图': '右视图|right',
+            '顶视图': '顶视图|top',
+            '底视图': '底视图|bottom',
+            '前视图': '前视图|front',
+            '后视图': '后视图|back',
+        };
+        var index = {};
+        var events = {};
+        var combo = new ui_1.SelectField({
+            options: options,
+            optionClassNamePrefix: 'viewport-camera',
+        });
+        combo.disabledClick = true;
+        combo.class.add('viewport-camera');
+        var tooltip = ui_1.Tooltip.attach({
+            target: combo.element,
+            text: '场景相机类型选择',
+            align: 'top',
+            root: editor.call('layout.root')
+        });
+        combo.on('open', function () {
+            tooltip.disabled = true;
+            // console.warn('修改编辑器相机类型: open');
+        });
+        combo.on('close', function (title) {
+            tooltip.disabled = false;
+            // console.warn('修改编辑器相机类型: close: ' + title);
+            if (title) {
+                combo.value = title;
+            }
+        });
+        combo.on('change', function (value) {
+            // console.warn('修改编辑器相机类型: ' + value);
+            editor.call('camera:change:mode', value);
+            viewport.value = value;
+        });
+        viewport.append(combo);
+        combo.value = '透视相机';
+        editor.method('camera:ortho:set', function () {
+            combo.value = '正交相机';
+        });
+        var refreshOptions = function () {
+            combo._updateOptions(options);
+            var writePermission = editor.call('permissions:write');
+            for (var key in combo.optionElements) {
+                if (index[key].__editorCamera)
+                    continue;
+                if (writePermission) {
+                    combo.optionElements[key].classList.remove('hidden');
+                }
+                else {
+                    combo.optionElements[key].classList.add('hidden');
+                }
+            }
+        };
+        var list = [{
+                name: 'perspective',
+                title: 'Perspective',
+                className: 'viewport-camera-perspective',
+                position: new BABYLON.Vector3(9.2, 6, 9),
+                rotation: new BABYLON.Vector3(-25, 45, 0),
+                default: true
+            }, {
+                name: 'top',
+                title: 'Top',
+                className: 'viewport-camera-top',
+                position: new BABYLON.Vector3(0, 1000, 0),
+                rotation: new BABYLON.Vector3(-90, 0, 0),
+                ortho: true
+            }, {
+                name: 'bottom',
+                title: 'Bottom',
+                className: 'viewport-camera-bottom',
+                position: new BABYLON.Vector3(0, -1000, 0),
+                rotation: new BABYLON.Vector3(90, 0, 0),
+                ortho: true
+            }, {
+                name: 'front',
+                title: 'Front',
+                className: 'viewport-camera-front',
+                position: new BABYLON.Vector3(0, 0, 1000),
+                rotation: new BABYLON.Vector3(0, 0, 0),
+                ortho: true
+            }, {
+                name: 'back',
+                title: 'Back',
+                className: 'viewport-camera-back',
+                position: new BABYLON.Vector3(0, 0, -1000),
+                rotation: new BABYLON.Vector3(0, 180, 0),
+                ortho: true
+            }, {
+                name: 'left',
+                title: 'Left',
+                className: 'viewport-camera-left',
+                position: new BABYLON.Vector3(-1000, 0, 0),
+                rotation: new BABYLON.Vector3(0, -90, 0),
+                ortho: true
+            }, {
+                name: 'right',
+                title: 'Right',
+                className: 'viewport-camera-right',
+                position: new BABYLON.Vector3(1000, 0, 0),
+                rotation: new BABYLON.Vector3(0, 90, 0),
+                ortho: true
+            }];
+        // editor.on('camera:add', function (entity) {
+        //     options[entity.getGuid()] = entity.name;
+        //     index[entity.getGuid()] = entity;
+        //     refreshOptions();
+        //     if (events[entity.getGuid()])
+        //         events[entity.getGuid()].unbind();
+        //     var obj = editor.call('entities:get', entity.getGuid());
+        //     if (obj) {
+        //         events[entity.getGuid()] = obj.on('name:set', function (value) {
+        //             options[entity.getGuid()] = value;
+        //             refreshOptions();
+        //             if (combo.value === entity.getGuid())
+        //                 combo.elementValue.textContent = value;
+        //         });
+        //     }
+        // });
+        // editor.on('camera:remove', function (entity) {
+        //     delete options[entity.getGuid()];
+        //     refreshOptions();
+        //     if (events[entity.getGuid()]) {
+        //         events[entity.getGuid()].unbind();
+        //         delete events[entity.getGuid()];
+        //     }
+        // });
+        // editor.on('camera:change', function (entity) {
+        //     combo.value = entity.getGuid();
+        // });
+    }
+    return ToolbarCamera;
+}());
+exports.ToolbarCamera = ToolbarCamera;
+},{"../../ui":148}],98:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarControl = void 0;
@@ -14630,7 +16861,7 @@ var ToolbarControl = /** @class */ (function () {
     return ToolbarControl;
 }());
 exports.ToolbarControl = ToolbarControl;
-},{}],83:[function(require,module,exports){
+},{}],99:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarEditorSettings = void 0;
@@ -14667,7 +16898,7 @@ var ToolbarEditorSettings = /** @class */ (function () {
     return ToolbarEditorSettings;
 }());
 exports.ToolbarEditorSettings = ToolbarEditorSettings;
-},{"../../engine":110,"../../ui":130}],84:[function(require,module,exports){
+},{"../../engine":128,"../../ui":148}],100:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarGizmos = void 0;
@@ -14814,45 +17045,55 @@ var ToolbarGizmos = /** @class */ (function () {
         });
         var tooltipFocus = ui_1.Tooltip.attach({
             target: buttonFocus.element,
-            text: '聚焦当前物体',
+            text: '镜头聚焦当前物体 / F键',
             align: 'left',
             root: root
         });
         tooltipFocus.class.add('innactive');
+        editor.call('hotkey:register', 'viewport:focus', {
+            key: 'f',
+            callback: function () {
+                // if (editor.call('picker:isOpen:otherThan', 'curve')) return;
+                editor.call('viewport:focus');
+            }
+        });
     }
     return ToolbarGizmos;
 }());
 exports.ToolbarGizmos = ToolbarGizmos;
-},{"../../ui":130,"../gizmos/gizmo-center":42}],85:[function(require,module,exports){
+},{"../../ui":148,"../gizmos/gizmo-center":52}],101:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarHelp = void 0;
+var engine_1 = require("../../engine");
+var ui_1 = require("../../ui");
 var ToolbarHelp = /** @class */ (function () {
     function ToolbarHelp() {
-        // var toolbar = VeryEngine.toolbar;
-        // var button = new Button('&#57656;');
-        // button.class!.add('pc-icon', 'help-howdoi', 'bottom', 'push-top');
-        // toolbar.append(button);
-        // button.on('click', function () {
-        //     editor.call('help:howdoi:toggle');
-        // });
+        var toolbar = engine_1.VeryEngine.toolbar;
+        var button = new ui_1.Button('&#57656;');
+        button.class.add('pc-icon', 'help-howdoi', 'bottom', 'push-top');
+        toolbar.append(button);
+        button.on('click', function () {
+            // editor.call('help:howdoi:toggle');
+            window.open('http://doc.veryengine.cn/readme/web/#/12?page_id=816', '_blank');
+        });
         // editor.on('help:howdoi:open', function () {
         //     button.class!.add('active');
         // });
         // editor.on('help:howdoi:close', function () {
         //     button.class!.remove('active');
         // });
-        // Tooltip.attach({
-        //     target: button.element!,
-        //     text: 'How do I...?',
-        //     align: 'left',
-        //     root: editor.call('layout.root')
-        // });
+        ui_1.Tooltip.attach({
+            target: button.element,
+            text: '引擎版本更新说明',
+            align: 'left',
+            root: editor.call('layout.root')
+        });
     }
     return ToolbarHelp;
 }());
 exports.ToolbarHelp = ToolbarHelp;
-},{}],86:[function(require,module,exports){
+},{"../../engine":128,"../../ui":148}],102:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarHistory = void 0;
@@ -14921,7 +17162,7 @@ var ToolbarHistory = /** @class */ (function () {
     return ToolbarHistory;
 }());
 exports.ToolbarHistory = ToolbarHistory;
-},{"../../engine":110,"../../ui":130}],87:[function(require,module,exports){
+},{"../../engine":128,"../../ui":148}],103:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarLogo = void 0;
@@ -14941,7 +17182,7 @@ var ToolbarLogo = /** @class */ (function () {
     return ToolbarLogo;
 }());
 exports.ToolbarLogo = ToolbarLogo;
-},{"../../ui":130}],88:[function(require,module,exports){
+},{"../../ui":148}],104:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarPublish = void 0;
@@ -14972,7 +17213,7 @@ var ToolbarPublish = /** @class */ (function () {
     return ToolbarPublish;
 }());
 exports.ToolbarPublish = ToolbarPublish;
-},{"../../engine":110,"../../ui":130}],89:[function(require,module,exports){
+},{"../../engine":128,"../../ui":148}],105:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarScene = void 0;
@@ -15008,7 +17249,7 @@ var ToolbarScene = /** @class */ (function () {
         });
         var sceneName = new ui_1.Label();
         // TODO
-        sceneName.text = '当前Scene Name';
+        sceneName.text = '当前场景名';
         sceneName.class.add('scene-name');
         sceneName.renderChanges = false;
         panel.append(sceneName);
@@ -15026,6 +17267,7 @@ var ToolbarScene = /** @class */ (function () {
         });
         sceneName.on('click', function () {
             // editor.call('selector:set', 'editorSettings', [editor.call('settings:projectUser')]);
+            editor.call('selector:set', 'editorSettings', [editor.call('settings:data')]);
         });
         editor.on('attributes:clear', function () {
             sceneName.class.remove('active');
@@ -15036,6 +17278,7 @@ var ToolbarScene = /** @class */ (function () {
         editor.on('scene:unload', function () {
             sceneName.text = '';
         });
+        // 版本管理
         // if (!config.project.settings.useLegacyScripts) {
         //     var name = config.self.branch.name;
         //     if (name.length > 33) {
@@ -15063,29 +17306,95 @@ var ToolbarScene = /** @class */ (function () {
         //         branchButton.hidden = !editor.call('permissions:read');
         //     });
         // }
-        var sceneList = new ui_1.Label();
-        sceneList.class.add('scene-list');
-        panel.append(sceneList);
-        ui_1.Tooltip.attach({
-            target: sceneList.element,
-            text: '场景设置',
-            align: 'top',
-            root: root
-        });
-        sceneList.on('click', function () {
-            // editor.call('picker:scene');
-        });
-        editor.on('picker:scene:open', function () {
-            sceneList.class.add('active');
-        });
-        editor.on('picker:scene:close', function () {
-            sceneList.class.remove('active');
-        });
+        // 场景设置
+        // var sceneList = new Label();
+        // sceneList.class!.add('scene-list');
+        // panel.append(sceneList);
+        // Tooltip.attach({
+        //     target: sceneList.element!,
+        //     text: '场景设置',
+        //     align: 'top',
+        //     root: root
+        // });
+        // sceneList.on('click', function () {
+        //     // editor.call('picker:scene');
+        // });
+        // editor.on('picker:scene:open', function () {
+        //     sceneList.class!.add('active');
+        // });
+        // editor.on('picker:scene:close', function () {
+        //     sceneList.class!.remove('active');
+        // });
     }
     return ToolbarScene;
 }());
 exports.ToolbarScene = ToolbarScene;
-},{"../../engine":110,"../../ui":130}],90:[function(require,module,exports){
+},{"../../engine":128,"../../ui":148}],106:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ToolbarStatus = void 0;
+var ui_1 = require("../../ui");
+var ToolbarStatus = /** @class */ (function () {
+    function ToolbarStatus() {
+        var jobs = {};
+        var panel = editor.call('layout.statusBar');
+        // status
+        var status = new ui_1.Label('VeRyEngine');
+        status.renderChanges = false;
+        status.class.add('status');
+        panel.append(status);
+        // progress
+        var progress = new ui_1.Progress();
+        progress.class.add('jobsProgress');
+        panel.append(progress);
+        // jobs
+        var jobsCount = new ui_1.Label('0');
+        jobsCount.renderChanges = false;
+        jobsCount.class.add('jobsCount');
+        panel.append(jobsCount);
+        // status text
+        editor.method('status:text', function (text) {
+            status.text = text;
+            status.class.remove('error');
+        });
+        // status error
+        editor.method('status:error', function (text) {
+            status.text = text;
+            status.class.add('error');
+        });
+        // update jobs
+        var updateJobs = function () {
+            var count = Object.keys(jobs).length;
+            jobsCount.text = count.toString();
+            if (count > 0) {
+                var least = 1;
+                for (var key in jobs) {
+                    if (jobs[key] < least)
+                        least = jobs[key];
+                }
+                progress.progress = least;
+                progress.class.add('active');
+            }
+            else {
+                progress.class.remove('active');
+                progress.progress = 1;
+            }
+        };
+        // status job
+        editor.method('status:job', function (id, value) {
+            if (jobs.hasOwnProperty(id) && value === undefined) {
+                delete jobs[id];
+            }
+            else {
+                jobs[id] = value;
+            }
+            updateJobs();
+        });
+    }
+    return ToolbarStatus;
+}());
+exports.ToolbarStatus = ToolbarStatus;
+},{"../../ui":148}],107:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarTopControl = void 0;
@@ -15110,18 +17419,18 @@ var ToolbarTopControl = /** @class */ (function () {
         });
         editor.on('viewport:expand', function (state) {
             if (state) {
-                tooltipExpand.text = '还原';
+                tooltipExpand.text = '还原 / 空格键';
                 buttonExpand.class.add('active');
             }
             else {
-                tooltipExpand.text = '最大化';
+                tooltipExpand.text = '最大化 / 空格键';
                 buttonExpand.class.remove('active');
             }
             tooltipExpand.hidden = true;
         });
         var tooltipExpand = ui_1.Tooltip.attach({
             target: buttonExpand.element,
-            text: '最大化',
+            text: '最大化 / 空格键',
             align: 'top',
             root: engine_1.VeryEngine.root
         });
@@ -15147,7 +17456,7 @@ var ToolbarTopControl = /** @class */ (function () {
     return ToolbarTopControl;
 }());
 exports.ToolbarTopControl = ToolbarTopControl;
-},{"../../engine":110,"../../ui":130,"../global":53}],91:[function(require,module,exports){
+},{"../../engine":128,"../../ui":148,"../global":63}],108:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -15326,7 +17635,7 @@ var AjaxRequest = /** @class */ (function (_super) {
     return AjaxRequest;
 }(lib_1.Events));
 exports.AjaxRequest = AjaxRequest;
-},{"../../lib":114}],92:[function(require,module,exports){
+},{"../../lib":132}],109:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ComponentsLogos = void 0;
@@ -15369,7 +17678,7 @@ var ComponentsLogos = /** @class */ (function () {
     return ComponentsLogos;
 }());
 exports.ComponentsLogos = ComponentsLogos;
-},{}],93:[function(require,module,exports){
+},{}],110:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ContextMenu = void 0;
@@ -15383,7 +17692,7 @@ var ContextMenu = /** @class */ (function () {
     return ContextMenu;
 }());
 exports.ContextMenu = ContextMenu;
-},{}],94:[function(require,module,exports){
+},{}],111:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Debug = void 0;
@@ -15422,7 +17731,7 @@ var Debug = /** @class */ (function () {
     return Debug;
 }());
 exports.Debug = Debug;
-},{}],95:[function(require,module,exports){
+},{}],112:[function(require,module,exports){
 (function (process,setImmediate){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -15911,7 +18220,7 @@ var EventProxy = /** @class */ (function () {
 exports.EventProxy = EventProxy;
 }).call(this,require('_process'),require("timers").setImmediate)
 
-},{"_process":1,"timers":2}],96:[function(require,module,exports){
+},{"_process":1,"timers":2}],113:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GUID = void 0;
@@ -15930,7 +18239,7 @@ var GUID = /** @class */ (function () {
     return GUID;
 }());
 exports.GUID = GUID;
-},{}],97:[function(require,module,exports){
+},{}],114:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -15951,7 +18260,7 @@ __exportStar(require("./debug"), exports);
 __exportStar(require("./tools"), exports);
 __exportStar(require("./ajax"), exports);
 __exportStar(require("./sha1"), exports);
-},{"./ajax":91,"./components-logos":92,"./context-menu":93,"./debug":94,"./eventproxy":95,"./guid":96,"./sha1":98,"./tools":99}],98:[function(require,module,exports){
+},{"./ajax":108,"./components-logos":109,"./context-menu":110,"./debug":111,"./eventproxy":112,"./guid":113,"./sha1":115,"./tools":116}],115:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SHA1 = void 0;
@@ -16033,7 +18342,7 @@ var SHA1 = /** @class */ (function () {
     return SHA1;
 }());
 exports.SHA1 = SHA1;
-},{}],99:[function(require,module,exports){
+},{}],116:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Tools = void 0;
@@ -16051,8 +18360,106 @@ var Tools = /** @class */ (function () {
         var para = 180 / Math.PI;
         return val.multiplyByFloats(para, para, para);
     };
+    Tools.eulerAngleFloatToRadian = function (euler_angle) {
+        return euler_angle * Math.PI / 180;
+    };
+    Tools.radianFloatToEulerAngle = function (radian) {
+        return radian * 180 / Math.PI;
+    };
     Tools.vector3ToArray = function (val) {
         return [val.x, val.y, val.z];
+    };
+    Tools.quatTransfromVector3 = function (quat, vec3) {
+        var res = BABYLON.Vector3.Zero();
+        var x = vec3.x, y = vec3.y, z = vec3.z;
+        var qx = quat.x, qy = quat.y, qz = quat.z, qw = quat.w;
+        // calculate quat * vec
+        var ix = qw * x + qy * z - qz * y;
+        var iy = qw * y + qz * x - qx * z;
+        var iz = qw * z + qx * y - qy * x;
+        var iw = -qx * x - qy * y - qz * z;
+        // calculate result * inverse quat
+        res.x = ix * qw + iw * -qx + iy * -qz - iz * -qy;
+        res.y = iy * qw + iw * -qy + iz * -qx - ix * -qz;
+        res.z = iz * qw + iw * -qz + ix * -qy - iy * -qx;
+        return res;
+    };
+    Tools.quatMultiplyVector3 = function (rotation, point) {
+        var num = rotation.x * 2;
+        var num2 = rotation.y * 2;
+        var num3 = rotation.z * 2;
+        var num4 = rotation.x * num;
+        var num5 = rotation.y * num2;
+        var num6 = rotation.z * num3;
+        var num7 = rotation.x * num2;
+        var num8 = rotation.x * num3;
+        var num9 = rotation.y * num3;
+        var num10 = rotation.w * num;
+        var num11 = rotation.w * num2;
+        var num12 = rotation.w * num3;
+        var result = BABYLON.Vector3.Zero();
+        result.x = (1 - (num5 + num6)) * point.x + (num7 - num12) * point.y + (num8 + num11) * point.z;
+        result.y = (num7 + num12) * point.x + (1 - (num4 + num6)) * point.y + (num9 - num10) * point.z;
+        result.z = (num8 - num11) * point.x + (num9 + num10) * point.y + (1 - (num4 + num5)) * point.z;
+        return result;
+    };
+    Tools.clampAngle = function (angle, min, max) {
+        if (angle < -360)
+            angle += 360;
+        if (angle > 360)
+            angle -= 360;
+        if (angle < min) {
+            angle = min;
+        }
+        else if (angle > max) {
+            angle = max;
+        }
+        return angle;
+    };
+    Tools.worldToScreenPoint = function (world_point, scene, camera, engine) {
+        return BABYLON.Vector3.Project(world_point, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()));
+    };
+    Tools.lerpVector2 = function (vec1, vec2, rate) {
+        var res = BABYLON.Vector2.Zero();
+        if (rate < 0)
+            rate = 0;
+        if (rate > 1)
+            rate = 1;
+        res.x = vec1.x + rate * (vec2.x - vec1.x);
+        res.y = vec1.y + rate * (vec2.y - vec1.y);
+        return res;
+    };
+    Tools.lerpVector3 = function (vec1, vec2, rate) {
+        var res = BABYLON.Vector3.Zero();
+        if (rate < 0)
+            rate = 0;
+        if (rate > 1)
+            rate = 1;
+        res.x = vec1.x + rate * (vec2.x - vec1.x);
+        res.y = vec1.y + rate * (vec2.y - vec1.y);
+        res.z = vec1.z + rate * (vec2.z - vec1.z);
+        return res;
+    };
+    Tools.lerpVector4 = function (vec1, vec2, rate) {
+        var res = BABYLON.Vector4.Zero();
+        if (rate < 0)
+            rate = 0;
+        if (rate > 1)
+            rate = 1;
+        res.x = vec1.x + rate * (vec2.x - vec1.x);
+        res.y = vec1.y + rate * (vec2.y - vec1.y);
+        res.z = vec1.z + rate * (vec2.z - vec1.z);
+        res.w = vec1.w + rate * (vec2.w - vec1.w);
+        return res;
+    };
+    Tools.transformLocalToWorldDirection = function (node, local_direction) {
+        if (node) {
+            var matrix = node.computeWorldMatrix();
+            return BABYLON.Vector3.TransformCoordinates(local_direction, matrix).subtract(node.getAbsolutePosition());
+        }
+        else {
+            return local_direction;
+        }
     };
     Tools.sha1 = function (val) {
         return sha1_1.SHA1.SHA1(val);
@@ -16266,7 +18673,7 @@ var Tools = /** @class */ (function () {
     return Tools;
 }());
 exports.Tools = Tools;
-},{"../../engine":110,"./sha1":98}],100:[function(require,module,exports){
+},{"../../engine":128,"./sha1":115}],117:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -16285,7 +18692,9 @@ __exportStar(require("./viewport-application"), exports);
 __exportStar(require("./viewport-entities-observer-binding"), exports);
 __exportStar(require("./viewport-instance-create"), exports);
 __exportStar(require("./viewport-drop-model"), exports);
-},{"./viewport":107,"./viewport-application":102,"./viewport-drop-model":103,"./viewport-entities-observer-binding":104,"./viewport-expand":105,"./viewport-instance-create":106}],101:[function(require,module,exports){
+__exportStar(require("./viewport-tap"), exports);
+__exportStar(require("./keeper"), exports);
+},{"./keeper":118,"./viewport":125,"./viewport-application":119,"./viewport-drop-model":120,"./viewport-entities-observer-binding":121,"./viewport-expand":122,"./viewport-instance-create":123,"./viewport-tap":124}],118:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ViewportKeeper = void 0;
@@ -16293,21 +18702,25 @@ var viewport_application_1 = require("./viewport-application");
 var viewport_instance_create_1 = require("./viewport-instance-create");
 var viewport_drop_model_1 = require("./viewport-drop-model");
 var viewport_entities_observer_binding_1 = require("./viewport-entities-observer-binding");
+var viewport_tap_1 = require("./viewport-tap");
 var ViewportKeeper = /** @class */ (function () {
     function ViewportKeeper() {
         new viewport_application_1.ViewportApplication();
         new viewport_entities_observer_binding_1.ViewportEntitiesObserverBinding();
         new viewport_instance_create_1.ViewportInstanceCreate();
         new viewport_drop_model_1.ViewportDropModel();
+        new viewport_tap_1.ViewportTap();
     }
     return ViewportKeeper;
 }());
 exports.ViewportKeeper = ViewportKeeper;
-},{"./viewport-application":102,"./viewport-drop-model":103,"./viewport-entities-observer-binding":104,"./viewport-instance-create":106}],102:[function(require,module,exports){
+},{"./viewport-application":119,"./viewport-drop-model":120,"./viewport-entities-observer-binding":121,"./viewport-instance-create":123,"./viewport-tap":124}],119:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ViewportApplication = void 0;
 var engine_1 = require("../../engine");
+var gizmos_1 = require("../gizmos");
+var global_1 = require("../global");
 var babylonLoader_1 = require("../middleware/loader/babylonLoader");
 var utility_1 = require("../utility");
 var ViewportApplication = /** @class */ (function () {
@@ -16316,52 +18729,276 @@ var ViewportApplication = /** @class */ (function () {
         var childIndex = {};
         var entitiesIndex = {};
         var unknowns = {};
+        var gizmos = {};
+        editor.method('gizmo:get', function (id) {
+            return (id in gizmos) ? gizmos[id] : null;
+        });
         editor.method('create:scene:element', function (entity) {
             // console.log('create scene element');
             // console.error(entity);
             if (entity.get('type') === 'light') {
                 // Lights
-                var light = BABYLON.Light.Parse(entity.get('data'), engine_1.VeryEngine.viewScene);
-                if (light) {
-                    entitiesIndex[entity.get('resource_id')] = light;
-                    entity.node = light;
-                    light.id = entity.get('resource_id');
-                    childAndParent(entity, light);
-                    // (<BABYLON.ShadowLight>light)
-                    // console.warn(light);
+                var lightWraper = babylonLoader_1.BabylonLoader.createLightWraper(entity.get('subtype'), entity.get('name'), engine_1.VeryEngine.viewScene);
+                // lightWraper.light.setEnabled(entity.has('enabled') ? entity.get('enabled') : true);
+                lightWraper.light.intensity = entity.has('intensity') ? entity.get('intensity') : 1;
+                if (entity.has('diffuse') && entity.get('diffuse').length === 3) {
+                    lightWraper.light.diffuse = BABYLON.Color3.FromArray(entity.get('diffuse'));
                 }
-                else {
-                    console.error('light创建失败，light原始信息：');
-                    console.error(entity.get('data'));
+                if (entity.has('specular') && entity.get('specular').length === 3) {
+                    lightWraper.light.specular = BABYLON.Color3.FromArray(entity.get('specular'));
                 }
+                if (lightWraper.light instanceof BABYLON.SpotLight) {
+                    if (entity.has('angle')) {
+                        lightWraper.light.angle = entity.get('angle');
+                    }
+                    if (entity.has('exponent')) {
+                        lightWraper.light.exponent = entity.get('exponent');
+                    }
+                }
+                lightWraper.id = entity.get('resource_id');
+                entitiesIndex[entity.get('resource_id')] = lightWraper;
+                entity.node = lightWraper;
+                if (entity.has('enabled')) {
+                    lightWraper.setEnabled(entity.get('enabled'));
+                }
+                if (entity.has('position') && entity.get('position').length === 3) {
+                    lightWraper.position = BABYLON.Vector3.FromArray(entity.get('position'));
+                }
+                if (entity.has('rotation') && entity.get('rotation').length === 3) {
+                    lightWraper.rotation = utility_1.Tools.eulerAngleToRadian(BABYLON.Vector3.FromArray(entity.get('rotation')));
+                    // 环境光不跟着父物体发生位置变化
+                    if (lightWraper.type === BABYLON.Light.LIGHTTYPEID_HEMISPHERICLIGHT) {
+                        lightWraper.light.direction.copyFrom(lightWraper.up);
+                    }
+                }
+                if (entity.has('scale') && entity.get('scale').length === 3) {
+                    lightWraper.scaling = BABYLON.Vector3.FromArray(entity.get('scale'));
+                }
+                var lightGizmo = new gizmos_1.LightGizmo();
+                lightGizmo.scaleRatio = 2;
+                lightGizmo.light = lightWraper.light;
+                gizmos[entity.get('resource_id')] = lightGizmo;
+                childAndParent(entity, lightWraper);
             }
             else if (entity.get('type') === 'camera') {
-                // TODO: camera要特别处理
                 // Cameras
-                // var camera = BABYLON.Camera.Parse(entity.get('data'), VeryEngine.viewScene);
-                // camera.attachControl(VeryEngine.viewCanvasElement);
-                // entity.node = camera;
-                // entitiesIndex[entity.get('resource_id')] = camera;
-                // camera!.id = entity.get('resource_id');
-                // childAndParent(entity, camera);
-                // console.warn(camera);
-            }
-            else if (entity.get('type') === 'box') {
-                // box
-                var box = BABYLON.Mesh.CreateBox(entity.get('name'), 1, engine_1.VeryEngine.viewScene);
-                entity.node = box;
-                entitiesIndex[entity.get('resource_id')] = box;
-                box.id = entity.get('resource_id');
-                box.position = BABYLON.Vector3.FromArray(entity.get('position'));
-                box.rotation = utility_1.Tools.eulerAngleToRadian(BABYLON.Vector3.FromArray(entity.get('rotation')));
-                box.scaling = BABYLON.Vector3.FromArray(entity.get('scale'));
-                box.isEnabled(entity.get('enabled'));
-                box.checkCollisions = entity.get('checkCollisions');
-                box.isVisible = entity.get('isVisible');
-                // 加载自定义关联材质
-                if (entity.get('material_id')) {
+                // 默认创建universalCamera，把input控制全删除
+                var cameraWraper = babylonLoader_1.BabylonLoader.createCameraWraper(entity.get('name'), engine_1.VeryEngine.viewScene, engine_1.VeryEngine.viewCanvasElement);
+                // TODO: camera视窗
+                var w = engine_1.VeryEngine.viewEngine.getRenderWidth();
+                var h = engine_1.VeryEngine.viewEngine.getRenderHeight();
+                // cameraWraper.camera.viewport = new BABYLON.Viewport(4 / w, (h - 241) / h, 260 / w, 200 / h);
+                cameraWraper.camera.viewport = new BABYLON.Viewport(global_1.Config.x / w, (h - global_1.Config.y) / h, global_1.Config.width / w, global_1.Config.height / h);
+                cameraWraper.id = entity.get('resource_id');
+                entitiesIndex[entity.get('resource_id')] = cameraWraper;
+                entity.node = cameraWraper;
+                if (entity.has('enabled')) {
+                    cameraWraper.setEnabled(entity.get('enabled'));
                 }
-                childAndParent(entity, box);
+                if (entity.has('position') && entity.get('position').length === 3) {
+                    cameraWraper.position = BABYLON.Vector3.FromArray(entity.get('position'));
+                }
+                if (entity.has('rotation') && entity.get('rotation').length === 3) {
+                    cameraWraper.rotation = utility_1.Tools.eulerAngleToRadian(BABYLON.Vector3.FromArray(entity.get('rotation')));
+                }
+                if (entity.has('scale') && entity.get('scale').length === 3) {
+                    cameraWraper.scaling = BABYLON.Vector3.FromArray(entity.get('scale'));
+                }
+                if (entity.has('checkCollisions')) {
+                    if (cameraWraper.camera instanceof BABYLON.FreeCamera) {
+                        cameraWraper.camera.checkCollisions = entity.get('checkCollisions');
+                    }
+                }
+                if (entity.has('applyGravity')) {
+                    if (cameraWraper.camera instanceof BABYLON.FreeCamera) {
+                        cameraWraper.camera.applyGravity = entity.get('applyGravity');
+                    }
+                }
+                if (entity.has('viewport')) {
+                    // 编辑器条件下不用管
+                    // let arr = entity.get('viewport');
+                    // if (arr && arr.length && arr.length === 4) {
+                    //     cameraWraper.camera.viewport = new BABYLON.Viewport(arr[0], arr[1], arr[2], arr[3]);
+                    // }
+                }
+                // TODO: 设置clearColor
+                if (entity.has('clearColor')) {
+                    var arr = entity.get('clearColor');
+                    if (arr && arr.length && arr.length === 4) {
+                        cameraWraper.clearColor = new BABYLON.Color4(arr[0], arr[1], arr[2], arr[3]);
+                    }
+                }
+                else {
+                    cameraWraper.clearColor = new BABYLON.Color4(45 / 255, 145 / 255, 186 / 255, 1);
+                }
+                if (entity.has('mode')) {
+                    cameraWraper.mode = entity.get('mode');
+                }
+                if (entity.has('fov')) {
+                    cameraWraper.fov = entity.get('fov');
+                }
+                if (entity.has('inertia')) {
+                    cameraWraper.inertia = entity.get('inertia');
+                }
+                if (entity.has('orthoSize')) {
+                    cameraWraper.orthoSize = entity.get('orthoSize');
+                }
+                engine_1.VeryEngine.addCamera(cameraWraper);
+                engine_1.VeryEngine.viewScene.activeCameras.push(cameraWraper.camera);
+                var cameraGizmo = new gizmos_1.CameraGizmo();
+                cameraGizmo.camera = cameraWraper.camera;
+                gizmos[entity.get('resource_id')] = cameraGizmo;
+                cameraGizmo.displayFrustum = false;
+                // 设置viewport
+                cameraWraper.resize(true);
+                // 先不要渲染出来
+                cameraWraper.renderCamera(false);
+                childAndParent(entity, cameraWraper);
+            }
+            else if (entity.get('type') === 'empty') {
+                // 空物体
+                var empty = new BABYLON.TransformNode(entity.get('name'), engine_1.VeryEngine.viewScene);
+                entity.node = empty;
+                empty.id = entity.get('resource_id');
+                empty.position = BABYLON.Vector3.FromArray(entity.get('position'));
+                empty.rotation = utility_1.Tools.eulerAngleToRadian(BABYLON.Vector3.FromArray(entity.get('rotation')));
+                empty.scaling = BABYLON.Vector3.FromArray(entity.get('scale'));
+                empty.isEnabled(entity.get('enabled'));
+                childAndParent(entity, empty);
+            }
+            else if (entity.get('type') === 'primitive') {
+                if (entity.get('subtype') && entity.get('subtype') === 'box') {
+                    // box
+                    var box = BABYLON.MeshBuilder.CreateBox(entity.get('name'), { size: 100 }, engine_1.VeryEngine.viewScene);
+                    // var box = BABYLON.Mesh.CreateBox(entity.get('name'), 1, VeryEngine.viewScene);
+                    entity.node = box;
+                    entitiesIndex[entity.get('resource_id')] = box;
+                    box.id = entity.get('resource_id');
+                    if (entity.has('enabled')) {
+                        box.setEnabled(entity.get('enabled'));
+                    }
+                    if (entity.has('position') && entity.get('position').length === 3) {
+                        box.position = BABYLON.Vector3.FromArray(entity.get('position'));
+                    }
+                    if (entity.has('rotation') && entity.get('rotation').length === 3) {
+                        box.rotation = utility_1.Tools.eulerAngleToRadian(BABYLON.Vector3.FromArray(entity.get('rotation')));
+                    }
+                    if (entity.has('scale') && entity.get('scale').length === 3) {
+                        box.scaling = BABYLON.Vector3.FromArray(entity.get('scale'));
+                    }
+                    if (entity.has('checkCollisions')) {
+                        box.checkCollisions = entity.get('checkCollisions');
+                    }
+                    if (entity.has('pickable')) {
+                        box.isPickable = entity.get('pickable');
+                    }
+                    if (entity.has('isVisible')) {
+                        box.isVisible = entity.get('isVisible');
+                    }
+                    // 加载自定义关联材质
+                    if (entity.get('material_id')) {
+                    }
+                    childAndParent(entity, box);
+                }
+                else if (entity.get('subtype') && entity.get('subtype') === 'sphere') {
+                    // box
+                    var box = BABYLON.MeshBuilder.CreateSphere(entity.get('name'), { segments: 20, diameter: 100 }, engine_1.VeryEngine.viewScene);
+                    // var box = BABYLON.Mesh.CreateBox(entity.get('name'), 1, VeryEngine.viewScene);
+                    entity.node = box;
+                    entitiesIndex[entity.get('resource_id')] = box;
+                    box.id = entity.get('resource_id');
+                    if (entity.has('enabled')) {
+                        box.setEnabled(entity.get('enabled'));
+                    }
+                    if (entity.has('position') && entity.get('position').length === 3) {
+                        box.position = BABYLON.Vector3.FromArray(entity.get('position'));
+                    }
+                    if (entity.has('rotation') && entity.get('rotation').length === 3) {
+                        box.rotation = utility_1.Tools.eulerAngleToRadian(BABYLON.Vector3.FromArray(entity.get('rotation')));
+                    }
+                    if (entity.has('scale') && entity.get('scale').length === 3) {
+                        box.scaling = BABYLON.Vector3.FromArray(entity.get('scale'));
+                    }
+                    if (entity.has('checkCollisions')) {
+                        box.checkCollisions = entity.get('checkCollisions');
+                    }
+                    if (entity.has('pickable')) {
+                        box.isPickable = entity.get('pickable');
+                    }
+                    if (entity.has('isVisible')) {
+                        box.isVisible = entity.get('isVisible');
+                    }
+                    // 加载自定义关联材质
+                    if (entity.get('material_id')) {
+                    }
+                    childAndParent(entity, box);
+                }
+                else if (entity.get('subtype') && entity.get('subtype') === 'plane') {
+                    // box
+                    var box = BABYLON.MeshBuilder.CreateGround(entity.get('name'), { width: 5000, height: 5000, subdivisions: 10 }, engine_1.VeryEngine.viewScene);
+                    // var box = BABYLON.Mesh.CreateBox(entity.get('name'), 1, VeryEngine.viewScene);
+                    entity.node = box;
+                    entitiesIndex[entity.get('resource_id')] = box;
+                    box.id = entity.get('resource_id');
+                    if (entity.has('enabled')) {
+                        box.setEnabled(entity.get('enabled'));
+                    }
+                    if (entity.has('position') && entity.get('position').length === 3) {
+                        box.position = BABYLON.Vector3.FromArray(entity.get('position'));
+                    }
+                    if (entity.has('rotation') && entity.get('rotation').length === 3) {
+                        box.rotation = utility_1.Tools.eulerAngleToRadian(BABYLON.Vector3.FromArray(entity.get('rotation')));
+                    }
+                    if (entity.has('scale') && entity.get('scale').length === 3) {
+                        box.scaling = BABYLON.Vector3.FromArray(entity.get('scale'));
+                    }
+                    if (entity.has('checkCollisions')) {
+                        box.checkCollisions = entity.get('checkCollisions');
+                    }
+                    if (entity.has('pickable')) {
+                        box.isPickable = entity.get('pickable');
+                    }
+                    if (entity.has('isVisible')) {
+                        box.isVisible = entity.get('isVisible');
+                    }
+                    // 加载自定义关联材质
+                    if (entity.get('material_id')) {
+                    }
+                    childAndParent(entity, box);
+                }
+                else if (entity.get('subtype') && entity.get('subtype') === 'cylinder') {
+                    // box
+                    var box = BABYLON.MeshBuilder.CreateCylinder(entity.get('name'), { height: 200, diameter: 100 }, engine_1.VeryEngine.viewScene);
+                    // var box = BABYLON.Mesh.CreateBox(entity.get('name'), 1, VeryEngine.viewScene);
+                    entity.node = box;
+                    entitiesIndex[entity.get('resource_id')] = box;
+                    box.id = entity.get('resource_id');
+                    if (entity.has('enabled')) {
+                        box.setEnabled(entity.get('enabled'));
+                    }
+                    if (entity.has('position') && entity.get('position').length === 3) {
+                        box.position = BABYLON.Vector3.FromArray(entity.get('position'));
+                    }
+                    if (entity.has('rotation') && entity.get('rotation').length === 3) {
+                        box.rotation = utility_1.Tools.eulerAngleToRadian(BABYLON.Vector3.FromArray(entity.get('rotation')));
+                    }
+                    if (entity.has('scale') && entity.get('scale').length === 3) {
+                        box.scaling = BABYLON.Vector3.FromArray(entity.get('scale'));
+                    }
+                    if (entity.has('checkCollisions')) {
+                        box.checkCollisions = entity.get('checkCollisions');
+                    }
+                    if (entity.has('pickable')) {
+                        box.isPickable = entity.get('pickable');
+                    }
+                    if (entity.has('isVisible')) {
+                        box.isVisible = entity.get('isVisible');
+                    }
+                    // 加载自定义关联材质
+                    if (entity.get('material_id')) {
+                    }
+                    childAndParent(entity, box);
+                }
                 // console.warn(box);
             }
             else if (entity.get('type') === 'mesh') {
@@ -16482,7 +19119,9 @@ var ViewportApplication = /** @class */ (function () {
                         recordRotation = meshData.rotation;
                     }
                     meshData.rotation = recordRotation;
-                    meshData.scale = entity.has('scale') && entity.get('scale') ? entity.get('scale') : meshData.scal;
+                    // console.log(meshData.name);
+                    // console.warn(meshData.rotation);
+                    meshData.scaling = entity.has('scale') && entity.get('scale') ? entity.get('scale') : meshData.scaling;
                     meshData.name = entity.has('name') && entity.get('name') ? entity.get('name') : meshData.name;
                     meshData.id = entity.has('resource_id') && entity.get('resource_id') ? entity.get('resource_id') : meshData.id;
                     meshData.isEnabled = entity.has('enabled') ? entity.get('enabled') : meshData.isEnabled;
@@ -16571,7 +19210,7 @@ var ViewportApplication = /** @class */ (function () {
     return ViewportApplication;
 }());
 exports.ViewportApplication = ViewportApplication;
-},{"../../engine":110,"../middleware/loader/babylonLoader":70,"../utility":97}],103:[function(require,module,exports){
+},{"../../engine":128,"../gizmos":55,"../global":63,"../middleware/loader/babylonLoader":80,"../utility":114}],120:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ViewportDropModel = void 0;
@@ -16972,7 +19611,7 @@ var ViewportDropModel = /** @class */ (function () {
     return ViewportDropModel;
 }());
 exports.ViewportDropModel = ViewportDropModel;
-},{"../../engine":110,"../gizmos":45,"../middleware/loader/babylonLoader":70}],104:[function(require,module,exports){
+},{"../../engine":128,"../gizmos":55,"../middleware/loader/babylonLoader":80}],121:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ViewportEntitiesObserverBinding = void 0;
@@ -17042,13 +19681,13 @@ var ViewportEntitiesObserverBinding = /** @class */ (function () {
                 // editor.call('viewport:render');
             });
             var reparent = function (child, index) {
-                console.warn('reparent : ' + child);
+                // console.warn('reparent : ' + child);
                 var childEntity = editor.call('entities:get', child);
                 if (childEntity && childEntity.node) {
                     // var oldParent = childEntity.node.parent;
                     // TODO: Light、Camera等不是TransformNode对象
                     if (childEntity.node instanceof BABYLON.TransformNode) {
-                        console.warn(childEntity.node);
+                        // console.warn(childEntity.node);
                         var absPos = BABYLON.Vector3.Zero().copyFrom(childEntity.node.getAbsolutePosition());
                         // TODO: children中的数据要删除
                         // 还有灯和摄像机怎么办
@@ -17057,9 +19696,9 @@ var ViewportEntitiesObserverBinding = /** @class */ (function () {
                         // VeryEngine.viewScene.render();
                         childEntity.node.setParent(obj.node ? obj.node : null);
                         // (<BABYLON.TransformNode>childEntity.node).parent =(obj.node ? obj.node : null);
-                        console.log(absPos);
+                        // console.log(absPos);
                         // (<BABYLON.TransformNode>childEntity.node).position = new BABYLON.Vector3(5,5,5);
-                        console.warn(childEntity.node);
+                        // console.warn(childEntity.node);
                         var localPosition = childEntity.node.position.clone();
                         var localRotation = utility_1.Tools.radianToEulerAngle(childEntity.node.rotation.clone());
                         childEntity.set('position.0', localPosition.x);
@@ -17116,7 +19755,7 @@ var ViewportEntitiesObserverBinding = /** @class */ (function () {
     return ViewportEntitiesObserverBinding;
 }());
 exports.ViewportEntitiesObserverBinding = ViewportEntitiesObserverBinding;
-},{"../middleware/loader/babylonLoader":70,"../utility":97}],105:[function(require,module,exports){
+},{"../middleware/loader/babylonLoader":80,"../utility":114}],122:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ViewportExpand = void 0;
@@ -17155,7 +19794,7 @@ var ViewportExpand = /** @class */ (function () {
     return ViewportExpand;
 }());
 exports.ViewportExpand = ViewportExpand;
-},{"../../engine":110}],106:[function(require,module,exports){
+},{"../../engine":128}],123:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ViewportInstanceCreate = void 0;
@@ -17168,7 +19807,109 @@ var ViewportInstanceCreate = /** @class */ (function () {
     return ViewportInstanceCreate;
 }());
 exports.ViewportInstanceCreate = ViewportInstanceCreate;
-},{}],107:[function(require,module,exports){
+},{}],124:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Tap = exports.ViewportTap = void 0;
+var ViewportTap = /** @class */ (function () {
+    function ViewportTap() {
+        // return;
+        var canvas = editor.call('viewport:canvas');
+        // console.warn(canvas);
+        if (!canvas) {
+            console.warn('Viewport Canvas组件没有创建成功！');
+            return;
+        }
+        var taps = [];
+        var inViewport = false;
+        editor.method('viewport:inViewport', function () {
+            return inViewport;
+        });
+        var evtMouseMove = function (evt) {
+            // console.warn('evtMouseMove');
+            var rect = canvas.element.getBoundingClientRect();
+            editor.emit('viewport:mouse:move', evt, rect);
+            // render if mouse moved within viewport
+            if (evt.clientX >= rect.left && evt.clientX <= rect.right && evt.clientY >= rect.top && evt.clientY <= rect.bottom) {
+                if (!inViewport) {
+                    inViewport = true;
+                    editor.emit('viewport:hover', true);
+                }
+            }
+            else if (inViewport) {
+                inViewport = false;
+                editor.emit('viewport:hover', false);
+            }
+        };
+        var evtMouseUp = function (evt) {
+            // console.warn('evtMouseUp');
+            var rect = canvas.element.getBoundingClientRect();
+            editor.emit('viewport:mouse:up', evt, rect);
+        };
+        // console.error(editor.call('layout.viewport').element);
+        canvas.element.addEventListener('mousedown', function (evt) {
+            // console.warn('mousedown');
+            var rect = canvas.element.getBoundingClientRect();
+            editor.emit('viewport:mouse:down', evt, rect);
+            // if (document.activeElement && document.activeElement.tagName.toLowerCase() === 'input')
+            //     document.activeElement.blur();
+            // evt.preventDefault();
+        }, false);
+        canvas.element.addEventListener('mouseover', function () {
+            // console.warn('mouseover');
+            editor.emit('viewport:hover', true);
+        }, false);
+        canvas.element.addEventListener('mouseleave', function (evt) {
+            // console.warn('mouseleave');
+            // ignore tooltip
+            var target = evt.target || evt.relatedTarget;
+            if (target && target.classList.contains('cursor-tooltip'))
+                return;
+            editor.emit('viewport:hover', false);
+        }, false);
+        var onMouseWheel = function (evt) {
+            editor.emit('viewport:mouse:wheel', evt);
+        };
+        window.addEventListener('mousemove', evtMouseMove, false);
+        window.addEventListener('dragover', evtMouseMove, false);
+        window.addEventListener('mouseup', evtMouseUp, false);
+        window.addEventListener('wheel', onMouseWheel, false);
+    }
+    return ViewportTap;
+}());
+exports.ViewportTap = ViewportTap;
+var Tap = /** @class */ (function () {
+    function Tap(evt, rect, mouse) {
+        this.x = this.lx = this.sx = evt.clientX - rect.left;
+        this.y = this.ly = this.sy = evt.clientY - rect.top;
+        this.nx = 0;
+        this.ny = 0;
+        this.move = false;
+        this.down = true;
+        this.button = evt.button;
+        this.mouse = !!mouse;
+    }
+    Tap.prototype.update = function (evt, rect) {
+        var x = evt.clientX - rect.left;
+        var y = evt.clientY - rect.top;
+        // if it's moved
+        if (this.down && !this.move && (Math.abs(this.sx - x) + Math.abs(this.sy - y)) > 8)
+            this.move = true;
+        // moving
+        if (this.move) {
+            this.nx = x - this.lx;
+            this.ny = y - this.ly;
+            this.lx = this.x;
+            this.ly = this.y;
+        }
+        // coords
+        this.x = x;
+        this.y = y;
+    };
+    return Tap;
+}());
+exports.Tap = Tap;
+},{}],125:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Viewport = void 0;
@@ -17177,6 +19918,7 @@ var engine_1 = require("../../engine");
 var toolbar_1 = require("../toolbar");
 var viewport_expand_1 = require("./viewport-expand");
 var gizmos_1 = require("../gizmos");
+var middleware_1 = require("../middleware");
 var Viewport = /** @class */ (function () {
     function Viewport() {
         var _this = this;
@@ -17188,88 +19930,54 @@ var Viewport = /** @class */ (function () {
         var engine = this._engine;
         // TODO: 设定相机
         // this._scene.clearColor = new BABYLON.Color4(49 / 255, 77 / 255, 121 / 255, 1); 
-        this._scene.clearColor = new BABYLON.Color4(116 / 255, 116 / 255, 116 / 255, 1);
-        var camera = new BABYLON.ArcRotateCamera('Default', 100, 50, 50, new BABYLON.Vector3(0, 0, 0), this._scene);
-        camera.setPosition(new BABYLON.Vector3(0, 1, -20));
-        camera.attachControl(this._canvas, true);
-        // camera.lowerBetaLimit = 0.1;
-        // camera.upperBetaLimit = (Math.PI / 2) * 0.99;
-        // camera.lowerRadiusLimit = 150;
-        // var light1 = new BABYLON.PointLight("omni", new BABYLON.Vector3(0, 50, 0), this._scene);
-        // 加载过度动画开
-        // engine.loadingScreen.hideLoadingUI();
-        // engine.displayLoadingUI();
-        // let inputMap: { [key: string]: boolean } = {};
-        // TODO: 加载scene.babylon场景文件，当前为默认
-        // 默认Editor场景，加载保存的某一个场景资源
-        // 资源的父子关系以及模型
-        /*
-        BABYLON.SceneLoader.Append('./scene/', 'scene.babylon', this._scene, function (scene) {
-          // do something with the scene
-          // 加载过度动画关
-          // engine.hideLoadingUI();
-    
-          // Keyboard events
-          var blue = scene.getMeshByName('blue')!;
-    
-          scene.actionManager = new BABYLON.ActionManager(scene);
-          scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger, function (evt) {
-            inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == 'keydown';
-          }));
-          scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyUpTrigger, function (evt) {
-            inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == 'keydown';
-          }));
-    
-    
-          // // Game/Render loop
-          scene.onBeforeRenderObservable.add(() => {
-    
-            if (inputMap['w'] || inputMap['ArrowUp']) {
-              blue.position.z -= 100 * engine.getDeltaTime() / 1000;
+        // this._scene.clearColor = new BABYLON.Color4(116 / 255, 116 / 255, 116 / 255, 1);
+        this._scene.autoClear = false;
+        // var camera = new BABYLON.ArcRotateCamera('Default', 100, 50, 50, new BABYLON.Vector3(0, 0, 0), this._scene);
+        // camera.setPosition(new BABYLON.Vector3(0, 1, -20));
+        // camera.attachControl(this._canvas, true);
+        var camera = new BABYLON.UniversalCamera('__viewportCamera__', new BABYLON.Vector3(0, 1, -20), this._scene);
+        // camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
+        camera.minZ = -800;
+        camera.maxZ = 20000;
+        this._scene.cameraToUseForPointers = camera;
+        // camera.layerMask = 0x20000000;
+        // TODO: 不同相机不同clearColor；
+        this._scene.onBeforeCameraRenderObservable.add(function (c) {
+            var engine = self._scene.getEngine();
+            var w = engine.getRenderWidth();
+            var h = engine.getRenderHeight();
+            var temp = engine_1.VeryEngine.getCamera(c);
+            if (temp) {
+                self._scene.getEngine().enableScissor(temp.camera.viewport.x * w, temp.camera.viewport.y * h, temp.camera.viewport.width * w, temp.camera.viewport.height * h);
+                self._scene.getEngine().clear(temp.clearColor, true, true, true);
             }
-            if (inputMap['a'] || inputMap['ArrowLeft']) {
-              blue.position.x += 100 * engine.getDeltaTime() / 1000;
-            }
-            if (inputMap['s'] || inputMap['ArrowDown']) {
-              blue.position.z += 100 * engine.getDeltaTime() / 1000;
-            }
-            if (inputMap['d'] || inputMap['ArrowRight']) {
-              blue.position.x -= 100 * engine.getDeltaTime() / 1000;
-            }
-          })
-    
-          // sphere
-          var sphere = scene.getMeshByName('sphere')!;
-          sphere.actionManager = new BABYLON.ActionManager(scene);
-    
-          sphere.actionManager.registerAction(new BABYLON.SetValueAction(
-            { trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger, parameter: blue },
-            sphere, 'scaling', new BABYLON.Vector3(2, 2, 2)));
-    
-          sphere.actionManager.registerAction(new BABYLON.SetValueAction(
-            { trigger: BABYLON.ActionManager.OnIntersectionExitTrigger, parameter: blue }
-            , sphere, 'scaling', new BABYLON.Vector3(1, 1, 1)));
-    
-          let i: number = 0;
-    
-          // WebSocket 测试
-          // scene.onKeyboardObservable.add( kbInfo => {
-          //   if(kbInfo.type === BABYLON.KeyboardEventTypes.KEYUP) {
-          //     if(kbInfo.event.keyCode === 65) {
-          //       // editor.call('send', '按下次数：' + (i++) + '!');
-          //       editor.call('send', '{'data': {'a': 123, 'b': 'qwe'}}');
-          //     }
-          //   }
-          // });
-    
         });
-        */
+        // console.warn(camera);
+        var viewCamera = new middleware_1.VeryCamera(camera, this._scene, this._canvas);
+        editor.method('camera:viewport', function () {
+            return viewCamera;
+        });
+        this._camera = viewCamera;
+        engine_1.VeryEngine.viewCamera = viewCamera;
+        this._camera.orthoSize = 0.5;
+        this._scene.activeCameras.push(camera);
+        // TODO：设置clearColor
+        viewCamera.clearColor = new BABYLON.Color4(116 / 255, 116 / 255, 116 / 255, 1);
+        engine_1.VeryEngine.addCamera(viewCamera);
+        camera.attachControl(this._canvas, true);
         this._engine.runRenderLoop(function () {
             if (_this._canvas.width !== _this._canvas.clientWidth) {
                 _this._engine.resize();
             }
+            // this._engine.clear()
             if (_this._scene) {
-                if (_this._scene.activeCamera) {
+                if (_this._scene.activeCamera || (_this._scene.activeCameras && _this._scene.activeCameras.length > 0)) {
+                    // 需要用的时候，乘以0.001，当前单位是毫秒
+                    editor.emit('viewport:update', _this._engine.getDeltaTime());
+                    // 正交相机画面比例控制
+                    for (var i = 0, len = engine_1.VeryEngine.cameras.length; i < len; i++) {
+                        engine_1.VeryEngine.cameras[i].resize(true);
+                    }
                     _this._scene.render();
                 }
             }
@@ -17308,7 +20016,9 @@ var Viewport = /** @class */ (function () {
         });
         this._scene = new BABYLON.Scene(this._engine);
         engine_1.VeryEngine.viewScene = this._scene;
-        this._scene.clearColor = new BABYLON.Color4(0, 0, 0, 1);
+        this._scene.preventDefaultOnPointerDown = false;
+        this._scene.preventDefaultOnPointerUp = false;
+        // this._scene.clearColor = new BABYLON.Color4(0, 0, 0, 1);
         gizmos_1.GizmosCenter.init(this._scene);
     };
     Viewport.prototype.expandControl = function () {
@@ -17318,7 +20028,7 @@ var Viewport = /** @class */ (function () {
     return Viewport;
 }());
 exports.Viewport = Viewport;
-},{"../../engine":110,"../../ui":130,"../gizmos":45,"../toolbar":80,"./viewport-expand":105}],108:[function(require,module,exports){
+},{"../../engine":128,"../../ui":148,"../gizmos":55,"../middleware":79,"../toolbar":95,"./viewport-expand":122}],126:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Application = void 0;
@@ -17328,7 +20038,7 @@ var Application = /** @class */ (function () {
     return Application;
 }());
 exports.Application = Application;
-},{}],109:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BabylonEngine = void 0;
@@ -17338,7 +20048,7 @@ var BabylonEngine = /** @class */ (function () {
     return BabylonEngine;
 }());
 exports.BabylonEngine = BabylonEngine;
-},{}],110:[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -17354,19 +20064,44 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./babylon-engine"), exports);
 __exportStar(require("./very-engine"), exports);
 __exportStar(require("./application"), exports);
-},{"./application":108,"./babylon-engine":109,"./very-engine":111}],111:[function(require,module,exports){
+},{"./application":126,"./babylon-engine":127,"./very-engine":129}],129:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VeryEngine = void 0;
+var editor_1 = require("../editor");
 var VeryEngine = /** @class */ (function () {
     // public static 
     function VeryEngine() {
     }
+    VeryEngine.addCamera = function (camera) {
+        VeryEngine.cameras.push(camera);
+        VeryEngine.cameraDic[camera.id] = camera;
+    };
+    VeryEngine.getCamera = function (camera) {
+        if (camera.parent && camera.parent instanceof editor_1.VeryCamera) {
+            if (camera.parent.id in VeryEngine.cameraDic) {
+                return VeryEngine.cameraDic[camera.parent.id];
+            }
+            else {
+                return null;
+            }
+        }
+        else {
+            for (var i = 0, len = VeryEngine.cameras.length; i < len; i++) {
+                if (VeryEngine.cameras[i].camera === camera) {
+                    return VeryEngine.cameras[i];
+                }
+            }
+        }
+        return null;
+    };
+    VeryEngine.cameras = [];
+    VeryEngine.cameraDic = {};
     return VeryEngine;
 }());
 exports.VeryEngine = VeryEngine;
 // export veryconfig
-},{}],112:[function(require,module,exports){
+},{"../editor":72}],130:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -17383,7 +20118,7 @@ __exportStar(require("./lib"), exports);
 __exportStar(require("./editor"), exports);
 __exportStar(require("./ui"), exports);
 __exportStar(require("./engine"), exports);
-},{"./editor":62,"./engine":110,"./lib":114,"./ui":130}],113:[function(require,module,exports){
+},{"./editor":72,"./engine":128,"./lib":132,"./ui":148}],131:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventHandle = exports.Events = void 0;
@@ -17527,7 +20262,7 @@ var EventHandle = /** @class */ (function () {
     return EventHandle;
 }());
 exports.EventHandle = EventHandle;
-},{}],114:[function(require,module,exports){
+},{}],132:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -17544,7 +20279,7 @@ __exportStar(require("./events"), exports);
 __exportStar(require("./observer"), exports);
 __exportStar(require("./observer-list"), exports);
 __exportStar(require("./observer-sync"), exports);
-},{"./events":113,"./observer":117,"./observer-list":115,"./observer-sync":116}],115:[function(require,module,exports){
+},{"./events":131,"./observer":135,"./observer-list":133,"./observer-sync":134}],133:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -17818,7 +20553,7 @@ var ObserverList = /** @class */ (function (_super) {
     return ObserverList;
 }(events_1.Events));
 exports.ObserverList = ObserverList;
-},{"./events":113}],116:[function(require,module,exports){
+},{"./events":131}],134:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -17973,7 +20708,7 @@ var ObserverSync = /** @class */ (function (_super) {
     return ObserverSync;
 }(events_1.Events));
 exports.ObserverSync = ObserverSync;
-},{"./events":113}],117:[function(require,module,exports){
+},{"./events":131}],135:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -18493,7 +21228,7 @@ var Observer = /** @class */ (function (_super) {
     return Observer;
 }(events_1.Events));
 exports.Observer = Observer;
-},{"./events":113}],118:[function(require,module,exports){
+},{"./events":131}],136:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -18531,11 +21266,11 @@ var search = new editor_1.Search();
 var hierarchy = new editor_1.HierarchyKeeper();
 // 资源菜单
 var assetsKeeper = new editor_1.AssetsKeeper();
-// 初始化全局信息类
-var initializeAfter = new editor_1.InitializeAfter();
 // 编辑视窗
 var viewport = new editor_1.Viewport();
 engine_1.VeryEngine.viewport = viewport;
+// 初始化全局信息类
+var initializeAfter = new editor_1.InitializeAfter();
 // 初始数据
 var initializeData = new editor_1.InitializeData();
 // TODO
@@ -18599,7 +21334,7 @@ editor.call('method', 123);
 // for(let i: number = 0; i < parent.childNodes.length; i++) {
 //   console.log(parent.childNodes[i] instanceof HTMLElement);
 // }
-},{"./editor":62,"./engine":110,"./index":112}],119:[function(require,module,exports){
+},{"./editor":72,"./engine":128,"./index":130}],137:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -18662,7 +21397,7 @@ var Bubble = /** @class */ (function (_super) {
     return Bubble;
 }(element_1.Element));
 exports.Bubble = Bubble;
-},{"./element":126}],120:[function(require,module,exports){
+},{"./element":144}],138:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -18734,7 +21469,7 @@ var Button = /** @class */ (function (_super) {
     return Button;
 }(element_1.Element));
 exports.Button = Button;
-},{"./element":126}],121:[function(require,module,exports){
+},{"./element":144}],139:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -18773,7 +21508,7 @@ var Canvas = /** @class */ (function (_super) {
             if (this.element.width === val)
                 return;
             this.element.width = val;
-            this.emit("resize", this.element.width, this.element.height);
+            this.emit('resize', this.element.width, this.element.height);
         },
         enumerable: false,
         configurable: true
@@ -18788,7 +21523,7 @@ var Canvas = /** @class */ (function (_super) {
             if (this.element.height === val)
                 return;
             this.element.height = val;
-            this.emit("resize", this.element.width, this.element.height);
+            this.emit('resize', this.element.width, this.element.height);
         },
         enumerable: false,
         configurable: true
@@ -18802,13 +21537,13 @@ var Canvas = /** @class */ (function (_super) {
             return;
         this.element.width = width;
         this.element.height = height;
-        this.emit("resize", this.element.width, this.element.height);
+        this.emit('resize', this.element.width, this.element.height);
     };
     ;
     return Canvas;
 }(element_1.Element));
 exports.Canvas = Canvas;
-},{"./element":126}],122:[function(require,module,exports){
+},{"./element":144}],140:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -18901,7 +21636,7 @@ var Checkbox = /** @class */ (function (_super) {
     return Checkbox;
 }(element_1.Element));
 exports.Checkbox = Checkbox;
-},{"./element":126}],123:[function(require,module,exports){
+},{"./element":144}],141:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -18940,7 +21675,7 @@ var Code = /** @class */ (function (_super) {
     return Code;
 }(container_element_1.ContainerElement));
 exports.Code = Code;
-},{"./container-element":125}],124:[function(require,module,exports){
+},{"./container-element":143}],142:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -19168,7 +21903,7 @@ var ColorField = /** @class */ (function (_super) {
     return ColorField;
 }(element_1.Element));
 exports.ColorField = ColorField;
-},{"./element":126}],125:[function(require,module,exports){
+},{"./element":144}],143:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -19423,7 +22158,7 @@ var ContainerElement = /** @class */ (function (_super) {
     return ContainerElement;
 }(element_1.Element));
 exports.ContainerElement = ContainerElement;
-},{"./element":126}],126:[function(require,module,exports){
+},{"./element":144}],144:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -19765,7 +22500,7 @@ var Element = /** @class */ (function (_super) {
     return Element;
 }(lib_1.Events));
 exports.Element = Element;
-},{"../lib":114}],127:[function(require,module,exports){
+},{"../lib":132}],145:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -19873,7 +22608,7 @@ var GridItemArgs = /** @class */ (function () {
     return GridItemArgs;
 }());
 exports.GridItemArgs = GridItemArgs;
-},{"./element":126}],128:[function(require,module,exports){
+},{"./element":144}],146:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -20040,7 +22775,7 @@ var Grid = /** @class */ (function (_super) {
     return Grid;
 }(container_element_1.ContainerElement));
 exports.Grid = Grid;
-},{"../editor":62,"./container-element":125}],129:[function(require,module,exports){
+},{"../editor":72,"./container-element":143}],147:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -20171,7 +22906,7 @@ var ImageField = /** @class */ (function (_super) {
     return ImageField;
 }(element_1.Element));
 exports.ImageField = ImageField;
-},{"./element":126}],130:[function(require,module,exports){
+},{"./element":144}],148:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -20213,7 +22948,7 @@ __exportStar(require("./image-field"), exports);
 __exportStar(require("./number-field"), exports);
 __exportStar(require("./slider"), exports);
 __exportStar(require("./select-field"), exports);
-},{"./bubble":119,"./button":120,"./canvas":121,"./checkbox":122,"./code":123,"./color-field":124,"./container-element":125,"./element":126,"./grid":128,"./grid-item":127,"./image-field":129,"./label":131,"./link":132,"./list":134,"./list-item":133,"./menu":136,"./menu-item":135,"./number-field":137,"./overlay":138,"./panel":139,"./progress":140,"./select-field":141,"./slider":142,"./text-field":143,"./textarea-field":144,"./tooltip":145,"./top/index":146,"./tree":151,"./tree-item":150}],131:[function(require,module,exports){
+},{"./bubble":137,"./button":138,"./canvas":139,"./checkbox":140,"./code":141,"./color-field":142,"./container-element":143,"./element":144,"./grid":146,"./grid-item":145,"./image-field":147,"./label":149,"./link":150,"./list":152,"./list-item":151,"./menu":154,"./menu-item":153,"./number-field":155,"./overlay":156,"./panel":157,"./progress":158,"./select-field":159,"./slider":160,"./text-field":161,"./textarea-field":162,"./tooltip":163,"./top/index":164,"./tree":169,"./tree-item":168}],149:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -20322,7 +23057,7 @@ var Label = /** @class */ (function (_super) {
     return Label;
 }(element_1.Element));
 exports.Label = Label;
-},{"./element":126}],132:[function(require,module,exports){
+},{"./element":144}],150:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LinkSchema = exports.Link = void 0;
@@ -20358,7 +23093,7 @@ var LinkSchema = /** @class */ (function () {
     return LinkSchema;
 }());
 exports.LinkSchema = LinkSchema;
-},{}],133:[function(require,module,exports){
+},{}],151:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -20438,7 +23173,7 @@ var ListItem = /** @class */ (function (_super) {
     return ListItem;
 }(element_1.Element));
 exports.ListItem = ListItem;
-},{"./element":126}],134:[function(require,module,exports){
+},{"./element":144}],152:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -20576,7 +23311,7 @@ var List = /** @class */ (function (_super) {
     return List;
 }(container_element_1.ContainerElement));
 exports.List = List;
-},{"../editor":62,"./container-element":125}],135:[function(require,module,exports){
+},{"../editor":72,"./container-element":143}],153:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -20755,7 +23490,7 @@ var MenuItem = /** @class */ (function (_super) {
     return MenuItem;
 }(container_element_1.ContainerElement));
 exports.MenuItem = MenuItem;
-},{"./container-element":125}],136:[function(require,module,exports){
+},{"./container-element":143}],154:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -20979,7 +23714,7 @@ var Menu = /** @class */ (function (_super) {
     return Menu;
 }(container_element_1.ContainerElement));
 exports.Menu = Menu;
-},{"./container-element":125,"./menu-item":135}],137:[function(require,module,exports){
+},{"./container-element":143,"./menu-item":153}],155:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -21197,7 +23932,7 @@ var NumberField = /** @class */ (function (_super) {
     return NumberField;
 }(element_1.Element));
 exports.NumberField = NumberField;
-},{"./element":126}],138:[function(require,module,exports){
+},{"./element":144}],156:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -21309,7 +24044,7 @@ var Overlay = /** @class */ (function (_super) {
     return Overlay;
 }(container_element_1.ContainerElement));
 exports.Overlay = Overlay;
-},{"./container-element":125}],139:[function(require,module,exports){
+},{"./container-element":143}],157:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -21678,7 +24413,7 @@ var Panel = /** @class */ (function (_super) {
     return Panel;
 }(container_element_1.ContainerElement));
 exports.Panel = Panel;
-},{"./container-element":125}],140:[function(require,module,exports){
+},{"./container-element":143}],158:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -21815,7 +24550,7 @@ var Progress = /** @class */ (function (_super) {
     return Progress;
 }(element_1.Element));
 exports.Progress = Progress;
-},{"./element":126}],141:[function(require,module,exports){
+},{"./element":144}],159:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -21920,6 +24655,7 @@ var SelectField = /** @class */ (function (_super) {
                 this._oldValue = this._value;
                 if (this.options[this._value]) {
                     this.elementValue.textContent = this.options[this._value];
+                    // console.warn(this._value);
                     this.optionElements[this._value].classList.add('selected');
                 }
                 else {
@@ -21953,7 +24689,8 @@ var SelectField = /** @class */ (function (_super) {
             return;
         if (target && target.uiElement && target.uiElement === this && evt !== undefined)
             this._onOptionSelect.call(target, evt);
-        this.close();
+        // console.log(target.textContent);
+        this.close(target.textContent);
     };
     ;
     SelectField.prototype._onMouseDown = function (evt) {
@@ -22090,6 +24827,7 @@ var SelectField = /** @class */ (function (_super) {
         if (this.optionElements[this._value]) {
             top -= this.optionElements[this._value].offsetTop;
             top += (Math.round(rect.height) - this.optionElements[this._value].clientHeight) / 2;
+            top = rect.top + rect.height + 3;
         }
         // limit to bottom / top of screen
         if (top + this.elementOptions.clientHeight > window.innerHeight) {
@@ -22098,7 +24836,7 @@ var SelectField = /** @class */ (function (_super) {
         else if (top < 0) {
             top = 0;
         }
-        // top
+        // top 
         this.elementOptions.style.top = Math.max(0, top) + 'px';
         // left
         this.elementOptions.style.left = left + 'px';
@@ -22130,7 +24868,8 @@ var SelectField = /** @class */ (function (_super) {
         this.emit('open');
     };
     ;
-    SelectField.prototype.close = function () {
+    SelectField.prototype.close = function (title) {
+        if (title === void 0) { title = ''; }
         if ((this.disabled && !this.disabledClick) || !this.element.classList.contains('active'))
             return;
         window.removeEventListener('mouseup', this.evtMouseUp.bind(this));
@@ -22146,7 +24885,7 @@ var SelectField = /** @class */ (function (_super) {
         this.elementOptions.style.left = '';
         this.elementOptions.style.width = '';
         this.elementOptions.style.height = '';
-        this.emit('close');
+        this.emit('close', title);
         this.evtTouchSecond = false;
     };
     ;
@@ -22179,17 +24918,21 @@ var SelectField = /** @class */ (function (_super) {
         for (var i = 0; i < this.optionsKeys.length; i++) {
             if (!this.options.hasOwnProperty(this.optionsKeys[i]))
                 continue;
+            // 用|分隔，前面是name，后面是class
+            var infos = this.options[this.optionsKeys[i]].split('|');
+            this.options[this.optionsKeys[i]] = infos[0];
             var element = document.createElement('li');
-            element.textContent = this.options[this.optionsKeys[i]];
+            element.textContent = infos[0];
             element.uiElement = this;
             element.uiValue = this.optionsKeys[i];
             element.addEventListener('touchstart', this._onOptionSelect.bind(this));
             element.addEventListener('mouseover', this._onOptionHover.bind(this));
             element.addEventListener('mouseout', this._onOptionOut.bind(this));
-            if (this._optionClassNamePrefix) {
-                element.classList.add(this._optionClassNamePrefix + '-' + element.textContent.toLowerCase());
+            if (this._optionClassNamePrefix && infos.length > 1) {
+                element.classList.add(this._optionClassNamePrefix + '-' + infos[1].toLowerCase());
             }
             this.elementOptions.appendChild(element);
+            // console.log(this.optionsKeys[i]);
             this.optionElements[this.optionsKeys[i]] = element;
         }
     };
@@ -22221,7 +24964,7 @@ var SelectField = /** @class */ (function (_super) {
     return SelectField;
 }(element_1.Element));
 exports.SelectField = SelectField;
-},{"./element":126}],142:[function(require,module,exports){
+},{"./element":144}],160:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -22474,7 +25217,7 @@ var Slider = /** @class */ (function (_super) {
     return Slider;
 }(element_1.Element));
 exports.Slider = Slider;
-},{"./element":126}],143:[function(require,module,exports){
+},{"./element":144}],161:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -22510,6 +25253,7 @@ var TextField = /** @class */ (function (_super) {
             _this.value = value;
         _this.elementInput.addEventListener('change', _this._onChange.bind(_this), false);
         _this.elementInput.addEventListener('keydown', _this._onKeyDown.bind(_this), false);
+        _this.elementInput.addEventListener('click', _this._onClick.bind(_this), false);
         _this.elementInput.addEventListener('contextmenu', _this._onFullSelect.bind(_this), false);
         _this.evtKeyChange = false;
         _this.ignoreChange = false;
@@ -22606,8 +25350,14 @@ var TextField = /** @class */ (function (_super) {
         if (!this._link)
             this.emit('change', this.value);
     };
+    TextField.prototype._onClick = function (evt) {
+        // console.log('click');
+        // this.elementInput.blur();
+        // this.elementInput.focus();
+    };
     TextField.prototype._onKeyDown = function (evt) {
         if (evt.keyCode === 27) {
+            // console.warn(evt.key);
             evt.target.blur();
         }
         else if (this.blurOnEnter && evt.keyCode === 13) {
@@ -22655,7 +25405,7 @@ var TextField = /** @class */ (function (_super) {
     return TextField;
 }(element_1.Element));
 exports.TextField = TextField;
-},{"./element":126}],144:[function(require,module,exports){
+},{"./element":144}],162:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -22838,7 +25588,7 @@ var TextAreaField = /** @class */ (function (_super) {
     return TextAreaField;
 }(element_1.Element));
 exports.TextAreaField = TextAreaField;
-},{"./element":126}],145:[function(require,module,exports){
+},{"./element":144}],163:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -23101,7 +25851,7 @@ var Tooltip = /** @class */ (function (_super) {
     return Tooltip;
 }(container_element_1.ContainerElement));
 exports.Tooltip = Tooltip;
-},{"./container-element":125}],146:[function(require,module,exports){
+},{"./container-element":143}],164:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -23117,7 +25867,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./top-element"), exports);
 __exportStar(require("./top-element-container"), exports);
 __exportStar(require("./top-element-panel"), exports);
-},{"./top-element":149,"./top-element-container":147,"./top-element-panel":148}],147:[function(require,module,exports){
+},{"./top-element":167,"./top-element-container":165,"./top-element-panel":166}],165:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -23571,7 +26321,7 @@ var TopElementContainer = /** @class */ (function (_super) {
     return TopElementContainer;
 }(top_element_1.TopElement));
 exports.TopElementContainer = TopElementContainer;
-},{"./top-element":149}],148:[function(require,module,exports){
+},{"./top-element":167}],166:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -23871,7 +26621,7 @@ var TopElementPanel = /** @class */ (function (_super) {
     return TopElementPanel;
 }(top_element_container_1.TopElementContainer));
 exports.TopElementPanel = TopElementPanel;
-},{"./top-element-container":147}],149:[function(require,module,exports){
+},{"./top-element-container":165}],167:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -24189,7 +26939,7 @@ var TopElement = /** @class */ (function (_super) {
     return TopElement;
 }(lib_1.Events));
 exports.TopElement = TopElement;
-},{"../../lib":114}],150:[function(require,module,exports){
+},{"../../lib":132}],168:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -24592,7 +27342,6 @@ var TreeItem = /** @class */ (function (_super) {
             selectedItem.selected = true;
         }
     };
-    // TODO:link to the observer 
     TreeItem.prototype._onRename = function (select) {
         if (select) {
             this.tree.clear();
@@ -24600,13 +27349,13 @@ var TreeItem = /** @class */ (function (_super) {
         }
         var self = this;
         this.class.add('rename');
-        console.log('tree item rename');
+        // console.log('tree item rename');
         // add remaning field
         var field = new text_field_1.TextField();
         field.parent = this;
         field.renderChanges = false;
         field.value = this.text;
-        field.elementInput.readOnly = !this.tree.allowRenaming;
+        // field.elementInput.readOnly = !this.tree!.allowRenaming;
         field.elementInput.addEventListener('blur', function () {
             field.destroy();
             self.class.remove('rename');
@@ -24620,10 +27369,10 @@ var TreeItem = /** @class */ (function (_super) {
         field.on('change', function (value) {
             value = value.trim();
             if (value) {
-                // TODO
-                // if (self.entity) {
-                //   self.entity.set('name', value);
-                // }
+                // 关联observer
+                if (self.entity) {
+                    self.entity.set('name', value);
+                }
                 self.emit('rename', value);
             }
             field.destroy();
@@ -24750,7 +27499,7 @@ var TreeItem = /** @class */ (function (_super) {
     return TreeItem;
 }(element_1.Element));
 exports.TreeItem = TreeItem;
-},{"./element":126,"./text-field":143,"./tree":151}],151:[function(require,module,exports){
+},{"./element":144,"./text-field":161,"./tree":169}],169:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -24892,7 +27641,7 @@ var Tree = /** @class */ (function (_super) {
         }
         else if (Tree._shift && Tree._shift() && this._selected.length) {
             // shift按住以后，往上往下都可进行选择，不断添加选择项，不减少
-            console.log('shift按钮');
+            //   console.log('shift按钮')
             var from = this._selected[this._selected.length - 1];
             var to = item;
             var up = [];
@@ -25321,6 +28070,6 @@ var Tree = /** @class */ (function (_super) {
     return Tree;
 }(container_element_1.ContainerElement));
 exports.Tree = Tree;
-},{"../editor":62,"./container-element":125,"./tree-item":150}]},{},[118])
+},{"../editor":72,"./container-element":143,"./tree-item":168}]},{},[136])
 
 //# sourceMappingURL=vreditor.js.map

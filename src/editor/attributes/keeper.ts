@@ -4,6 +4,7 @@ import { AttributesEntity } from "./attributes-entity";
 import { AttributesAssets } from "./attributes-assets";
 import { AttributeHistory } from "./attributes-history";
 import { AttributeAssetsTexture } from "./assets/attributes-assets-texture";
+import { AttributeComponentCamera } from "./components/attributes-component-camera";
 
 export class AttributesKeeper {
     public constructor() {
@@ -19,6 +20,8 @@ export class AttributesKeeper {
         let attributesAsset = new AttributesAssets();
 
         let attributesAssetsTexture = new AttributeAssetsTexture();
+
+        new AttributeComponentCamera();
 
     }
 }

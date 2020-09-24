@@ -14,6 +14,7 @@ import { Gizmo } from "./gizmo";
 
 // import "../Meshes/Builders/linesBuilder";
 import { RotationGizmo } from "./rotationGizmo";
+import { UtilityLayerRenderer } from "./UtilityLayerRenderer";
 
 /**
  * Single plane rotation gizmo
@@ -47,7 +48,7 @@ export class PlaneRotationGizmo extends Gizmo {
      * @param useEulerRotation Use and update Euler angle instead of quaternion
      * @param thickness display gizmo axis thickness
      */
-    constructor(planeNormal: BABYLON.Vector3, color: BABYLON.Color3 = BABYLON.Color3.Gray(), gizmoLayer: BABYLON.UtilityLayerRenderer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer, tessellation = 32, parent: Nullable<RotationGizmo> = null, useEulerRotation = false, thickness: number = 1) {
+    constructor(planeNormal: BABYLON.Vector3, color: BABYLON.Color3 = BABYLON.Color3.Gray(), gizmoLayer: UtilityLayerRenderer = UtilityLayerRenderer.DefaultUtilityLayer, tessellation = 32, parent: Nullable<RotationGizmo> = null, useEulerRotation = false, thickness: number = 1) {
         super(gizmoLayer);
         this._parent = parent;
         // Create Material

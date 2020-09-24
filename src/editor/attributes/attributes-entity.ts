@@ -1,4 +1,4 @@
-import { Panel, Button, Menu, MenuItem } from '../../ui';
+import { Panel, Button, Menu, MenuItem, Label } from '../../ui';
 import { Observer } from '../../lib';
 
 export class AttributesEntity {
@@ -14,44 +14,129 @@ export class AttributesEntity {
             return panelComponents;
         });
 
-        // add component menu
-        // var menuAddComponent = new Menu();
-        // var components = editor.call('components:schema');
-        // var list = editor.call('components:list');
-        // for (var i = 0; i < list.length; i++) {
-        //     menuAddComponent.append(new MenuItem({
-        //         text: components[list[i]].$title,
-        //         value: list[i]
-        //     }));
-        // }
-        // menuAddComponent.on('open', function () {
-        //     var items = editor.call('selector:items');
+        editor.method('attributes:entity:addComponentPanel', function (args: any) {
+            var title = args.title;
+            var name = args.name;
+            var entities = args.entities;
+            var events: any = [];
 
-        //     var legacyAudio = editor.call('settings:project').get('useLegacyAudio');
-        //     for (var i = 0; i < list.length; i++) {
-        //         var different = false;
-        //         var disabled = items[0].has('components.' + list[i]);
+            // panel
+            var panel = editor.call('attributes:addPanel', {
+                parent: panelComponents,
+                name: title
+            });
+            panel.class.add('component', 'entity', name);
+            // reference
+            editor.call('attributes:reference:' + name + ':attach', panel, panel.headerElementTitle);
 
-        //         for (var n = 1; n < items.length; n++) {
-        //             if (disabled !== items[n].has('components.' + list[i])) {
-        //                 var different = true;
-        //                 break;
-        //             }
-        //         }
-        //         menuAddComponent.findByPath([list[i]])!.disabled = different ? false : disabled;
+            // show/hide panel
+            var checkingPanel : boolean;
+            var checkPanel = function () {
+                checkingPanel = false;
 
-        //         if (list[i] === 'audiosource')
-        //             menuAddComponent.findByPath([list[i]])!.hidden = !legacyAudio;
-        //     }
-        // });
-        // menuAddComponent.on('select', function (path) {
-        //     var items = editor.call('selector:items');
-        //     var component = path[0];
-        //     editor.call('entities:addComponent', items, component);
-        // });
-        // editor.call('layout.root').append(menuAddComponent);
+                var show = entities[0].has('components.' + name);
+                for (var i = 1; i < entities.length; i++) {
+                    if (show !== entities[i].has('components.' + name)) {
+                        show = false;
+                        break;
+                    }
+                }
 
+                panel.disabled = !show;
+                panel.hidden = !show;
+            };
+            var queueCheckPanel = function () {
+                if (checkingPanel)
+                    return;
 
+                checkingPanel = true;
+                setTimeout(checkPanel);
+            }
+            checkPanel();
+            for (var i = 0; i < entities.length; i++) {
+                events.push(entities[i].on('components.' + name + ':set', queueCheckPanel));
+                events.push(entities[i].on('components.' + name + ':unset', queueCheckPanel));
+            }
+            panel.once('destroy', function () {
+                for (var i = 0; i < entities.length; i++)
+                    events[i].unbind();
+            });
+
+            // remove
+            // var fieldRemove = new Button();
+
+            // fieldRemove.hidden = !editor.call('permissions:write');
+            // events.push(editor.on('permissions:writeState', function (state: boolean) {
+            //     fieldRemove.hidden = !state;
+            // }));
+
+            // fieldRemove.class!.add('component-remove');
+            // fieldRemove.on('click', function () {
+            //     var records: any = [];
+
+            //     for (var i = 0; i < entities.length; i++) {
+            //         records.push({
+            //             get: entities[i].history._getItemFn,
+            //             value: entities[i].get('components.' + name)
+            //         });
+
+            //         entities[i].history.enabled = false;
+            //         entities[i].unset('components.' + name);
+            //         entities[i].history.enabled = true;
+            //     }
+
+                // editor.call('history:add', {
+                //     name: 'entities.set[components.' + name + ']',
+                //     undo: function () {
+                //         for (var i = 0; i < records.length; i++) {
+                //             var item = records[i].get();
+                //             if (!item)
+                //                 continue;
+
+                //             item.history.enabled = false;
+                //             item.set('components.' + name, records[i].value);
+                //             item.history.enabled = true;
+                //         }
+                //     },
+                //     redo: function () {
+                //         for (var i = 0; i < records.length; i++) {
+                //             var item = records[i].get();
+                //             if (!item)
+                //                 continue;
+
+                //             item.history.enabled = false;
+                //             item.unset('components.' + name);
+                //             item.history.enabled = true;
+                //         }
+                //     }
+                // });
+            // });
+            // panel.headerAppend(fieldRemove);
+
+            // enable/disable
+            var fieldEnabled = editor.call('attributes:addField', {
+                panel: panel,
+                type: 'checkbox',
+                link: entities,
+                path: 'components.' + name + '.enabled'
+            });
+            fieldEnabled.class.remove('tick');
+            fieldEnabled.class.add('component-toggle');
+            fieldEnabled.element.parentNode.removeChild(fieldEnabled.element);
+            panel.headerAppend(fieldEnabled);
+
+            // toggle-label
+            var labelEnabled = new Label();
+            labelEnabled.renderChanges = false;
+            labelEnabled.class!.add('component-toggle-label');
+            panel.headerAppend(labelEnabled);
+            labelEnabled.text = fieldEnabled.value ? 'On' : 'Off';
+            fieldEnabled.on('change', function (value: any) {
+                labelEnabled.text = value ? 'On' : 'Off';
+            });
+
+            return panel;
+        });
 
 
 
@@ -275,6 +360,8 @@ export class AttributesEntity {
             toggleFields(entities);
 
             onInspect(entities);
+
+            console.log('entity finished');
         });
 
         editor.on('attributes:clear', function () {

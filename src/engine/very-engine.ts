@@ -1,4 +1,4 @@
-import { Viewport } from "../editor";
+import { VeryCamera, Viewport } from "../editor";
 import { Canvas, Panel, Tree, Grid, TopElementContainer, TopElementPanel } from "../ui";
 import { Database } from "../editor/middleware/offline/database";
 
@@ -10,8 +10,6 @@ export class VeryEngine {
     public static hierarchy: TopElementPanel;
     public static assets: TopElementPanel;
     public static attributes: TopElementPanel;
-    
-
 
 
     // public static viewPanel: Panel;
@@ -30,6 +28,8 @@ export class VeryEngine {
     public static viewCanvasElement: HTMLCanvasElement;
     public static viewEngine: BABYLON.Engine;
     public static viewScene: BABYLON.Scene;
+    public static viewCamera: VeryCamera;
+    // public static viewCamera: VeryCamera;
 
     // assets
     public static assetsGrid: Grid;
@@ -38,6 +38,8 @@ export class VeryEngine {
     // TODO
     public static database: Database;
 
+    public static cameras: VeryCamera[] = [];
+    public static cameraDic: { [key: string]: VeryCamera } = {};
 
     // public static 
 
@@ -45,6 +47,28 @@ export class VeryEngine {
 
     }
 
+
+    public static addCamera(camera: VeryCamera): void {
+        VeryEngine.cameras.push(camera);
+        VeryEngine.cameraDic[camera.id] = camera;
+    }
+
+    public static getCamera(camera: BABYLON.Camera): Nullable<VeryCamera> {
+        if (camera.parent && camera.parent instanceof VeryCamera) {
+            if (camera.parent.id in VeryEngine.cameraDic ) {
+                return VeryEngine.cameraDic[camera.parent.id];
+            } else {
+                return null;
+            }
+        } else {
+            for (let i = 0, len = VeryEngine.cameras.length; i < len; i++) {
+                if (VeryEngine.cameras[i].camera === camera) {
+                    return VeryEngine.cameras[i];
+                }
+            }
+        }
+        return null;
+    }
 
 }
 

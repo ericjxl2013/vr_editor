@@ -225,7 +225,7 @@
   > .ui-button.remove,
 .ui-checkbox.tick:after,
 .ui-checkbox.tick.checked:hover:after,
-.ui-panel.viewport > .content > .camera-preview > .pin,
+.ui-panel.viewport > .camera-preview > .pin,
 .ui-tree.hierarchy .ui-tree-item > .title > .icon:after,
 .ui-grid.assets > .ui-grid-item.type-bundle > .confirm:after,
 .ui-grid.assets > .ui-grid-item.unused > .label:before,
@@ -787,7 +787,7 @@
   > .ui-button.remove,
 .ui-checkbox.tick:after,
 .ui-checkbox.tick.checked:hover:after,
-.ui-panel.viewport > .content > .camera-preview > .pin,
+.ui-panel.viewport > .camera-preview > .pin,
 .ui-tree.hierarchy .ui-tree-item > .title > .icon:after,
 .ui-grid.assets > .ui-grid-item.type-bundle > .confirm:after,
 .ui-grid.assets > .ui-grid-item.unused > .label:before,
@@ -4368,25 +4368,27 @@ body {
   content: "\E133";
   color: #2c393c;
 }
-.ui-panel.viewport > .content > .camera-preview {
+.pcui-element.viewport > .camera-preview {
   display: none;
   position: absolute;
   top: 41px;
   left: 4px;
-  width: 256px;
-  height: 196px;
+  /* width: 256px;
+  height: 196px; */
+  width: 440px;
+  height: 246px;
   border: 2px solid #fff;
 }
-.ui-panel.viewport > .content > .camera-preview.active {
+.pcui-element.viewport > .camera-preview.active {
   display: block;
 }
-.ui-panel.viewport > .content > .camera-preview.clickable {
+.pcui-element.viewport > .camera-preview.clickable {
   cursor: pointer;
 }
-.ui-panel.viewport > .content > .camera-preview.clickable:hover {
+.pcui-element.viewport > .camera-preview.clickable:hover {
   border-color: #f60;
 }
-.ui-panel.viewport > .content > .camera-preview > .pin {
+.pcui-element.viewport > .camera-preview > .pin {
   position: absolute;
   top: 0;
   right: 0;
@@ -4400,11 +4402,11 @@ body {
   color: rgba(255, 255, 255, 0.75);
   background-color: rgba(41, 53, 56, 0.5);
 }
-.ui-panel.viewport > .content > .camera-preview > .pin.active {
+.pcui-element.viewport > .camera-preview > .pin.active {
   color: #f60;
   background-color: transparent;
 }
-.ui-panel.viewport > .content > .camera-preview > .pin:hover {
+.pcui-element.viewport > .camera-preview > .pin:hover {
   color: #fff;
   background-color: rgba(41, 53, 56, 0.75);
 }
@@ -5087,7 +5089,8 @@ body {
 .ui-select-field.viewport-camera {
   position: absolute;
   top: 2px;
-  right: 109px;
+  /* right: 109px; */
+  right: 76px;
   margin: 2px 0;
   height: 33px;
   line-height: 33px;
@@ -7580,7 +7583,6 @@ body {
   > .content
   > .ui-label
   .ui-panel.viewport
-  > .content
   > .camera-preview
   > .pin,
 .ui-overlay.help-howdoi
@@ -9790,7 +9792,6 @@ body {
   > .content
   > .ui-label
   .ui-panel.viewport
-  > .content
   > .camera-preview
   > .pin,
 .ui-overlay.help-howdoi
@@ -12166,7 +12167,6 @@ body {
 .ui-overlay.bubble
   > .content
   > .ui-panel.viewport
-  > .content
   > .camera-preview.ui-label
   > .pin,
 .ui-tree.hierarchy

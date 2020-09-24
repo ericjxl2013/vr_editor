@@ -6,11 +6,14 @@ import { ToolbarControl } from "./toolbar-control";
 import { ToolbarEditorSettings } from "./toolbar-editor-settings";
 import { ToolbarPublish } from "./toolbar-publish";
 import { ToolbarScene } from "./toolbar-scene";
+import { ToolbarCamera } from "./toolbar-camera";
+import { ToolbarStatus } from "./toolbar-status";
 
 export class ToolbarKeeper {
 
     public constructor() {
 
+        new ToolbarStatus();
         let logo = new ToolbarLogo();
         let gizmos = new ToolbarGizmos();
         let history = new ToolbarHistory();
@@ -22,6 +25,8 @@ export class ToolbarKeeper {
 
 
         let scene = new ToolbarScene();
+
+        new ToolbarCamera();
 
     }
 

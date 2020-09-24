@@ -1,0 +1,1029 @@
+{
+    "assets": {
+        "1600076516-d488c81a": {
+            "id": "1600076516-d488c81a",
+            "type": "texture",
+            "createdAt": "2020-09-14 17:41",
+            "modifiedAt": "2020-09-14 17:41",
+            "name": "low_07 - Default_AlbedoTransparency.png",
+            "preload": "true",
+            "has_thumbnail": true,
+            "scope": {
+                "type": "project",
+                "id": "a035a1e6"
+            },
+            "file": {
+                "filename": "low_07 - Default_AlbedoTransparency.png",
+                "size": 3413107,
+                "hash": "357f71fe08bae3d1d8da7bbe07c7969cea030a56"
+            },
+            "data": null,
+            "path": []
+        },
+        "1600076516-ea26c3dd": {
+            "id": "1600076516-ea26c3dd",
+            "type": "model",
+            "createdAt": "2020-09-14 17:41",
+            "modifiedAt": "2020-09-20 15:41",
+            "name": "wurenji.babylon",
+            "preload": "true",
+            "has_thumbnail": false,
+            "scope": {
+                "type": "project",
+                "id": "a035a1e6"
+            },
+            "file": {
+                "filename": "wurenji.babylon",
+                "size": 5889527,
+                "hash": "f95ab10873485ababd14f4edddd4650428dcc021"
+            },
+            "data": null,
+            "path": []
+        },
+        "1600076516-4dfecc83": {
+            "id": "1600076516-4dfecc83",
+            "type": "material",
+            "createdAt": "2020-09-14 17:41",
+            "modifiedAt": "2020-09-14 17:41",
+            "name": "07 - Default",
+            "preload": false,
+            "has_thumbnail": false,
+            "scope": {
+                "type": "project",
+                "id": "a035a1e6"
+            },
+            "file": null,
+            "data": {
+                "customType": "BABYLON.StandardMaterial",
+                "ambient": [
+                    0.5882,
+                    0.5882,
+                    0.5882
+                ],
+                "diffuse": [
+                    0.5882,
+                    0.5882,
+                    0.5882
+                ],
+                "specular": [
+                    0,
+                    0,
+                    0
+                ],
+                "emissive": [
+                    0,
+                    0,
+                    0
+                ],
+                "specularPower": 25.6,
+                "diffuseTexture": null,
+                "diffuseFresnelParameters": null,
+                "ambientTexture": null,
+                "opacityTexture": null,
+                "opacityFresnelParameters": null,
+                "reflectionTexture": null,
+                "reflectionFresnelParameters": null,
+                "emissiveTexture": null,
+                "lightmapTexture": null,
+                "useLightmapAsShadowmap": false,
+                "emissiveFresnelParameters": null,
+                "specularTexture": null,
+                "bumpTexture": null,
+                "useSpecularOverAlpha": true,
+                "disableLighting": false,
+                "useEmissiveAsIllumination": false,
+                "linkEmissiveWithDiffuse": true,
+                "twoSidedLighting": false,
+                "maxSimultaneousLights": 4,
+                "useGlossinessFromSpecularMapAlpha": false,
+                "name": "07 - Default",
+                "id": "827e8d79-fda9-4a3b-8ea8-b32dee9a1f5b",
+                "backFaceCulling": true,
+                "wireframe": false,
+                "alpha": 1,
+                "alphaMode": 2
+            },
+            "path": []
+        },
+        "1600076516-95e0aaa6": {
+            "id": "1600076516-95e0aaa6",
+            "type": "material",
+            "createdAt": "2020-09-14 17:41",
+            "modifiedAt": "2020-09-14 17:41",
+            "name": "Material #26",
+            "preload": false,
+            "has_thumbnail": false,
+            "scope": {
+                "type": "project",
+                "id": "a035a1e6"
+            },
+            "file": null,
+            "data": {
+                "customType": "BABYLON.StandardMaterial",
+                "ambient": [
+                    0.588,
+                    0.588,
+                    0.588
+                ],
+                "diffuse": [
+                    1,
+                    1,
+                    1
+                ],
+                "specular": [
+                    0,
+                    0,
+                    0
+                ],
+                "emissive": [
+                    0,
+                    0,
+                    0
+                ],
+                "specularPower": 25.6,
+                "diffuseTexture": {
+                    "name": "low_07 - Default_AlbedoTransparency.png",
+                    "level": 1,
+                    "hasAlpha": true,
+                    "getAlphaFromRGB": false,
+                    "coordinatesMode": 0,
+                    "isCube": false,
+                    "uOffset": 0,
+                    "vOffset": 0,
+                    "uScale": 1,
+                    "vScale": -1,
+                    "uRotationCenter": 0,
+                    "vRotationCenter": 0,
+                    "wRotationCenter": 0.5,
+                    "invertY": false,
+                    "uAng": 0,
+                    "vAng": 0,
+                    "wAng": 0,
+                    "wrapU": 1,
+                    "wrapV": 1,
+                    "coordinatesIndex": 0,
+                    "isRenderTarget": false,
+                    "renderTargetSize": 0,
+                    "mirrorPlane": null,
+                    "renderList": null,
+                    "animations": [],
+                    "extensions": null,
+                    "samplingMode": 3,
+                    "texture_id": "1600076516-d488c81a"
+                },
+                "diffuseFresnelParameters": null,
+                "ambientTexture": null,
+                "opacityTexture": null,
+                "opacityFresnelParameters": null,
+                "reflectionTexture": null,
+                "reflectionFresnelParameters": null,
+                "emissiveTexture": null,
+                "lightmapTexture": null,
+                "useLightmapAsShadowmap": false,
+                "emissiveFresnelParameters": null,
+                "specularTexture": null,
+                "bumpTexture": null,
+                "useSpecularOverAlpha": true,
+                "disableLighting": false,
+                "useEmissiveAsIllumination": false,
+                "linkEmissiveWithDiffuse": true,
+                "twoSidedLighting": false,
+                "maxSimultaneousLights": 4,
+                "useGlossinessFromSpecularMapAlpha": false,
+                "name": "Material #26",
+                "id": "15f9048b-3d26-4c4a-b847-f56dcf617385",
+                "backFaceCulling": true,
+                "wireframe": false,
+                "alpha": 1,
+                "alphaMode": 2
+            },
+            "path": []
+        },
+        "1600076516-4689c7ff": {
+            "id": "1600076516-4689c7ff",
+            "type": "material",
+            "createdAt": "2020-09-14 17:41",
+            "modifiedAt": "2020-09-14 17:41",
+            "name": "02 - Default",
+            "preload": false,
+            "has_thumbnail": false,
+            "scope": {
+                "type": "project",
+                "id": "a035a1e6"
+            },
+            "file": null,
+            "data": {
+                "customType": "BABYLON.StandardMaterial",
+                "ambient": [
+                    0.5882,
+                    0.5882,
+                    0.5882
+                ],
+                "diffuse": [
+                    0.5882,
+                    0.5882,
+                    0.5882
+                ],
+                "specular": [
+                    0,
+                    0,
+                    0
+                ],
+                "emissive": [
+                    0,
+                    0,
+                    0
+                ],
+                "specularPower": 25.6,
+                "diffuseTexture": null,
+                "diffuseFresnelParameters": null,
+                "ambientTexture": null,
+                "opacityTexture": null,
+                "opacityFresnelParameters": null,
+                "reflectionTexture": null,
+                "reflectionFresnelParameters": null,
+                "emissiveTexture": null,
+                "lightmapTexture": null,
+                "useLightmapAsShadowmap": false,
+                "emissiveFresnelParameters": null,
+                "specularTexture": null,
+                "bumpTexture": null,
+                "useSpecularOverAlpha": true,
+                "disableLighting": false,
+                "useEmissiveAsIllumination": false,
+                "linkEmissiveWithDiffuse": true,
+                "twoSidedLighting": false,
+                "maxSimultaneousLights": 4,
+                "useGlossinessFromSpecularMapAlpha": false,
+                "name": "02 - Default",
+                "id": "910e5368-e2c9-4618-8457-9cde3ec0b2ad",
+                "backFaceCulling": true,
+                "wireframe": false,
+                "alpha": 1,
+                "alphaMode": 2
+            },
+            "path": []
+        },
+        "1600076980-4151cd6e": {
+            "id": "1600076980-4151cd6e",
+            "type": "texture",
+            "createdAt": "2020-09-14 17:49",
+            "modifiedAt": "2020-09-20 15:41",
+            "name": "船.jpg",
+            "preload": "true",
+            "has_thumbnail": true,
+            "scope": {
+                "type": "project",
+                "id": "a035a1e6"
+            },
+            "file": {
+                "filename": "船.jpg",
+                "size": 576854,
+                "hash": "304ca251bd226c60e8e96479455ac54cf5a23139"
+            },
+            "data": null,
+            "path": []
+        },
+        "1600076980-96653a45": {
+            "id": "1600076980-96653a45",
+            "type": "model",
+            "createdAt": "2020-09-14 17:49",
+            "modifiedAt": "2020-09-20 15:41",
+            "name": "定远号.babylon",
+            "preload": "true",
+            "has_thumbnail": false,
+            "scope": {
+                "type": "project",
+                "id": "a035a1e6"
+            },
+            "file": {
+                "filename": "定远号.babylon",
+                "size": 2085467,
+                "hash": "2506ab5262b016e9835f60fa1770d23a68f2f15e"
+            },
+            "data": null,
+            "path": []
+        },
+        "1600076980-1777a5a2": {
+            "id": "1600076980-1777a5a2",
+            "type": "material",
+            "createdAt": "2020-09-14 17:49",
+            "modifiedAt": "2020-09-14 17:49",
+            "name": "Material #2100438287",
+            "preload": false,
+            "has_thumbnail": false,
+            "scope": {
+                "type": "project",
+                "id": "a035a1e6"
+            },
+            "file": null,
+            "data": {
+                "customType": "BABYLON.StandardMaterial",
+                "ambient": [
+                    1,
+                    1,
+                    1
+                ],
+                "diffuse": [
+                    1,
+                    1,
+                    1
+                ],
+                "specular": [
+                    0,
+                    0,
+                    0
+                ],
+                "emissive": [
+                    0,
+                    0,
+                    0
+                ],
+                "specularPower": 25.6,
+                "diffuseTexture": {
+                    "name": "船.jpg",
+                    "level": 1,
+                    "hasAlpha": false,
+                    "getAlphaFromRGB": false,
+                    "coordinatesMode": 0,
+                    "isCube": false,
+                    "uOffset": 0,
+                    "vOffset": 0,
+                    "uScale": 1,
+                    "vScale": -1,
+                    "uRotationCenter": 0,
+                    "vRotationCenter": 0,
+                    "wRotationCenter": 0.5,
+                    "invertY": false,
+                    "uAng": 0,
+                    "vAng": 0,
+                    "wAng": 0,
+                    "wrapU": 1,
+                    "wrapV": 1,
+                    "coordinatesIndex": 0,
+                    "isRenderTarget": false,
+                    "renderTargetSize": 0,
+                    "mirrorPlane": null,
+                    "renderList": null,
+                    "animations": [],
+                    "extensions": null,
+                    "samplingMode": 3,
+                    "texture_id": "1600076980-4151cd6e"
+                },
+                "diffuseFresnelParameters": null,
+                "ambientTexture": null,
+                "opacityTexture": null,
+                "opacityFresnelParameters": null,
+                "reflectionTexture": null,
+                "reflectionFresnelParameters": null,
+                "emissiveTexture": null,
+                "lightmapTexture": null,
+                "useLightmapAsShadowmap": false,
+                "emissiveFresnelParameters": null,
+                "specularTexture": null,
+                "bumpTexture": null,
+                "useSpecularOverAlpha": true,
+                "disableLighting": false,
+                "useEmissiveAsIllumination": false,
+                "linkEmissiveWithDiffuse": true,
+                "twoSidedLighting": false,
+                "maxSimultaneousLights": 4,
+                "useGlossinessFromSpecularMapAlpha": false,
+                "name": "Material #2100438287",
+                "id": "20e11052-92d2-4e60-9c7d-902a69b3ee92",
+                "backFaceCulling": true,
+                "wireframe": false,
+                "alpha": 1,
+                "alphaMode": 2
+            },
+            "path": []
+        },
+        "1600077232-de164318": {
+            "id": "1600077232-de164318",
+            "type": "texture",
+            "createdAt": "2020-09-14 17:53",
+            "modifiedAt": "2020-09-14 17:53",
+            "name": "辽宁舰00VRay全部照明贴图.jpg",
+            "preload": "true",
+            "has_thumbnail": true,
+            "scope": {
+                "type": "project",
+                "id": "a035a1e6"
+            },
+            "file": {
+                "filename": "辽宁舰00VRay全部照明贴图.jpg",
+                "size": 806865,
+                "hash": "b4feb9c0caec89013c0ecb0b81ae06f144960f43"
+            },
+            "data": null,
+            "path": []
+        },
+        "1600077232-91f2d06f": {
+            "id": "1600077232-91f2d06f",
+            "type": "model",
+            "createdAt": "2020-09-14 17:53",
+            "modifiedAt": "2020-09-14 17:53",
+            "name": "辽宁舰.babylon",
+            "preload": "true",
+            "has_thumbnail": false,
+            "scope": {
+                "type": "project",
+                "id": "a035a1e6"
+            },
+            "file": {
+                "filename": "辽宁舰.babylon",
+                "size": 3962734,
+                "hash": "09deab1084a4b190c760687dac125ab37151791a"
+            },
+            "data": null,
+            "path": []
+        },
+        "1600077232-7118e413": {
+            "id": "1600077232-7118e413",
+            "type": "material",
+            "createdAt": "2020-09-14 17:53",
+            "modifiedAt": "2020-09-14 17:53",
+            "name": "辽宁",
+            "preload": false,
+            "has_thumbnail": false,
+            "scope": {
+                "type": "project",
+                "id": "a035a1e6"
+            },
+            "file": null,
+            "data": {
+                "customType": "BABYLON.StandardMaterial",
+                "ambient": [
+                    1,
+                    1,
+                    1
+                ],
+                "diffuse": [
+                    1,
+                    1,
+                    1
+                ],
+                "specular": [
+                    0,
+                    0,
+                    0
+                ],
+                "emissive": [
+                    0,
+                    0,
+                    0
+                ],
+                "specularPower": 25.6,
+                "diffuseTexture": {
+                    "name": "辽宁舰00VRay全部照明贴图.jpg",
+                    "level": 1,
+                    "hasAlpha": true,
+                    "getAlphaFromRGB": false,
+                    "coordinatesMode": 0,
+                    "isCube": false,
+                    "uOffset": 0,
+                    "vOffset": 0,
+                    "uScale": 1,
+                    "vScale": -1,
+                    "uRotationCenter": 0,
+                    "vRotationCenter": 0,
+                    "wRotationCenter": 0.5,
+                    "invertY": false,
+                    "uAng": 0,
+                    "vAng": 0,
+                    "wAng": 0,
+                    "wrapU": 1,
+                    "wrapV": 1,
+                    "coordinatesIndex": 0,
+                    "isRenderTarget": false,
+                    "renderTargetSize": 0,
+                    "mirrorPlane": null,
+                    "renderList": null,
+                    "animations": [],
+                    "extensions": null,
+                    "samplingMode": 3,
+                    "texture_id": "1600077232-de164318"
+                },
+                "diffuseFresnelParameters": null,
+                "ambientTexture": null,
+                "opacityTexture": null,
+                "opacityFresnelParameters": null,
+                "reflectionTexture": null,
+                "reflectionFresnelParameters": null,
+                "emissiveTexture": null,
+                "lightmapTexture": null,
+                "useLightmapAsShadowmap": false,
+                "emissiveFresnelParameters": null,
+                "specularTexture": null,
+                "bumpTexture": null,
+                "useSpecularOverAlpha": true,
+                "disableLighting": false,
+                "useEmissiveAsIllumination": false,
+                "linkEmissiveWithDiffuse": true,
+                "twoSidedLighting": false,
+                "maxSimultaneousLights": 4,
+                "useGlossinessFromSpecularMapAlpha": false,
+                "name": "辽宁",
+                "id": "ff2a2ad0-78cc-4d8b-8b4b-13f9e5a4c3aa",
+                "backFaceCulling": true,
+                "wireframe": false,
+                "alpha": 1,
+                "alphaMode": 2
+            },
+            "path": []
+        },
+        "1600077398-8ef37f41": {
+            "id": "1600077398-8ef37f41",
+            "type": "model",
+            "createdAt": "2020-09-14 17:56",
+            "modifiedAt": "2020-09-20 15:41",
+            "name": "模型.babylon",
+            "preload": "true",
+            "has_thumbnail": false,
+            "scope": {
+                "type": "project",
+                "id": "a035a1e6"
+            },
+            "file": {
+                "filename": "模型.babylon",
+                "size": 65030,
+                "hash": "e4ada9c6cd6355ae731c9563a06d6937265a268c"
+            },
+            "data": null,
+            "path": []
+        },
+        "1600077398-455b3281": {
+            "id": "1600077398-455b3281",
+            "type": "material",
+            "createdAt": "2020-09-14 17:56",
+            "modifiedAt": "2020-09-14 17:56",
+            "name": "Material #2100439547",
+            "preload": false,
+            "has_thumbnail": false,
+            "scope": {
+                "type": "project",
+                "id": "a035a1e6"
+            },
+            "file": null,
+            "data": {
+                "customType": "BABYLON.StandardMaterial",
+                "ambient": [
+                    1,
+                    1,
+                    1
+                ],
+                "diffuse": [
+                    1,
+                    1,
+                    1
+                ],
+                "specular": [
+                    0,
+                    0,
+                    0
+                ],
+                "emissive": [
+                    0,
+                    0,
+                    0
+                ],
+                "specularPower": 25.6,
+                "diffuseTexture": {
+                    "name": "6VRayCompleteMap.jpg",
+                    "level": 1,
+                    "hasAlpha": false,
+                    "getAlphaFromRGB": false,
+                    "coordinatesMode": 0,
+                    "isCube": false,
+                    "uOffset": 0,
+                    "vOffset": 0,
+                    "uScale": 1,
+                    "vScale": -1,
+                    "uRotationCenter": 0,
+                    "vRotationCenter": 0,
+                    "wRotationCenter": 0.5,
+                    "invertY": false,
+                    "uAng": 0,
+                    "vAng": 0,
+                    "wAng": 0,
+                    "wrapU": 1,
+                    "wrapV": 1,
+                    "coordinatesIndex": 0,
+                    "isRenderTarget": false,
+                    "renderTargetSize": 0,
+                    "mirrorPlane": null,
+                    "renderList": null,
+                    "animations": [],
+                    "extensions": null,
+                    "samplingMode": 3,
+                    "texture_id": "1600077398-a8319af9"
+                },
+                "diffuseFresnelParameters": null,
+                "ambientTexture": null,
+                "opacityTexture": null,
+                "opacityFresnelParameters": null,
+                "reflectionTexture": null,
+                "reflectionFresnelParameters": null,
+                "emissiveTexture": null,
+                "lightmapTexture": null,
+                "useLightmapAsShadowmap": false,
+                "emissiveFresnelParameters": null,
+                "specularTexture": null,
+                "bumpTexture": null,
+                "useSpecularOverAlpha": true,
+                "disableLighting": false,
+                "useEmissiveAsIllumination": false,
+                "linkEmissiveWithDiffuse": true,
+                "twoSidedLighting": false,
+                "maxSimultaneousLights": 4,
+                "useGlossinessFromSpecularMapAlpha": false,
+                "name": "Material #2100439547",
+                "id": "73c762f4-554c-4a61-9bc8-961232f6e9f3",
+                "backFaceCulling": true,
+                "wireframe": false,
+                "alpha": 1,
+                "alphaMode": 2
+            },
+            "path": []
+        },
+        "1600077398-a8319af9": {
+            "id": "1600077398-a8319af9",
+            "type": "texture",
+            "createdAt": "2020-09-14 17:56",
+            "modifiedAt": "2020-09-20 15:41",
+            "name": "6VRayCompleteMap.jpg",
+            "preload": "true",
+            "has_thumbnail": true,
+            "scope": {
+                "type": "project",
+                "id": "a035a1e6"
+            },
+            "file": {
+                "filename": "6VRayCompleteMap.jpg",
+                "size": 306277,
+                "hash": "07756110976cf226a90ba1642c2b1ee5dc7e9477"
+            },
+            "data": null,
+            "path": []
+        },
+        "1600225898-bd56525e": {
+            "id": "1600225898-bd56525e",
+            "type": "folder",
+            "createdAt": "2020-09-16 11:11",
+            "modifiedAt": "2020-09-16 11:11",
+            "name": "立方体",
+            "preload": "false",
+            "has_thumbnail": false,
+            "scope": {
+                "type": "project",
+                "id": "a035a1e6"
+            },
+            "file": null,
+            "data": null,
+            "path": []
+        },
+        "1600225911-68e9675e": {
+            "id": "1600225911-68e9675e",
+            "type": "model",
+            "createdAt": "2020-09-16 11:11",
+            "modifiedAt": "2020-09-16 11:11",
+            "name": "121.babylon",
+            "preload": "true",
+            "has_thumbnail": false,
+            "scope": {
+                "type": "project",
+                "id": "a035a1e6"
+            },
+            "file": {
+                "filename": "121.babylon",
+                "size": 4342,
+                "hash": "8c4dd9f29bac65c665513f2a457a26b72b2e4a33"
+            },
+            "data": null,
+            "path": [
+                "1600225898-bd56525e"
+            ]
+        },
+        "1600225911-97051c47": {
+            "id": "1600225911-97051c47",
+            "type": "material",
+            "createdAt": "2020-09-16 11:11",
+            "modifiedAt": "2020-09-16 11:11",
+            "name": "23 - Default",
+            "preload": false,
+            "has_thumbnail": false,
+            "scope": {
+                "type": "project",
+                "id": "a035a1e6"
+            },
+            "file": null,
+            "data": {
+                "customType": "BABYLON.StandardMaterial",
+                "ambient": [
+                    0.5882,
+                    0.5882,
+                    0.5882
+                ],
+                "diffuse": [
+                    0.5882,
+                    0.5882,
+                    0.5882
+                ],
+                "specular": [
+                    0,
+                    0,
+                    0
+                ],
+                "emissive": [
+                    0,
+                    0,
+                    0
+                ],
+                "specularPower": 25.6,
+                "diffuseTexture": null,
+                "diffuseFresnelParameters": null,
+                "ambientTexture": null,
+                "opacityTexture": null,
+                "opacityFresnelParameters": null,
+                "reflectionTexture": null,
+                "reflectionFresnelParameters": null,
+                "emissiveTexture": null,
+                "lightmapTexture": null,
+                "useLightmapAsShadowmap": false,
+                "emissiveFresnelParameters": null,
+                "specularTexture": null,
+                "bumpTexture": null,
+                "useSpecularOverAlpha": true,
+                "disableLighting": false,
+                "useEmissiveAsIllumination": false,
+                "linkEmissiveWithDiffuse": true,
+                "twoSidedLighting": false,
+                "maxSimultaneousLights": 4,
+                "useGlossinessFromSpecularMapAlpha": false,
+                "name": "23 - Default",
+                "id": "fdcb86cd-f158-4e86-b7b9-8a60ca28a329",
+                "backFaceCulling": true,
+                "wireframe": false,
+                "alpha": 1,
+                "alphaMode": 2
+            },
+            "path": [
+                "1600225898-bd56525e"
+            ]
+        },
+        "1600226226-008dc6a5": {
+            "id": "1600226226-008dc6a5",
+            "type": "model",
+            "createdAt": "2020-09-16 11:17",
+            "modifiedAt": "2020-09-16 11:17",
+            "name": "121(1).babylon",
+            "preload": "true",
+            "has_thumbnail": false,
+            "scope": {
+                "type": "project",
+                "id": "a035a1e6"
+            },
+            "file": {
+                "filename": "121(1).babylon",
+                "size": 4353,
+                "hash": "3bcd03dfcb5b41d346fa5beee6d60eefcd6ea831"
+            },
+            "data": null,
+            "path": [
+                "1600225898-bd56525e"
+            ]
+        },
+        "1600226226-658af4f7": {
+            "id": "1600226226-658af4f7",
+            "type": "material",
+            "createdAt": "2020-09-16 11:17",
+            "modifiedAt": "2020-09-16 11:17",
+            "name": "24 - Default",
+            "preload": false,
+            "has_thumbnail": false,
+            "scope": {
+                "type": "project",
+                "id": "a035a1e6"
+            },
+            "file": null,
+            "data": {
+                "customType": "BABYLON.StandardMaterial",
+                "ambient": [
+                    0.5882,
+                    0.5882,
+                    0.5882
+                ],
+                "diffuse": [
+                    0.5882,
+                    0.5882,
+                    0.5882
+                ],
+                "specular": [
+                    0,
+                    0,
+                    0
+                ],
+                "emissive": [
+                    0,
+                    0,
+                    0
+                ],
+                "specularPower": 25.6,
+                "diffuseTexture": null,
+                "diffuseFresnelParameters": null,
+                "ambientTexture": null,
+                "opacityTexture": null,
+                "opacityFresnelParameters": null,
+                "reflectionTexture": null,
+                "reflectionFresnelParameters": null,
+                "emissiveTexture": null,
+                "lightmapTexture": null,
+                "useLightmapAsShadowmap": false,
+                "emissiveFresnelParameters": null,
+                "specularTexture": null,
+                "bumpTexture": null,
+                "useSpecularOverAlpha": true,
+                "disableLighting": false,
+                "useEmissiveAsIllumination": false,
+                "linkEmissiveWithDiffuse": true,
+                "twoSidedLighting": false,
+                "maxSimultaneousLights": 4,
+                "useGlossinessFromSpecularMapAlpha": false,
+                "name": "24 - Default",
+                "id": "ac9412df-cdd2-414e-a1cd-7a4edbc62741",
+                "backFaceCulling": true,
+                "wireframe": false,
+                "alpha": 1,
+                "alphaMode": 2
+            },
+            "path": [
+                "1600225898-bd56525e"
+            ]
+        },
+        "1600587533-e45c8705": {
+            "id": "1600587533-e45c8705",
+            "type": "folder",
+            "createdAt": "2020-09-20 15:38",
+            "modifiedAt": "2020-09-20 15:38",
+            "name": "文件1",
+            "preload": "false",
+            "has_thumbnail": false,
+            "scope": {
+                "type": "project",
+                "id": "a035a1e6"
+            },
+            "file": null,
+            "data": null,
+            "path": []
+        },
+        "1600587888-1d089dac": {
+            "id": "1600587888-1d089dac",
+            "type": "folder",
+            "createdAt": "2020-09-20 15:44",
+            "modifiedAt": "2020-09-20 15:44",
+            "name": "新建文件夹",
+            "preload": "false",
+            "has_thumbnail": false,
+            "scope": {
+                "type": "project",
+                "id": "a035a1e6"
+            },
+            "file": null,
+            "data": null,
+            "path": [
+                "1600225898-bd56525e"
+            ]
+        },
+        "1600762292-87554696": {
+            "id": "1600762292-87554696",
+            "type": "folder",
+            "createdAt": "2020-09-22 16:11",
+            "modifiedAt": "2020-09-22 16:11",
+            "name": "新建文件夹",
+            "preload": "false",
+            "has_thumbnail": false,
+            "scope": {
+                "type": "project",
+                "id": "a035a1e6"
+            },
+            "file": null,
+            "data": null,
+            "path": []
+        },
+        "1600762310-ecc747c9": {
+            "id": "1600762310-ecc747c9",
+            "type": "table",
+            "createdAt": "2020-09-22 16:11",
+            "modifiedAt": "2020-09-22 16:19",
+            "name": "无人机表格.table",
+            "preload": "false",
+            "has_thumbnail": false,
+            "scope": {
+                "type": "project",
+                "id": "a035a1e6"
+            },
+            "file": {
+                "filename": "无人机表格.table",
+                "size": 0,
+                "hash": "24cd1432-ebe8-4cc6-9553-521ac24cb18e"
+            },
+            "data": null,
+            "path": []
+        },
+        "1600783935-06d41adc": {
+            "id": "1600783935-06d41adc",
+            "type": "folder",
+            "createdAt": "2020-09-22 22:12",
+            "modifiedAt": "2020-09-22 22:12",
+            "name": "新建文件夹",
+            "preload": "false",
+            "has_thumbnail": false,
+            "scope": {
+                "type": "project",
+                "id": "a035a1e6"
+            },
+            "file": null,
+            "data": null,
+            "path": [
+                "1600762292-87554696"
+            ]
+        }
+    },
+    "geometry": {},
+    "babylon": {
+        "path": {
+            "root": {
+                "1600077232-91f2d06f": true,
+                "1600076516-ea26c3dd": true,
+                "1600076980-96653a45": true,
+                "1600077398-8ef37f41": true
+            },
+            "1600225898-bd56525e": {
+                "1600225911-68e9675e": true,
+                "1600226226-008dc6a5": true
+            },
+            "1600587533-e45c8705": {}
+        },
+        "1600076516-ea26c3dd": {
+            "materials": {
+                "827e8d79-fda9-4a3b-8ea8-b32dee9a1f5b": {
+                    "asset_id": "1600076516-4dfecc83"
+                },
+                "15f9048b-3d26-4c4a-b847-f56dcf617385": {
+                    "asset_id": "1600076516-95e0aaa6",
+                    "diffuseTexture": "low_07 - Default_AlbedoTransparency.png"
+                },
+                "910e5368-e2c9-4618-8457-9cde3ec0b2ad": {
+                    "asset_id": "1600076516-4689c7ff"
+                }
+            }
+        },
+        "1600076980-96653a45": {
+            "materials": {
+                "20e11052-92d2-4e60-9c7d-902a69b3ee92": {
+                    "asset_id": "1600076980-1777a5a2",
+                    "diffuseTexture": "船.jpg"
+                }
+            }
+        },
+        "1600077232-91f2d06f": {
+            "materials": {
+                "ff2a2ad0-78cc-4d8b-8b4b-13f9e5a4c3aa": {
+                    "asset_id": "1600077232-7118e413",
+                    "diffuseTexture": "辽宁舰00VRay全部照明贴图.jpg"
+                }
+            }
+        },
+        "1600077398-8ef37f41": {
+            "materials": {
+                "73c762f4-554c-4a61-9bc8-961232f6e9f3": {
+                    "asset_id": "1600077398-455b3281",
+                    "diffuseTexture": "6VRayCompleteMap.jpg"
+                }
+            }
+        },
+        "1600225911-68e9675e": {
+            "materials": {
+                "fdcb86cd-f158-4e86-b7b9-8a60ca28a329": {
+                    "asset_id": "1600225911-97051c47"
+                }
+            }
+        },
+        "1600226226-008dc6a5": {
+            "materials": {
+                "ac9412df-cdd2-414e-a1cd-7a4edbc62741": {
+                    "asset_id": "1600226226-658af4f7"
+                }
+            }
+        }
+    },
+    "babylon_resource": {
+        "root": {
+            "1600076516-d488c81a": true,
+            "1600077232-de164318": true,
+            "1600077398-a8319af9": true,
+            "1600076980-4151cd6e": true
+        },
+        "1600587533-e45c8705": {}
+    }
+}

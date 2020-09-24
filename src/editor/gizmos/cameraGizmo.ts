@@ -1,8 +1,10 @@
+import { VeryCamera } from "../middleware";
 // import { Nullable } from "../types";
 // import { Vector3 } from "../Maths/math.vector";
 // import { Color3 } from '../Maths/math.color';
 // import { Mesh } from "../Meshes/mesh";
 import { Gizmo } from "./gizmo";
+import { UtilityLayerRenderer } from "./UtilityLayerRenderer";
 // import { UtilityLayerRenderer } from "../Rendering/utilityLayerRenderer";
 // import { StandardMaterial } from '../Materials/standardMaterial';
 // import { Scene } from '../scene';
@@ -32,7 +34,7 @@ export class CameraGizmo extends Gizmo {
      * Creates a CameraGizmo
      * @param gizmoLayer The utility layer the gizmo will be added to
      */
-    constructor(gizmoLayer: BABYLON.UtilityLayerRenderer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer) {
+    constructor(gizmoLayer: UtilityLayerRenderer = UtilityLayerRenderer.DefaultUtilityLayer) {
         super(gizmoLayer);
 
         this._material = new BABYLON.StandardMaterial("cameraGizmoMaterial", this.gizmoLayer.utilityLayerScene);
@@ -46,6 +48,16 @@ export class CameraGizmo extends Gizmo {
 
             var isHovered = pointerInfo.pickInfo && (this._rootMesh.getChildMeshes().indexOf(<BABYLON.Mesh>pointerInfo.pickInfo.pickedMesh) != -1);
             if (isHovered && pointerInfo.event.button === 0) {
+
+                if (this._camera.parent && this._camera.parent instanceof VeryCamera) {
+                    var entity = editor.call('entities:get', this._camera.parent.id);
+                    // console.error(entity);
+                    if (entity) {
+                        editor.call('selector:set', 'entity', [entity]);
+                    } else {
+                        console.error('失败');
+                    }
+                }
                 this.onClickedObservable.notifyObservers(this._camera);
             }
         }, BABYLON.PointerEventTypes.POINTERDOWN);
@@ -162,22 +174,22 @@ export class CameraGizmo extends Gizmo {
         var mesh = new BABYLON.Mesh(root.name, scene);
         mesh.parent = root;
 
-        var box = BABYLON.BoxBuilder.CreateBox(root.name, {width: 1.0, height: 0.8, depth: 0.5 }, scene);
+        var box = BABYLON.BoxBuilder.CreateBox(root.name, { width: 1.0, height: 0.8, depth: 0.5 }, scene);
         box.parent = mesh;
 
-        var cyl1 = BABYLON.CylinderBuilder.CreateCylinder(root.name, {height: 0.5, diameterTop: 0.8, diameterBottom: 0.8}, scene);
+        var cyl1 = BABYLON.CylinderBuilder.CreateCylinder(root.name, { height: 0.5, diameterTop: 0.8, diameterBottom: 0.8 }, scene);
         cyl1.parent = mesh;
         cyl1.position.y = 0.3;
         cyl1.position.x = -0.6;
         cyl1.rotation.x = Math.PI * 0.5;
 
-        var cyl2 = BABYLON.CylinderBuilder.CreateCylinder(root.name, {height: 0.5, diameterTop: 0.6, diameterBottom: 0.6}, scene);
+        var cyl2 = BABYLON.CylinderBuilder.CreateCylinder(root.name, { height: 0.5, diameterTop: 0.6, diameterBottom: 0.6 }, scene);
         cyl2.parent = mesh;
         cyl2.position.y = 0.5;
         cyl2.position.x = 0.4;
         cyl2.rotation.x = Math.PI * 0.5;
 
-        var cyl3 = BABYLON.CylinderBuilder.CreateCylinder(root.name, {height: 0.5, diameterTop: 0.5, diameterBottom: 0.5}, scene);
+        var cyl3 = BABYLON.CylinderBuilder.CreateCylinder(root.name, { height: 0.5, diameterTop: 0.5, diameterBottom: 0.5 }, scene);
         cyl3.parent = mesh;
         cyl3.position.y = 0.0;
         cyl3.position.x = 0.6;
@@ -194,10 +206,8 @@ export class CameraGizmo extends Gizmo {
         var mesh = new BABYLON.Mesh(root.name, scene);
         mesh.parent = root;
 
-        for (var y = 0; y < 4; y += 2)
-        {
-            for (var x = 0; x < 4; x += 2)
-            {
+        for (var y = 0; y < 4; y += 2) {
+            for (var x = 0; x < 4; x += 2) {
                 var line = BABYLON.LinesBuilder.CreateLines("lines", { points: [new BABYLON.Vector3(-1 + x, -1 + y, -1), new BABYLON.Vector3(-1 + x, -1 + y, 1)] }, scene);
                 line.parent = mesh;
                 line.alwaysSelectAsActiveMesh = true;
@@ -206,7 +216,7 @@ export class CameraGizmo extends Gizmo {
                 line.parent = mesh;
                 line.alwaysSelectAsActiveMesh = true;
                 line.isPickable = false;
-                var line = BABYLON.LinesBuilder.CreateLines("lines", { points: [new BABYLON.Vector3(-1 + x, -1, -1 + y), new BABYLON.Vector3(-1 + x,  1, -1 + y)] }, scene);
+                var line = BABYLON.LinesBuilder.CreateLines("lines", { points: [new BABYLON.Vector3(-1 + x, -1, -1 + y), new BABYLON.Vector3(-1 + x, 1, -1 + y)] }, scene);
                 line.parent = mesh;
                 line.alwaysSelectAsActiveMesh = true;
                 line.isPickable = false;

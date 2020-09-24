@@ -33,12 +33,12 @@ let hierarchy = new HierarchyKeeper();
 // 资源菜单
 let assetsKeeper = new AssetsKeeper();
 
-// 初始化全局信息类
-let initializeAfter: InitializeAfter = new InitializeAfter();
-
 // 编辑视窗
 let viewport = new Viewport();
 VeryEngine.viewport = viewport;
+
+// 初始化全局信息类
+let initializeAfter: InitializeAfter = new InitializeAfter();
 
 // 初始数据
 let initializeData: InitializeData = new InitializeData();

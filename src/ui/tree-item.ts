@@ -436,7 +436,6 @@ export class TreeItem extends Element {
         }
     }
 
-    // TODO:link to the observer 
     private _onRename(select: boolean): void {
         if (select) {
             this.tree!.clear();
@@ -445,13 +444,13 @@ export class TreeItem extends Element {
 
         var self = this;
         this.class!.add('rename');
-        console.log('tree item rename');
+        // console.log('tree item rename');
         // add remaning field
         var field = new TextField();
         field.parent = this;
         field.renderChanges = false;
         field.value = this.text;
-        field.elementInput.readOnly = !this.tree!.allowRenaming;
+        // field.elementInput.readOnly = !this.tree!.allowRenaming;
         field.elementInput.addEventListener('blur', function () {
             field.destroy();
             self.class!.remove('rename');
@@ -465,11 +464,10 @@ export class TreeItem extends Element {
         field.on('change', function (value: string) {
             value = value.trim();
             if (value) {
-                // TODO
-                // if (self.entity) {
-                //   self.entity.set('name', value);
-                // }
-
+                // 关联observer
+                if (self.entity) {
+                  self.entity.set('name', value);
+                }
                 self.emit('rename', value);
             }
 

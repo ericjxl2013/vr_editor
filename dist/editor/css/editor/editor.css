@@ -143,7 +143,8 @@
 .pcui-panel.attributes .ui-panel.component .ui-panel.component-script>.ui-header>.remove,
 .pcui-panel.attributes .ui-panel.batching .ui-panel.batch-group .remove,
 .pcui-panel.attributes .ui-panel.localization>.content .ui-panel.locale>.ui-header>.ui-button.remove,
-.ui-panel.inspector-controls>.content>.ui-button {
+.ui-panel.inspector-controls>.content>.ui-button,
+.viewport > .camera-preview > .ui-button.pin {
     font-family: 'pc-icon'
 }
 

@@ -72,14 +72,13 @@ export class ViewportEntitiesObserverBinding {
             });
 
             var reparent = function (child: string, index: number) {
-                console.warn('reparent : ' + child);
+                // console.warn('reparent : ' + child);
                 var childEntity = editor.call('entities:get', child);
                 if (childEntity && childEntity.node) {
                     // var oldParent = childEntity.node.parent;
                     // TODO: Light、Camera等不是TransformNode对象
                     if (childEntity.node instanceof BABYLON.TransformNode) {
-                        console.warn(childEntity.node);
-
+                        // console.warn(childEntity.node);
                         let absPos = BABYLON.Vector3.Zero().copyFrom((<BABYLON.TransformNode>childEntity.node).getAbsolutePosition());
 
                         // TODO: children中的数据要删除
@@ -93,10 +92,10 @@ export class ViewportEntitiesObserverBinding {
 
                         // (<BABYLON.TransformNode>childEntity.node).parent =(obj.node ? obj.node : null);
 
-                        console.log(absPos);
+                        // console.log(absPos);
 
                         // (<BABYLON.TransformNode>childEntity.node).position = new BABYLON.Vector3(5,5,5);
-                        console.warn(childEntity.node);
+                        // console.warn(childEntity.node);
                         let localPosition = childEntity.node.position.clone();
                         let localRotation = Tools.radianToEulerAngle(childEntity.node.rotation.clone());
                         childEntity.set('position.0', localPosition.x);

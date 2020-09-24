@@ -84,7 +84,7 @@ export class HierarchyKeeper {
 
     // 全局菜单
     let contextMenuLogo = new HierarchyMenu();
-    let controlMenu = new HierarchyControl();
+    // let controlMenu = new HierarchyControl();
 
     // 搜索区域：Search Field
     let searchField = new HierarchySearch();

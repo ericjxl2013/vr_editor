@@ -1,0 +1,1349 @@
+{
+    "scenes": [
+        {
+            "id": "0a389a23",
+            "projectId": "a035a1e6",
+            "name": "关卡1",
+            "created": "2020-09-14 17:41",
+            "modified": "2020-09-23 15:08",
+            "entities": {
+                "799f7762-3ef2-4564-a59b-c0ae959a90ce": {
+                    "name": "关卡1",
+                    "type": "root",
+                    "root": true,
+                    "parent": null,
+                    "resource_id": "799f7762-3ef2-4564-a59b-c0ae959a90ce",
+                    "tags": [],
+                    "enabled": true,
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "position": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "children": [
+                        "5e7ecc24-75b7-445a-b381-a66bd7699163",
+                        "3109cca1-b962-4fd5-a83a-0b28719d2616",
+                        "29b0f445-653a-4436-8c72-309d2b1ee829",
+                        "8676c498-1552-43f9-82f5-214bec0dd1f8",
+                        "e8b1e986-cec9-4634-9c90-1e43d010d947",
+                        "5df5ac5a-143a-4ec3-b611-18b142eb8eac",
+                        "05dbdb46-4a5e-4a9b-a265-a9727f3c2cfc",
+                        "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                        "36a59085-b2af-4121-babf-1788c7c20af8",
+                        "5d9281d6-0761-4216-8304-029864a06fa9",
+                        "ecd9c497-5306-49db-9946-4d7556d52d49"
+                    ],
+                    "asset_id": "",
+                    "babylon_id": ""
+                },
+                "5e7ecc24-75b7-445a-b381-a66bd7699163": {
+                    "name": "主相机",
+                    "type": "camera",
+                    "parent": "799f7762-3ef2-4564-a59b-c0ae959a90ce",
+                    "resource_id": "5e7ecc24-75b7-445a-b381-a66bd7699163",
+                    "tags": [],
+                    "enabled": true,
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "position": [
+                        559.35986328125,
+                        368.6007080078125,
+                        -95.96697235107422
+                    ],
+                    "rotation": [
+                        32.70695386734067,
+                        -50.347258876004474,
+                        -9.007439029663908
+                    ],
+                    "mode": 0,
+                    "fov": 0.8,
+                    "inertia": 0.9,
+                    "orthoSize": 1,
+                    "children": [],
+                    "ellipsoid": [
+                        0.5,
+                        1,
+                        0.5
+                    ],
+                    "ellipsoidOffset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "checkCollisions": false,
+                    "applyGravity": false,
+                    "minZ": 1,
+                    "maxZ": 10000,
+                    "index": 0,
+                    "viewport": [
+                        0,
+                        0,
+                        1,
+                        1
+                    ],
+                    "clearColor": [
+                        0.176,
+                        0.569,
+                        0.729,
+                        1
+                    ]
+                },
+                "3109cca1-b962-4fd5-a83a-0b28719d2616": {
+                    "name": "环境光",
+                    "type": "light",
+                    "parent": "799f7762-3ef2-4564-a59b-c0ae959a90ce",
+                    "resource_id": "3109cca1-b962-4fd5-a83a-0b28719d2616",
+                    "tags": [],
+                    "subtype": "hemispheric",
+                    "enabled": true,
+                    "position": [
+                        300,
+                        300,
+                        300
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": []
+                },
+                "fefe4331-b2b7-4974-ae28-e2a27a90a5ba": {
+                    "name": "wurenji",
+                    "resource_id": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "babylon_id": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "799f7762-3ef2-4564-a59b-c0ae959a90ce",
+                    "position": [
+                        46.35789489746094,
+                        0.38199999928474426,
+                        12.149499893188477
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [
+                        "d1a215ee-efdb-47ac-91bb-0a05d4d63f93",
+                        "4a83355a-9f82-40f9-a59a-7677593fdabd",
+                        "226e2e7a-936f-4923-be46-32bc3ff738a7",
+                        "7ef83ae8-220d-497c-8b53-07874cec9c8b",
+                        "9581f4b6-ddf1-4212-beb7-90d0c8473cbc",
+                        "21da413f-a248-4455-824c-f375d343f7bc",
+                        "5b5d996e-89b9-4c01-b391-22f2d88fbf62",
+                        "e230de0f-9fba-4f8b-8e4d-66e3e7340573",
+                        "50d051dd-0675-4da1-9fc8-929f46aaca1b",
+                        "baf83fe7-add5-43c2-b2bf-ddc0d83e23e6",
+                        "750a20f4-e766-4769-bad9-887811ee885e",
+                        "19b702d0-8f5d-41d1-beee-031b1a3ae378",
+                        "fc80426d-bd4b-45d9-9def-abc6e861c723",
+                        "959f5c8d-6a6f-4029-b288-e95d65e66a13",
+                        "ff77c57e-7cac-49ee-9743-7888baca17ec",
+                        "fa548eb5-8cc9-4a01-8f8d-2ee2ac2b53db",
+                        "663b5db8-6218-4e84-94fc-5b8bb1eb8065",
+                        "5ace6617-e9cf-44b4-9a9e-2be6f5baaa55",
+                        "caf3bfef-dee8-4a46-beb5-ca9183656004",
+                        "efeca239-16d0-4f57-8499-a8ba0b7035ac",
+                        "0d101c99-92a5-49c1-bebd-fb2b33d0837c",
+                        "79670a9e-d297-467e-b94c-5df262567455",
+                        "004e1ef7-27e7-40fc-a42c-4aee9e940c7d",
+                        "8306327f-673b-4c0e-adea-3c6477a10594",
+                        "249d698f-a0cd-4ec2-bad8-52f2ac500fa6"
+                    ],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "d1a215ee-efdb-47ac-91bb-0a05d4d63f93": {
+                    "name": "VIFS003",
+                    "resource_id": "d1a215ee-efdb-47ac-91bb-0a05d4d63f93",
+                    "babylon_id": "d1a215ee-efdb-47ac-91bb-0a05d4d63f93",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "position": [
+                        -39.11750030517578,
+                        -22.281200408935547,
+                        -0.2663002014160156
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "4a83355a-9f82-40f9-a59a-7677593fdabd": {
+                    "name": "Object024",
+                    "resource_id": "4a83355a-9f82-40f9-a59a-7677593fdabd",
+                    "babylon_id": "4a83355a-9f82-40f9-a59a-7677593fdabd",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "position": [
+                        0.09070014953613281,
+                        19.76490020751953,
+                        -0.26150035858154297
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "226e2e7a-936f-4923-be46-32bc3ff738a7": {
+                    "name": "Object048",
+                    "resource_id": "226e2e7a-936f-4923-be46-32bc3ff738a7",
+                    "babylon_id": "226e2e7a-936f-4923-be46-32bc3ff738a7",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "position": [
+                        -55.754302978515625,
+                        53.213600158691406,
+                        109.71299743652344
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "7ef83ae8-220d-497c-8b53-07874cec9c8b": {
+                    "name": "Object049",
+                    "resource_id": "7ef83ae8-220d-497c-8b53-07874cec9c8b",
+                    "babylon_id": "7ef83ae8-220d-497c-8b53-07874cec9c8b",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "position": [
+                        -101.03520202636719,
+                        53.213600158691406,
+                        46.66429901123047
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "9581f4b6-ddf1-4212-beb7-90d0c8473cbc": {
+                    "name": "Object050",
+                    "resource_id": "9581f4b6-ddf1-4212-beb7-90d0c8473cbc",
+                    "babylon_id": "9581f4b6-ddf1-4212-beb7-90d0c8473cbc",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "position": [
+                        -78.40450286865234,
+                        49.03110122680664,
+                        78.09449768066406
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "21da413f-a248-4455-824c-f375d343f7bc": {
+                    "name": "Object051",
+                    "resource_id": "21da413f-a248-4455-824c-f375d343f7bc",
+                    "babylon_id": "21da413f-a248-4455-824c-f375d343f7bc",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "position": [
+                        -78.40450286865234,
+                        57.23419952392578,
+                        78.09420013427734
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "5b5d996e-89b9-4c01-b391-22f2d88fbf62": {
+                    "name": "Object025",
+                    "resource_id": "5b5d996e-89b9-4c01-b391-22f2d88fbf62",
+                    "babylon_id": "5b5d996e-89b9-4c01-b391-22f2d88fbf62",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "position": [
+                        -78.0343017578125,
+                        49.03110122680664,
+                        -78.3864974975586
+                    ],
+                    "rotation": [
+                        0,
+                        98.4155207116676,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [
+                        "fd392628-c7e0-4dff-9ca1-fb674cd28d04",
+                        "f06f49d4-dbd4-4c24-ac11-d48486ed013d",
+                        "a218d899-ef07-421d-bc18-166113675726"
+                    ],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "fd392628-c7e0-4dff-9ca1-fb674cd28d04": {
+                    "name": "Object023",
+                    "resource_id": "fd392628-c7e0-4dff-9ca1-fb674cd28d04",
+                    "babylon_id": "fd392628-c7e0-4dff-9ca1-fb674cd28d04",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "5b5d996e-89b9-4c01-b391-22f2d88fbf62",
+                    "position": [
+                        0,
+                        8.203197479248047,
+                        -0.00040435791015625
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "f06f49d4-dbd4-4c24-ac11-d48486ed013d": {
+                    "name": "Object022",
+                    "resource_id": "f06f49d4-dbd4-4c24-ac11-d48486ed013d",
+                    "babylon_id": "f06f49d4-dbd4-4c24-ac11-d48486ed013d",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "5b5d996e-89b9-4c01-b391-22f2d88fbf62",
+                    "position": [
+                        -22.650299072265625,
+                        4.182498931884766,
+                        31.61840057373047
+                    ],
+                    "rotation": [
+                        -23.875988181725766,
+                        179.99999251763236,
+                        106.140110012883
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "a218d899-ef07-421d-bc18-166113675726": {
+                    "name": "Object035",
+                    "resource_id": "a218d899-ef07-421d-bc18-166113675726",
+                    "babylon_id": "a218d899-ef07-421d-bc18-166113675726",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "5b5d996e-89b9-4c01-b391-22f2d88fbf62",
+                    "position": [
+                        22.630706787109375,
+                        4.182498931884766,
+                        -31.43030548095703
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "e230de0f-9fba-4f8b-8e4d-66e3e7340573": {
+                    "name": "Object044",
+                    "resource_id": "e230de0f-9fba-4f8b-8e4d-66e3e7340573",
+                    "babylon_id": "e230de0f-9fba-4f8b-8e4d-66e3e7340573",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "position": [
+                        55.754295349121094,
+                        53.213600158691406,
+                        109.71299743652344
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "50d051dd-0675-4da1-9fc8-929f46aaca1b": {
+                    "name": "Object045",
+                    "resource_id": "50d051dd-0675-4da1-9fc8-929f46aaca1b",
+                    "babylon_id": "50d051dd-0675-4da1-9fc8-929f46aaca1b",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "position": [
+                        101.03520202636719,
+                        53.213600158691406,
+                        46.66429901123047
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "baf83fe7-add5-43c2-b2bf-ddc0d83e23e6": {
+                    "name": "Object046",
+                    "resource_id": "baf83fe7-add5-43c2-b2bf-ddc0d83e23e6",
+                    "babylon_id": "baf83fe7-add5-43c2-b2bf-ddc0d83e23e6",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "position": [
+                        78.40460205078125,
+                        49.03110122680664,
+                        78.09449768066406
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "750a20f4-e766-4769-bad9-887811ee885e": {
+                    "name": "Object047",
+                    "resource_id": "750a20f4-e766-4769-bad9-887811ee885e",
+                    "babylon_id": "750a20f4-e766-4769-bad9-887811ee885e",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "position": [
+                        78.40460205078125,
+                        57.23429870605469,
+                        78.09420013427734
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "19b702d0-8f5d-41d1-beee-031b1a3ae378": {
+                    "name": "Object040",
+                    "resource_id": "19b702d0-8f5d-41d1-beee-031b1a3ae378",
+                    "babylon_id": "19b702d0-8f5d-41d1-beee-031b1a3ae378",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "position": [
+                        55.797401428222656,
+                        53.213600158691406,
+                        -109.81680297851562
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "fc80426d-bd4b-45d9-9def-abc6e861c723": {
+                    "name": "Object041",
+                    "resource_id": "fc80426d-bd4b-45d9-9def-abc6e861c723",
+                    "babylon_id": "fc80426d-bd4b-45d9-9def-abc6e861c723",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "position": [
+                        78.4281005859375,
+                        49.03110122680664,
+                        -78.3865966796875
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "959f5c8d-6a6f-4029-b288-e95d65e66a13": {
+                    "name": "Object042",
+                    "resource_id": "959f5c8d-6a6f-4029-b288-e95d65e66a13",
+                    "babylon_id": "959f5c8d-6a6f-4029-b288-e95d65e66a13",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "position": [
+                        78.4281005859375,
+                        57.23419952392578,
+                        -78.38690185546875
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "ff77c57e-7cac-49ee-9743-7888baca17ec": {
+                    "name": "Object043",
+                    "resource_id": "ff77c57e-7cac-49ee-9743-7888baca17ec",
+                    "babylon_id": "ff77c57e-7cac-49ee-9743-7888baca17ec",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "position": [
+                        101.07839965820312,
+                        53.213600158691406,
+                        -46.768096923828125
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "fa548eb5-8cc9-4a01-8f8d-2ee2ac2b53db": {
+                    "name": "VIFS028",
+                    "resource_id": "fa548eb5-8cc9-4a01-8f8d-2ee2ac2b53db",
+                    "babylon_id": "fa548eb5-8cc9-4a01-8f8d-2ee2ac2b53db",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "position": [
+                        39.37969970703125,
+                        -22.281200408935547,
+                        -0.2663002014160156
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "663b5db8-6218-4e84-94fc-5b8bb1eb8065": {
+                    "name": "Object026",
+                    "resource_id": "663b5db8-6218-4e84-94fc-5b8bb1eb8065",
+                    "babylon_id": "663b5db8-6218-4e84-94fc-5b8bb1eb8065",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "position": [
+                        -6.591499328613281,
+                        -41.3672981262207,
+                        13.550579071044922
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "5ace6617-e9cf-44b4-9a9e-2be6f5baaa55": {
+                    "name": "Object027",
+                    "resource_id": "5ace6617-e9cf-44b4-9a9e-2be6f5baaa55",
+                    "babylon_id": "5ace6617-e9cf-44b4-9a9e-2be6f5baaa55",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "position": [
+                        0.09070014953613281,
+                        1.2029999494552612,
+                        -15.519700050354004
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "caf3bfef-dee8-4a46-beb5-ca9183656004": {
+                    "name": "Object028",
+                    "resource_id": "caf3bfef-dee8-4a46-beb5-ca9183656004",
+                    "babylon_id": "caf3bfef-dee8-4a46-beb5-ca9183656004",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "position": [
+                        24.059499740600586,
+                        -4.578199863433838,
+                        4.79279899597168
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "efeca239-16d0-4f57-8499-a8ba0b7035ac": {
+                    "name": "Object029",
+                    "resource_id": "efeca239-16d0-4f57-8499-a8ba0b7035ac",
+                    "babylon_id": "efeca239-16d0-4f57-8499-a8ba0b7035ac",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "position": [
+                        0.09070014953613281,
+                        -12.062600135803223,
+                        -15.519700050354004
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "0d101c99-92a5-49c1-bebd-fb2b33d0837c": {
+                    "name": "Object030",
+                    "resource_id": "0d101c99-92a5-49c1-bebd-fb2b33d0837c",
+                    "babylon_id": "0d101c99-92a5-49c1-bebd-fb2b33d0837c",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "position": [
+                        -17.818557739257812,
+                        -29.70319938659668,
+                        -4.488399982452393
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "79670a9e-d297-467e-b94c-5df262567455": {
+                    "name": "Object031",
+                    "resource_id": "79670a9e-d297-467e-b94c-5df262567455",
+                    "babylon_id": "79670a9e-d297-467e-b94c-5df262567455",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "position": [
+                        12.63296127319336,
+                        -39.959800720214844,
+                        2.1135597229003906
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "004e1ef7-27e7-40fc-a42c-4aee9e940c7d": {
+                    "name": "Object032",
+                    "resource_id": "004e1ef7-27e7-40fc-a42c-4aee9e940c7d",
+                    "babylon_id": "004e1ef7-27e7-40fc-a42c-4aee9e940c7d",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "position": [
+                        24.059499740600586,
+                        -4.578199863433838,
+                        -35.80759811401367
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "8306327f-673b-4c0e-adea-3c6477a10594": {
+                    "name": "Object033",
+                    "resource_id": "8306327f-673b-4c0e-adea-3c6477a10594",
+                    "babylon_id": "8306327f-673b-4c0e-adea-3c6477a10594",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "position": [
+                        -23.8960018157959,
+                        -4.578199863433838,
+                        -35.80759811401367
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "249d698f-a0cd-4ec2-bad8-52f2ac500fa6": {
+                    "name": "Object034",
+                    "resource_id": "249d698f-a0cd-4ec2-bad8-52f2ac500fa6",
+                    "babylon_id": "249d698f-a0cd-4ec2-bad8-52f2ac500fa6",
+                    "asset_id": "1600076516-ea26c3dd",
+                    "parent": "fefe4331-b2b7-4974-ae28-e2a27a90a5ba",
+                    "position": [
+                        -23.8960018157959,
+                        -4.578199863433838,
+                        4.79279899597168
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "36a59085-b2af-4121-babf-1788c7c20af8": {
+                    "name": "chuanshen003",
+                    "resource_id": "36a59085-b2af-4121-babf-1788c7c20af8",
+                    "babylon_id": "36a59085-b2af-4121-babf-1788c7c20af8",
+                    "asset_id": "1600076980-96653a45",
+                    "parent": "799f7762-3ef2-4564-a59b-c0ae959a90ce",
+                    "position": [
+                        -118.13395690917969,
+                        -3.979039320256561e-13,
+                        325.0417785644531
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        100,
+                        100,
+                        100
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "5d9281d6-0761-4216-8304-029864a06fa9": {
+                    "name": "辽宁舰003",
+                    "resource_id": "5d9281d6-0761-4216-8304-029864a06fa9",
+                    "babylon_id": "5d9281d6-0761-4216-8304-029864a06fa9",
+                    "asset_id": "1600077232-91f2d06f",
+                    "parent": "799f7762-3ef2-4564-a59b-c0ae959a90ce",
+                    "position": [
+                        -70.02727508544922,
+                        -107.73085021972656,
+                        896.012451171875
+                    ],
+                    "rotation": [
+                        -90,
+                        0,
+                        -90
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "ecd9c497-5306-49db-9946-4d7556d52d49": {
+                    "name": "组003",
+                    "resource_id": "ecd9c497-5306-49db-9946-4d7556d52d49",
+                    "babylon_id": "ecd9c497-5306-49db-9946-4d7556d52d49",
+                    "asset_id": "1600077398-8ef37f41",
+                    "parent": "799f7762-3ef2-4564-a59b-c0ae959a90ce",
+                    "position": [
+                        -441.6578369140625,
+                        40.23684310913086,
+                        23.181358337402344
+                    ],
+                    "rotation": [
+                        0,
+                        90,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "children": [
+                        "3eca2889-5e6c-49c6-8107-3efaa650d8a0"
+                    ],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "3eca2889-5e6c-49c6-8107-3efaa650d8a0": {
+                    "name": "6烘焙",
+                    "resource_id": "3eca2889-5e6c-49c6-8107-3efaa650d8a0",
+                    "babylon_id": "3eca2889-5e6c-49c6-8107-3efaa650d8a0",
+                    "asset_id": "1600077398-8ef37f41",
+                    "parent": "ecd9c497-5306-49db-9946-4d7556d52d49",
+                    "position": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        3.1963,
+                        3.1963,
+                        3.1963
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "05dbdb46-4a5e-4a9b-a265-a9727f3c2cfc": {
+                    "name": "Box001",
+                    "resource_id": "05dbdb46-4a5e-4a9b-a265-a9727f3c2cfc",
+                    "babylon_id": "05dbdb46-4a5e-4a9b-a265-a9727f3c2cfc",
+                    "asset_id": "1600225911-68e9675e",
+                    "parent": "799f7762-3ef2-4564-a59b-c0ae959a90ce",
+                    "position": [
+                        -148.34664916992188,
+                        0.156700000166893,
+                        -4.215345859527588
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        10,
+                        10,
+                        10
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "5df5ac5a-143a-4ec3-b611-18b142eb8eac": {
+                    "name": "Box001",
+                    "resource_id": "5df5ac5a-143a-4ec3-b611-18b142eb8eac",
+                    "babylon_id": "5df5ac5a-143a-4ec3-b611-18b142eb8eac",
+                    "asset_id": "1600226226-008dc6a5",
+                    "parent": "799f7762-3ef2-4564-a59b-c0ae959a90ce",
+                    "position": [
+                        -148.34664916992188,
+                        0.156700000166893,
+                        -123.5887680053711
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        10,
+                        10,
+                        10
+                    ],
+                    "children": [],
+                    "enabled": true,
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "tags": [],
+                    "type": "mesh"
+                },
+                "29b0f445-653a-4436-8c72-309d2b1ee829": {
+                    "name": "空物体",
+                    "type": "empty",
+                    "subtype": "",
+                    "resource_id": "29b0f445-653a-4436-8c72-309d2b1ee829",
+                    "parent": "799f7762-3ef2-4564-a59b-c0ae959a90ce",
+                    "position": [
+                        45.59452819824219,
+                        0,
+                        630.740234375
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "enabled": true,
+                    "tags": [],
+                    "children": [
+                        "d0d28fd9-11d6-4355-b3cd-8a55f60507a1",
+                        "eb7a0eca-cd5a-479e-8fb5-2cdc9bc60431"
+                    ]
+                },
+                "d0d28fd9-11d6-4355-b3cd-8a55f60507a1": {
+                    "name": "立方体2",
+                    "type": "primitive",
+                    "subtype": "box",
+                    "resource_id": "d0d28fd9-11d6-4355-b3cd-8a55f60507a1",
+                    "parent": "29b0f445-653a-4436-8c72-309d2b1ee829",
+                    "position": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "enabled": true,
+                    "tags": [],
+                    "children": [],
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "material_id": ""
+                },
+                "eb7a0eca-cd5a-479e-8fb5-2cdc9bc60431": {
+                    "name": "立方体",
+                    "type": "primitive",
+                    "subtype": "box",
+                    "resource_id": "eb7a0eca-cd5a-479e-8fb5-2cdc9bc60431",
+                    "parent": "29b0f445-653a-4436-8c72-309d2b1ee829",
+                    "position": [
+                        319.45654296875,
+                        0,
+                        -630.740234375
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "enabled": true,
+                    "tags": [],
+                    "children": [],
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "material_id": ""
+                },
+                "e8b1e986-cec9-4634-9c90-1e43d010d947": {
+                    "name": "比例测试",
+                    "type": "empty",
+                    "subtype": "",
+                    "resource_id": "e8b1e986-cec9-4634-9c90-1e43d010d947",
+                    "parent": "799f7762-3ef2-4564-a59b-c0ae959a90ce",
+                    "position": [
+                        -616.9817504882812,
+                        0,
+                        0
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        10,
+                        10,
+                        10
+                    ],
+                    "enabled": true,
+                    "tags": [],
+                    "children": []
+                },
+                "8676c498-1552-43f9-82f5-214bec0dd1f8": {
+                    "name": "立方体",
+                    "type": "primitive",
+                    "subtype": "box",
+                    "resource_id": "8676c498-1552-43f9-82f5-214bec0dd1f8",
+                    "parent": "799f7762-3ef2-4564-a59b-c0ae959a90ce",
+                    "position": [
+                        -616.9817504882812,
+                        0,
+                        0
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "enabled": true,
+                    "tags": [],
+                    "children": [],
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "material_id": ""
+                },
+                "ee0936d3-b869-417d-87b2-37fef06e0c7f": {
+                    "name": "圆柱体",
+                    "type": "primitive",
+                    "subtype": "cylinder",
+                    "resource_id": "ee0936d3-b869-417d-87b2-37fef06e0c7f",
+                    "parent": "3e8d0d21-726a-427d-bf34-7baaebdff54c",
+                    "position": [
+                        -10.03472900390625,
+                        0,
+                        -178.70704650878906
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "scale": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "enabled": true,
+                    "tags": [],
+                    "children": [],
+                    "checkCollisions": false,
+                    "pickable": true,
+                    "isVisible": true,
+                    "material_id": ""
+                }
+            }
+        }
+    ],
+    "last": 0
+}

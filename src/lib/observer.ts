@@ -23,8 +23,8 @@ export class Observer extends Events {
     public _keys: string[]; // 记录对象的key、value值；
 
 
-    public _data: { [key: string]: any }; // 采用此对象，完整记录所有值；
-    public _data2: { [key: string]: any }; // 采用此对象，完整记录所有值；
+    public _data: { [key: string]: any }; // 采用此对象，完整记录所有值，包含新建的数组；
+    public _data2: { [key: string]: any }; // 采用此对象，完整记录所有值，不包含新建数组；
     public _dataType: { [key: string]: boolean } = {}; // 暂时只判断是否为array分拆而成的类型；
     public _dataType2: { [key: string]: boolean } = {}; // 暂时只判断是否为array分拆而成的类型；
 

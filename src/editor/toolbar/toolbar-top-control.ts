@@ -29,10 +29,10 @@ export class ToolbarTopControl {
 
         editor.on('viewport:expand', function (state: boolean) {
             if (state) {
-                tooltipExpand.text = '还原';
+                tooltipExpand.text = '还原 / 空格键';
                 buttonExpand.class!.add('active');
             } else {
-                tooltipExpand.text = '最大化';
+                tooltipExpand.text = '最大化 / 空格键';
                 buttonExpand.class!.remove('active');
             }
 
@@ -41,7 +41,7 @@ export class ToolbarTopControl {
 
         var tooltipExpand = Tooltip.attach({
             target: buttonExpand.element!,
-            text: '最大化',
+            text: '最大化 / 空格键',
             align: 'top',
             root: VeryEngine.root
         });

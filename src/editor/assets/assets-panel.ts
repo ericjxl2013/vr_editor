@@ -74,6 +74,9 @@ export class AssetsPanel {
         files.scroll = true;
         assetsPanel.append(files);
 
+        editor.method('assets:panel:files', function () {
+            return files;
+        });
 
         // grid
         var grid = new Grid();
@@ -570,7 +573,7 @@ export class AssetsPanel {
             if (assetsChanged)
                 return;
 
-            console.log('grid select');
+            // console.log('grid select');
 
             if (item.asset) {
                 editor.call('selector:add', 'asset', item.asset);
@@ -1327,7 +1330,7 @@ export class AssetsPanel {
             item.element!.appendChild(thumbnail);
 
             if (asset.has('has_thumbnail') && asset.get('has_thumbnail') === true && !asset.get('source')) {
-                
+
                 thumbnail.style.backgroundImage = 'url("' + BabylonLoader.prefix + asset.get('id') + '/' + asset.get('name') + '?' + asset.get('file.hash') + '")';
             } else {
                 thumbnail.classList.add('placeholder');

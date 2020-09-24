@@ -1,9 +1,12 @@
+import { VeryLight } from "../middleware";
+import { Tools } from "../utility";
 // import { Nullable } from "../types";
 // import { Vector3, Quaternion } from "../Maths/math.vector";
 // import { Color3 } from '../Maths/math.color';
 // import { AbstractMesh } from "../Meshes/abstractMesh";
 // import { Mesh } from "../Meshes/mesh";
 import { Gizmo } from "./gizmo";
+import { UtilityLayerRenderer } from "./UtilityLayerRenderer";
 // import { UtilityLayerRenderer } from "../Rendering/utilityLayerRenderer";
 
 // import { StandardMaterial } from '../Materials/standardMaterial';
@@ -38,7 +41,7 @@ export class LightGizmo extends Gizmo {
      * Creates a LightGizmo
      * @param gizmoLayer The utility layer the gizmo will be added to
      */
-    constructor(gizmoLayer: BABYLON.UtilityLayerRenderer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer) {
+    constructor(gizmoLayer: UtilityLayerRenderer = UtilityLayerRenderer.DefaultUtilityLayer) {
         super(gizmoLayer);
         this.attachedMesh = new BABYLON.AbstractMesh("", this.gizmoLayer.utilityLayerScene);
         this._attachedMeshParent = new BABYLON.TransformNode("parent", this.gizmoLayer.utilityLayerScene);
@@ -55,6 +58,17 @@ export class LightGizmo extends Gizmo {
 
             var isHovered = pointerInfo.pickInfo && (this._rootMesh.getChildMeshes().indexOf(<BABYLON.Mesh>pointerInfo.pickInfo.pickedMesh) != -1);
             if (isHovered && pointerInfo.event.button === 0) {
+                // console.warn('pick light: ' + this._light.name);
+                // 选择到light父物体
+                if (this._light.parent && this._light.parent instanceof VeryLight) {
+                    var entity = editor.call('entities:get', this._light.parent.id);
+                    // console.error(entity);
+                    if (entity) {
+                        editor.call('selector:set', 'entity', [entity]);
+                    } else {
+                        console.error('失败');
+                    }
+                }
                 this.onClickedObservable.notifyObservers(this._light);
             }
         }, BABYLON.PointerEventTypes.POINTERDOWN);
@@ -102,17 +116,50 @@ export class LightGizmo extends Gizmo {
                 this._attachedMeshParent.freezeWorldMatrix();
             }
 
-            // Get update position and direction if the light has it
-            if ((light as any).position) {
-                this.attachedMesh!.position.copyFrom((light as any).position);
-                this.attachedMesh!.computeWorldMatrix(true);
-                this._cachedPosition.copyFrom(this.attachedMesh!.position);
+
+
+            if (light.parent && light.parent instanceof VeryLight) {
+                if (light instanceof BABYLON.HemisphericLight) {
+                    this.attachedMesh!.position.copyFrom(light.parent.position);
+                    this.attachedMesh!.computeWorldMatrix(true);
+                    this._cachedPosition.copyFrom(this.attachedMesh!.position);
+
+                    let newDirection = Tools.transformLocalToWorldDirection(light.parent, BABYLON.Vector3.Down());
+                    // this.attachedMesh!.setDirection((light as any).direction);
+                    this.attachedMesh!.setDirection(newDirection);
+                    this.attachedMesh!.computeWorldMatrix(true);
+                    this._cachedForward.copyFrom(this.attachedMesh!.forward);
+
+                } else {
+                    if ((light as any).position) {
+                        this.attachedMesh!.position.copyFrom(light.parent.position);
+                        this.attachedMesh!.computeWorldMatrix(true);
+                        this._cachedPosition.copyFrom(this.attachedMesh!.position);
+                    }
+
+                    if ((light as any).direction) {
+                        let newDirection = Tools.transformLocalToWorldDirection(light, (light as any).direction);
+                        // this.attachedMesh!.setDirection((light as any).direction);
+                        this.attachedMesh!.setDirection(newDirection);
+                        this.attachedMesh!.computeWorldMatrix(true);
+                        this._cachedForward.copyFrom(this.attachedMesh!.forward);
+                    }
+                }
+            } else {
+                // Get update position and direction if the light has it
+                if ((light as any).position) {
+                    this.attachedMesh!.position.copyFrom((light as any).position);
+                    this.attachedMesh!.computeWorldMatrix(true);
+                    this._cachedPosition.copyFrom(this.attachedMesh!.position);
+                }
+
+                if ((light as any).direction) {
+                    this.attachedMesh!.setDirection((light as any).direction);
+                    this.attachedMesh!.computeWorldMatrix(true);
+                    this._cachedForward.copyFrom(this.attachedMesh!.forward);
+                }
             }
-            if ((light as any).direction) {
-                this.attachedMesh!.setDirection((light as any).direction);
-                this.attachedMesh!.computeWorldMatrix(true);
-                this._cachedForward.copyFrom(this.attachedMesh!.forward);
-            }
+
 
             this._update();
         }
@@ -143,31 +190,105 @@ export class LightGizmo extends Gizmo {
             this._attachedMeshParent.freezeWorldMatrix();
         }
 
-        if ((this._light as any).position) {
-            // If the gizmo is moved update the light otherwise update the gizmo to match the light
-            if (!this.attachedMesh!.position.equals(this._cachedPosition)) {
-                // update light to match gizmo
-                (this._light as any).position.copyFrom(this.attachedMesh!.position);
-                this._cachedPosition.copyFrom(this.attachedMesh!.position);
+
+
+        // 更改light rotation
+        if (this._light.parent && this._light.parent instanceof VeryLight) {
+
+            if (this._light instanceof BABYLON.HemisphericLight) {
+
+                // If the gizmo is moved update the light otherwise update the gizmo to match the light
+                if (!this.attachedMesh!.position.equals(this._cachedPosition)) {
+                    // update light to match gizmo
+                    this._light.parent.position.copyFrom(this.attachedMesh!.position);
+                    this._cachedPosition.copyFrom(this.attachedMesh!.position);
+                } else {
+                    // update gizmo to match light
+                    this.attachedMesh!.position.copyFrom(this._light.parent.position);
+                    // console.log((this._light as any).getAbsolutePosition());
+                    this.attachedMesh!.computeWorldMatrix(true);
+                    this._cachedPosition.copyFrom(this.attachedMesh!.position);
+                }
+
+                let newDirection = Tools.transformLocalToWorldDirection(this._light.parent, BABYLON.Vector3.Up());
+                
+                // If the gizmo is moved update the light otherwise update the gizmo to match the light
+                if (BABYLON.Vector3.DistanceSquared(this.attachedMesh!.forward, this._cachedForward) > 0.0001) {
+                    // update light to match gizmo
+                    // TODO
+                    // newDirection.copyFrom(this.attachedMesh!.forward);
+                    // (<BABYLON.HemisphericLight>this.light).direction.copyFrom(newDirection);
+                    this._cachedForward.copyFrom(this.attachedMesh!.forward);
+                } else if (BABYLON.Vector3.DistanceSquared(this.attachedMesh!.forward, newDirection) > 0.0001) {
+                    // console.log('hemi');
+                    // update gizmo to match light
+                    this.attachedMesh!.setDirection(newDirection);
+                    this.attachedMesh!.computeWorldMatrix(true);
+                    this._cachedForward.copyFrom(this.attachedMesh!.forward);
+                    (<BABYLON.HemisphericLight>this.light).direction.copyFrom(this._light.parent.up);
+                }
             } else {
-                // update gizmo to match light
-                this.attachedMesh!.position.copyFrom((this._light as any).position);
-                this.attachedMesh!.computeWorldMatrix(true);
-                this._cachedPosition.copyFrom(this.attachedMesh!.position);
+                if ((this._light as any).position) {
+                    // If the gizmo is moved update the light otherwise update the gizmo to match the light
+                    if (!this.attachedMesh!.position.equals(this._cachedPosition)) {
+                        // update light to match gizmo
+                        (this._light as any).position.copyFrom(this.attachedMesh!.position);
+                        this._cachedPosition.copyFrom(this.attachedMesh!.position);
+                    } else {
+                        // update gizmo to match light
+                        this.attachedMesh!.position.copyFrom(this._light.parent.position);
+                        // console.log((this._light as any).getAbsolutePosition());
+                        this.attachedMesh!.computeWorldMatrix(true);
+                        this._cachedPosition.copyFrom(this.attachedMesh!.position);
+                    }
+                }
+
+                // console.log((this._light as any).direction);
+                if ((this._light as any).direction) {
+                    let newDirection = Tools.transformLocalToWorldDirection(this._light, (this._light as any).direction);
+                    // If the gizmo is moved update the light otherwise update the gizmo to match the light
+                    if (BABYLON.Vector3.DistanceSquared(this.attachedMesh!.forward, this._cachedForward) > 0.0001) {
+                        console.log('light');
+                        // update light to match gizmo
+                        newDirection.copyFrom(this.attachedMesh!.forward);
+                        this._cachedForward.copyFrom(this.attachedMesh!.forward);
+                    } else if (BABYLON.Vector3.DistanceSquared(this.attachedMesh!.forward, newDirection) > 0.0001) {
+                        // update gizmo to match light
+                        this.attachedMesh!.setDirection(newDirection);
+                        this.attachedMesh!.computeWorldMatrix(true);
+                        this._cachedForward.copyFrom(this.attachedMesh!.forward);
+                    }
+                }
             }
 
-        }
-        if ((this._light as any).direction) {
-            // If the gizmo is moved update the light otherwise update the gizmo to match the light
-            if (BABYLON.Vector3.DistanceSquared(this.attachedMesh!.forward, this._cachedForward) > 0.0001) {
-                // update light to match gizmo
-                (this._light as any).direction.copyFrom(this.attachedMesh!.forward);
-                this._cachedForward.copyFrom(this.attachedMesh!.forward);
-            } else if (BABYLON.Vector3.DistanceSquared(this.attachedMesh!.forward, (this._light as any).direction) > 0.0001) {
-                // update gizmo to match light
-                this.attachedMesh!.setDirection((this._light as any).direction);
-                this.attachedMesh!.computeWorldMatrix(true);
-                this._cachedForward.copyFrom(this.attachedMesh!.forward);
+        } else {
+            if ((this._light as any).position) {
+                // If the gizmo is moved update the light otherwise update the gizmo to match the light
+                if (!this.attachedMesh!.position.equals(this._cachedPosition)) {
+                    // update light to match gizmo
+                    (this._light as any).position.copyFrom(this.attachedMesh!.position);
+                    this._cachedPosition.copyFrom(this.attachedMesh!.position);
+                } else {
+                    // update gizmo to match light
+                    this.attachedMesh!.position.copyFrom((this._light as any).position);
+                    // console.log((this._light as any).getAbsolutePosition());
+                    this.attachedMesh!.computeWorldMatrix(true);
+                    this._cachedPosition.copyFrom(this.attachedMesh!.position);
+                }
+            }
+
+            if ((this._light as any).direction) {
+                // If the gizmo is moved update the light otherwise update the gizmo to match the light
+                if (BABYLON.Vector3.DistanceSquared(this.attachedMesh!.forward, this._cachedForward) > 0.0001) {
+                    // update light to match gizmo
+                    (this._light as any).direction.copyFrom(this.attachedMesh!.forward);
+                    this._cachedForward.copyFrom(this.attachedMesh!.forward);
+                } else if (BABYLON.Vector3.DistanceSquared(this.attachedMesh!.forward, (this._light as any).direction) > 0.0001) {
+                    // update gizmo to match light
+                    this.attachedMesh!.setDirection((this._light as any).direction);
+                    this.attachedMesh!.computeWorldMatrix(true);
+                    this._cachedForward.copyFrom(this.attachedMesh!.forward);
+                }
             }
         }
     }

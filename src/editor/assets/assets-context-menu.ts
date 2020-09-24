@@ -108,7 +108,7 @@ export class AssetsContextMenu {
             'upload': '上传',
             'folder': '新建文件夹',
             'table': '表格',
-            'material': '材质'
+            // 'material': '材质'
         };
 
         // if (editor.call('users:hasFlag', 'hasBundles')) {
@@ -167,53 +167,53 @@ export class AssetsContextMenu {
         }
 
         // related
-        var menuItemReferences = new MenuItem({
-            text: 'References',
-            icon: ICONS.REFERENCES,
-            value: 'references'
-        });
-        menu.append(menuItemReferences);
+        // var menuItemReferences = new MenuItem({
+        //     text: 'References',
+        //     icon: ICONS.REFERENCES,
+        //     value: 'references'
+        // });
+        // menu.append(menuItemReferences);
 
         // Create Atlas
-        var menuItemTextureToAtlas = new MenuItem({
-            text: 'Create Texture Atlas',
-            icon: ICONS.TEXTURE_ATLAS,
-            value: 'texture-to-atlas'
-        });
-        menu.append(menuItemTextureToAtlas);
+        // var menuItemTextureToAtlas = new MenuItem({
+        //     text: 'Create Texture Atlas',
+        //     icon: ICONS.TEXTURE_ATLAS,
+        //     value: 'texture-to-atlas'
+        // });
+        // menu.append(menuItemTextureToAtlas);
 
-        menuItemTextureToAtlas.on('select', function () {
-            editor.call('assets:textureToAtlas', currentAsset);
-        });
+        // menuItemTextureToAtlas.on('select', function () {
+        //     editor.call('assets:textureToAtlas', currentAsset);
+        // });
 
         // Create Sprite From Atlas
-        var menuItemCreateSprite = new MenuItem({
-            text: 'Create Sprite Asset',
-            icon: ICONS.SPRITE_ASSET,
-            value: 'atlas-to-sprite'
-        });
-        menu.append(menuItemCreateSprite);
+        // var menuItemCreateSprite = new MenuItem({
+        //     text: 'Create Sprite Asset',
+        //     icon: ICONS.SPRITE_ASSET,
+        //     value: 'atlas-to-sprite'
+        // });
+        // menu.append(menuItemCreateSprite);
 
-        menuItemCreateSprite.on('select', function () {
-            editor.call('assets:atlasToSprite', {
-                asset: currentAsset
-            });
-        });
+        // menuItemCreateSprite.on('select', function () {
+        //     editor.call('assets:atlasToSprite', {
+        //         asset: currentAsset
+        //     });
+        // });
 
         // Create Sliced Sprite From Atlas
-        var menuItemCreateSlicedSprite = new MenuItem({
-            text: 'Create Sliced Sprite Asset',
-            icon: ICONS.SPRITE_ASSET,
-            value: 'atlas-to-sliced-sprite'
-        });
-        menu.append(menuItemCreateSlicedSprite);
+        // var menuItemCreateSlicedSprite = new MenuItem({
+        //     text: 'Create Sliced Sprite Asset',
+        //     icon: ICONS.SPRITE_ASSET,
+        //     value: 'atlas-to-sliced-sprite'
+        // });
+        // menu.append(menuItemCreateSlicedSprite);
 
-        menuItemCreateSlicedSprite.on('select', function () {
-            editor.call('assets:atlasToSprite', {
-                asset: currentAsset,
-                sliced: true
-            });
-        });
+        // menuItemCreateSlicedSprite.on('select', function () {
+        //     editor.call('assets:atlasToSprite', {
+        //         asset: currentAsset,
+        //         sliced: true
+        //     });
+        // });
 
         // replace
         var replaceAvailable: any = {
@@ -289,45 +289,45 @@ export class AssetsContextMenu {
         // menu.append(menuItemReplaceTextureToSprite);
 
         // extract. Used for source assets.
-        var menuItemExtract = new MenuItem({
-            text: 'Re-Import',
-            icon: ICONS.REIMPORT,
-            value: 'extract'
-        });
-        menuItemExtract.on('select', function () {
-            editor.call(
-                'assets:reimport',
-                currentAsset.get('id'),
-                currentAsset.get('type')
-            );
-        });
-        menu.append(menuItemExtract);
+        // var menuItemExtract = new MenuItem({
+        //     text: 'Re-Import',
+        //     icon: ICONS.REIMPORT,
+        //     value: 'extract'
+        // });
+        // menuItemExtract.on('select', function () {
+        //     editor.call(
+        //         'assets:reimport',
+        //         currentAsset.get('id'),
+        //         currentAsset.get('type')
+        //     );
+        // });
+        // menu.append(menuItemExtract);
 
         // re-import. Used for target assets.
-        var menuItemReImport = new MenuItem({
-            text: 'Re-Import',
-            icon: ICONS.REIMPORT,
-            value: 're-import'
-        });
-        menuItemReImport.on('select', function () {
-            editor.call(
-                'assets:reimport',
-                currentAsset.get('id'),
-                currentAsset.get('type')
-            );
-        });
-        menu.append(menuItemReImport);
+        // var menuItemReImport = new MenuItem({
+        //     text: 'Re-Import',
+        //     icon: ICONS.REIMPORT,
+        //     value: 're-import'
+        // });
+        // menuItemReImport.on('select', function () {
+        //     editor.call(
+        //         'assets:reimport',
+        //         currentAsset.get('id'),
+        //         currentAsset.get('type')
+        //     );
+        // });
+        // menu.append(menuItemReImport);
 
         // download
-        var menuItemDownload = new MenuItem({
-            text: '下载',
-            icon: ICONS.DOWNLOAD,
-            value: 'download'
-        });
-        menuItemDownload.on('select', function () {
-            window.open(currentAsset.get('file.url'));
-        });
-        menu.append(menuItemDownload);
+        // var menuItemDownload = new MenuItem({
+        //     text: '下载',
+        //     icon: ICONS.DOWNLOAD,
+        //     value: 'download'
+        // });
+        // menuItemDownload.on('select', function () {
+        //     window.open(currentAsset.get('file.url'));
+        // });
+        // menu.append(menuItemDownload);
 
         // edit
         var menuItemEdit = new MenuItem({
@@ -337,20 +337,21 @@ export class AssetsContextMenu {
         });
         menuItemEdit.on('select', function () {
             // editor.call('assets:edit', currentAsset);
-            console.log('编辑表格');
-            console.warn(currentAsset);
+            // console.log('编辑表格');
+            // console.warn(currentAsset);
             editor.call('assets:open-table', currentAsset.get('name'));
-            
+
         });
         menu.append(menuItemEdit);
 
         // duplicate
         var menuItemDuplicate = new MenuItem({
-            text: '复制',
+            text: '创建副本',
             icon: ICONS.DUPLICATE,
             value: 'duplicate'
         });
         menuItemDuplicate.on('select', function () {
+            editor.call('status:text', '抱歉，创建副本功能待添加！');
             editor.call('assets:duplicate', currentAsset);
         });
         menu.append(menuItemDuplicate);
@@ -363,6 +364,8 @@ export class AssetsContextMenu {
         });
         menuItemDelete.style!.fontWeight = '200';
         menuItemDelete.on('select', function () {
+
+            editor.call('status:text', '抱歉，删除功能待添加！');
             var asset = currentAsset;
             var multiple = false;
 
@@ -403,7 +406,7 @@ export class AssetsContextMenu {
 
             if (currentAsset) {
                 // download，TODO：下载菜单
-                menuItemDownload.hidden = true;
+                // menuItemDownload.hidden = true;
                 // menuItemDownload.hidden = !(
                 //     (!config.project.privateAssets ||
                 //         (config.project.privateAssets &&
@@ -446,25 +449,25 @@ export class AssetsContextMenu {
                 }
 
                 // create atlas
-                menuItemTextureToAtlas.hidden =
-                    currentAsset.get('type') !== 'texture' ||
-                    currentAsset.get('source') ||
-                    currentAsset.get('task') ||
-                    !editor.call('permissions:write');
+                // menuItemTextureToAtlas.hidden =
+                //     currentAsset.get('type') !== 'texture' ||
+                //     currentAsset.get('source') ||
+                //     currentAsset.get('task') ||
+                //     !editor.call('permissions:write');
 
                 // create sprite
-                menuItemCreateSprite.hidden =
-                    currentAsset.get('type') !== 'textureatlas' ||
-                    currentAsset.get('source') ||
-                    currentAsset.get('task') ||
-                    !editor.call('permissions:write');
-                menuItemCreateSlicedSprite.hidden = menuItemCreateSprite.hidden;
+                // menuItemCreateSprite.hidden =
+                //     currentAsset.get('type') !== 'textureatlas' ||
+                //     currentAsset.get('source') ||
+                //     currentAsset.get('task') ||
+                //     !editor.call('permissions:write');
+                // menuItemCreateSlicedSprite.hidden = menuItemCreateSprite.hidden;
 
                 // delete
                 menuItemDelete.hidden = false;
 
                 if (!currentAsset.get('source')) {
-                    menuItemExtract.hidden = true;
+                    // menuItemExtract.hidden = true;
 
                     // re-import
                     var sourceId = currentAsset.get('source_asset_id');
@@ -478,25 +481,25 @@ export class AssetsContextMenu {
                                 ) !== -1 ||
                                     !source.get('meta'))
                             ) {
-                                menuItemReImport.hidden = true;
+                                // menuItemReImport.hidden = true;
                             } else if (
                                 currentAsset.get('type') === 'animation' &&
                                 !source.get('meta.animation.available')
                             ) {
-                                menuItemReImport.hidden = true;
+                                // menuItemReImport.hidden = true;
                             } else if (
                                 currentAsset.get('type') === 'material' &&
                                 !currentAsset.has('meta.index')
                             ) {
-                                menuItemReImport.hidden = true;
+                                // menuItemReImport.hidden = true;
                             } else {
-                                menuItemReImport.hidden = false;
+                                // menuItemReImport.hidden = false;
                             }
                         } else {
-                            menuItemReImport.hidden = true;
+                            // menuItemReImport.hidden = true;
                         }
                     } else {
-                        menuItemReImport.hidden = true;
+                        // menuItemReImport.hidden = true;
                     }
 
                     // references
@@ -602,29 +605,29 @@ export class AssetsContextMenu {
                     //     menuItemReplaceTextureToSprite.hidden = true;
                     // }
                 } else {
-                    menuItemReferences.hidden = true;
+                    // menuItemReferences.hidden = true;
                     menuItemReplace.hidden = true;
                     // menuItemReplaceTextureToSprite.hidden = true;
-                    menuItemReImport.hidden = true;
-                    menuItemExtract.hidden =
-                        ['scene', 'texture', 'textureatlas'].indexOf(
-                            currentAsset.get('type')
-                        ) === -1 || !currentAsset.get('meta');
+                    // menuItemReImport.hidden = true;
+                    // menuItemExtract.hidden =
+                    //     ['scene', 'texture', 'textureatlas'].indexOf(
+                    //         currentAsset.get('type')
+                    //     ) === -1 || !currentAsset.get('meta');
                 }
             } else {
                 // no asset
-                menuItemExtract.hidden = true;
-                menuItemReImport.hidden = true;
-                menuItemDownload.hidden = true;
+                // menuItemExtract.hidden = true;
+                // menuItemReImport.hidden = true;
+                // menuItemDownload.hidden = true;
                 menuItemDuplicate.hidden = true;
                 menuItemEdit.hidden = true;
                 menuItemDelete.hidden = true;
-                menuItemReferences.hidden = true;
+                // menuItemReferences.hidden = true;
                 menuItemReplace.hidden = true;
                 // menuItemReplaceTextureToSprite.hidden = true;
-                menuItemTextureToAtlas.hidden = true;
-                menuItemCreateSprite.hidden = true;
-                menuItemCreateSlicedSprite.hidden = true;
+                // menuItemTextureToAtlas.hidden = true;
+                // menuItemCreateSprite.hidden = true;
+                // menuItemCreateSlicedSprite.hidden = true;
             }
 
             for (var i = 0; i < customMenuItems.length; i++) {
@@ -673,6 +676,32 @@ export class AssetsContextMenu {
                 );
             }
         });
+
+        // folders
+        editor.call('assets:panel:folders').innerElement.addEventListener('contextmenu', function (evt: MouseEvent) {
+            evt.preventDefault();
+            evt.stopPropagation();
+
+            // if (!editor.call('permissions:write'))
+            //     return;
+
+            currentAsset = undefined;
+            menu.open = true;
+            menu.position(evt.clientX + 1, evt.clientY);
+        }, false);
+
+        // files
+        editor.call('assets:panel:files').innerElement.addEventListener('contextmenu', function (evt: MouseEvent) {
+            evt.preventDefault();
+            evt.stopPropagation();
+
+            // if (!editor.call('permissions:write'))
+            //     return;
+
+            currentAsset = null;
+            menu.open = true;
+            menu.position(evt.clientX + 1, evt.clientY);
+        }, false);
 
 
 

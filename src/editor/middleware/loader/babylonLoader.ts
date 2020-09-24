@@ -2,6 +2,8 @@ import { Tools, AjaxRequest, Ajax, GUID } from "../../../editor/utility";
 import { Observer } from "../../../lib";
 import { VeryEngine } from "../../../engine";
 import { Config } from "../../../editor/global";
+import { VeryLight } from "../very-light";
+import { VeryCamera } from "../very-camera";
 
 export class BabylonLoader {
 
@@ -63,10 +65,10 @@ export class BabylonLoader {
 
     public static assembleBabylon(assetID: string, dataBabylon: any) {
         if (dataBabylon !== null) {
-            console.warn(dataBabylon);
-            console.log(dataBabylon.meshes);
-            console.log(dataBabylon.materials);
-            console.log(dataBabylon.lights);
+            // console.warn(dataBabylon);
+            // console.log(dataBabylon.meshes);
+            // console.log(dataBabylon.materials);
+            // console.log(dataBabylon.lights);
 
             // if (dataBabylon.lights) {
             //     dataBabylon.lights.forEach((element: any) => {
@@ -158,7 +160,7 @@ export class BabylonLoader {
                         dataBabylon.meshes.forEach((element2: any) => {
                             if (element2.parentId === oldID) {
                                 element2.parentId = newID;
-                                console.log('change parent id');
+                                // console.log('change parent id');
                             }
                         });
                     } else {
@@ -375,9 +377,21 @@ export class BabylonLoader {
         BabylonLoader.scenesData['modified'] = BabylonLoader.createdAtTime();
     }
 
+    public static removeSceneData(resource_id: string): void {
+        delete BabylonLoader.scenesData.entities[resource_id];
+        BabylonLoader.scenesData['modified'] = BabylonLoader.createdAtTime();
+    }
+
     public static updateSceneData(resource_id: string, data: any): void {
         BabylonLoader.scenesData.entities[resource_id] = data;
         BabylonLoader.scenesData['modified'] = BabylonLoader.createdAtTime();
+    }
+
+    public static changeSceneName(resource_id: string, name: string) {
+        BabylonLoader.scenesData.entities[resource_id].name = name;
+        BabylonLoader.scenesData['name'] = name;
+        BabylonLoader.scenesData['modified'] = BabylonLoader.createdAtTime();
+        editor.call('make:scene:dirty');
     }
 
     public static createdAtTime(): string {
@@ -608,6 +622,71 @@ export class BabylonLoader {
         //         currentMesh.computeWorldMatrix(true);
         //     }
         // }
+    }
+
+
+    // hierarchy创建灯光，直接创建wraper
+
+    public static createCameraWraper(name: string, scene: BABYLON.Scene, canvas: HTMLCanvasElement): VeryCamera {
+        var camera = new BABYLON.UniversalCamera(name, new BABYLON.Vector3(0, 100, -200), scene);
+        // camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
+        // camera.minZ = -800;
+        camera.maxZ = 20000;
+
+        let cameraWraper = new VeryCamera(camera, scene, canvas);
+
+        cameraWraper.orthoSize = 0.5;
+
+        return cameraWraper;
+    }
+
+
+    public static createLightWraper(type: string, name: string, scene: BABYLON.Scene): VeryLight {
+        let light = BabylonLoader.createLight(type, name, scene);
+
+        let lightWraper = new VeryLight(light, scene);
+
+        return lightWraper;
+    }
+
+
+
+    public static createLight(type: string, name: string, scene: BABYLON.Scene): BABYLON.Light {
+        let light: BABYLON.Light;
+
+        type = type.toLowerCase();
+        if (type === 'point') {
+            light = new BABYLON.PointLight(name, BABYLON.Vector3.Zero(), scene);
+        } else if (type === 'spot') {
+            light = new BABYLON.SpotLight(name, BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, -1, 0), Math.PI * 0.75, 8, scene);
+        } else if (type === 'hemispheric') {
+            light = new BABYLON.HemisphericLight(name, BABYLON.Vector3.Up(), scene);
+        } else {
+            light = new BABYLON.DirectionalLight(name, BABYLON.Vector3.Forward(), scene);
+        }
+
+        return light;
+    }
+
+    public static createPrimitive(type: string, name: string, scene: BABYLON.Scene): BABYLON.TransformNode {
+        let primitive: BABYLON.TransformNode;
+        if (type === 'box') {
+            primitive = BABYLON.MeshBuilder.CreateBox(name, {}, scene);
+        } else if (type === 'sphere') {
+            primitive = BABYLON.MeshBuilder.CreateSphere(name, {}, scene);
+        } else if (type === 'plane') {
+            primitive = BABYLON.MeshBuilder.CreateGround(name, {}, scene);
+        }
+        else if (type === 'cylinder') {
+            primitive = BABYLON.MeshBuilder.CreateCylinder(name, {}, scene);
+        }
+        // else if (type === 'capsule') {
+        //     primitive = BABYLON.MeshBuilder(name, {}, scene);
+        // } 
+        else {
+            primitive = new BABYLON.TransformNode(name, scene);
+        }
+        return primitive;
     }
 
 

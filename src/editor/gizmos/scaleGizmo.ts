@@ -7,6 +7,7 @@
 // import { PolyhedronBuilder } from "../Meshes/Builders/polyhedronBuilder";
 import { Gizmo } from "./gizmo";
 import { AxisScaleGizmo } from "./axisScaleGizmo";
+import { UtilityLayerRenderer } from "./UtilityLayerRenderer";
 // import { UtilityLayerRenderer } from "../Rendering/utilityLayerRenderer";
 // import { Mesh } from "../Meshes/mesh";
 // import { Node } from "../node";
@@ -81,7 +82,7 @@ export class ScaleGizmo extends Gizmo {
      * @param gizmoLayer The utility layer the gizmo will be added to
      * @param thickness display gizmo axis thickness
      */
-    constructor(gizmoLayer: BABYLON.UtilityLayerRenderer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer, thickness: number = 1) {
+    constructor(gizmoLayer: UtilityLayerRenderer = UtilityLayerRenderer.DefaultUtilityLayer, thickness: number = 1) {
         super(gizmoLayer);
         this.xGizmo = new AxisScaleGizmo(new BABYLON.Vector3(1, 0, 0), BABYLON.Color3.Red().scale(0.5), gizmoLayer, this, thickness);
         this.yGizmo = new AxisScaleGizmo(new BABYLON.Vector3(0, 1, 0), BABYLON.Color3.Green().scale(0.5), gizmoLayer, this, thickness);

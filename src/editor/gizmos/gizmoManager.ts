@@ -13,8 +13,9 @@ import { RotationGizmo } from "./rotationGizmo";
 import { PositionGizmo } from "./positionGizmo";
 import { ScaleGizmo } from "./scaleGizmo";
 import { BoundingBoxGizmo } from "./boundingBoxGizmo";
-import { Observer } from "src/lib";
+import { Observer } from "../../lib";
 import { GizmosCenter } from ".";
+import { UtilityLayerRenderer } from "./UtilityLayerRenderer";
 
 /**
  * Helps setup gizmo's in the scene to rotate/scale/position nodes
@@ -39,8 +40,8 @@ export class GizmoManager implements BABYLON.IDisposable {
     private _attachedMesh: Nullable<BABYLON.AbstractMesh> = null;
     private _attachedNode: Nullable<BABYLON.Node> = null;
     private _boundingBoxColor = BABYLON.Color3.FromHexString("#0984e3");
-    private _defaultUtilityLayer: BABYLON.UtilityLayerRenderer;
-    private _defaultKeepDepthUtilityLayer: BABYLON.UtilityLayerRenderer;
+    private _defaultUtilityLayer: UtilityLayerRenderer;
+    private _defaultKeepDepthUtilityLayer: UtilityLayerRenderer;
     private _thickness: number = 1;
     /**
      * When bounding box gizmo is enabled, this can be used to track drag/end events
@@ -79,9 +80,9 @@ export class GizmoManager implements BABYLON.IDisposable {
      * @param thickness display gizmo axis thickness
      */
     constructor(private scene: BABYLON.Scene, thickness: number = 1) {
-        this._defaultKeepDepthUtilityLayer = new BABYLON.UtilityLayerRenderer(scene);
+        this._defaultKeepDepthUtilityLayer = new UtilityLayerRenderer(scene);
         this._defaultKeepDepthUtilityLayer.utilityLayerScene.autoClearDepthAndStencil = false;
-        this._defaultUtilityLayer = new BABYLON.UtilityLayerRenderer(scene);
+        this._defaultUtilityLayer = new UtilityLayerRenderer(scene);
         this._thickness = thickness;
         this.gizmos = { positionGizmo: null, rotationGizmo: null, scaleGizmo: null, boundingBoxGizmo: null };
 
@@ -91,7 +92,8 @@ export class GizmoManager implements BABYLON.IDisposable {
                 return;
             }
             if (pointerInfo.type == BABYLON.PointerEventTypes.POINTERDOWN) {
-                if (pointerInfo.pickInfo && pointerInfo.pickInfo.pickedMesh) {
+                // 只支持鼠标左键选择
+                if (pointerInfo.pickInfo && pointerInfo.event.button === 0 && pointerInfo.pickInfo.pickedMesh) {
                     // if (mesh === null) {
                     //     GizmosCenter.clear();
                     //     console.log('clear gizmos');

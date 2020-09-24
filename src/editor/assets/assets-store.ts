@@ -7,12 +7,12 @@ export class AssetsStore {
 
         var assetsPanel = VeryEngine.assets;
 
-        var btnStore = new Button('资源库');
+        var btnStore = new Button('说明文档');
         btnStore.class!.add('store');
         assetsPanel.header.append(btnStore);
 
         btnStore.on('click', function () {
-            window.open('http://www.veryengine.cn/', '_blank');
+            window.open('http://doc.veryengine.cn/readme/web/?#/12', '_blank');
         });
     }
 }

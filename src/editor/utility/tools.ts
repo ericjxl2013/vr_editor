@@ -22,9 +22,126 @@ export class Tools {
         return val.multiplyByFloats(para, para, para);
     }
 
+    public static eulerAngleFloatToRadian(euler_angle: number): number {
+        return euler_angle * Math.PI / 180;
+    }
+
+    public static radianFloatToEulerAngle(radian: number): number {
+        return radian * 180 / Math.PI;
+    }
+
     public static vector3ToArray(val: BABYLON.Vector3): number[] {
         return [val.x, val.y, val.z];
     }
+
+    public static quatTransfromVector3(quat: BABYLON.Quaternion, vec3: BABYLON.Vector3): BABYLON.Vector3 {
+        let res = BABYLON.Vector3.Zero();
+
+        var x = vec3.x, y = vec3.y, z = vec3.z;
+        var qx = quat.x, qy = quat.y, qz = quat.z, qw = quat.w;
+
+        // calculate quat * vec
+        var ix = qw * x + qy * z - qz * y;
+        var iy = qw * y + qz * x - qx * z;
+        var iz = qw * z + qx * y - qy * x;
+        var iw = -qx * x - qy * y - qz * z;
+
+        // calculate result * inverse quat
+        res.x = ix * qw + iw * -qx + iy * -qz - iz * -qy;
+        res.y = iy * qw + iw * -qy + iz * -qx - ix * -qz;
+        res.z = iz * qw + iw * -qz + ix * -qy - iy * -qx;
+
+        return res;
+    }
+
+    public static quatMultiplyVector3(rotation: BABYLON.Quaternion, point: BABYLON.Vector3): BABYLON.Vector3 {
+        let num = rotation.x * 2;
+        let num2 = rotation.y * 2;
+        let num3 = rotation.z * 2;
+        let num4 = rotation.x * num;
+        let num5 = rotation.y * num2;
+        let num6 = rotation.z * num3;
+        let num7 = rotation.x * num2;
+        let num8 = rotation.x * num3;
+        let num9 = rotation.y * num3;
+        let num10 = rotation.w * num;
+        let num11 = rotation.w * num2;
+        let num12 = rotation.w * num3;
+        let result: BABYLON.Vector3 = BABYLON.Vector3.Zero();
+        result.x = (1 - (num5 + num6)) * point.x + (num7 - num12) * point.y + (num8 + num11) * point.z;
+        result.y = (num7 + num12) * point.x + (1 - (num4 + num6)) * point.y + (num9 - num10) * point.z;
+        result.z = (num8 - num11) * point.x + (num9 + num10) * point.y + (1 - (num4 + num5)) * point.z;
+        return result;
+    }
+
+
+    public static clampAngle(angle: number, min: number, max: number): number {
+        if (angle < -360)
+            angle += 360;
+        if (angle > 360)
+            angle -= 360;
+        if (angle < min) {
+            angle = min;
+        } else if (angle > max) {
+            angle = max;
+        }
+        return angle;
+    }
+
+    public static worldToScreenPoint(world_point: BABYLON.Vector3, scene: BABYLON.Scene, camera: BABYLON.TargetCamera, engine: BABYLON.Engine): BABYLON.Vector3 {
+        return BABYLON.Vector3.Project(
+            world_point,
+            BABYLON.Matrix.Identity(),
+            scene.getTransformMatrix(),
+            camera.viewport.toGlobal(
+                engine.getRenderWidth(),
+                engine.getRenderHeight(),
+            ),
+        );
+    }
+
+    public static lerpVector2(vec1: BABYLON.Vector2, vec2: BABYLON.Vector2, rate: number): BABYLON.Vector2 {
+        let res = BABYLON.Vector2.Zero();
+        if (rate < 0) rate = 0;
+        if (rate > 1) rate = 1;
+        res.x = vec1.x + rate * (vec2.x - vec1.x);
+        res.y = vec1.y + rate * (vec2.y - vec1.y);
+        return res;
+    }
+
+    public static lerpVector3(vec1: BABYLON.Vector3, vec2: BABYLON.Vector3, rate: number): BABYLON.Vector3 {
+        let res = BABYLON.Vector3.Zero();
+        if (rate < 0) rate = 0;
+        if (rate > 1) rate = 1;
+        res.x = vec1.x + rate * (vec2.x - vec1.x);
+        res.y = vec1.y + rate * (vec2.y - vec1.y);
+        res.z = vec1.z + rate * (vec2.z - vec1.z);
+        return res;
+    }
+
+    public static lerpVector4(vec1: BABYLON.Vector4, vec2: BABYLON.Vector4, rate: number): BABYLON.Vector4 {
+        let res = BABYLON.Vector4.Zero();
+        if (rate < 0) rate = 0;
+        if (rate > 1) rate = 1;
+        res.x = vec1.x + rate * (vec2.x - vec1.x);
+        res.y = vec1.y + rate * (vec2.y - vec1.y);
+        res.z = vec1.z + rate * (vec2.z - vec1.z);
+        res.w = vec1.w + rate * (vec2.w - vec1.w);
+        return res;
+    }
+
+
+    public static transformLocalToWorldDirection(node: BABYLON.Node, local_direction: BABYLON.Vector3): BABYLON.Vector3 {
+        if (node) {
+            let matrix: BABYLON.Matrix = node.computeWorldMatrix();
+            return BABYLON.Vector3.TransformCoordinates(local_direction, matrix).subtract((node as any).getAbsolutePosition());
+        } else {
+            return local_direction;
+        }
+    }
+
+    
+
 
     public static sha1(val: any): string {
         return SHA1.SHA1(val);
@@ -38,6 +155,13 @@ export class Tools {
 
         return path.substring(index + 1);
     }
+
+
+
+
+
+
+
 
     public static GetFolderPath(uri: string, returnUnchangedIfNoSlash = false): string {
         var index = uri.lastIndexOf('/');

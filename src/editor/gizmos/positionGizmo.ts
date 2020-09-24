@@ -9,6 +9,7 @@
 import { Gizmo } from "./gizmo";
 import { AxisDragGizmo } from "./axisDragGizmo";
 import { PlaneDragGizmo } from "./planeDragGizmo";
+import { UtilityLayerRenderer } from "./UtilityLayerRenderer";
 // import { UtilityLayerRenderer } from "../Rendering/utilityLayerRenderer";
 /**
  * Gizmo that enables dragging a mesh along 3 axis
@@ -92,7 +93,7 @@ export class PositionGizmo extends Gizmo {
      * @param gizmoLayer The utility layer the gizmo will be added to
       @param thickness display gizmo axis thickness
      */
-    constructor(gizmoLayer: BABYLON.UtilityLayerRenderer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer, thickness: number = 1) {
+    constructor(gizmoLayer: UtilityLayerRenderer = UtilityLayerRenderer.DefaultUtilityLayer, thickness: number = 1) {
         super(gizmoLayer);
         this.xGizmo = new AxisDragGizmo(new BABYLON.Vector3(1, 0, 0), BABYLON.Color3.Red().scale(0.5), gizmoLayer, this, thickness);
         this.yGizmo = new AxisDragGizmo(new BABYLON.Vector3(0, 1, 0), BABYLON.Color3.Green().scale(0.5), gizmoLayer, this, thickness);

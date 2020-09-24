@@ -25,12 +25,12 @@ export class ToolbarGizmos {
             tooltip: '缩放',
             op: 'scale'
         }
-        // , {
-        //     icon: '&#57666;',
-        //     tooltip: 'Resize Element Component',
-        //     op: 'resize'
-        // }
-    ].forEach(function (item, index) {
+            // , {
+            //     icon: '&#57666;',
+            //     tooltip: 'Resize Element Component',
+            //     op: 'resize'
+            // }
+        ].forEach(function (item, index) {
             var button = new Button(item.icon);
             // button.hidden = !editor.call('permissions:write');
             button.op = item.op;
@@ -163,13 +163,19 @@ export class ToolbarGizmos {
 
         var tooltipFocus = Tooltip.attach({
             target: buttonFocus.element!,
-            text: '聚焦当前物体',
+            text: '镜头聚焦当前物体 / F键',
             align: 'left',
             root: root
         });
         tooltipFocus.class!.add('innactive');
 
-
+        editor.call('hotkey:register', 'viewport:focus', {
+            key: 'f',
+            callback: function () {
+                // if (editor.call('picker:isOpen:otherThan', 'curve')) return;
+                editor.call('viewport:focus');
+            }
+        });
 
     }
 

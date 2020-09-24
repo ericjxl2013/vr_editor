@@ -3,6 +3,7 @@ import { Entities } from "./entities";
 import { EntityCreate } from "./entity-create";
 import { EntitySync } from "./entity-sync";
 import { EntityEdit } from "./entity-edit";
+import { EntityDelete } from "./entity-delete";
 
 export class EntityKeeper {
 
@@ -17,6 +18,8 @@ export class EntityKeeper {
         new EntityLoad();
 
         new EntitySync();
+
+        new EntityDelete();
 
 
         

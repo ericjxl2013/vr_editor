@@ -13,6 +13,7 @@ import { Gizmo } from "./gizmo";
 // import { StandardMaterial } from "../Materials/standardMaterial";
 // import { Scene } from "../scene";
 import { PositionGizmo } from "./positionGizmo";
+import { UtilityLayerRenderer } from "./UtilityLayerRenderer";
 // import { Color3 } from '../Maths/math.color';
 /**
  * Single axis drag gizmo
@@ -75,7 +76,7 @@ export class AxisDragGizmo extends Gizmo {
      * @param color The color of the gizmo
      * @param thickness display gizmo axis thickness
      */
-    constructor(dragAxis: BABYLON.Vector3, color: BABYLON.Color3 = BABYLON.Color3.Gray(), gizmoLayer: BABYLON.UtilityLayerRenderer = BABYLON.UtilityLayerRenderer.DefaultUtilityLayer, parent: Nullable<PositionGizmo> = null, thickness: number = 1) {
+    constructor(dragAxis: BABYLON.Vector3, color: BABYLON.Color3 = BABYLON.Color3.Gray(), gizmoLayer: UtilityLayerRenderer = UtilityLayerRenderer.DefaultUtilityLayer, parent: Nullable<PositionGizmo> = null, thickness: number = 1) {
         super(gizmoLayer);
         this._parent = parent;
         // Create Material

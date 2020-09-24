@@ -9,6 +9,7 @@ export class AssetsCreateTable {
 
             if(Config.tableAssetsID !== '') {
                 console.warn('抱歉，暂时只允许创建一个表格！');
+                editor.call('status:text', '抱歉，暂时只允许创建一个表格！');
                 return;
             }
             // if (!editor.call('permissions:write'))
@@ -50,7 +51,7 @@ export class AssetsCreateTable {
         editor.on('assets:add', function (asset: Observer) {
             if(asset.get('type') === 'table') {
                 Config.tableAssetsID = asset.get('id');
-                console.log('设置表格ID：' + Config.tableAssetsID);
+                // console.log('设置表格ID：' + Config.tableAssetsID);
             }
         });
 

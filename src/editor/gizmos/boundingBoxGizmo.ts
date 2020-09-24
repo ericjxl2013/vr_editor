@@ -11,6 +11,7 @@
 // import { LinesBuilder } from "../Meshes/Builders/linesBuilder";
 // import { PointerDragBehavior } from "../Behaviors/Meshes/pointerDragBehavior";
 import { Gizmo } from "./gizmo";
+import { UtilityLayerRenderer } from "./UtilityLayerRenderer";
 // import { UtilityLayerRenderer } from "../Rendering/utilityLayerRenderer";
 // import { StandardMaterial } from "../Materials/standardMaterial";
 // import { PivotTools } from "../Misc/pivotTools";
@@ -118,7 +119,7 @@ export class BoundingBoxGizmo extends Gizmo {
      * @param gizmoLayer The utility layer the gizmo will be added to
      * @param color The color of the gizmo
      */
-    constructor(color: BABYLON.Color3 = BABYLON.Color3.Gray(), gizmoLayer: BABYLON.UtilityLayerRenderer = BABYLON.UtilityLayerRenderer.DefaultKeepDepthUtilityLayer) {
+    constructor(color: BABYLON.Color3 = BABYLON.Color3.Gray(), gizmoLayer: UtilityLayerRenderer = UtilityLayerRenderer.DefaultKeepDepthUtilityLayer) {
         super(gizmoLayer);
 
         // Do not update the gizmo's scale so it has a fixed size to the object its attached to

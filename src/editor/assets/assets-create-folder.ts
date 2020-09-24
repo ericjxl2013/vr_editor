@@ -7,7 +7,7 @@ export class AssetsCreateFolder {
         editor.method('assets:create:folder', function (args: any) {
             // if (!editor.call('permissions:write'))
             //     return;
-            console.log('assets:create:folder');
+            // console.log('assets:create:folder');
 
             args = args || {};
 
@@ -31,7 +31,7 @@ export class AssetsCreateFolder {
                 path: path.join(',')
             };
 
-            console.log(asset);
+            // console.log(asset);
 
             editor.call('assets:create', asset);
         });

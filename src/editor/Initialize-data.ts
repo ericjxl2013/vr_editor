@@ -17,7 +17,7 @@ export class InitializeData {
             .then(response => {
                 var data = response.data;
                 if (data.code === '0000') {
-                    console.log(data.data);
+                    // console.log(data.data);
                     BabylonLoader.projectData = data.data;
                     Config.projectName = data.data.project.name;
                     Config.userID = data.data.owner.id;
@@ -43,7 +43,7 @@ export class InitializeData {
             .then(response => {
                 var data = response.data;
                 if (data.code === '0000') {
-                    console.log(data.data);
+                    // console.log(data.data);
                     BabylonLoader.assetsData = data.data;
                     Config.assetsData = data.data;
                     editor.call('initAssets', Config.assetsData);
@@ -73,7 +73,7 @@ export class InitializeData {
                         let lastScene: number = data.data.last;
                         Config.scenesData = data.data.scenes[lastScene];
                         Config.sceneIndex = lastScene;
-                        console.log(Config.scenesData);
+                        // console.log(Config.scenesData);
                         BabylonLoader.scenesData = Config.scenesData;
                         BabylonLoader.sceneIndex = lastScene;
                         editor.emit('scene:raw', Config.scenesData);

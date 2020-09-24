@@ -14,15 +14,14 @@ export class AttributesPanel {
     public constructor() {
         this.root = VeryEngine.attributes;
 
-        this.init();
-
-    }
-
-    private init(): void {
         let self = this;
 
-        // clearing
-        editor.method('attributes:clear', this.clearPanel);
+        let clearPanel = () => {
+            editor.emit('attributes:beforeClear');
+            // console.warn(this.root);
+            this.root.clear();
+            editor.emit('attributes:clear');
+        };
 
         // set header
         editor.method('attributes:header', (text: string) => {
@@ -1467,7 +1466,7 @@ export class AttributesPanel {
         });
 
         editor.method('attributes:inspect', function (type: string, item: Observer) {
-            self.clearPanel();
+            clearPanel();
 
             // clear if destroyed
             inspectedItems.push(item.once('destroy', function () {
@@ -1482,7 +1481,7 @@ export class AttributesPanel {
 
 
         editor.on('selector:change', function (type: string, items: Observer[]) {
-            self.clearPanel();
+            clearPanel();
 
             // console.warn('selector:change：type --- ' + type + '* length --- ' + items.length);
 
@@ -1526,14 +1525,15 @@ export class AttributesPanel {
         // 初始时，默认没有选中物体
         editor.emit('selector:change', null, []);
 
+
+
+        // clearing
+        editor.method('attributes:clear', clearPanel);
+
     }
 
 
-    public clearPanel(): void {
-        editor.emit('attributes:beforeClear');
-        this.root.clear();
-        editor.emit('attributes:clear');
-    }
+
 
 
 

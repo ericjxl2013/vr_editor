@@ -5,8 +5,12 @@ export class AssetsSync {
     public constructor() {
 
         editor.method('initAssets', (assets_data: any) => {
-            if(assets_data.assets)
+            if(assets_data.assets) {
                 onLoad(assets_data.assets);
+                editor.call('material:preview:assemble', assets_data);
+                editor.call('material:preview:start');
+            }
+                
         });
 
         // Asseting, uniqueId为assets索引id

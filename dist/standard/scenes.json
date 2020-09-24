@@ -22,8 +22,8 @@
                     ],
                     "position": [
                         0,
-                        1,
-                        -10
+                        0,
+                        0
                     ],
                     "rotation": [
                         0,
@@ -45,52 +45,6 @@
                     "resource_id": "5e7ecc24-75b7-445a-b381-a66bd7699163",
                     "tags": [],
                     "enabled": true,
-                    "data": {
-                        "tags": null,
-                        "ellipsoid": [
-                            0.5,
-                            1,
-                            0.5
-                        ],
-                        "ellipsoidOffset": [
-                            0,
-                            0,
-                            0
-                        ],
-                        "checkCollisions": true,
-                        "applyGravity": true,
-                        "rotation": [
-                            0,
-                            0,
-                            0
-                        ],
-                        "speed": 2,
-                        "position": [
-                            0,
-                            1,
-                            -20
-                        ],
-                        "upVector": [
-                            0,
-                            1,
-                            0
-                        ],
-                        "fov": 0.8,
-                        "minZ": 1,
-                        "maxZ": 10000,
-                        "inertia": 0.9,
-                        "mode": 0,
-                        "layerMask": 268435455,
-                        "fovMode": 0,
-                        "cameraRigMode": 0,
-                        "name": "主相机",
-                        "id": "主相机",
-                        "uniqueId": 21,
-                        "state": "",
-                        "type": "FreeCamera",
-                        "animations": [],
-                        "ranges": []
-                    },
                     "scale": [
                         1,
                         1,
@@ -98,87 +52,76 @@
                     ],
                     "position": [
                         0,
-                        1,
-                        -20
+                        100,
+                        -200
                     ],
                     "rotation": [
                         0,
                         0,
                         0
                     ],
-                    "children": []
+                    "mode": 0,
+                    "fov": 0.8,
+                    "inertia": 0.9,
+                    "orthoSize": 0.5,
+                    "children": [],
+                    "ellipsoid": [
+                        0.5,
+                        1,
+                        0.5
+                    ],
+                    "ellipsoidOffset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "checkCollisions": true,
+                    "applyGravity": true,
+                    "minZ": 1,
+                    "maxZ": 20000,
+                    "priority": 0,
+                    "viewport": [
+                        0,
+                        0,
+                        1,
+                        1
+                    ],
+                    "clearColor": [
+                        0.176,
+                        0.569,
+                        0.729,
+                        1
+                    ]
                 },
                 "3109cca1-b962-4fd5-a83a-0b28719d2616": {
-                    "name": "平行光",
+                    "name": "环境光",
                     "type": "light",
                     "parent": "799f7762-3ef2-4564-a59b-c0ae959a90ce",
                     "resource_id": "3109cca1-b962-4fd5-a83a-0b28719d2616",
                     "tags": [],
+                    "subtype": "hemispheric",
                     "enabled": true,
-                    "data": {
-                        "tags": null,
-                        "shadowFrustumSize": 0,
-                        "shadowOrthoScale": 0.1,
-                        "autoUpdateExtends": true,
-                        "autoCalcShadowZBounds": false,
-                        "diffuse": [
-                            1,
-                            1,
-                            1
-                        ],
-                        "specular": [
-                            1,
-                            1,
-                            1
-                        ],
-                        "falloffType": 0,
-                        "intensity": 1,
-                        "range": 1.7976931348623157e+308,
-                        "intensityMode": 0,
-                        "radius": 0.00001,
-                        "_renderPriority": 0,
-                        "shadowEnabled": true,
-                        "excludeWithLayerMask": 0,
-                        "includeOnlyWithLayerMask": 0,
-                        "lightmapMode": 0,
-                        "position": [
-                            0,
-                            3,
-                            0
-                        ],
-                        "direction": [
-                            50,
-                            -30,
-                            0
-                        ],
-                        "name": "light2",
-                        "id": "light2",
-                        "uniqueId": 22,
-                        "state": "",
-                        "type": 1,
-                        "animations": [],
-                        "ranges": []
-                    },
+                    "position": [
+                        300,
+                        300,
+                        300
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
                     "scale": [
                         1,
                         1,
                         1
-                    ],
-                    "position": [
-                        0,
-                        3,
-                        0
-                    ],
-                    "rotation": [
-                        50,
-                        -30,
-                        0
                     ],
                     "children": []
                 },
                 "3e8d0d21-726a-427d-bf34-7baaebdff54c": {
                     "name": "立方体",
-                    "type": "box",
+                    "type": "primitive",
+                    "subtype": "box",
                     "resource_id": "3e8d0d21-726a-427d-bf34-7baaebdff54c",
                     "babylon_id": "",
                     "asset_id": "",

@@ -1,6 +1,8 @@
 import { Observer } from "../../lib";
 import { GizmoManager } from ".";
 import { Tools } from "../utility";
+import { VeryCamera, VeryLight } from "../middleware";
+import { CameraGizmo } from "./cameraGizmo";
 
 export class GizmosCenter {
 
@@ -20,40 +22,66 @@ export class GizmosCenter {
         GizmosCenter.gizmoManager.positionGizmoEnabled = true;
         GizmosCenter.gizmoManager.rotationGizmoEnabled = true;
         GizmosCenter.gizmoManager.scaleGizmoEnabled = true;
-        GizmosCenter.gizmoManager.gizmos.positionGizmo!.scaleRatio = 2;
-        GizmosCenter.gizmoManager.gizmos.rotationGizmo!.scaleRatio = 2;
-        GizmosCenter.gizmoManager.gizmos.scaleGizmo!.scaleRatio = 2;
+        GizmosCenter.gizmoManager.gizmos.positionGizmo!.scaleRatio = 1.5;
+        GizmosCenter.gizmoManager.gizmos.rotationGizmo!.scaleRatio = 1.5;
+        GizmosCenter.gizmoManager.gizmos.scaleGizmo!.scaleRatio = 1.5;
         GizmosCenter.gizmoManager.positionGizmoEnabled = false;
         GizmosCenter.gizmoManager.rotationGizmoEnabled = false;
         GizmosCenter.gizmoManager.scaleGizmoEnabled = false;
 
-
+        let lastCameraGizmo: Nullable<CameraGizmo> = null;
 
         editor.on('selector:change', (type: string, items: Observer[]) => {
             GizmosCenter.clear();
             if (type === 'entity') {
+                if (items && items.length === 0) {
+                    return;
+                }
+                let node;
                 if (items.length === 1) {
-                    GizmosCenter.attach(items[0].node);
+                    node = items[0].node;
+                    // GizmosCenter.attach(node);
                 } else {
-                    // TODO
                     // 创建一个空物体作为所有物体的父物体；
                     // 记录原始父物体；
-                    GizmosCenter.attach(items[items.length - 1].node);
+                    node = items[items.length - 1].node;
+                }
+                GizmosCenter.attach(node);
+                // Camera Gizmo处理
+                if (node && node instanceof VeryCamera) {
+                    let tempGizmo = editor.call('gizmo:get', node.id);
+                    if (tempGizmo === lastCameraGizmo) {
+                        return;
+                    } else {
+                        if (lastCameraGizmo) {
+                            lastCameraGizmo.displayFrustum = false;
+                            lastCameraGizmo = null;
+                        }
+                    }
+                    if (tempGizmo && tempGizmo instanceof CameraGizmo) {
+                        tempGizmo.displayFrustum = true;
+                        lastCameraGizmo = tempGizmo;
+                    }
+                } else {
+                    if (lastCameraGizmo) {
+                        lastCameraGizmo.displayFrustum = false;
+                        lastCameraGizmo = null;
+                    }
                 }
                 this.currentItems = items;
-                for(let i = 0; i < this.currentItems.length; i++) {
-                    this.currentEvents.push(this.currentItems[i].on('position:set', (val: any) => {}));
-                    this.currentEvents.push(this.currentItems[i].on('position.0:set', (val: any) => {}));
-                    this.currentEvents.push(this.currentItems[i].on('position.1:set', (val: any) => {}));
-                    this.currentEvents.push(this.currentItems[i].on('position.2:set', (val: any) => {}));
-                    this.currentEvents.push(this.currentItems[i].on('rotation:set', (val: any) => {}));
-                    this.currentEvents.push(this.currentItems[i].on('rotation.0:set', (val: any) => {}));
-                    this.currentEvents.push(this.currentItems[i].on('rotation.1:set', (val: any) => {}));
-                    this.currentEvents.push(this.currentItems[i].on('rotation.2:set', (val: any) => {}));
-                    this.currentEvents.push(this.currentItems[i].on('scale:set', (val: any) => {}));
-                    this.currentEvents.push(this.currentItems[i].on('scale.0:set', (val: any) => {}));
-                    this.currentEvents.push(this.currentItems[i].on('scale.1:set', (val: any) => {}));
-                    this.currentEvents.push(this.currentItems[i].on('scale.2:set', (val: any) => {}));
+                for (let i = 0; i < this.currentItems.length; i++) {
+                    this.currentEvents.push(this.currentItems[i].on('position:set', (val: any) => { }));
+                    this.currentEvents.push(this.currentItems[i].on('position.0:set', (val: any) => { }));
+                    this.currentEvents.push(this.currentItems[i].on('position.1:set', (val: any) => { }));
+                    this.currentEvents.push(this.currentItems[i].on('position.2:set', (val: any) => { }));
+                    this.currentEvents.push(this.currentItems[i].on('rotation:set', (val: any) => { }));
+                    this.currentEvents.push(this.currentItems[i].on('rotation.0:set', (val: any) => { }));
+                    this.currentEvents.push(this.currentItems[i].on('rotation.1:set', (val: any) => { }));
+                    this.currentEvents.push(this.currentItems[i].on('rotation.2:set', (val: any) => { }));
+                    this.currentEvents.push(this.currentItems[i].on('scale:set', (val: any) => { }));
+                    this.currentEvents.push(this.currentItems[i].on('scale.0:set', (val: any) => { }));
+                    this.currentEvents.push(this.currentItems[i].on('scale.1:set', (val: any) => { }));
+                    this.currentEvents.push(this.currentItems[i].on('scale.2:set', (val: any) => { }));
                 }
             }
         });
@@ -80,6 +108,10 @@ export class GizmosCenter {
     }
 
     public static attach(mesh: Nullable<BABYLON.Node>): void {
+        // if (mesh instanceof VeryLight) {
+        //     this.gizmoManager.attachToNode(mesh.light);
+        // }
+        // else 
         if (mesh instanceof BABYLON.AbstractMesh) {
             this.gizmoManager.attachToMesh(mesh);
         } else {

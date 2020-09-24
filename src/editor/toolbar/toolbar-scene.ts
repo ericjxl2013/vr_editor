@@ -40,7 +40,7 @@ export class ToolbarScene {
 
         var sceneName = new Label();
         // TODO
-        sceneName.text = '当前Scene Name';
+        sceneName.text = '当前场景名';
         sceneName.class!.add('scene-name');
         sceneName.renderChanges = false;
         panel.append(sceneName);
@@ -62,6 +62,7 @@ export class ToolbarScene {
 
         sceneName.on('click', function () {
             // editor.call('selector:set', 'editorSettings', [editor.call('settings:projectUser')]);
+            editor.call('selector:set', 'editorSettings', [editor.call('settings:data')]);
         });
 
         editor.on('attributes:clear', function () {
@@ -76,7 +77,7 @@ export class ToolbarScene {
             sceneName.text = '';
         });
 
-
+        // 版本管理
         // if (!config.project.settings.useLegacyScripts) {
         //     var name = config.self.branch.name;
         //     if (name.length > 33) {
@@ -107,28 +108,29 @@ export class ToolbarScene {
         //     });
         // }
 
-        var sceneList = new Label();
-        sceneList.class!.add('scene-list');
-        panel.append(sceneList);
+        // 场景设置
+        // var sceneList = new Label();
+        // sceneList.class!.add('scene-list');
+        // panel.append(sceneList);
 
-        Tooltip.attach({
-            target: sceneList.element!,
-            text: '场景设置',
-            align: 'top',
-            root: root
-        });
+        // Tooltip.attach({
+        //     target: sceneList.element!,
+        //     text: '场景设置',
+        //     align: 'top',
+        //     root: root
+        // });
 
-        sceneList.on('click', function () {
-            // editor.call('picker:scene');
-        });
+        // sceneList.on('click', function () {
+        //     // editor.call('picker:scene');
+        // });
 
-        editor.on('picker:scene:open', function () {
-            sceneList.class!.add('active');
-        });
+        // editor.on('picker:scene:open', function () {
+        //     sceneList.class!.add('active');
+        // });
 
-        editor.on('picker:scene:close', function () {
-            sceneList.class!.remove('active');
-        });
+        // editor.on('picker:scene:close', function () {
+        //     sceneList.class!.remove('active');
+        // });
 
 
     }
